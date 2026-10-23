@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Markdown Studio</title>
+  <style>
+    :root {
+      --accent: #d97706;
+      --accent-hover: #b45309;
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --muted: #64748b;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--accent);
+    }
+    .badge {
+      font-size: 0.75rem;
+      background: #fef3c7;
+      color: #92400e;
+      padding: 3px 8px;
+      border-radius: 6px;
+      border: 1px solid #fde68a;
+      font-weight: 600;
+    }
+    .actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    button {
+      background: #f1f5f9;
+      color: #334155;
+      border: 1px solid var(--border);
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.15s ease;
+    }
+    button:hover { background: #e2e8f0; color: #0f172a; }
+    button.primary {
+      background: var(--accent);
+      color: #ffffff;
+      border: none;
+      font-weight: 700;
+    }
+    button.primary:hover { background: var(--accent-hover); }
+    .stats {
+      font-size: 0.8rem;
+      color: var(--muted);
+      display: flex;
+      gap: 12px;
+      font-family: monospace;
+    }
+    main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      overflow: hidden;
+      background: var(--surface);
+    }
+    .panel {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      overflow: hidden;
+    }
+    .panel-header {
+      background: #f8fafc;
+      padding: 8px 16px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+    }
+    textarea {
+      flex: 1;
+      background: #ffffff;
+      color: #1e293b;
+      border: none;
+      padding: 20px;
+      font-family: "JetBrains Mono", Consolas, monospace;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      resize: none;
+      outline: none;
+      border-right: 1px solid var(--border);
+    }
+    .preview-box {
+      flex: 1;
+      padding: 24px 32px;
+      overflow-y: auto;
+      line-height: 1.7;
+      background: #ffffff;
+    }
+    .preview-box h1 { font-size: 1.8rem; margin-bottom: 12px; color: #92400e; border-bottom: 2px solid #fef3c7; padding-bottom: 8px; }
+    .preview-box h2 { font-size: 1.4rem; margin: 18px 0 8px; color: #b45309; }
+    .preview-box h3 { font-size: 1.15rem; margin: 16px 0 6px; color: #d97706; }
+    .preview-box p { margin-bottom: 14px; color: #334155; }
+    .preview-box ul, .preview-box ol { margin-left: 24px; margin-bottom: 14px; color: #334155; }
+    .preview-box li { margin-bottom: 4px; }
+    .preview-box code { background: #fef3c7; color: #92400e; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.88em; }
+    .preview-box pre { background: #f8fafc; padding: 14px; border-radius: 8px; border: 1px solid var(--border); overflow-x: auto; margin-bottom: 14px; }
+    .preview-box pre code { background: none; padding: 0; color: #0284c7; }
+    .preview-box blockquote { border-left: 4px solid var(--accent); padding-left: 14px; color: #64748b; margin-bottom: 14px; font-style: italic; background: #fffbeb; padding: 8px 12px; border-radius: 0 6px 6px 0; }
+    @media (max-width: 768px) {
+      main { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr; }
+      textarea { border-right: none; border-bottom: 1px solid var(--border); }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <span>Markdown Studio</span>
+      <span class="badge">Editor e Testi</span>
+    </div>
+    <div class="stats">
+      <span id="charCount">0 caratteri</span>
+      <span>·</span>
+      <span id="wordCount">0 parole</span>
+      <span>·</span>
+      <span id="readTime">0 min</span>
+    </div>
+    <div class="actions">
+      <button onclick="insertSample()">Esempio</button>
+      <button onclick="clearText()">Pulisci</button>
+      <button class="primary" onclick="exportFile()">Scarica .md</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="panel">
+      <div class="panel-header">Sorgente Markdown</div>
+      <textarea id="editor" spellcheck="false" placeholder="Scrivi qui il tuo testo in formato Markdown..."></textarea>
+    </div>
+    <div class="panel">
+      <div class="panel-header">Anteprima Formattata</div>
+      <div id="preview" class="preview-box"></div>
+    </div>
+  </main>
+
+  <script>
+    const editor = document.getElementById('editor');
+    const preview = document.getElementById('preview');
+    const charCount = document.getElementById('charCount');
+    const wordCount = document.getElementById('wordCount');
+    const readTime = document.getElementById('readTime');
+
+    const sample = `# Note di Progetto
+
+Benvenuto in **Markdown Studio**! Questo strumento ti permette di redigere e formattare documentazione e testi con un layout luminoso e ad alta leggibilità.
+
+## Funzionalità
+- Anteprima HTML istantanea
+- Calcolo automatico di parole e tempo di lettura
+- Esportazione rapida del file markdown
+- Interfaccia chiara e priva di distrazioni
+
+### Esempio di Codice
+\`\`\`javascript
+function saluta(nome) {
+  return \`Ciao \${nome}, benvenuto in WebApps Hub!\`;
+}
+\`\`\`
+
+> "La semplicità è la massima sofisticazione." — Leonardo da Vinci
+
+Scrivi liberamente nell'editor a sinistra per vedere il testo aggiornarsi al volo.`;
+
+    function parseMarkdown(md) {
+      let html = md
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+        .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+        .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+        .replace(/^\> (.*$)/gim, '<blockquote>$1</blockquote>')
+        .replace(/```([a-z]*)\n([\s\S]*?)```/gim, '<pre><code>$2</code></pre>')
+        .replace(/`([^`]+)`/gim, '<code>$1</code>')
+        .replace(/\*\*([^*]+)\*\*/gim, '<strong>$1</strong>')
+        .replace(/\*([^*]+)\*/gim, '<em>$1</em>')
+        .replace(/^- (.*$)/gim, '<ul><li>$1</li></ul>')
+        .replace(/\n\n/gim, '</p><p>');
+
+      html = html.replace(/<\/ul>\s?<ul>/gim, '');
+      return '<p>' + html + '</p>';
+    }
+
+    function update() {
+      const text = editor.value;
+      preview.innerHTML = parseMarkdown(text);
+      const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+      const chars = text.length;
+      const minutes = Math.ceil(words / 200);
+
+      charCount.textContent = `${chars} caratteri`;
+      wordCount.textContent = `${words} parole`;
+      readTime.textContent = `${words === 0 ? 0 : minutes} min`;
+
+      localStorage.setItem('markdown_hub_cache', text);
+    }
+
+    function insertSample() {
+      editor.value = sample;
+      update();
+    }
+
+    function clearText() {
+      if (confirm('Vuoi cancellare il testo?')) {
+        editor.value = '';
+        update();
+      }
+    }
+
+    function exportFile() {
+      const blob = new Blob([editor.value], { type: 'text/markdown' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'documento.md';
+      a.click();
+    }
+
+    editor.addEventListener('input', update);
+    const cached = localStorage.getItem('markdown_hub_cache');
+    editor.value = cached || sample;
+    update();
+  </script>
+</body>
+</html>

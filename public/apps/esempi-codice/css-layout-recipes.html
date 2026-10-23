@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ricettario Layout CSS Grid & Flexbox</title>
+  <style>
+    :root {
+      --accent: #0284c7;
+      --accent-hover: #0369a1;
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --muted: #64748b;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .brand {
+      color: var(--accent);
+      font-weight: 800;
+      font-size: 1.15rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .badge {
+      font-size: 0.75rem;
+      background: #e0f2fe;
+      color: #0369a1;
+      padding: 3px 8px;
+      border-radius: 6px;
+      border: 1px solid #bae6fd;
+      font-weight: 700;
+    }
+    button.primary {
+      background: #0284c7;
+      color: #fff;
+      font-weight: 700;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+    button.primary:hover { background: var(--accent-hover); }
+    main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 280px 1fr 1fr;
+      overflow: hidden;
+      background: var(--surface);
+    }
+    .nav-sidebar {
+      background: #f8fafc;
+      border-right: 1px solid var(--border);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      overflow-y: auto;
+    }
+    .nav-item {
+      padding: 11px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 0.88rem;
+      color: #334155;
+      font-weight: 600;
+      transition: background 0.15s;
+    }
+    .nav-item:hover { background: #e2e8f0; color: #0f172a; }
+    .nav-item.active {
+      background: #e0f2fe;
+      color: #0369a1;
+      border: 1px solid #bae6fd;
+      font-weight: 700;
+    }
+    .preview-col {
+      background: #ffffff;
+      border-right: 1px solid var(--border);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+    .code-col {
+      background: #f8fafc;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .col-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+      margin-bottom: 14px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      font-weight: 700;
+    }
+    .preview-canvas {
+      flex: 1;
+      background: #f0f9ff;
+      border: 2px dashed #bae6fd;
+      border-radius: 14px;
+      padding: 20px;
+      overflow: auto;
+      min-height: 350px;
+    }
+    pre {
+      flex: 1;
+      margin: 0;
+      padding: 20px;
+      font-family: "JetBrains Mono", Consolas, monospace;
+      font-size: 0.88rem;
+      line-height: 1.6;
+      color: #0f172a;
+      overflow: auto;
+      background: #fdfdfd;
+      border-top: 1px solid var(--border);
+    }
+    .box-item {
+      background: #0284c7;
+      color: #fff;
+      border-radius: 8px;
+      padding: 14px;
+      text-align: center;
+      font-weight: 700;
+      font-size: 0.88rem;
+      box-shadow: 0 4px 10px rgba(2, 132, 199, 0.2);
+    }
+    @media (max-width: 900px) {
+      main { grid-template-columns: 1fr; grid-template-rows: auto 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <span>Layout CSS Grid & Flexbox</span>
+      <span class="badge">Esempi Codici</span>
+    </div>
+    <button class="primary" onclick="copySnippet()">Copia Codice CSS</button>
+  </header>
+
+  <main>
+    <div class="nav-sidebar" id="menu"></div>
+
+    <div class="preview-col">
+      <div class="col-title">Anteprima del Layout</div>
+      <div class="preview-canvas" id="canvas"></div>
+    </div>
+
+    <div class="code-col">
+      <div class="col-title" style="padding:14px 20px 8px;">
+        <span>Codice CSS & HTML</span>
+        <span id="copyMsg" style="color:#0284c7; font-weight:700;"></span>
+      </div>
+      <pre id="codeView"></pre>
+    </div>
+  </main>
+
+  <script>
+    const recipes = [
+      {
+        id: 'holy-grail',
+        name: '01. Holy Grail Layout (Header, 3 Col, Footer)',
+        css: `.container {
+  display: grid;
+  grid-template-rows: 60px 1fr 50px;
+  grid-template-columns: 140px 1fr 140px;
+  grid-template-areas:
+    "header header header"
+    "nav    main   aside"
+    "footer footer footer";
+  height: 320px;
+  gap: 8px;
+}`,
+        html: `<div class="container" style="display:grid; grid-template-rows:50px 1fr 40px; grid-template-columns:100px 1fr 100px; grid-template-areas:'h h h' 'n m a' 'f f f'; height:300px; gap:8px;">
+  <div class="box-item" style="grid-area:h; background:#0284c7;">Header</div>
+  <div class="box-item" style="grid-area:n; background:#0369a1;">Nav</div>
+  <div class="box-item" style="grid-area:m; background:#075985;">Main Content</div>
+  <div class="box-item" style="grid-area:a; background:#0369a1;">Sidebar</div>
+  <div class="box-item" style="grid-area:f; background:#0c4a6e;">Footer</div>
+</div>`
+      },
+      {
+        id: 'autofit-grid',
+        name: '02. Responsive Auto-Fit Cards (Senza Media Query)',
+        css: `.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+}`,
+        html: `<div class="card-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(120px, 1fr)); gap:12px;">
+  <div class="box-item">Card 1</div>
+  <div class="box-item">Card 2</div>
+  <div class="box-item">Card 3</div>
+  <div class="box-item">Card 4</div>
+  <div class="box-item">Card 5</div>
+  <div class="box-item">Card 6</div>
+</div>`
+      },
+      {
+        id: 'perfect-center',
+        name: '03. Centratura Assoluta (Centering)',
+        css: `.parent-box {
+  display: grid;
+  place-content: center;
+  min-height: 260px;
+}
+/* Oppure con Flexbox */
+.parent-flex {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}`,
+        html: `<div style="display:grid; place-content:center; height:240px; background:#e0f2fe; border-radius:12px;">
+  <div class="box-item" style="padding:24px 36px;">Perfettamente Centrato</div>
+</div>`
+      },
+      {
+        id: 'sticky-footer',
+        name: '04. Sticky Footer Flexbox',
+        css: `body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+main {
+  flex: 1;
+}`,
+        html: `<div style="display:flex; flex-direction:column; height:260px; gap:8px;">
+  <div class="box-item" style="background:#0284c7;">Header Fisso</div>
+  <div class="box-item" style="flex:1; background:#075985; display:grid; place-content:center;">Contenuto Dinamico (flex: 1)</div>
+  <div class="box-item" style="background:#0284c7;">Footer in Fondo</div>
+</div>`
+      }
+    ];
+
+    let current = 0;
+    const menu = document.getElementById('menu');
+    const canvas = document.getElementById('canvas');
+    const codeView = document.getElementById('codeView');
+    const copyMsg = document.getElementById('copyMsg');
+
+    function renderMenu() {
+      menu.innerHTML = '';
+      recipes.forEach((r, i) => {
+        const div = document.createElement('div');
+        div.className = `nav-item ${i === current ? 'active' : ''}`;
+        div.textContent = r.name;
+        div.onclick = () => {
+          current = i;
+          renderMenu();
+          renderContent();
+        };
+        menu.appendChild(div);
+      });
+    }
+
+    function renderContent() {
+      const r = recipes[current];
+      canvas.innerHTML = r.html;
+      codeView.textContent = `/* === CSS === */\n${r.css}\n\n<!-- === HTML === -->\n${r.html}`;
+    }
+
+    function copySnippet() {
+      navigator.clipboard.writeText(codeView.textContent).then(() => {
+        copyMsg.textContent = 'Copiato!';
+        setTimeout(() => { copyMsg.textContent = ''; }, 1600);
+      });
+    }
+
+    renderMenu();
+    renderContent();
+  </script>
+</body>
+</html>

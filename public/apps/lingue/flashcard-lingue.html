@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flashcard Lingue Interattive</title>
+  <style>
+    :root {
+      --accent: #059669;
+      --accent-hover: #047857;
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --muted: #64748b;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px;
+      gap: 20px;
+    }
+    .header {
+      width: 100%;
+      max-width: 680px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .brand h1 { font-size: 1.25rem; color: var(--accent); font-weight: 800; }
+    .brand p { font-size: 0.85rem; color: var(--muted); }
+    .lang-selector {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      color: #0f172a;
+      padding: 8px 16px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    .card-scene {
+      width: 100%;
+      max-width: 540px;
+      height: 320px;
+      perspective: 1000px;
+      cursor: pointer;
+    }
+    .card-inner {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      border-radius: 20px;
+    }
+    .card-inner.flipped { transform: rotateY(180deg); }
+    .card-face {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 20px;
+      border: 2px solid #d1fae5;
+      background: var(--surface);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 30px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(5, 150, 105, 0.08);
+    }
+    .card-face.back {
+      transform: rotateY(180deg);
+      background: #ecfdf5;
+      border-color: #34d399;
+    }
+    .card-label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #059669;
+      margin-bottom: 12px;
+      font-weight: 700;
+    }
+    .card-word {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 8px;
+    }
+    .card-sub {
+      font-size: 1rem;
+      color: #047857;
+      font-style: italic;
+    }
+    .hint-tap {
+      position: absolute;
+      bottom: 18px;
+      font-size: 0.8rem;
+      color: #64748b;
+      font-weight: 500;
+    }
+    .controls {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    button {
+      background: var(--surface);
+      color: #0f172a;
+      border: 1px solid var(--border);
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+      transition: all 0.15s ease;
+    }
+    button:hover {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+    }
+    button.primary {
+      background: var(--accent);
+      color: #ffffff;
+      font-weight: 700;
+      border: none;
+    }
+    button.primary:hover { background: var(--accent-hover); }
+    .progress-bar {
+      width: 100%;
+      max-width: 540px;
+      display: flex;
+      justify-content: space-between;
+      color: #059669;
+      font-size: 0.85rem;
+      font-family: monospace;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="brand">
+      <h1>Flashcard Lingue</h1>
+      <p>Allena vocaboli, pronuncia e memoria visiva</p>
+    </div>
+    <select id="langSelect" class="lang-selector" onchange="changeSet(this.value)">
+      <option value="en">Inglese (IT ➔ EN)</option>
+      <option value="es">Spagnolo (IT ➔ ES)</option>
+      <option value="de">Tedesco (IT ➔ DE)</option>
+    </select>
+  </div>
+
+  <div class="progress-bar">
+    <span id="counter">Scheda 1 di 7</span>
+    <span id="score">Pronuncia attiva</span>
+  </div>
+
+  <div class="card-scene" onclick="flipCard()">
+    <div class="card-inner" id="cardInner">
+      <div class="card-face front">
+        <div class="card-label">Italiano</div>
+        <div class="card-word" id="frontWord">Ingegnere del Software</div>
+        <div class="card-sub" id="frontContext">Professione / Tecnologia</div>
+        <div class="hint-tap">Tocca la scheda per scoprire la traduzione</div>
+      </div>
+      <div class="card-face back">
+        <div class="card-label">Traduzione &amp; Contesto</div>
+        <div class="card-word" id="backWord">Software Engineer</div>
+        <div class="card-sub" id="backExample">"He works as a senior software engineer."</div>
+        <div class="hint-tap">Tocca per girare indietro</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button onclick="speakWord()">🔊 Ascolta Pronuncia</button>
+    <button onclick="prevCard()">← Precedente</button>
+    <button class="primary" onclick="nextCard()">Prossima →</button>
+  </div>
+
+  <script>
+    const decks = {
+      en: [
+        { it: 'Ingegnere del Software', tr: 'Software Engineer', ex: 'He works as a software engineer.', lang: 'en-US' },
+        { it: 'Database Relazionale', tr: 'Relational Database', ex: 'PostgreSQL is a relational database.', lang: 'en-US' },
+        { it: 'Algoritmo Efficiente', tr: 'Efficient Algorithm', ex: 'This algorithm runs in O(n) time.', lang: 'en-US' },
+        { it: 'Interfaccia Utente', tr: 'User Interface', ex: 'Clean UI improves user experience.', lang: 'en-US' },
+        { it: 'Risoluzione dei Problemi', tr: 'Troubleshooting', ex: 'Effective troubleshooting saves time.', lang: 'en-US' },
+        { it: 'Sincronizzazione Dati', tr: 'Data Synchronization', ex: 'Real-time synchronization across devices.', lang: 'en-US' },
+        { it: 'Requisiti di Sistema', tr: 'System Requirements', ex: 'Check system requirements first.', lang: 'en-US' }
+      ],
+      es: [
+        { it: 'Sviluppatore Web', tr: 'Desarrollador Web', ex: 'Es un desarrollador web experto.', lang: 'es-ES' },
+        { it: 'Benvenuto', tr: 'Bienvenido', ex: '¡Bienvenido a nuestra plataforma!', lang: 'es-ES' },
+        { it: 'Codice Pulito', tr: 'Código Limpio', ex: 'El código limpio es fácil de mantener.', lang: 'es-ES' },
+        { it: 'Fine Settimana', tr: 'Fin de Semana', ex: 'Nos vemos el fin de semana.', lang: 'es-ES' },
+        { it: 'Soluzione Innovativa', tr: 'Solución Innovadora', ex: 'Encontramos una solución innovadora.', lang: 'es-ES' }
+      ],
+      de: [
+        { it: 'Sviluppatore Software', tr: 'Softwareentwickler', ex: 'Er arbeitet als Softwareentwickler.', lang: 'de-DE' },
+        { it: 'Interfaccia Utente', tr: 'Benutzeroberfläche', ex: 'Die Benutzeroberfläche ist intuitiv.', lang: 'de-DE' },
+        { it: 'Velocità di Caricamento', tr: 'Ladegeschwindigkeit', ex: 'Optimieren Sie die Ladegeschwindigkeit.', lang: 'de-DE' },
+        { it: 'Sicurezza dei Dati', tr: 'Datensicherheit', ex: 'Datensicherheit hat höchste Priorität.', lang: 'de-DE' }
+      ]
+    };
+
+    let curDeck = 'en';
+    let idx = 0;
+    const cardInner = document.getElementById('cardInner');
+
+    function flipCard() {
+      cardInner.classList.toggle('flipped');
+    }
+
+    function renderCard() {
+      cardInner.classList.remove('flipped');
+      const item = decks[curDeck][idx];
+      document.getElementById('frontWord').textContent = item.it;
+      document.getElementById('backWord').textContent = item.tr;
+      document.getElementById('backExample').textContent = item.ex;
+      document.getElementById('counter').textContent = `Scheda ${idx + 1} di ${decks[curDeck].length}`;
+    }
+
+    function nextCard() {
+      idx = (idx + 1) % decks[curDeck].length;
+      renderCard();
+    }
+
+    function prevCard() {
+      idx = (idx - 1 + decks[curDeck].length) % decks[curDeck].length;
+      renderCard();
+    }
+
+    function changeSet(lang) {
+      curDeck = lang;
+      idx = 0;
+      renderCard();
+    }
+
+    function speakWord() {
+      const item = decks[curDeck][idx];
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(item.tr);
+        utterance.lang = item.lang;
+        window.speechSynthesis.speak(utterance);
+      } else {
+        alert('Sintesi vocale non supportata in questo browser.');
+      }
+    }
+
+    renderCard();
+  </script>
+</body>
+</html>

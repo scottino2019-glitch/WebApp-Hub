@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ispettore Entità HTML</title>
+  <style>
+    :root {
+      --accent: #ea580c;
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface-hover: #fff7ed;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --muted: #64748b;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 24px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .header {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .title-area h1 { font-size: 1.25rem; color: var(--accent); font-weight: 800; }
+    .title-area p { font-size: 0.85rem; color: var(--muted); }
+    .search-input {
+      background: #fafafa;
+      border: 1px solid var(--border);
+      color: #0f172a;
+      padding: 10px 18px;
+      border-radius: 10px;
+      width: 280px;
+      font-size: 0.9rem;
+      outline: none;
+    }
+    .search-input:focus { border-color: var(--accent); background: #ffffff; }
+    .tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .tag-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.15s ease;
+    }
+    .tag-btn.active, .tag-btn:hover {
+      background: #ffedd5;
+      border-color: #fdba74;
+      color: #9a3412;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 12px;
+    }
+    .entity-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+    }
+    .entity-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--accent);
+      background: var(--surface-hover);
+      box-shadow: 0 6px 16px rgba(234, 88, 12, 0.12);
+    }
+    .char-preview {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #0f172a;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .entity-code {
+      font-family: monospace;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--accent);
+      background: #fff7ed;
+      border: 1px solid #ffedd5;
+      padding: 2px 6px;
+      border-radius: 6px;
+      width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .entity-name {
+      font-size: 0.72rem;
+      color: var(--muted);
+      font-weight: 500;
+    }
+    .notification {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--accent);
+      color: #ffffff;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      pointer-events: none;
+      box-shadow: 0 8px 24px rgba(234, 88, 12, 0.25);
+    }
+    .notification.show { opacity: 1; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="title-area">
+      <h1>Ispettore Entità & Simboli HTML</h1>
+      <p>Clicca su qualsiasi carattere per copiare subito l'entità &amp;code; negli appunti</p>
+    </div>
+    <input type="text" id="searchBox" class="search-input" placeholder="Cerca simbolo, nome o codice..." />
+  </div>
+
+  <div class="tabs">
+    <button class="tag-btn active" onclick="filterCat('all')">Tutti</button>
+    <button class="tag-btn" onclick="filterCat('special')">Punteggiatura & Simboli</button>
+    <button class="tag-btn" onclick="filterCat('arrows')">Frecce & Puntatori</button>
+    <button class="tag-btn" onclick="filterCat('math')">Matematica & Logica</button>
+    <button class="tag-btn" onclick="filterCat('currency')">Valute</button>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <div id="toast" class="notification">Copiato negli appunti!</div>
+
+  <script>
+    const entities = [
+      { char: '<', code: '&lt;', name: 'Minore', cat: 'special' },
+      { char: '>', code: '&gt;', name: 'Maggiore', cat: 'special' },
+      { char: '&', code: '&amp;', name: 'E commerciale', cat: 'special' },
+      { char: '"', code: '&quot;', name: 'Virgolette', cat: 'special' },
+      { char: '©', code: '&copy;', name: 'Copyright', cat: 'special' },
+      { char: '®', code: '&reg;', name: 'Marchio reg.', cat: 'special' },
+      { char: '™', code: '&trade;', name: 'Trademark', cat: 'special' },
+      { char: '§', code: '&sect;', name: 'Sezione/Paragrafo', cat: 'special' },
+      { char: '•', code: '&bull;', name: 'Punto elenco', cat: 'special' },
+      { char: '…', code: '&hellip;', name: 'Puntini sospensivi', cat: 'special' },
+      { char: '°', code: '&deg;', name: 'Grado', cat: 'special' },
+      { char: '¶', code: '&para;', name: 'Piede di mosca', cat: 'special' },
+
+      { char: '←', code: '&larr;', name: 'Freccia sinistra', cat: 'arrows' },
+      { char: '→', code: '&rarr;', name: 'Freccia destra', cat: 'arrows' },
+      { char: '↑', code: '&uarr;', name: 'Freccia su', cat: 'arrows' },
+      { char: '↓', code: '&darr;', name: 'Freccia giù', cat: 'arrows' },
+      { char: '↔', code: '&harr;', name: 'Freccia orizzontale', cat: 'arrows' },
+      { char: '⇒', code: '&rArr;', name: 'Doppia destra', cat: 'arrows' },
+      { char: '⇐', code: '&lArr;', name: 'Doppia sinistra', cat: 'arrows' },
+      { char: '↵', code: '&crarr;', name: 'Invio / Return', cat: 'arrows' },
+
+      { char: '±', code: '&plusmn;', name: 'Più o meno', cat: 'math' },
+      { char: '×', code: '&times;', name: 'Moltiplicazione', cat: 'math' },
+      { char: '÷', code: '&divide;', name: 'Divisione', cat: 'math' },
+      { char: '≠', code: '&ne;', name: 'Diverso', cat: 'math' },
+      { char: '≤', code: '&le;', name: 'Minore o uguale', cat: 'math' },
+      { char: '≥', code: '&ge;', name: 'Maggiore o uguale', cat: 'math' },
+      { char: '∞', code: '&infin;', name: 'Infinito', cat: 'math' },
+      { char: '√', code: '&radic;', name: 'Radice quadrata', cat: 'math' },
+      { char: '∑', code: '&sum;', name: 'Sommatoria', cat: 'math' },
+      { char: 'π', code: '&pi;', name: 'Pi greco', cat: 'math' },
+      { char: '≈', code: '&asymp;', name: 'Quasi uguale', cat: 'math' },
+      { char: 'Δ', code: '&Delta;', name: 'Delta', cat: 'math' },
+
+      { char: '€', code: '&euro;', name: 'Euro', cat: 'currency' },
+      { char: '$', code: '&#36;', name: 'Dollaro', cat: 'currency' },
+      { char: '£', code: '&pound;', name: 'Sterlina', cat: 'currency' },
+      { char: '¥', code: '&yen;', name: 'Yen', cat: 'currency' },
+      { char: '¢', code: '&cent;', name: 'Cent', cat: 'currency' }
+    ];
+
+    let currentCat = 'all';
+    const grid = document.getElementById('grid');
+    const search = document.getElementById('searchBox');
+    const toast = document.getElementById('toast');
+
+    function render() {
+      const q = search.value.toLowerCase().trim();
+      grid.innerHTML = '';
+
+      const filtered = entities.filter(item => {
+        const matchesCat = currentCat === 'all' || item.cat === currentCat;
+        const matchesQ = !q || item.char.includes(q) || item.code.toLowerCase().includes(q) || item.name.toLowerCase().includes(q);
+        return matchesCat && matchesQ;
+      });
+
+      filtered.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'entity-card';
+        div.innerHTML = `
+          <div class="char-preview">${item.char}</div>
+          <div class="entity-code">${item.code}</div>
+          <div class="entity-name">${item.name}</div>
+        `;
+        div.onclick = () => {
+          navigator.clipboard.writeText(item.code);
+          toast.textContent = `Copiato: ${item.code}`;
+          toast.classList.add('show');
+          setTimeout(() => toast.classList.remove('show'), 1600);
+        };
+        grid.appendChild(div);
+      });
+    }
+
+    function filterCat(cat) {
+      currentCat = cat;
+      document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+      render();
+    }
+
+    search.addEventListener('input', render);
+    render();
+  </script>
+</body>
+</html>

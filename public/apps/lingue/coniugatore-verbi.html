@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Coniugatore Verbi Essenziali</title>
+  <style>
+    :root {
+      --accent: #10b981;
+      --bg: #061c14;
+      --surface: #0b291e;
+      --border: #134e3a;
+      --text: #ecfdf5;
+      --muted: #6ee7b7;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 24px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .top-header {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .brand h1 { font-size: 1.25rem; color: var(--accent); }
+    .brand p { font-size: 0.85rem; color: var(--muted); }
+    .verb-picker {
+      background: #04140e;
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+    }
+    .tenses-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+    .tense-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    .tense-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+    td {
+      padding: 8px 4px;
+      border-bottom: 1px solid rgba(19, 78, 58, 0.4);
+    }
+    td.pronoun {
+      color: var(--muted);
+      width: 35%;
+      font-weight: 500;
+    }
+    td.form {
+      color: #fff;
+      font-weight: 600;
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body>
+  <div class="top-header">
+    <div class="brand">
+      <h1>Coniugatore Verbi & Tempi</h1>
+      <p>Esplora coniugazioni nei tempi verbali fondamentali</p>
+    </div>
+    <select id="verbSelect" class="verb-picker" onchange="showVerb(this.value)">
+      <option value="essere">Essere (To be / Ser-Estar)</option>
+      <option value="avere">Avere (To have / Haber-Tener)</option>
+      <option value="fare">Fare (To do-make / Hacer)</option>
+      <option value="andare">Andare (To go / Ir)</option>
+      <option value="volere">Volere (To want / Querer)</option>
+    </select>
+  </div>
+
+  <div class="tenses-grid" id="tensesGrid"></div>
+
+  <script>
+    const data = {
+      essere: [
+        {
+          tense: 'Presente Indicativo',
+          forms: [
+            ['Io', 'sono'], ['Tu', 'sei'], ['Lui / Lei', 'è'],
+            ['Noi', 'siamo'], ['Voi', 'siete'], ['Loro', 'sono']
+          ]
+        },
+        {
+          tense: 'Passato Prossimo',
+          forms: [
+            ['Io', 'sono stato/a'], ['Tu', 'sei stato/a'], ['Lui / Lei', 'è stato/a'],
+            ['Noi', 'siamo stati/e'], ['Voi', 'siete stati/e'], ['Loro', 'sono stati/e']
+          ]
+        },
+        {
+          tense: 'Futuro Semplice',
+          forms: [
+            ['Io', 'sarò'], ['Tu', 'sarai'], ['Lui / Lei', 'sarà'],
+            ['Noi', 'saremo'], ['Voi', 'sarete'], ['Loro', 'saranno']
+          ]
+        },
+        {
+          tense: 'Condizionale Presente',
+          forms: [
+            ['Io', 'sarei'], ['Tu', 'saresti'], ['Lui / Lei', 'sarebbe'],
+            ['Noi', 'saremmo'], ['Voi', 'sareste'], ['Loro', 'sarebbero']
+          ]
+        }
+      ],
+      avere: [
+        {
+          tense: 'Presente Indicativo',
+          forms: [
+            ['Io', 'ho'], ['Tu', 'hai'], ['Lui / Lei', 'ha'],
+            ['Noi', 'abbiamo'], ['Voi', 'avete'], ['Loro', 'hanno']
+          ]
+        },
+        {
+          tense: 'Passato Prossimo',
+          forms: [
+            ['Io', 'ho avuto'], ['Tu', 'hai avuto'], ['Lui / Lei', 'ha avuto'],
+            ['Noi', 'abbiamo avuto'], ['Voi', 'avete avuto'], ['Loro', 'hanno avuto']
+          ]
+        },
+        {
+          tense: 'Futuro Semplice',
+          forms: [
+            ['Io', 'avrò'], ['Tu', 'avrai'], ['Lui / Lei', 'avrà'],
+            ['Noi', 'avremo'], ['Voi', 'avrete'], ['Loro', 'avranno']
+          ]
+        },
+        {
+          tense: 'Condizionale Presente',
+          forms: [
+            ['Io', 'avrei'], ['Tu', 'avresti'], ['Lui / Lei', 'avrebbe'],
+            ['Noi', 'avremmo'], ['Voi', 'avreste'], ['Loro', 'avrebbero']
+          ]
+        }
+      ],
+      fare: [
+        {
+          tense: 'Presente Indicativo',
+          forms: [
+            ['Io', 'faccio'], ['Tu', 'fai'], ['Lui / Lei', 'fa'],
+            ['Noi', 'facciamo'], ['Voi', 'fate'], ['Loro', 'fanno']
+          ]
+        },
+        {
+          tense: 'Passato Prossimo',
+          forms: [
+            ['Io', 'ho fatto'], ['Tu', 'hai fatto'], ['Lui / Lei', 'ha fatto'],
+            ['Noi', 'abbiamo fatto'], ['Voi', 'avete fatto'], ['Loro', 'hanno fatto']
+          ]
+        },
+        {
+          tense: 'Futuro Semplice',
+          forms: [
+            ['Io', 'farò'], ['Tu', 'farai'], ['Lui / Lei', 'farà'],
+            ['Noi', 'faremo'], ['Voi', 'farete'], ['Loro', 'faranno']
+          ]
+        },
+        {
+          tense: 'Condizionale Presente',
+          forms: [
+            ['Io', 'farei'], ['Tu', 'faresti'], ['Lui / Lei', 'farebbe'],
+            ['Noi', 'faremmo'], ['Voi', 'fareste'], ['Loro', 'farebbero']
+          ]
+        }
+      ],
+      andare: [
+        {
+          tense: 'Presente Indicativo',
+          forms: [
+            ['Io', 'vado'], ['Tu', 'vai'], ['Lui / Lei', 'va'],
+            ['Noi', 'andiamo'], ['Voi', 'andate'], ['Loro', 'vanno']
+          ]
+        },
+        {
+          tense: 'Passato Prossimo',
+          forms: [
+            ['Io', 'sono andato/a'], ['Tu', 'sei andato/a'], ['Lui / Lei', 'è andato/a'],
+            ['Noi', 'siamo andati/e'], ['Voi', 'siete andati/e'], ['Loro', 'sono andati/e']
+          ]
+        },
+        {
+          tense: 'Futuro Semplice',
+          forms: [
+            ['Io', 'andrò'], ['Tu', 'andrai'], ['Lui / Lei', 'andrà'],
+            ['Noi', 'andremo'], ['Voi', 'andrete'], ['Loro', 'andranno']
+          ]
+        },
+        {
+          tense: 'Condizionale Presente',
+          forms: [
+            ['Io', 'andrei'], ['Tu', 'andresti'], ['Lui / Lei', 'andrebbe'],
+            ['Noi', 'andremmo'], ['Voi', 'andreste'], ['Loro', 'andrebbero']
+          ]
+        }
+      ],
+      volere: [
+        {
+          tense: 'Presente Indicativo',
+          forms: [
+            ['Io', 'voglio'], ['Tu', 'vuoi'], ['Lui / Lei', 'vuole'],
+            ['Noi', 'vogliamo'], ['Voi', 'volete'], ['Loro', 'vogliono']
+          ]
+        },
+        {
+          tense: 'Passato Prossimo',
+          forms: [
+            ['Io', 'ho voluto'], ['Tu', 'hai voluto'], ['Lui / Lei', 'ha voluto'],
+            ['Noi', 'abbiamo voluto'], ['Voi', 'avete voluto'], ['Loro', 'hanno voluto']
+          ]
+        },
+        {
+          tense: 'Futuro Semplice',
+          forms: [
+            ['Io', 'vorrò'], ['Tu', 'vorrai'], ['Lui / Lei', 'vorrà'],
+            ['Noi', 'vorremo'], ['Voi', 'vorrete'], ['Loro', 'vorranno']
+          ]
+        },
+        {
+          tense: 'Condizionale Presente',
+          forms: [
+            ['Io', 'vorrei'], ['Tu', 'vorresti'], ['Lui / Lei', 'vorrebbe'],
+            ['Noi', 'vorremmo'], ['Voi', 'vorreste'], ['Loro', 'vorrebbero']
+          ]
+        }
+      ]
+    };
+
+    function showVerb(verbKey) {
+      const container = document.getElementById('tensesGrid');
+      container.innerHTML = '';
+      const tenses = data[verbKey];
+      if (!tenses) return;
+
+      tenses.forEach(t => {
+        const card = document.createElement('div');
+        card.className = 'tense-card';
+        let rows = t.forms.map(f => `<tr><td class="pronoun">${f[0]}</td><td class="form">${f[1]}</td></tr>`).join('');
+        card.innerHTML = `
+          <div class="tense-title">${t.tense}</div>
+          <table>${rows}</table>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    showVerb('essere');
+  </script>
+</body>
+</html>

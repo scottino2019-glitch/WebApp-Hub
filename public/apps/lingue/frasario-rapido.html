@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Frasario Rapido Multilingua</title>
+  <style>
+    :root {
+      --accent: #10b981;
+      --bg: #061c14;
+      --surface: #0b291e;
+      --surface-hover: #134e3a;
+      --border: #134e3a;
+      --text: #ecfdf5;
+      --muted: #6ee7b7;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 24px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .top-bar {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .title-group h1 { font-size: 1.25rem; color: var(--accent); }
+    .title-group p { font-size: 0.85rem; color: var(--muted); }
+    .search-input {
+      background: #04140e;
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      outline: none;
+      width: 260px;
+    }
+    .search-input:focus { border-color: var(--accent); }
+    .filters {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .filter-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      cursor: pointer;
+    }
+    .filter-btn.active, .filter-btn:hover {
+      background: #134e3a;
+      color: #fff;
+      border-color: var(--accent);
+    }
+    .phrase-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .phrase-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background 0.15s ease;
+    }
+    .phrase-card:hover {
+      background: rgba(19, 78, 58, 0.5);
+      border-color: var(--accent);
+    }
+    .it-phrase {
+      font-weight: 600;
+      font-size: 1rem;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+    .translations {
+      display: flex;
+      gap: 16px;
+      font-size: 0.85rem;
+      color: #a7f3d0;
+      flex-wrap: wrap;
+    }
+    .badge-lang {
+      font-weight: 700;
+      color: var(--accent);
+      margin-right: 4px;
+    }
+    .audio-btn {
+      background: #134e3a;
+      border: 1px solid #10b981;
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+    .audio-btn:hover { background: var(--accent); color: #061c14; }
+  </style>
+</head>
+<body>
+  <div class="top-bar">
+    <div class="title-group">
+      <h1>Frasario Rapido per il Lavoro e i Viaggi</h1>
+      <p>Espressioni comuni in Inglese, Spagnolo e Francese con pronuncia integrata</p>
+    </div>
+    <input type="text" id="searchBar" class="search-input" placeholder="Cerca frase o parola..." />
+  </div>
+
+  <div class="filters">
+    <button class="filter-btn active" onclick="setCategory('all')">Tutte</button>
+    <button class="filter-btn" onclick="setCategory('tech')">Lavoro & Tech</button>
+    <button class="filter-btn" onclick="setCategory('travel')">Viaggi & Spostamenti</button>
+    <button class="filter-btn" onclick="setCategory('polite')">Cortesia & Saluti</button>
+  </div>
+
+  <div class="phrase-list" id="phraseList"></div>
+
+  <script>
+    const phrases = [
+      { it: 'Possiamo fare una riunione per chiarire i dettagli?', en: 'Could we schedule a meeting to clarify the details?', es: '¿Podríamos programar una reunión para aclarar los detalles?', cat: 'tech' },
+      { it: 'Ti ho appena inviato la bozza del documento.', en: 'I have just sent you the draft document.', es: 'Te acabo de enviar el borrador del documento.', cat: 'tech' },
+      { it: 'Il rilascio dell\'aggiornamento è previsto per domani.', en: 'The update deployment is scheduled for tomorrow.', es: 'El despliegue de la actualización está programado para mañana.', cat: 'tech' },
+      { it: 'Qual è la scadenza per questo progetto?', en: 'What is the deadline for this project?', es: '¿Cuál es la fecha límite para este proyecto?', cat: 'tech' },
+      { it: 'Dove posso prendere un treno per il centro?', en: 'Where can I catch a train to the city center?', es: '¿Dónde puedo tomar un tren hacia el centro?', cat: 'travel' },
+      { it: 'Avete il Wi-Fi gratuito qui?', en: 'Do you have free Wi-Fi here?', es: '¿Tienen Wi-Fi gratuito aquí?', cat: 'travel' },
+      { it: 'Vorrei un tavolo per due persone, per favore.', en: 'I would like a table for two, please.', es: 'Quisiera una mesa para dos personas, por favor.', cat: 'travel' },
+      { it: 'È stato un grande piacere conoscerti.', en: 'It was a real pleasure meeting you.', es: 'Fue un gran placer conocerte.', cat: 'polite' },
+      { it: 'Ti ringrazio molto per la tua disponibilità.', en: 'Thank you very much for your availability.', es: 'Muchas gracias por tu disponibilidad.', cat: 'polite' },
+      { it: 'Non esitare a contattarmi per qualsiasi dubbio.', en: 'Do not hesitate to contact me if you have any questions.', es: 'No dudes en contactarme para cualquier consulta.', cat: 'polite' }
+    ];
+
+    let currentCat = 'all';
+    const list = document.getElementById('phraseList');
+    const search = document.getElementById('searchBar');
+
+    function render() {
+      const q = search.value.toLowerCase().trim();
+      list.innerHTML = '';
+
+      const filtered = phrases.filter(p => {
+        const matchesCat = currentCat === 'all' || p.cat === currentCat;
+        const matchesQ = !q || p.it.toLowerCase().includes(q) || p.en.toLowerCase().includes(q) || p.es.toLowerCase().includes(q);
+        return matchesCat && matchesQ;
+      });
+
+      filtered.forEach(p => {
+        const card = document.createElement('div');
+        card.className = 'phrase-card';
+        card.innerHTML = `
+          <div>
+            <div class="it-phrase">${p.it}</div>
+            <div class="translations">
+              <div><span class="badge-lang">EN:</span> ${p.en}</div>
+              <div><span class="badge-lang">ES:</span> ${p.es}</div>
+            </div>
+          </div>
+          <div>
+            <button class="audio-btn" onclick="playAudio('${p.en.replace(/'/g, "\\'")}', 'en-US')">🔊 EN</button>
+            <button class="audio-btn" onclick="playAudio('${p.es.replace(/'/g, "\\'")}', 'es-ES')">🔊 ES</button>
+          </div>
+        `;
+        list.appendChild(card);
+      });
+    }
+
+    function setCategory(cat) {
+      currentCat = cat;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+      render();
+    }
+
+    function playAudio(text, lang) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang = lang;
+        window.speechSynthesis.speak(u);
+      }
+    }
+
+    search.addEventListener('input', render);
+    render();
+  </script>
+</body>
+</html>

@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RegEx Tester & Debugger</title>
+  <style>
+    :root {
+      --accent: #7c3aed;
+      --accent-hover: #6d28d9;
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --muted: #64748b;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 24px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    header {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .brand h1 { font-size: 1.25rem; color: var(--accent); font-weight: 800; }
+    .brand p { font-size: 0.85rem; color: var(--muted); }
+    .regex-bar {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      background: #ffffff;
+      padding: 12px 18px;
+      border-radius: 14px;
+      border: 2px solid #ddd6fe;
+      box-shadow: 0 2px 6px rgba(124, 58, 237, 0.08);
+    }
+    .regex-slash { color: var(--accent); font-family: monospace; font-size: 1.3rem; font-weight: bold; }
+    input#pattern {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: #0f172a;
+      font-family: "JetBrains Mono", Consolas, monospace;
+      font-size: 1.05rem;
+      font-weight: 600;
+      outline: none;
+    }
+    input#flags {
+      width: 70px;
+      background: #f5f3ff;
+      border: 1px solid #ddd6fe;
+      color: var(--accent);
+      padding: 6px 8px;
+      border-radius: 8px;
+      font-family: monospace;
+      font-weight: 700;
+      text-align: center;
+      outline: none;
+    }
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      flex: 1;
+    }
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .panel-head {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+      font-weight: 700;
+    }
+    textarea {
+      flex: 1;
+      min-height: 240px;
+      background: #fafafa;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      color: #0f172a;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      resize: vertical;
+      outline: none;
+    }
+    textarea:focus { border-color: var(--accent); background: #fff; }
+    .highlight-box {
+      flex: 1;
+      min-height: 240px;
+      background: #fdfcff;
+      border: 1px solid #ddd6fe;
+      border-radius: 10px;
+      padding: 16px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    mark {
+      background: #ede9fe;
+      color: #5b21b6;
+      border-radius: 4px;
+      padding: 2px 4px;
+      font-weight: 700;
+      border: 1px solid #c4b5fd;
+    }
+    .cheatsheet {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-size: 0.8rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .cheat-item {
+      display: inline-flex;
+      gap: 6px;
+      align-items: center;
+      background: #f5f3ff;
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: 1px solid #ede9fe;
+    }
+    .cheat-code { color: var(--accent); font-family: monospace; font-weight: 800; }
+    .cheat-desc { color: #4b5563; font-weight: 500; }
+    @media (max-width: 800px) {
+      .main-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <h1>RegEx Tester & Match Debugger</h1>
+      <p>Testa espressioni regolari in diretta con evidenziazione sintattica</p>
+    </div>
+    <div style="font-size:0.85rem; color:#7c3aed; font-family:monospace; font-weight:700;" id="matchCount">0 corrispondenze trovate</div>
+  </header>
+
+  <div class="regex-bar">
+    <span class="regex-slash">/</span>
+    <input type="text" id="pattern" placeholder="Inserisci pattern regex, es: (\w+)@([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})" value="(\w+)@([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})" />
+    <span class="regex-slash">/</span>
+    <input type="text" id="flags" value="g" title="Flags (g, i, m, s)" />
+  </div>
+
+  <div class="main-grid">
+    <div class="panel">
+      <div class="panel-head">
+        <span>Testo di Prova</span>
+      </div>
+      <textarea id="testString" spellcheck="false">Contattaci a supporto@azienda.it per assistenza.
+Oppure scrivi a info@example.com o dev.team@tech-hub.org.
+Codice utente: USR-98234, id sessione: sess_77492.
+Telefono: +39 02 1234567.</textarea>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <span>Risultato Evidenziato</span>
+      </div>
+      <div class="highlight-box" id="highlightBox"></div>
+    </div>
+  </div>
+
+  <div class="cheatsheet">
+    <div class="cheat-item"><span class="cheat-code">\d</span><span class="cheat-desc">Cifra [0-9]</span></div>
+    <div class="cheat-item"><span class="cheat-code">\w</span><span class="cheat-desc">Parola [a-zA-Z0-9_]</span></div>
+    <div class="cheat-item"><span class="cheat-code">\s</span><span class="cheat-desc">Spazio vuoto</span></div>
+    <div class="cheat-item"><span class="cheat-code">^ / $</span><span class="cheat-desc">Inizio / Fine riga</span></div>
+    <div class="cheat-item"><span class="cheat-code">+ / *</span><span class="cheat-desc">1 o più / 0 o più</span></div>
+    <div class="cheat-item"><span class="cheat-code">(...)</span><span class="cheat-desc">Gruppo cattura</span></div>
+    <div class="cheat-item"><span class="cheat-code">[abc]</span><span class="cheat-desc">Set caratteri</span></div>
+  </div>
+
+  <script>
+    const patternInput = document.getElementById('pattern');
+    const flagsInput = document.getElementById('flags');
+    const testStringInput = document.getElementById('testString');
+    const highlightBox = document.getElementById('highlightBox');
+    const matchCount = document.getElementById('matchCount');
+
+    function escapeHtml(text) {
+      return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    function evaluateRegex() {
+      const pat = patternInput.value;
+      const flags = flagsInput.value;
+      const str = testStringInput.value;
+
+      if (!pat) {
+        highlightBox.textContent = str;
+        matchCount.textContent = '0 corrispondenze';
+        return;
+      }
+
+      try {
+        const regex = new RegExp(pat, flags.includes('g') ? flags : flags + 'g');
+        const matches = [...str.matchAll(regex)];
+        matchCount.textContent = `${matches.length} corrispondenz${matches.length === 1 ? 'a' : 'e'} trovat${matches.length === 1 ? 'a' : 'e'}`;
+
+        let lastIndex = 0;
+        let html = '';
+
+        for (const match of matches) {
+          const matchStart = match.index;
+          const matchEnd = matchStart + match[0].length;
+
+          html += escapeHtml(str.substring(lastIndex, matchStart));
+          html += `<mark>${escapeHtml(match[0])}</mark>`;
+          lastIndex = matchEnd;
+        }
+
+        html += escapeHtml(str.substring(lastIndex));
+        highlightBox.innerHTML = html;
+      } catch (err) {
+        highlightBox.innerHTML = `<span style="color:#dc2626; font-weight:bold;">Errore sintassi RegEx: ${escapeHtml(err.message)}</span>`;
+        matchCount.textContent = 'Errore espressione';
+      }
+    }
+
+    patternInput.addEventListener('input', evaluateRegex);
+    flagsInput.addEventListener('input', evaluateRegex);
+    testStringInput.addEventListener('input', evaluateRegex);
+    evaluateRegex();
+  </script>
+</body>
+</html>

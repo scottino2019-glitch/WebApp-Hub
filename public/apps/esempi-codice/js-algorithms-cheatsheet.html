@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JavaScript Utility & Snippets Studio</title>
+  <style>
+    :root {
+      --accent: #0ea5e9;
+      --accent-hover: #0284c7;
+      --bg: #031525;
+      --surface: #082138;
+      --border: #0e375e;
+      --text: #f0f9ff;
+      --muted: #7dd3fc;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 24px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    header {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .brand h1 { font-size: 1.25rem; color: var(--accent); }
+    .brand p { font-size: 0.85rem; color: var(--muted); }
+    .search-box {
+      background: #020c16;
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      outline: none;
+      width: 250px;
+    }
+    .search-box:focus { border-color: var(--accent); }
+    .snippets-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 18px;
+    }
+    .snippet-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .card-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #fff;
+    }
+    .copy-btn {
+      background: #0e375e;
+      color: #7dd3fc;
+      border: 1px solid var(--accent);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .copy-btn:hover {
+      background: var(--accent);
+      color: #031525;
+    }
+    .card-desc {
+      font-size: 0.85rem;
+      color: #bae6fd;
+      line-height: 1.4;
+    }
+    pre {
+      background: #010810;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      font-family: "JetBrains Mono", Consolas, monospace;
+      font-size: 0.8rem;
+      line-height: 1.5;
+      color: #38bdf8;
+      overflow-x: auto;
+      margin: 0;
+    }
+    .test-box {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      background: #020c16;
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+    }
+    .test-btn {
+      background: var(--accent);
+      color: #031525;
+      border: none;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .test-output {
+      font-family: monospace;
+      font-size: 0.8rem;
+      color: #a7f3d0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <h1>JavaScript Utility & Snippets Studio</h1>
+      <p>Collezione di algoritmi, helper e funzioni JavaScript moderne con test interattivo</p>
+    </div>
+    <input type="text" id="search" class="search-box" placeholder="Cerca snippet o metodo..." />
+  </header>
+
+  <div class="snippets-grid" id="grid"></div>
+
+  <script>
+    const snippets = [
+      {
+        title: 'Debounce',
+        desc: 'Ritarda l\'esecuzione di una funzione fino a quando non sono trascorsi N millisecondi dall\'ultima invocazione.',
+        code: `function debounce(fn, delay = 300) {
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn(...args), delay);
+  };
+}`,
+        test: () => {
+          let c = 0;
+          const inc = () => { c++; };
+          const debounced = debounce(inc, 100);
+          debounced(); debounced(); debounced();
+          return "Chiamata 3 volte, eseguita 1 sola volta!";
+        }
+      },
+      {
+        title: 'Deep Clone (Clonazione Profonda)',
+        desc: 'Copia ricorsiva di oggetti annidati senza mantenere riferimenti condivisi.',
+        code: `function deepClone(obj) {
+  if (obj === null || typeof obj !== 'object') return obj;
+  if (Array.isArray(obj)) return obj.map(deepClone);
+  return Object.fromEntries(
+    Object.entries(obj).map(([k, v]) => [k, deepClone(v)])
+  );
+  // Oppure se moderno: structuredClone(obj)
+}`,
+        test: () => {
+          const a = { x: 1, user: { name: "Marco" } };
+          const b = structuredClone ? structuredClone(a) : JSON.parse(JSON.stringify(a));
+          b.user.name = "Luigi";
+          return `Orig: ${a.user.name}, Copia: ${b.user.name}`;
+        }
+      },
+      {
+        title: 'Array Group By',
+        desc: 'Raggruppa una lista di elementi secondo una chiave o funzione selettrice.',
+        code: `function groupBy(array, keyFn) {
+  return array.reduce((acc, item) => {
+    const key = keyFn(item);
+    (acc[key] = acc[key] || []).push(item);
+    return acc;
+  }, {});
+}`,
+        test: () => {
+          const items = [{ cat: 'A', v: 1 }, { cat: 'B', v: 2 }, { cat: 'A', v: 3 }];
+          const res = items.reduce((acc, i) => { (acc[i.cat] = acc[i.cat] || []).push(i.v); return acc; }, {});
+          return JSON.stringify(res);
+        }
+      },
+      {
+        title: 'Async Retry con Backoff',
+        desc: 'Esegue una promise con tentativi automatici in caso di errore di rete temporaneo.',
+        code: `async function retry(fn, retries = 3, delay = 500) {
+  try {
+    return await fn();
+  } catch (err) {
+    if (retries <= 1) throw err;
+    await new Promise(r => setTimeout(r, delay));
+    return retry(fn, retries - 1, delay * 2);
+  }
+}`,
+        test: () => "Pronta all'uso in fetch o chiamate API"
+      },
+      {
+        title: 'Formattazione Valuta & Date (Intl)',
+        desc: 'Utilizza le API native di internazionalizzazione del browser senza librerie esterne.',
+        code: `const formatEuro = (num) =>
+  new Intl.NumberFormat('it-IT', {
+    style: 'currency',
+    currency: 'EUR'
+  }).format(num);
+
+const formatDate = (d) =>
+  new Intl.DateTimeFormat('it-IT', { dateStyle: 'long' }).format(d);`,
+        test: () => {
+          return new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' }).format(1450.5);
+        }
+      }
+    ];
+
+    function debounce(fn, delay) {
+      let t;
+      return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), delay); };
+    }
+
+    const grid = document.getElementById('grid');
+    const search = document.getElementById('search');
+
+    function render() {
+      const q = search.value.toLowerCase().trim();
+      grid.innerHTML = '';
+      const filtered = snippets.filter(s => !q || s.title.toLowerCase().includes(q) || s.desc.toLowerCase().includes(q));
+
+      filtered.forEach((s, idx) => {
+        const card = document.createElement('div');
+        card.className = 'snippet-card';
+        card.innerHTML = `
+          <div class="card-top">
+            <span class="card-title">${s.title}</span>
+            <button class="copy-btn" onclick="copySnippet(${idx})">Copia</button>
+          </div>
+          <div class="card-desc">${s.desc}</div>
+          <pre>${s.code}</pre>
+          <div class="test-box">
+            <button class="test-btn" onclick="runTest(${idx})">Esegui Test</button>
+            <span class="test-output" id="testOut_${idx}">Clicca per verificare</span>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function copySnippet(idx) {
+      navigator.clipboard.writeText(snippets[idx].code).then(() => {
+        alert(`Snippet "${snippets[idx].title}" copiato!`);
+      });
+    }
+
+    function runTest(idx) {
+      const out = document.getElementById(`testOut_${idx}`);
+      out.textContent = snippets[idx].test();
+    }
+
+    search.addEventListener('input', render);
+    render();
+  </script>
+</body>
+</html>

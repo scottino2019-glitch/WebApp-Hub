@@ -1,0 +1,6 @@
+{
+  "name": "WebApps Hub",
+  "description": "Hub pulito e colorato per organizzare ed eseguire app HTML divise in categorie: editor e testi, HTML, lingue, programmazione ed esempi di codice.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

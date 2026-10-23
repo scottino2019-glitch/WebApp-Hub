@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Formattatore e Pulitore Testi</title>
+  <style>
+    :root {
+      --accent: #d97706;
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --muted: #64748b;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 24px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--surface);
+      padding: 16px 24px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .title-group h1 {
+      font-size: 1.25rem;
+      color: var(--accent);
+      margin-bottom: 2px;
+      font-weight: 800;
+    }
+    .title-group p {
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+    .tools-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 20px;
+    }
+    .editor-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    textarea {
+      width: 100%;
+      height: 380px;
+      background: #fafafa;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      color: #1e293b;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      outline: none;
+      resize: vertical;
+    }
+    textarea:focus { border-color: var(--accent); background: #ffffff; }
+    .operations {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .op-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .op-section h3 {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--accent);
+      margin-bottom: 12px;
+      font-weight: 700;
+    }
+    .btn-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    button {
+      background: #f1f5f9;
+      color: #334155;
+      border: 1px solid var(--border);
+      padding: 9px 12px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.15s ease;
+      text-align: center;
+    }
+    button:hover { background: #e2e8f0; color: #0f172a; }
+    button.highlight {
+      background: var(--accent);
+      color: #ffffff;
+      font-weight: 700;
+      border: none;
+    }
+    button.highlight:hover { background: #b45309; }
+    .stats-box {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 6px;
+    }
+    .stat-item {
+      background: #f8fafc;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      text-align: center;
+    }
+    .stat-val { font-size: 1.3rem; font-weight: 800; color: var(--accent); font-family: monospace; }
+    .stat-lbl { font-size: 0.75rem; color: var(--muted); margin-top: 2px; font-weight: 600; }
+    .toast {
+      display: none;
+      color: #059669;
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+    @media (max-width: 900px) {
+      .tools-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="top-bar">
+    <div class="title-group">
+      <h1>Formattatore & Pulitore Testi</h1>
+      <p>Trasforma maiuscole, rimuovi spazi doppi, calcola statistiche e genera slug URL</p>
+    </div>
+    <div style="display:flex; align-items:center; gap:12px;">
+      <span id="toast" class="toast">Copiato negli appunti!</span>
+      <button class="highlight" onclick="copyResult()">Copia Risultato</button>
+    </div>
+  </div>
+
+  <div class="tools-grid">
+    <div class="editor-card">
+      <textarea id="inputText" placeholder="Incolla o digita qui il testo da analizzare o trasformare..."></textarea>
+      
+      <div class="stats-box">
+        <div class="stat-item">
+          <div class="stat-val" id="statChars">0</div>
+          <div class="stat-lbl">Caratteri</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-val" id="statWords">0</div>
+          <div class="stat-lbl">Parole</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-val" id="statLines">0</div>
+          <div class="stat-lbl">Righe</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-val" id="statSpaces">0</div>
+          <div class="stat-lbl">Spazi</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="operations">
+      <div class="op-section">
+        <h3>Trasformazione Maiuscole</h3>
+        <div class="btn-wrap">
+          <button onclick="applyTransform('upper')">TUTTO MAIUSCOLO</button>
+          <button onclick="applyTransform('lower')">tutto minuscolo</button>
+          <button onclick="applyTransform('title')">Iniziali Maiuscole</button>
+          <button onclick="applyTransform('sentence')">Inizio Frase</button>
+          <button onclick="applyTransform('camel')">camelCase</button>
+          <button onclick="applyTransform('kebab')">kebab-case</button>
+          <button onclick="applyTransform('snake')">snake_case</button>
+          <button onclick="applyTransform('slug')">url-slug-pulito</button>
+        </div>
+      </div>
+
+      <div class="op-section">
+        <h3>Pulizia & Ordinamento</h3>
+        <div class="btn-wrap">
+          <button onclick="cleanSpaces()">Rimuovi Spazi Multipli</button>
+          <button onclick="trimLines()">Pulisci Inizio/Fine</button>
+          <button onclick="removeEmptyLines()">Elimina Righe Vuote</button>
+          <button onclick="sortLines()">Ordina Righe (A-Z)</button>
+          <button onclick="reverseLines()">Inverti Righe</button>
+          <button onclick="removeDuplicates()">Rimuovi Duplicate</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const txt = document.getElementById('inputText');
+    const toast = document.getElementById('toast');
+
+    txt.value = `WebApps Hub è la suite ideale per tutti i tuoi strumenti HTML!
+Questo testo serve per provare tutte le trasformazioni veloci.
+   prova con spazi doppi    e righe da sistemare.
+WebApps Hub è la suite ideale per tutti i tuoi strumenti HTML!
+prova con lettere minuscole e accenti speciali: caffè, città, perché.`;
+
+    function updateStats() {
+      const v = txt.value;
+      document.getElementById('statChars').textContent = v.length;
+      document.getElementById('statWords').textContent = v.trim() ? v.trim().split(/\s+/).length : 0;
+      document.getElementById('statLines').textContent = v ? v.split('\n').length : 0;
+      document.getElementById('statSpaces').textContent = (v.match(/ /g) || []).length;
+    }
+
+    txt.addEventListener('input', updateStats);
+    updateStats();
+
+    function applyTransform(type) {
+      let str = txt.value;
+      if (type === 'upper') txt.value = str.toUpperCase();
+      if (type === 'lower') txt.value = str.toLowerCase();
+      if (type === 'title') {
+        txt.value = str.replace(/\b\w/g, l => l.toUpperCase());
+      }
+      if (type === 'sentence') {
+        txt.value = str.toLowerCase().replace(/(^\s*\w|[.!?]\s*\w)/g, c => c.toUpperCase());
+      }
+      if (type === 'camel') {
+        txt.value = str.toLowerCase().replace(/[^a-zA-Z0-9]+(.)/g, (m, chr) => chr.toUpperCase());
+      }
+      if (type === 'kebab') {
+        txt.value = str.trim().toLowerCase().replace(/[\s_]+/g, '-').replace(/[^\w\-]+/g, '');
+      }
+      if (type === 'snake') {
+        txt.value = str.trim().toLowerCase().replace(/[\s\-]+/g, '_').replace(/[^\w_]+/g, '');
+      }
+      if (type === 'slug') {
+        txt.value = str.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+          .toLowerCase()
+          .trim()
+          .replace(/[^a-z0-9 ]/g, '')
+          .replace(/\s+/g, '-');
+      }
+      updateStats();
+    }
+
+    function cleanSpaces() {
+      txt.value = txt.value.replace(/[ \t]+/g, ' ');
+      updateStats();
+    }
+
+    function trimLines() {
+      txt.value = txt.value.split('\n').map(l => l.trim()).join('\n');
+      updateStats();
+    }
+
+    function removeEmptyLines() {
+      txt.value = txt.value.split('\n').filter(l => l.trim().length > 0).join('\n');
+      updateStats();
+    }
+
+    function sortLines() {
+      txt.value = txt.value.split('\n').sort((a,b) => a.localeCompare(b)).join('\n');
+      updateStats();
+    }
+
+    function reverseLines() {
+      txt.value = txt.value.split('\n').reverse().join('\n');
+      updateStats();
+    }
+
+    function removeDuplicates() {
+      const set = new Set(txt.value.split('\n'));
+      txt.value = Array.from(set).join('\n');
+      updateStats();
+    }
+
+    function copyResult() {
+      navigator.clipboard.writeText(txt.value).then(() => {
+        toast.style.display = 'inline';
+        setTimeout(() => { toast.style.display = 'none'; }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>

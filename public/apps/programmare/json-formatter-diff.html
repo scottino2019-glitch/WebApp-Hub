@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JSON Formatter & Inspector</title>
+  <style>
+    :root {
+      --accent: #8b5cf6;
+      --accent-hover: #7c3aed;
+      --bg: #090514;
+      --surface: #170d2b;
+      --border: #2e1a53;
+      --text: #f5f3ff;
+      --muted: #a78bfa;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .brand {
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 1.15rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .badge {
+      font-size: 0.75rem;
+      background: rgba(139, 92, 246, 0.15);
+      color: var(--accent);
+      padding: 2px 8px;
+      border-radius: 4px;
+      border: 1px solid rgba(139, 92, 246, 0.3);
+    }
+    .btn-bar {
+      display: flex;
+      gap: 8px;
+    }
+    button {
+      background: #241442;
+      color: #fff;
+      border: 1px solid var(--border);
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    button:hover { background: #351e61; }
+    button.primary {
+      background: var(--accent);
+      color: #090514;
+      font-weight: 700;
+      border: none;
+    }
+    button.primary:hover { background: var(--accent-hover); }
+    main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      overflow: hidden;
+    }
+    .col {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .col:first-child { border-right: 1px solid var(--border); }
+    .col-header {
+      background: rgba(23, 13, 43, 0.7);
+      padding: 8px 16px;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+    }
+    textarea {
+      flex: 1;
+      background: #06030e;
+      color: #ede9fe;
+      border: none;
+      padding: 16px;
+      font-family: "JetBrains Mono", Consolas, monospace;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      resize: none;
+      outline: none;
+    }
+    pre {
+      flex: 1;
+      background: #06030e;
+      color: #ede9fe;
+      padding: 16px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      overflow: auto;
+      margin: 0;
+    }
+    .val-key { color: #c084fc; font-weight: 600; }
+    .val-string { color: #4ade80; }
+    .val-number { color: #f59e0b; }
+    .val-boolean { color: #38bdf8; font-weight: bold; }
+    .val-null { color: #f43f5e; font-style: italic; }
+    .status-alert { font-size: 0.8rem; font-weight: 600; }
+    .status-ok { color: #10b981; }
+    .status-err { color: #ef4444; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <span>JSON Formatter & Inspector</span>
+      <span class="badge">Programmazione</span>
+    </div>
+    <div class="btn-bar">
+      <button onclick="formatJson()">Formatta (2 Spazi)</button>
+      <button onclick="minifyJson()">Compatta (Minify)</button>
+      <button onclick="loadSample()">Carica Esempio</button>
+      <button class="primary" onclick="copyResult()">Copia Output</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="col">
+      <div class="col-header">
+        <span>JSON Grezzo / Input</span>
+        <span id="inputStatus" class="status-alert status-ok">Pronto</span>
+      </div>
+      <textarea id="rawJson" spellcheck="false" placeholder="Incolla qui il JSON da formattare o convalidare..."></textarea>
+    </div>
+    <div class="col">
+      <div class="col-header">
+        <span>Output Formattato con Sintassi Colorata</span>
+        <span id="copyFeedback" style="color:var(--muted);"></span>
+      </div>
+      <pre id="outputView"></pre>
+    </div>
+  </main>
+
+  <script>
+    const raw = document.getElementById('rawJson');
+    const out = document.getElementById('outputView');
+    const status = document.getElementById('inputStatus');
+    const feedback = document.getElementById('copyFeedback');
+
+    const sampleObj = {
+      app: "WebApps Hub",
+      version: 1.2,
+      active: true,
+      categories: ["Editor e Testi", "HTML", "Lingue", "Programmazione", "Esempi Codici"],
+      server: {
+        host: "localhost",
+        port: 3000,
+        ssl: false
+      },
+      metadata: null
+    };
+
+    function syntaxHighlight(json) {
+      if (typeof json !== 'string') {
+        json = JSON.stringify(json, null, 2);
+      }
+      json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+        let cls = 'val-number';
+        if (/^"/.test(match)) {
+          if (/:$/.test(match)) {
+            cls = 'val-key';
+          } else {
+            cls = 'val-string';
+          }
+        } else if (/true|false/.test(match)) {
+          cls = 'val-boolean';
+        } else if (/null/.test(match)) {
+          cls = 'val-null';
+        }
+        return '<span class="' + cls + '">' + match + '</span>';
+      });
+    }
+
+    function parseAndRender() {
+      const text = raw.value.trim();
+      if (!text) {
+        out.innerHTML = '';
+        status.textContent = 'In attesa di testo';
+        status.className = 'status-alert status-ok';
+        return;
+      }
+      try {
+        const parsed = JSON.parse(text);
+        out.innerHTML = syntaxHighlight(parsed);
+        status.textContent = 'JSON Valido';
+        status.className = 'status-alert status-ok';
+      } catch (err) {
+        out.innerHTML = `<span style="color:#ef4444; font-weight:bold;">Sintassi JSON non valida:</span>\n${err.message}`;
+        status.textContent = 'Errore di Sintassi';
+        status.className = 'status-alert status-err';
+      }
+    }
+
+    function formatJson() {
+      try {
+        const parsed = JSON.parse(raw.value);
+        raw.value = JSON.stringify(parsed, null, 2);
+        parseAndRender();
+      } catch (e) {
+        parseAndRender();
+      }
+    }
+
+    function minifyJson() {
+      try {
+        const parsed = JSON.parse(raw.value);
+        raw.value = JSON.stringify(parsed);
+        parseAndRender();
+      } catch (e) {
+        parseAndRender();
+      }
+    }
+
+    function loadSample() {
+      raw.value = JSON.stringify(sampleObj, null, 2);
+      parseAndRender();
+    }
+
+    function copyResult() {
+      const text = out.innerText;
+      if (!text) return;
+      navigator.clipboard.writeText(text).then(() => {
+        feedback.textContent = 'Copiato!';
+        setTimeout(() => { feedback.textContent = ''; }, 1600);
+      });
+    }
+
+    raw.addEventListener('input', () => {
+      clearTimeout(window._jsonTimer);
+      window._jsonTimer = setTimeout(parseAndRender, 300);
+    });
+
+    loadSample();
+  </script>
+</body>
+</html>
