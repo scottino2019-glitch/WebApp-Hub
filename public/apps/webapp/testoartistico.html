@@ -2,304 +2,2640 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Creatore di Testi Artistici Mobile</title>
-    <!-- Google Fonts CDN per Font Artistici -->
-    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Borel&family=Sedgwick+Ave+Display&display=swap" rel="stylesheet">
-    <!-- html2canvas CDN per l'esportazione in immagine -->
+    <meta name="description" content="Studio mobile e web per creare testi artistici, citazioni calligrafiche, biglietti grafici e adesivi con font personalizzati, effetti combinabili, cornici, texture ed esportazione in alta definizione." />
+    <meta property="og:title" content="Creatore di Testi Artistici Mobile" />
+    <meta property="og:description" content="Crea splendidi testi artistici, adesivi trasparenti e grafiche per social direttamente dal tuo smartphone in un unico file." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- Google Fonts Ricchi e Stabili -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Borel&family=Bungee+Shade&family=Caveat:wght@400..700&family=Cinzel+Decorative:wght@700&family=Dancing+Script:wght@600&family=Fraunces:opsz,wght@9..144,600&family=Great+Vibes&family=Monoton&family=Outfit:wght@400;600;800&family=Pacifico&family=Playfair+Display:ital,wght@0,600;1,600&family=Righteous&family=Sedgwick+Ave+Display&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    
+    <!-- html2canvas per esportazione grafica -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
-        /* CSS Reset e Setup Globale */
         :root {
-            --primary-color: #3f51b5;
-            --accent-color: #ff4081;
-            --bg-color: #f0f4f8;
-            --control-height: 60px;
+            --primary: #4f46e5;
+            --accent: #ec4899;
+            --bg-page: #0b1120;
+            --surface-card: #131d31;
+            --surface-elevated: #1e293b;
+            --border-subtle: rgba(255, 255, 255, 0.12);
+            --border-strong: rgba(255, 255, 255, 0.25);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: var(--bg-color);
+            font-family: 'Outfit', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
-            min-height: 100vh;
+            overflow-x: hidden;
         }
 
-        /* Controlli e Barra Strumenti (Sempre visibile in alto o in basso) */
-        #controls {
-            width: 100%;
-            background-color: #fff;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        /* Top Bar Superiore */
+        .top-navbar {
+            min-height: 56px;
+            background: #0f172a;
+            border-bottom: 1px solid var(--border-subtle);
             position: sticky;
             top: 0;
-            z-index: 100;
-            padding: 8px 10px;
-            box-sizing: border-box;
+            z-index: 60;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            gap: 8px;
         }
 
-        .control-group {
+        .brand-lockup {
             display: flex;
-            flex-wrap: wrap;
-            gap: 5px;
-            margin-bottom: 5px;
-            padding-bottom: 5px;
-            border-bottom: 1px solid #eee;
+            align-items: center;
+            gap: 8px;
         }
-        
-        /* Stile per i pulsanti */
-        button {
-            background-color: var(--primary-color);
+
+        .brand-badge-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #ec4899, #6366f1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: 800;
+            font-size: 16px;
+        }
+
+        .brand-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #ffffff;
+            white-space: nowrap;
+        }
+
+        .top-actions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .action-pill-btn {
+            background: var(--surface-card);
+            border: 1px solid var(--border-subtle);
+            color: #ffffff;
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            white-space: nowrap;
+            min-height: 36px;
+        }
+
+        .action-pill-btn:hover {
+            background: var(--surface-elevated);
+        }
+
+        .action-pill-btn.btn-disabled {
+            opacity: 0.45;
+            cursor: default;
+        }
+
+        .btn-html-download {
+            background: #0284c7;
+            border-color: #38bdf8;
+            color: #ffffff;
+        }
+
+        .btn-export-primary {
+            background: linear-gradient(135deg, #ec4899, #8b5cf6);
             color: white;
             border: none;
-            padding: 8px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: background-color 0.2s;
-            flex-grow: 1; /* Permette ai pulsanti di espandersi orizzontalmente */
-            min-width: 80px;
-        }
-
-        button:hover {
-            background-color: #303f9f;
-        }
-
-        /* Stile specifico per i font */
-        .font-selector {
-            font-size: 16px;
-            font-weight: bold;
-            color: #333;
-            background-color: #e0e7ff;
-            min-width: 40px;
-        }
-
-        /* Area di Visualizzazione e Modifica (L'output finale) */
-        #editor-container {
-            flex-grow: 1;
-            padding: 15px;
-            overflow-y: auto;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-        }
-
-        #editor-area {
-            width: 100%;
-            max-width: 600px;
-            min-height: 300px;
-            padding: 20px;
-            background-color: white;
-            border: 2px solid #ccc;
+            padding: 7px 14px;
             border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            line-height: 1.5;
+            font-weight: 700;
+            font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            white-space: nowrap;
+            min-height: 36px;
+        }
+
+        /* Striscia Template Rapidi */
+        .template-strip {
+            background: #090e1a;
+            border-bottom: 1px solid var(--border-subtle);
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .template-strip::-webkit-scrollbar {
+            display: none;
+        }
+
+        .template-strip-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #fb7185;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            white-space: nowrap;
+        }
+
+        .template-quick-chip {
+            background: var(--surface-card);
+            border: 1px solid var(--border-subtle);
+            color: #e2e8f0;
+            padding: 5px 11px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .template-quick-chip:hover {
+            background: #3b82f6;
+            color: #ffffff;
+        }
+
+        /* Workspace Principale */
+        .app-workspace {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-height: calc(100vh - 105px);
+            position: relative;
+        }
+
+        @media (min-width: 960px) {
+            .app-workspace {
+                flex-direction: row;
+                height: calc(100vh - 105px);
+                overflow: hidden;
+            }
+        }
+
+        /* Area Stage / Canvas */
+        .stage-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 16px 12px;
+            background: radial-gradient(circle at 50% 25%, #18233c 0%, #060911 100%);
+            overflow-y: auto;
+            min-height: 350px;
+        }
+
+        .quick-stage-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 440px;
+            margin-bottom: 8px;
+        }
+
+        .ratio-tag {
+            font-size: 11px;
+            color: var(--text-muted);
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .stage-quick-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--border-subtle);
+            color: #cbd5e1;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .stage-quick-btn:hover {
+            background: var(--surface-card);
+            color: #fff;
+        }
+
+        /* IL FOGLIO / CANVAS ARTISTICO */
+        .art-canvas {
+            width: 100%;
+            max-width: 440px;
+            min-height: 320px;
+            padding: 26px;
+            border-radius: 16px;
+            position: relative;
             outline: none;
             cursor: text;
             word-wrap: break-word;
-            /* Stile base */
-            font-size: 20px;
-            transition: font-family 0.3s ease;
+            line-height: 1.5;
+            background-color: #ffffff;
+            color: #0f172a;
+            box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            transition: border 0.15s ease, box-shadow 0.15s ease, border-radius 0.15s ease;
+            font-size: 24px;
         }
 
-        #editor-area:focus {
-            border-color: var(--accent-color);
+        /* Regole di scala proporzionale per il testo interno */
+        .art-canvas h1, .art-canvas h2 {
+            font-size: 1.35em;
+            margin-bottom: 6px;
+            line-height: 1.25;
         }
 
-        /* Stile per le immagini all'interno dell'editor */
-        #editor-area img {
-            max-width: 95%;
-            height: auto;
-            display: block;
-            margin: 10px auto;
-            border-radius: 5px;
+        .art-canvas p {
+            font-size: 1em;
+            line-height: 1.45;
         }
 
-        /* Classe temporanea per la cattura dell'immagine */
-        .capturing {
-            border: none !important;
-            box-shadow: none !important;
+        .art-canvas:focus {
+            box-shadow: 0 16px 45px -10px rgba(99, 102, 241, 0.4), 0 0 0 2px #6366f1;
         }
 
-        /* Stile specifico per i font */
+        /* Formati Aspetto */
+        .ratio-story { max-width: 320px; aspect-ratio: 9/16; min-height: 500px; }
+        .ratio-square { max-width: 380px; aspect-ratio: 1/1; min-height: 380px; }
+        .ratio-portrait { max-width: 360px; aspect-ratio: 4/5; min-height: 440px; }
+        .ratio-landscape { max-width: 480px; aspect-ratio: 16/9; min-height: 270px; }
+        .ratio-auto { max-width: 460px; min-height: 300px; }
+
+        /* SFONDI & TEXTURE DEL FOGLIO */
+        .bg-pure-white { background: #ffffff !important; color: #111827; }
+        .bg-soft-cream { background: #faf5eb !important; color: #2d261e; }
+        .bg-dark-slate { background: #0f172a !important; color: #f8fafc; }
+        .bg-midnight-black { background: #09090b !important; color: #ffffff; }
+        .bg-pastel-rose { background: #fff1f2 !important; color: #881337; }
+        .bg-sage-green { background: #f0fdf4 !important; color: #14532d; }
+        .bg-lavender { background: #f5f3ff !important; color: #4c1d95; }
+        
+        /* RIGHE DEL QUADERNO (Pattern SVG puro) */
+        .bg-notebook-ruled {
+            background-color: #ffffff !important;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='32'%3E%3Cline x1='0' y1='31' x2='100' y2='31' stroke='%2394a3b8' stroke-width='1.2'/%3E%3C/svg%3E") !important;
+            background-repeat: repeat !important;
+            line-height: 32px !important;
+            color: #1e293b;
+        }
+
+        /* CARTA A QUADRETTI */
+        .bg-graph-grid {
+            background-color: #ffffff !important;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Cpath d='M 24 0 L 0 0 0 24' fill='none' stroke='%23cbd5e1' stroke-width='1.2'/%3E%3C/svg%3E") !important;
+            background-repeat: repeat !important;
+            color: #0f172a;
+        }
+
+        /* PERGAMENA ANTICA */
+        .bg-vintage-paper {
+            background-color: #f6efe1 !important;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' opacity='0.3'%3E%3Ccircle cx='12' cy='15' r='1.2' fill='%238c6d46'/%3E%3Ccircle cx='46' cy='38' r='1' fill='%238c6d46'/%3E%3Ccircle cx='28' cy='52' r='0.8' fill='%238c6d46'/%3E%3C/svg%3E") !important;
+            background-repeat: repeat !important;
+            color: #3b2816;
+        }
+
+        /* NOTTE STELLATA */
+        .bg-starry-night {
+            background-color: #0b0c16 !important;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Ccircle cx='10' cy='20' r='1.5' fill='%23ffffff' opacity='0.9'/%3E%3Ccircle cx='50' cy='60' r='1' fill='%23ffffff' opacity='0.7'/%3E%3Ccircle cx='70' cy='15' r='1.2' fill='%23ffffff' opacity='0.8'/%3E%3C/svg%3E") !important;
+            background-repeat: repeat !important;
+            color: #f8fafc;
+        }
+
+        /* SFONDO TRASPARENTE A SCACCHI */
+        .bg-transparent-grid {
+            background-color: #ffffff;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Crect width='8' height='8' fill='%23e2e8f0'/%3E%3Crect x='8' y='8' width='8' height='8' fill='%23e2e8f0'/%3E%3C/svg%3E") !important;
+            background-repeat: repeat !important;
+            color: #0f172a;
+        }
+
+        .bg-sunset-gradient { 
+            background: linear-gradient(135deg, #fbcfe8 0%, #fed7aa 50%, #fef08a 100%) !important; 
+            color: #4a044e; 
+        }
+
+        .bg-aurora-gradient { 
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #064e3b 100%) !important; 
+            color: #ecfdf5; 
+        }
+
+        /* CORNICI DEL FOGLIO (Gestite dinamicamente da applyFrameStyles per supportare ogni colore e spessore) */
+        .art-canvas {
+            border: 2px solid #0f172a;
+        }
+
+        /* Font Classes */
         .font-pacifico { font-family: 'Pacifico', cursive; }
         .font-borel { font-family: 'Borel', cursive; }
         .font-sedgwick { font-family: 'Sedgwick Ave Display', cursive; }
+        .font-caveat { font-family: 'Caveat', cursive; }
+        .font-dancing { font-family: 'Dancing Script', cursive; }
+        .font-great-vibes { font-family: 'Great Vibes', cursive; }
+        .font-playfair { font-family: 'Playfair Display', serif; }
+        .font-cinzel { font-family: 'Cinzel Decorative', serif; }
+        .font-fraunces { font-family: 'Fraunces', serif; }
+        .font-righteous { font-family: 'Righteous', cursive; }
+        .font-bungee { font-family: 'Bungee Shade', cursive; }
+        .font-monoton { font-family: 'Monoton', cursive; }
+        .font-bangers { font-family: 'Bangers', cursive; }
+        .font-outfit { font-family: 'Outfit', sans-serif; }
+        .font-space { font-family: 'Space Grotesk', sans-serif; }
 
-        /* Modal per la Preview/Download */
-        #download-modal {
-            display: none;
-            position: fixed;
-            z-index: 200;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.8);
+        /* Divisori & Immagini */
+        .art-divider {
+            text-align: center;
+            margin: 10px 0;
+            user-select: none;
+            opacity: 0.9;
+            font-size: 16px;
+            line-height: 1.2;
+        }
+
+        .user-canvas-media {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 12px 0;
+            user-select: none;
+        }
+
+        .user-canvas-media img {
+            max-width: 200px;
+            max-height: 180px;
+            border-radius: 10px;
+            object-fit: contain;
+            display: block;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        /* BARRA 6 STRUMENTI FISSA SOTTO AL FOGLIO */
+        .dock-nav-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 4px;
+            background: #090e1a;
+            border-top: 1px solid var(--border-subtle);
+            border-bottom: 1px solid var(--border-subtle);
+            padding: 6px 8px;
+        }
+
+        .dock-btn {
+            background: var(--surface-card);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-muted);
+            padding: 6px 4px;
+            font-size: 11px;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 10px;
+            gap: 2px;
+            min-height: 48px;
+            transition: all 0.15s ease;
         }
 
-        .modal-content {
-            background-color: #fefefe;
-            padding: 20px;
-            border-radius: 8px;
-            width: 90%;
-            max-width: 500px;
+        .dock-btn .dock-icon {
+            font-size: 16px;
+        }
+
+        .dock-btn.active {
+            background: #2563eb;
+            border-color: #60a5fa;
+            color: #ffffff;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.4);
+        }
+
+        .dock-btn:hover:not(.active) {
+            background: var(--surface-elevated);
+            color: #fff;
+        }
+
+        /* Pannello Strumenti */
+        .toolbox-panel {
+            background: #111827;
+            display: flex;
+            flex-direction: column;
+            z-index: 50;
+        }
+
+        @media (min-width: 960px) {
+            .toolbox-panel {
+                width: 440px;
+                border-left: 1px solid var(--border-subtle);
+                height: 100%;
+                overflow-y: auto;
+            }
+        }
+
+        .tab-content {
+            display: none;
+            padding: 16px 14px;
+            overflow-y: auto;
+            max-height: 52vh;
+        }
+
+        @media (min-width: 960px) {
+            .tab-content {
+                max-height: none;
+                flex: 1;
+            }
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .section-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #93c5fd;
+            margin: 14px 0 8px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .section-label:first-child {
+            margin-top: 0;
+        }
+
+        /* Griglia Font */
+        .fonts-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        .font-card {
+            background: var(--surface-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 10px;
+            padding: 10px 8px;
+            color: var(--text-main);
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.15s ease;
+            min-height: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .font-card:hover {
+            background: var(--surface-elevated);
+        }
+
+        .font-card.active {
+            border-color: #6366f1;
+            background: rgba(99, 102, 241, 0.25);
+        }
+
+        .font-sample {
+            font-size: 17px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1.2;
+        }
+
+        .font-meta {
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-top: 3px;
+            font-family: 'Outfit', sans-serif;
+            text-transform: uppercase;
+        }
+
+        /* Slider Controls con Bottoni Steppers */
+        .slider-control {
+            background: var(--surface-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 10px;
+            padding: 10px 12px;
+            margin-bottom: 10px;
+        }
+
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .slider-value {
+            color: #38bdf8;
+            font-weight: 700;
+            font-size: 13px;
+        }
+
+        .slider-stepper-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stepper-btn {
+            background: var(--surface-elevated);
+            border: 1px solid var(--border-subtle);
+            color: #fff;
+            width: 34px;
+            height: 32px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .stepper-btn:active {
+            background: #2563eb;
+        }
+
+        input[type="range"] {
+            flex: 1;
+            height: 8px;
+            border-radius: 4px;
+            background: var(--surface-elevated);
+            accent-color: #ec4899;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .btn-group {
+            display: flex;
+            background: var(--surface-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 10px;
+            padding: 3px;
+            gap: 3px;
+            margin-bottom: 10px;
+        }
+
+        .btn-segment {
+            flex: 1;
+            height: 38px;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            border-radius: 7px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s ease;
+            user-select: none;
+        }
+
+        .btn-segment.active {
+            background: #2563eb !important;
+            color: #ffffff !important;
+            box-shadow: 0 2px 6px rgba(37, 99, 235, 0.4);
+        }
+
+        .color-palette {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .color-swatch {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            transition: transform 0.15s ease;
+        }
+
+        .color-swatch.active {
+            border-color: #ffffff;
+            box-shadow: 0 0 0 2px #ec4899;
+            transform: scale(1.15);
+        }
+
+        .color-picker-input {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            padding: 0;
+            cursor: pointer;
+            background: none;
+            overflow: hidden;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .option-card {
+            background: var(--surface-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 10px;
+            padding: 10px 8px;
+            font-size: 13px;
             text-align: center;
+            color: #fff;
+            cursor: pointer;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s ease;
+            font-weight: 600;
         }
 
-        #preview-image {
+        .option-card:hover {
+            background: var(--surface-elevated);
+        }
+
+        .option-card.active {
+            border-color: #ec4899;
+            background: rgba(236, 72, 153, 0.22);
+            box-shadow: 0 0 8px rgba(236, 72, 153, 0.3);
+        }
+
+        .emoji-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+
+        .emoji-btn {
+            background: var(--surface-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            height: 44px;
+            font-size: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.1s ease;
+        }
+
+        .emoji-btn:active {
+            transform: scale(1.25);
+            background: var(--surface-elevated);
+        }
+
+        .divider-chip {
+            background: var(--surface-card);
+            border: 1px solid var(--border-subtle);
+            color: #ffffff;
+            padding: 10px 12px;
+            border-radius: 10px;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            margin-bottom: 6px;
+            transition: all 0.15s ease;
+        }
+
+        .divider-chip:hover, .divider-chip:active {
+            background: var(--surface-elevated);
+            border-color: #6366f1;
+            transform: translateX(2px);
+        }
+
+        .symbols-flow {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+
+        .symbol-btn {
+            background: var(--surface-card);
+            border: 1px solid var(--border-subtle);
+            color: #ffffff;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .symbol-btn:active {
+            transform: scale(1.2);
+            background: #4f46e5;
+        }
+
+        /* Modal Esportazione */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        .modal-box {
+            background: #1e293b;
+            border: 1px solid var(--border-strong);
+            border-radius: 18px;
+            width: 100%;
+            max-width: 480px;
+            max-height: 92vh;
+            overflow-y: auto;
+            padding: 22px 18px;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.75);
+        }
+
+        .preview-export-img {
             max-width: 100%;
-            height: auto;
-            border: 1px solid #ccc;
-            margin-bottom: 15px;
+            max-height: 280px;
+            border-radius: 12px;
+            border: 1px solid var(--border-subtle);
+            margin: 14px auto;
+            display: block;
+            background: #0b0f19;
+        }
+
+        .modal-actions-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        .modal-btn {
+            height: 44px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .modal-btn-download {
+            background: #10b981;
+            color: #ffffff;
+            grid-column: span 2;
+        }
+        .modal-btn-copy { background: #3b82f6; color: #ffffff; }
+        .modal-btn-share { background: #8b5cf6; color: #ffffff; }
+        .modal-btn-close { background: var(--surface-elevated); color: var(--text-muted); grid-column: span 2; }
+
+        /* Toast Notifica */
+        .toast-msg {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #1e293b;
+            color: #fff;
+            border: 1px solid var(--border-strong);
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 600;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            z-index: 200;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.25s ease;
+        }
+
+        .toast-msg.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
         }
     </style>
 </head>
 <body>
 
-    <div id="controls">
-        <!-- Gruppo Font -->
-        <div class="control-group">
-            <button class="font-selector" onclick="setFont('Arial')">Aa (Standard)</button>
-            <button class="font-selector font-pacifico" onclick="setFont('Pacifico')">Aa</button>
-            <button class="font-selector font-borel" onclick="setFont('Borel')">Aa</button>
-            <button class="font-selector font-sedgwick" onclick="setFont('Sedgwick Ave Display')">Aa</button>
+    <!-- TOP BAR SUPERIORE -->
+    <header class="top-navbar">
+        <div class="brand-lockup">
+            <div class="brand-badge-icon">A</div>
+            <span class="brand-title">Testi Artistici</span>
         </div>
 
-        <!-- Gruppo Contenuti -->
-        <div class="control-group">
-            <button onclick="insertImage()">🖼️ Aggiungi Immagine</button>
-            <button onclick="insertEmoji('😊')">😊</button>
-            <button onclick="insertEmoji('❤️')">❤️</button>
-            <button onclick="insertEmoji('🔥')">🔥</button>
-            <button onclick="insertEmoji('✨')">✨</button>
-            <button onclick="insertEmoji('🍕')">🍕</button>
+        <div class="top-actions">
+            <!-- Annulla & Ripristina -->
+            <button class="action-pill-btn" id="btn-undo" title="Annulla ultima modifica" onclick="undo()">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg>
+                <span>Annulla</span>
+            </button>
+            <button class="action-pill-btn" id="btn-redo" title="Ripristina modifica" onclick="redo()">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 7v6h-6"/><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3L21 13"/></svg>
+                <span>Ripristina</span>
+            </button>
+
+            <!-- Salva Immagine PNG (Scarica ESCLUSIVAMENTE l'immagine della grafica creata) -->
+            <button class="btn-export-primary" onclick="exportAsImage(true)" title="Scarica solo l'immagine PNG della grafica creata">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                <span>💾 Salva Immagine</span>
+            </button>
         </div>
+    </header>
 
-        <!-- Gruppo Esporta -->
-        <div class="control-group">
-            <button style="background-color: var(--accent-color);" onclick="exportAsImage()">📸 ESPORTA COME IMMAGINE</button>
-        </div>
-    </div>
+    <!-- STRISCIA TEMPLATE A 1 CLICK -->
+    <section class="template-strip">
+        <span class="template-strip-label">💡 Template:</span>
+        <button class="template-quick-chip" onclick="applyTemplate('notebook')">📝 Diario a Righe</button>
+        <button class="template-quick-chip" onclick="applyTemplate('vintage')">📜 Pergamena</button>
+        <button class="template-quick-chip" onclick="applyTemplate('neon')">⚡ Cyber Neon</button>
+        <button class="template-quick-chip" onclick="applyTemplate('birthday')">🎂 Compleanno</button>
+        <button class="template-quick-chip" onclick="applyTemplate('luxury')">🪙 Invito Oro</button>
+        <button class="template-quick-chip" onclick="applyTemplate('sticker')">🏷️ Sticker Pop</button>
+        <button class="template-quick-chip" onclick="applyTemplate('graph')">📐 Quadretti</button>
+        <button class="template-quick-chip" onclick="applyTemplate('cozy')">☕ Cozy Minimal</button>
+    </section>
 
-    <div id="editor-container">
-        <div id="editor-area" contenteditable="true">
-            <h1>Il tuo testo artistico qui!</h1>
-            <p>Seleziona un font e aggiungi contenuti.</p>
-        </div>
-    </div>
-
-    <!-- Modal di download -->
-    <div id="download-modal">
-        <div class="modal-content">
-            <h3>Anteprima Immagine</h3>
-            <img id="preview-image" alt="Anteprima del contenuto esportato">
-            <a id="download-link" download="testo_artistico.png">
-                <button style="background-color: green; margin-top: 10px;">⬇️ Scarica Immagine</button>
-            </a>
-            <button onclick="closeModal()" style="background-color: gray; margin-top: 10px;">Chiudi</button>
-        </div>
-    </div>
-
-    <script>
-        const editorArea = document.getElementById('editor-area');
-        const downloadModal = document.getElementById('download-modal');
-        const previewImage = document.getElementById('preview-image');
-        const downloadLink = document.getElementById('download-link');
-
-        // Funzione per impostare il font
-        function setFont(fontName) {
-            editorArea.style.fontFamily = fontName;
+    <!-- WORKSPACE PRINCIPALE -->
+    <main class="app-workspace">
+        
+        <!-- AREA DEL FOGLIO (CANVAS) -->
+        <section class="stage-container">
             
-            // Rimuove tutte le classi di font
-            editorArea.classList.remove('font-pacifico', 'font-borel', 'font-sedgwick');
+            <div class="quick-stage-bar">
+                <div class="ratio-tag" id="ratio-label">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+                    <span>Formato Flessibile</span>
+                </div>
+                <div style="display: flex; gap: 6px;">
+                    <button class="stage-quick-btn" onclick="openToolTab('tab-decorations')">
+                        🌸 + Emoji / Fregio
+                    </button>
+                    <!-- PULISCI ISTANTANEO SICURO (Senza finestre di conferma che bloccano i browser) -->
+                    <button class="stage-quick-btn" style="background: rgba(239, 68, 68, 0.2); border-color: rgba(239, 68, 68, 0.4); color: #fca5a5;" onclick="clearCanvas()">
+                        🗑️ Pulisci
+                    </button>
+                </div>
+            </div>
 
-            // Aggiunge la classe se è un font specifico
-            if (fontName.includes('Pacifico')) {
-                editorArea.classList.add('font-pacifico');
-            } else if (fontName.includes('Borel')) {
-                editorArea.classList.add('font-borel');
-            } else if (fontName.includes('Sedgwick')) {
-                editorArea.classList.add('font-sedgwick');
+            <!-- IL FOGLIO ARTISTICO (Scalabile e reattivo al 100%) -->
+            <div id="art-canvas" class="art-canvas font-pacifico bg-notebook-ruled frame-thin ratio-auto" contenteditable="true" spellcheck="false" oninput="saveHistoryDebounced()">
+                <h1>Il Tuo Testo Artistico ✨</h1>
+                <p>Scrivi qui la tua dedica, poesia o citazione speciale.</p>
+                <div class="art-divider">✦ ────── ༺ ❀ ༻ ────── ✦</div>
+            </div>
+
+        </section>
+
+        <!-- BARRA STRUMENTI & CASSETTI -->
+        <aside class="toolbox-panel">
+            
+            <!-- BARRA 6 STRUMENTI FISSA SOTTO AL FOGLIO -->
+            <nav class="dock-nav-grid">
+                <button class="dock-btn active" id="dock-btn-fonts" onclick="openToolTab('tab-fonts', this)">
+                    <span class="dock-icon">🔤</span>
+                    <span>Testo</span>
+                </button>
+                <button class="dock-btn" id="dock-btn-effects" onclick="openToolTab('tab-effects', this)">
+                    <span class="dock-icon">🎨</span>
+                    <span>Effetti</span>
+                </button>
+                <button class="dock-btn" id="dock-btn-frames" onclick="openToolTab('tab-frames', this)">
+                    <span class="dock-icon">🔲</span>
+                    <span>Cornici</span>
+                </button>
+                <button class="dock-btn" id="dock-btn-background" onclick="openToolTab('tab-background', this)">
+                    <span class="dock-icon">🖼️</span>
+                    <span>Sfondo</span>
+                </button>
+                <button class="dock-btn" id="dock-btn-decorations" onclick="openToolTab('tab-decorations', this)">
+                    <span class="dock-icon">✨</span>
+                    <span>Emoji & Fregi</span>
+                </button>
+                <button class="dock-btn" id="dock-btn-media" onclick="openToolTab('tab-media', this)">
+                    <span class="dock-icon">📷</span>
+                    <span>Foto</span>
+                </button>
+            </nav>
+
+            <!-- 1. PANNELLO TESTO & FONT -->
+            <div id="tab-fonts" class="tab-content active">
+                
+                <div class="section-label">Grandezza del Testo (Regolabile)</div>
+                <div class="slider-control">
+                    <div class="slider-header">
+                        <span>Dimensione Carattere</span>
+                        <span class="slider-value" id="val-font-size">24 px</span>
+                    </div>
+                    <div class="slider-stepper-row">
+                        <button class="stepper-btn" onclick="stepFontSize(-2)">A-</button>
+                        <input type="range" id="input-font-size" min="14" max="72" value="24" oninput="updateFontSize(this.value)">
+                        <button class="stepper-btn" onclick="stepFontSize(+2)">A+</button>
+                    </div>
+                </div>
+
+                <div class="section-label">Formattazione Rapida (Tocca per attivare)</div>
+                <div class="btn-group">
+                    <button class="btn-segment" id="btn-bold" onmousedown="event.preventDefault()" onclick="toggleFormat('bold')">
+                        <b>B Grassetto</b>
+                    </button>
+                    <button class="btn-segment" id="btn-italic" onmousedown="event.preventDefault()" onclick="toggleFormat('italic')">
+                        <i>I Corsivo</i>
+                    </button>
+                    <button class="btn-segment" id="btn-underline" onmousedown="event.preventDefault()" onclick="toggleFormat('underline')">
+                        <u>U Sottolinea</u>
+                    </button>
+                    <button class="btn-segment" id="btn-upper" onmousedown="event.preventDefault()" onclick="toggleUppercase()">
+                        MAIUSC
+                    </button>
+                </div>
+
+                <div class="section-label">Spaziatura Lettere (Kerning)</div>
+                <div class="slider-control">
+                    <div class="slider-header">
+                        <span>Spazio tra le lettere</span>
+                        <span class="slider-value" id="val-letter-spacing">0 px</span>
+                    </div>
+                    <div class="slider-stepper-row">
+                        <button class="stepper-btn" onclick="stepLetterSpacing(-1)">-</button>
+                        <input type="range" id="input-letter-spacing" min="-2" max="16" value="0" oninput="updateLetterSpacing(this.value)">
+                        <button class="stepper-btn" onclick="stepLetterSpacing(+1)">+</button>
+                    </div>
+                </div>
+
+                <div class="section-label">Allineamento Testo</div>
+                <div class="btn-group">
+                    <button class="btn-segment" onclick="setTextAlign('left', this)">Sinistra</button>
+                    <button class="btn-segment active" onclick="setTextAlign('center', this)">Centro</button>
+                    <button class="btn-segment" onclick="setTextAlign('right', this)">Destra</button>
+                    <button class="btn-segment" onclick="setTextAlign('justify', this)">Giustifica</button>
+                </div>
+
+                <div class="section-label">Famiglia del Carattere (15 Stili)</div>
+                <div class="fonts-grid">
+                    <button class="font-card active font-pacifico" onclick="setFontFamily('font-pacifico', 'Pacifico', this)">
+                        <span class="font-sample">Pacifico</span>
+                        <span class="font-meta">Calligrafico Retro</span>
+                    </button>
+                    <button class="font-card font-borel" onclick="setFontFamily('font-borel', 'Borel', this)">
+                        <span class="font-sample">Borel</span>
+                        <span class="font-meta">Manoscritto Dolce</span>
+                    </button>
+                    <button class="font-card font-caveat" onclick="setFontFamily('font-caveat', 'Caveat', this)">
+                        <span class="font-sample">Caveat</span>
+                        <span class="font-meta">Casual a Mano</span>
+                    </button>
+                    <button class="font-card font-dancing" onclick="setFontFamily('font-dancing', 'Dancing Script', this)">
+                        <span class="font-sample">Dancing</span>
+                        <span class="font-meta">Fluido & Vivace</span>
+                    </button>
+                    <button class="font-card font-great-vibes" onclick="setFontFamily('font-great-vibes', 'Great Vibes', this)">
+                        <span class="font-sample">Great Vibes</span>
+                        <span class="font-meta">Corsivo Regale</span>
+                    </button>
+                    <button class="font-card font-playfair" onclick="setFontFamily('font-playfair', 'Playfair Display', this)">
+                        <span class="font-sample">Playfair</span>
+                        <span class="font-meta">Serif d'Autore</span>
+                    </button>
+                    <button class="font-card font-cinzel" onclick="setFontFamily('font-cinzel', 'Cinzel Decorative', this)">
+                        <span class="font-sample">Cinzel</span>
+                        <span class="font-meta">Classico Oro</span>
+                    </button>
+                    <button class="font-card font-sedgwick" onclick="setFontFamily('font-sedgwick', 'Sedgwick Ave Display', this)">
+                        <span class="font-sample">Sedgwick</span>
+                        <span class="font-meta">Urban Graffiti</span>
+                    </button>
+                    <button class="font-card font-righteous" onclick="setFontFamily('font-righteous', 'Righteous', this)">
+                        <span class="font-sample">Righteous</span>
+                        <span class="font-meta">Retro Sci-Fi</span>
+                    </button>
+                    <button class="font-card font-bungee" onclick="setFontFamily('font-bungee', 'Bungee Shade', this)">
+                        <span class="font-sample">Bungee</span>
+                        <span class="font-meta">3D Arcade Ombra</span>
+                    </button>
+                    <button class="font-card font-monoton" onclick="setFontFamily('font-monoton', 'Monoton', this)">
+                        <span class="font-sample">Monoton</span>
+                        <span class="font-meta">Disco Neon Lines</span>
+                    </button>
+                    <button class="font-card font-bangers" onclick="setFontFamily('font-bangers', 'Bangers', this)">
+                        <span class="font-sample">Bangers</span>
+                        <span class="font-meta">Fumetto Pop</span>
+                    </button>
+                    <button class="font-card font-outfit" onclick="setFontFamily('font-outfit', 'Outfit', this)">
+                        <span class="font-sample">Outfit</span>
+                        <span class="font-meta">Modern Minimal</span>
+                    </button>
+                    <button class="font-card font-space" onclick="setFontFamily('font-space', 'Space Grotesk', this)">
+                        <span class="font-sample">Space</span>
+                        <span class="font-meta">Geometrico Tech</span>
+                    </button>
+                </div>
+
+            </div>
+
+            <!-- 2. PANNELLO EFFETTI COMBINABILI -->
+            <div id="tab-effects" class="tab-content">
+                
+                <div class="section-label">1. Colore Testo</div>
+                <div class="color-palette">
+                    <button class="color-swatch active" style="background: #0f172a;" onclick="setTextColor('#0f172a', this)"></button>
+                    <button class="color-swatch" style="background: #ffffff;" onclick="setTextColor('#ffffff', this)"></button>
+                    <button class="color-swatch" style="background: #d4af37;" title="Oro" onclick="setTextColor('#d4af37', this)"></button>
+                    <button class="color-swatch" style="background: #ec4899;" title="Fucsia" onclick="setTextColor('#ec4899', this)"></button>
+                    <button class="color-swatch" style="background: #4f46e5;" title="Viola" onclick="setTextColor('#4f46e5', this)"></button>
+                    <button class="color-swatch" style="background: #ef4444;" title="Rosso" onclick="setTextColor('#ef4444', this)"></button>
+                    <button class="color-swatch" style="background: #f59e0b;" title="Arancio" onclick="setTextColor('#f59e0b', this)"></button>
+                    <button class="color-swatch" style="background: #10b981;" title="Verde" onclick="setTextColor('#10b981', this)"></button>
+                    <button class="color-swatch" style="background: #06b6d4;" title="Ciano" onclick="setTextColor('#06b6d4', this)"></button>
+                    <button class="color-swatch" style="background: #3e2723;" title="Marrone" onclick="setTextColor('#3e2723', this)"></button>
+                    <input type="color" class="color-picker-input" id="custom-text-color" value="#0f172a" oninput="setTextColor(this.value)">
+                </div>
+
+                <div class="section-label">2. Bordo Testo / Contorno Sticker (Combinabile)</div>
+                <div class="btn-group">
+                    <button class="btn-segment active" id="btn-stroke-off" onclick="setStrokePreset('none', this)">Nessuno</button>
+                    <button class="btn-segment" id="btn-stroke-white" onclick="setStrokePreset('white', this)">🏷️ Bianco Sticker</button>
+                    <button class="btn-segment" id="btn-stroke-dark" onclick="setStrokePreset('black', this)">Nero</button>
+                    <button class="btn-segment" id="btn-stroke-gold" onclick="setStrokePreset('gold', this)">Oro</button>
+                </div>
+                
+                <div class="slider-control" id="stroke-slider-box" style="display: none;">
+                    <div class="slider-header">
+                        <span>Spessore Bordo Testo</span>
+                        <span class="slider-value" id="val-stroke-width">3 px</span>
+                    </div>
+                    <input type="range" min="1" max="8" value="3" oninput="updateStrokeWidth(this.value)">
+                </div>
+
+                <div class="section-label">3. Ombra & Bagliore Neon (Combinabile)</div>
+                <div class="options-grid">
+                    <button class="option-card active" onclick="setTextShadowMode('none', this)">
+                        <span>Nessuna Ombra</span>
+                    </button>
+                    <button class="option-card" onclick="setTextShadowMode('neon-pink', this)">
+                        <span style="color: #ec4899; text-shadow: 0 0 8px #ec4899;">⚡ Neon Rosa</span>
+                    </button>
+                    <button class="option-card" onclick="setTextShadowMode('neon-cyan', this)">
+                        <span style="color: #06b6d4; text-shadow: 0 0 8px #06b6d4;">⚡ Neon Ciano</span>
+                    </button>
+                    <button class="option-card" onclick="setTextShadowMode('3d-retro', this)">
+                        <span style="text-shadow: 1px 1px 0 #000, 2px 2px 0 #000, 3px 3px 0 #000;">🧱 Ombra 3D</span>
+                    </button>
+                    <button class="option-card" onclick="setTextShadowMode('soft-cinema', this)">
+                        <span style="text-shadow: 0 6px 12px rgba(0,0,0,0.6);">🌑 Ombra Morbida</span>
+                    </button>
+                    <button class="option-card" onclick="setTextShadowMode('gold-glow', this)">
+                        <span style="color: #fef08a; text-shadow: 0 0 10px #eab308;">✨ Bagliore Oro</span>
+                    </button>
+                </div>
+
+            </div>
+
+            <!-- 3. PANNELLO CORNICI DEL FOGLIO -->
+            <div id="tab-frames" class="tab-content">
+                <div class="section-label">Stile della Cornice</div>
+                <div class="options-grid">
+                    <button class="option-card" id="frame-opt-none" onclick="setCanvasFrame('none', this)">
+                        <span>Nessuna Cornice</span>
+                    </button>
+                    <button class="option-card active" id="frame-opt-thin" onclick="setCanvasFrame('thin', this)">
+                        <span>Lineare Semplice</span>
+                    </button>
+                    <button class="option-card" id="frame-opt-double" onclick="setCanvasFrame('double', this)">
+                        <span>Doppia Linea</span>
+                    </button>
+                    <button class="option-card" id="frame-opt-dashed" onclick="setCanvasFrame('dashed', this)">
+                        <span>Tratteggiata</span>
+                    </button>
+                    <button class="option-card" id="frame-opt-dotted" onclick="setCanvasFrame('dotted', this)">
+                        <span>Puntinata</span>
+                    </button>
+                    <button class="option-card" id="frame-opt-gold-ornate" onclick="setCanvasFrame('gold-ornate', this)">
+                        <span>🪙 Art Déco / Regale</span>
+                    </button>
+                    <button class="option-card" id="frame-opt-neon" onclick="setCanvasFrame('neon', this)">
+                        <span>⚡ Bagliore Neon Glow</span>
+                    </button>
+                </div>
+
+                <div class="section-label">Spessore della Cornice</div>
+                <div class="slider-control">
+                    <div class="slider-header">
+                        <span>Spessore Bordo</span>
+                        <span class="slider-value" id="val-frame-width">2 px</span>
+                    </div>
+                    <div class="slider-stepper-row">
+                        <button class="stepper-btn" onclick="stepFrameWidth(-1)">-</button>
+                        <input type="range" id="input-frame-width" min="1" max="16" value="2" oninput="updateFrameWidth(this.value)">
+                        <button class="stepper-btn" onclick="stepFrameWidth(+1)">+</button>
+                    </div>
+                </div>
+
+                <div class="section-label">Colore della Cornice (Applica Istantaneamente)</div>
+                <div class="color-palette">
+                    <button class="color-swatch active" style="background: #0f172a;" title="Nero Scuro" onclick="setFrameColor('#0f172a', this)"></button>
+                    <button class="color-swatch" style="background: #ffffff;" title="Bianco" onclick="setFrameColor('#ffffff', this)"></button>
+                    <button class="color-swatch" style="background: #d4af37;" title="Oro" onclick="setFrameColor('#d4af37', this)"></button>
+                    <button class="color-swatch" style="background: #ec4899;" title="Fucsia" onclick="setFrameColor('#ec4899', this)"></button>
+                    <button class="color-swatch" style="background: #6366f1;" title="Indaco" onclick="setFrameColor('#6366f1', this)"></button>
+                    <button class="color-swatch" style="background: #ef4444;" title="Rosso" onclick="setFrameColor('#ef4444', this)"></button>
+                    <button class="color-swatch" style="background: #f59e0b;" title="Ambra" onclick="setFrameColor('#f59e0b', this)"></button>
+                    <button class="color-swatch" style="background: #10b981;" title="Smeraldo" onclick="setFrameColor('#10b981', this)"></button>
+                    <button class="color-swatch" style="background: #06b6d4;" title="Ciano" onclick="setFrameColor('#06b6d4', this)"></button>
+                    <button class="color-swatch" style="background: #8b5cf6;" title="Viola" onclick="setFrameColor('#8b5cf6', this)"></button>
+                    <input type="color" class="color-picker-input" id="custom-frame-color" value="#0f172a" title="Scegli qualsiasi colore personalizzato" oninput="setFrameColor(this.value)">
+                </div>
+
+                <div class="section-label">Arrotondamento & Margine</div>
+                <div class="slider-control">
+                    <div class="slider-header">
+                        <span>Arrotondamento Angoli</span>
+                        <span class="slider-value" id="val-border-radius">16 px</span>
+                    </div>
+                    <input type="range" id="input-border-radius" min="0" max="40" value="16" oninput="updateBorderRadius(this.value)">
+                </div>
+
+                <div class="slider-control">
+                    <div class="slider-header">
+                        <span>Margine Interno (Padding)</span>
+                        <span class="slider-value" id="val-padding">26 px</span>
+                    </div>
+                    <input type="range" id="input-padding" min="10" max="50" value="26" oninput="updatePadding(this.value)">
+                </div>
+            </div>
+
+            <!-- 4. PANNELLO SFONDO DEL FOGLIO -->
+            <div id="tab-background" class="tab-content">
+                <div class="section-label">Formato Foglio / Social</div>
+                <div class="btn-group">
+                    <button class="btn-segment active" onclick="setCanvasRatio('ratio-auto', 'Formato Flessibile', this)">Auto</button>
+                    <button class="btn-segment" onclick="setCanvasRatio('ratio-square', 'Post Quadrato (1:1)', this)">1:1</button>
+                    <button class="btn-segment" onclick="setCanvasRatio('ratio-story', 'Storie & Reels (9:16)', this)">9:16</button>
+                    <button class="btn-segment" onclick="setCanvasRatio('ratio-portrait', 'Ritratto (4:5)', this)">4:5</button>
+                    <button class="btn-segment" onclick="setCanvasRatio('ratio-landscape', 'Orizzontale (16:9)', this)">16:9</button>
+                </div>
+
+                <div class="section-label">Texture Foglio (Visibili nel Download!)</div>
+                <div class="options-grid">
+                    <button class="option-card active" onclick="setCanvasBgClass('bg-notebook-ruled', this)">
+                        <span>📝 Righe Diario</span>
+                    </button>
+                    <button class="option-card" onclick="setCanvasBgClass('bg-vintage-paper', this)">
+                        <span>📜 Pergamena</span>
+                    </button>
+                    <button class="option-card" onclick="setCanvasBgClass('bg-graph-grid', this)">
+                        <span>📐 Carta Quadretti</span>
+                    </button>
+                    <button class="option-card" onclick="setCanvasBgClass('bg-starry-night', this)">
+                        <span>🌌 Notte Stellata</span>
+                    </button>
+                    <button class="option-card" onclick="setCanvasBgClass('bg-sunset-gradient', this)">
+                        <span>🌅 Sfumatura Alba</span>
+                    </button>
+                    <button class="option-card" onclick="setCanvasBgClass('bg-aurora-gradient', this)">
+                        <span>🌲 Aurora Scuro</span>
+                    </button>
+                    <button class="option-card" onclick="setCanvasBgClass('bg-transparent-grid', this)">
+                        <span>🏁 Sfondo Trasparente</span>
+                    </button>
+                    <button class="option-card" onclick="setCanvasBgClass('bg-pure-white', this)">
+                        <span>⚪ Bianco Puro</span>
+                    </button>
+                </div>
+
+                <div class="section-label">Tinte Pastello & Scure</div>
+                <div class="color-palette">
+                    <button class="color-swatch" style="background: #faf5eb;" title="Crema" onclick="setCanvasBgClass('bg-soft-cream', this)"></button>
+                    <button class="color-swatch" style="background: #0f172a;" title="Dark Slate" onclick="setCanvasBgClass('bg-dark-slate', this)"></button>
+                    <button class="color-swatch" style="background: #09090b;" title="Nero Notte" onclick="setCanvasBgClass('bg-midnight-black', this)"></button>
+                    <button class="color-swatch" style="background: #fff1f2;" title="Rosa Cipria" onclick="setCanvasBgClass('bg-pastel-rose', this)"></button>
+                    <button class="color-swatch" style="background: #f0fdf4;" title="Verde Salvia" onclick="setCanvasBgClass('bg-sage-green', this)"></button>
+                    <button class="color-swatch" style="background: #f5f3ff;" title="Lavanda" onclick="setCanvasBgClass('bg-lavender', this)"></button>
+                </div>
+            </div>
+
+            <!-- 5. PANNELLO EMOJI & DIVISORI -->
+            <div id="tab-decorations" class="tab-content">
+                
+                <div class="section-label">
+                    <span>Divisori & Fregi Calligrafici (Tocca per inserire)</span>
+                </div>
+                <div>
+                    <button class="divider-chip" onclick="insertContent('<div class=\'art-divider\'>✦ ────── ༺ ❀ ༻ ────── ✦</div>')">
+                        <span>༺ ❀ ༻ Fregio Barocco</span>
+                        <span style="opacity: 0.6;">➕</span>
+                    </button>
+                    <button class="divider-chip" onclick="insertContent('<div class=\'art-divider\'>⋆┈┈┈┈┈ ✧ ┈┈┈┈┈⋆</div>')">
+                        <span>⋆ ✧ ⋆ Stelle d'Argento</span>
+                        <span style="opacity: 0.6;">➕</span>
+                    </button>
+                    <button class="divider-chip" onclick="insertContent('<div class=\'art-divider\'>꧁ ——————————— ꧂</div>')">
+                        <span>꧁ ꧂ Nastri Festivi</span>
+                        <span style="opacity: 0.6;">➕</span>
+                    </button>
+                    <button class="divider-chip" onclick="insertContent('<div class=\'art-divider\'>~ ~ ~ 𓍢ִ໋🌷͙֒ ~ ~ ~</div>')">
+                        <span>~ ~ 𓍢ִ໋🌷 Tulipani ~ ~</span>
+                        <span style="opacity: 0.6;">➕</span>
+                    </button>
+                    <button class="divider-chip" onclick="insertContent('<div class=\'art-divider\'>─── ⋆⋅☆⋅⋆ ───</div>')">
+                        <span>─── ⋆⋅☆⋅⋆ ─── Costellazione</span>
+                        <span style="opacity: 0.6;">➕</span>
+                    </button>
+                    <button class="divider-chip" onclick="insertContent('<div class=\'art-divider\'>⚡ ════════════ ⚡</div>')">
+                        <span>⚡ ════ ⚡ Cyber Glow</span>
+                        <span style="opacity: 0.6;">➕</span>
+                    </button>
+                </div>
+
+                <div class="section-label" style="margin-top: 14px;">
+                    <span>Simboli Estetici Tipografici</span>
+                </div>
+                <div class="symbols-flow">
+                    <button class="symbol-btn" onclick="insertContent(' ✦ ')">✦</button>
+                    <button class="symbol-btn" onclick="insertContent(' ✧ ')">✧</button>
+                    <button class="symbol-btn" onclick="insertContent(' ⋆ ')">⋆</button>
+                    <button class="symbol-btn" onclick="insertContent(' ✵ ')">✵</button>
+                    <button class="symbol-btn" onclick="insertContent(' ❀ ')">❀</button>
+                    <button class="symbol-btn" onclick="insertContent(' ✿ ')">✿</button>
+                    <button class="symbol-btn" onclick="insertContent(' ❦ ')">❦</button>
+                    <button class="symbol-btn" onclick="insertContent(' ꕥ ')">ꕥ</button>
+                    <button class="symbol-btn" onclick="insertContent(' 𖡼 ')">𖡼</button>
+                    <button class="symbol-btn" onclick="insertContent(' 𖤣 ')">𖤣</button>
+                    <button class="symbol-btn" onclick="insertContent(' ♡ ')">♡</button>
+                    <button class="symbol-btn" onclick="insertContent(' ᰔ ')">ᰔ</button>
+                    <button class="symbol-btn" onclick="insertContent(' 𓍢ִ໋🌷͙֒ ')">𓍢ִ໋🌷͙֒</button>
+                </div>
+
+                <div class="section-label" style="margin-top: 14px;">
+                    <span>Libreria Emoji (Tocca per inserire)</span>
+                </div>
+                <div class="emoji-grid">
+                    <button class="emoji-btn" onclick="insertContent('✨')">✨</button>
+                    <button class="emoji-btn" onclick="insertContent('💖')">💖</button>
+                    <button class="emoji-btn" onclick="insertContent('❤️')">❤️</button>
+                    <button class="emoji-btn" onclick="insertContent('🔥')">🔥</button>
+                    <button class="emoji-btn" onclick="insertContent('🌟')">🌟</button>
+                    <button class="emoji-btn" onclick="insertContent('🌸')">🌸</button>
+                    <button class="emoji-btn" onclick="insertContent('☕')">☕</button>
+                    <button class="emoji-btn" onclick="insertContent('🎂')">🎂</button>
+                    <button class="emoji-btn" onclick="insertContent('🎉')">🎉</button>
+                    <button class="emoji-btn" onclick="insertContent('🦋')">🦋</button>
+                    <button class="emoji-btn" onclick="insertContent('🌙')">🌙</button>
+                    <button class="emoji-btn" onclick="insertContent('🫶')">🫶</button>
+                    <button class="emoji-btn" onclick="insertContent('🥰')">🥰</button>
+                    <button class="emoji-btn" onclick="insertContent('💌')">💌</button>
+                    <button class="emoji-btn" onclick="insertContent('🍕')">🍕</button>
+                    <button class="emoji-btn" onclick="insertContent('🍀')">🍀</button>
+                    <button class="emoji-btn" onclick="insertContent('🪄')">🪄</button>
+                    <button class="emoji-btn" onclick="insertContent('🎵')">🎵</button>
+                    <button class="emoji-btn" onclick="insertContent('🥂')">🥂</button>
+                    <button class="emoji-btn" onclick="insertContent('🎈')">🎈</button>
+                    <button class="emoji-btn" onclick="insertContent('🌻')">🌻</button>
+                    <button class="emoji-btn" onclick="insertContent('🌹')">🌹</button>
+                    <button class="emoji-btn" onclick="insertContent('💫')">💫</button>
+                    <button class="emoji-btn" onclick="insertContent('🔮')">🔮</button>
+                </div>
+
+            </div>
+
+            <!-- 6. PANNELLO FOTO & LOGO -->
+            <div id="tab-media" class="tab-content">
+                <div class="section-label">Aggiungi Logo o Immagine dal Tuo Dispositivo</div>
+                <div style="background: var(--surface-card); border: 2px dashed #6366f1; border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 12px;">
+                    <p style="font-size: 13px; color: #cbd5e1; margin-bottom: 12px;">
+                        Carica una foto, un logo o un adesivo dal telefono o dal PC.
+                    </p>
+                    <label for="img-file-input" style="background: #4f46e5; color: white; padding: 10px 18px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;">
+                        <span>📷 Scegli File Immagine</span>
+                    </label>
+                    <input type="file" id="img-file-input" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
+                </div>
+
+                <div id="media-controls" style="display: none; background: var(--surface-card); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 12px;">
+                    <div class="slider-header">
+                        <span>Dimensione Immagine</span>
+                        <span class="slider-value" id="val-img-size">180 px</span>
+                    </div>
+                    <input type="range" min="60" max="340" value="180" oninput="resizeCanvasImage(this.value)">
+                    <button style="margin-top: 12px; width: 100%; height: 38px; border-radius: 8px; background: #dc2626; color: white; border: none; font-weight: 700; cursor: pointer;" onclick="removeCanvasImage()">
+                        🗑️ Rimuovi Immagine dal Foglio
+                    </button>
+                </div>
+            </div>
+
+        </aside>
+
+    </main>
+
+    <!-- MODAL DI ESPORTAZIONE IMMAGINE (Solo grafica creata) -->
+    <div id="export-modal" class="modal-overlay">
+        <div class="modal-box">
+            <h3 style="font-size: 18px; font-weight: 700; color: #fff;">Grafica Esportata con Successo! 📸</h3>
+            <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">È stata salvata l'immagine della tua grafica con tutte le cornici, texture e font applicati.</p>
+            
+            <img id="export-preview-img" class="preview-export-img" alt="Anteprima grafica">
+
+            <div class="modal-actions-grid">
+                <a id="export-download-link" download="testo_artistico.png" style="text-decoration: none; grid-column: span 2;">
+                    <button class="modal-btn modal-btn-download" style="width: 100%;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        Scarica di nuovo PNG
+                    </button>
+                </a>
+                
+                <button class="modal-btn modal-btn-copy" onclick="copyImageToClipboard()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                    Copia Immagine
+                </button>
+
+                <button class="modal-btn modal-btn-share" onclick="shareNativeImage()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                    Condividi 📲
+                </button>
+
+                <button class="modal-btn" style="background: #0284c7; color: #fff; grid-column: span 2;" onclick="downloadArtworkHtml()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                    Scarica Cartolina HTML (Solo Grafica)
+                </button>
+
+                <button class="modal-btn modal-btn-close" onclick="closeModal()">
+                    ✕ Chiudi
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- NOTIFICA TOAST -->
+    <div id="toast" class="toast-msg">
+        <span id="toast-text">Messaggio</span>
+    </div>
+
+    <!-- SCRIPT APPLICATIVO STABILE & PERFETTO -->
+    <script>
+        const canvas = document.getElementById('art-canvas');
+        const exportModal = document.getElementById('export-modal');
+        const exportPreviewImg = document.getElementById('export-preview-img');
+        const exportDownloadLink = document.getElementById('export-download-link');
+        const toast = document.getElementById('toast');
+        const toastText = document.getElementById('toast-text');
+        const ratioLabel = document.getElementById('ratio-label');
+        const btnUndo = document.getElementById('btn-undo');
+        const btnRedo = document.getElementById('btn-redo');
+        const mediaControls = document.getElementById('media-controls');
+
+        // STATO EFFETTI TESTO
+        let currentTextColor = '#0f172a';
+        let currentStroke = '0px transparent';
+        let currentShadow = 'none';
+
+        // STATO FORMATTAZIONE RAPIDA
+        let isBold = false;
+        let isItalic = false;
+        let isUnderline = false;
+        let isUpper = false;
+
+        // STATO CORNICI DEL FOGLIO
+        let currentFrameStyle = 'thin';
+        let currentFrameColor = '#0f172a';
+        let currentFrameWidth = 2;
+
+        // CRONOLOGIA COMPLETA (Salva sia HTML che stili per Undo/Redo perfetto)
+        let historyStack = [];
+        let historyIndex = -1;
+        let isHistoryAction = false;
+        let debounceTimer = null;
+        let currentBlob = null;
+
+        function captureState() {
+            return {
+                html: canvas.innerHTML,
+                className: canvas.className,
+                fontSize: canvas.style.fontSize || '24px',
+                letterSpacing: canvas.style.letterSpacing || '0px',
+                textAlign: canvas.style.textAlign || 'center',
+                color: currentTextColor,
+                stroke: currentStroke,
+                shadow: currentShadow,
+                isBold: isBold,
+                isItalic: isItalic,
+                isUnderline: isUnderline,
+                isUpper: isUpper,
+                borderRadius: canvas.style.borderRadius || '16px',
+                padding: canvas.style.padding || '26px',
+                frameStyle: currentFrameStyle,
+                frameColor: currentFrameColor,
+                frameWidth: currentFrameWidth
+            };
+        }
+
+        function saveHistoryState() {
+            if (isHistoryAction) return;
+            const currentState = captureState();
+
+            // Evita duplicati identici consecutivi
+            if (historyIndex >= 0) {
+                const prev = historyStack[historyIndex];
+                if (prev.html === currentState.html &&
+                    prev.className === currentState.className &&
+                    prev.fontSize === currentState.fontSize &&
+                    prev.color === currentState.color &&
+                    prev.isBold === currentState.isBold &&
+                    prev.isItalic === currentState.isItalic &&
+                    prev.isUnderline === currentState.isUnderline &&
+                    prev.letterSpacing === currentState.letterSpacing &&
+                    prev.frameStyle === currentState.frameStyle &&
+                    prev.frameColor === currentState.frameColor &&
+                    prev.frameWidth === currentState.frameWidth &&
+                    prev.borderRadius === currentState.borderRadius &&
+                    prev.padding === currentState.padding) {
+                    return;
+                }
+            }
+
+            historyStack = historyStack.slice(0, historyIndex + 1);
+            historyStack.push(currentState);
+            if (historyStack.length > 40) historyStack.shift();
+            historyIndex = historyStack.length - 1;
+            updateHistoryButtons();
+        }
+
+        function saveHistoryDebounced() {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                saveHistoryState();
+            }, 300);
+        }
+
+        function restoreState(state) {
+            isHistoryAction = true;
+            canvas.innerHTML = state.html;
+            canvas.className = state.className;
+            
+            // Ripristina dimensioni e stili tipografici
+            updateFontSize(parseInt(state.fontSize) || 24, false);
+            updateLetterSpacing(parseInt(state.letterSpacing) || 0, false);
+            
+            canvas.style.textAlign = state.textAlign;
+            currentTextColor = state.color;
+            currentStroke = state.stroke;
+            currentShadow = state.shadow;
+            applyTextStyles();
+
+            isBold = state.isBold;
+            isItalic = state.isItalic;
+            isUnderline = state.isUnderline;
+            isUpper = state.isUpper;
+
+            canvas.style.fontWeight = isBold ? 'bold' : 'normal';
+            canvas.style.fontStyle = isItalic ? 'italic' : 'normal';
+            canvas.style.textDecoration = isUnderline ? 'underline' : 'none';
+            canvas.style.textTransform = isUpper ? 'uppercase' : 'none';
+
+            document.getElementById('btn-bold').classList.toggle('active', isBold);
+            document.getElementById('btn-italic').classList.toggle('active', isItalic);
+            document.getElementById('btn-underline').classList.toggle('active', isUnderline);
+            document.getElementById('btn-upper').classList.toggle('active', isUpper);
+
+            canvas.style.borderRadius = state.borderRadius;
+            canvas.style.padding = state.padding;
+            
+            // Ripristina raggio e padding negli slider
+            const radiusInput = document.getElementById('input-border-radius');
+            if (radiusInput) radiusInput.value = parseInt(state.borderRadius) || 16;
+            const paddingInput = document.getElementById('input-padding');
+            if (paddingInput) paddingInput.value = parseInt(state.padding) || 26;
+            const valRadius = document.getElementById('val-border-radius');
+            if (valRadius) valRadius.textContent = state.borderRadius;
+            const valPad = document.getElementById('val-padding');
+            if (valPad) valPad.textContent = state.padding;
+
+            // Ripristina la cornice e il colore
+            currentFrameStyle = state.frameStyle || 'thin';
+            currentFrameColor = state.frameColor || '#0f172a';
+            currentFrameWidth = state.frameWidth || 2;
+            applyFrameStyles();
+            syncFrameUI();
+
+            updateHistoryButtons();
+            checkCanvasMedia();
+
+            setTimeout(() => { isHistoryAction = false; }, 50);
+        }
+
+        function undo() {
+            if (historyIndex > 0) {
+                historyIndex--;
+                restoreState(historyStack[historyIndex]);
+                showToast("Modifica annullata ↩️");
+            } else {
+                showToast("Nessuna modifica precedente da annullare");
             }
         }
 
-        // Funzione per inserire contenuto (Emoji o testo)
-        function insertAtCursor(html) {
-            editorArea.focus();
-            if (window.getSelection) {
-                const selection = window.getSelection();
-                if (selection.getRangeAt && selection.rangeCount) {
-                    let range = selection.getRangeAt(0);
-                    range.deleteContents();
-                    
-                    const el = document.createElement("div");
-                    el.innerHTML = html;
-                    let frag = document.createDocumentFragment(), node, lastNode;
-                    while ( (node = el.firstChild) ) {
-                        lastNode = frag.appendChild(node);
-                    }
-                    range.insertNode(frag);
+        function redo() {
+            if (historyIndex < historyStack.length - 1) {
+                historyIndex++;
+                restoreState(historyStack[historyIndex]);
+                showToast("Modifica ripristinata ↪️");
+            } else {
+                showToast("Nessuna modifica successiva da ripristinare");
+            }
+        }
 
-                    // Pulisce e sposta il cursore dopo il contenuto inserito
-                    if (lastNode) {
-                        range = range.cloneRange();
-                        range.setStartAfter(lastNode);
-                        range.collapse(true);
-                        selection.removeAllRanges();
-                        selection.addRange(range);
+        function updateHistoryButtons() {
+            btnUndo.classList.toggle('btn-disabled', historyIndex <= 0);
+            btnRedo.classList.toggle('btn-disabled', historyIndex >= historyStack.length - 1);
+        }
+
+        // ==========================================
+        // 1. REGOLAZIONE DIMENSIONE TESTO (Funziona sempre!)
+        // ==========================================
+        function updateFontSize(val, shouldSave = true) {
+            const intVal = parseInt(val) || 24;
+            const pxVal = intVal + 'px';
+            canvas.style.fontSize = pxVal;
+
+            // Rimuove gli stili inline rigidi sui figli così ereditano la nuova dimensione
+            canvas.querySelectorAll('h1, h2, h3, p, span').forEach(el => {
+                el.style.fontSize = '';
+            });
+
+            const valLabel = document.getElementById('val-font-size');
+            if (valLabel) valLabel.textContent = pxVal;
+
+            const sliderInput = document.getElementById('input-font-size');
+            if (sliderInput) sliderInput.value = intVal;
+
+            if (shouldSave) saveHistoryDebounced();
+        }
+
+        function stepFontSize(delta) {
+            const current = parseInt(canvas.style.fontSize) || 24;
+            let next = current + delta;
+            if (next < 14) next = 14;
+            if (next > 72) next = 72;
+            updateFontSize(next);
+            showToast("Dimensione: " + next + " px");
+        }
+
+        // ==========================================
+        // 2. SPAZIATURA LETTERE (KERNING)
+        // ==========================================
+        function updateLetterSpacing(val, shouldSave = true) {
+            const intVal = parseInt(val) || 0;
+            canvas.style.letterSpacing = intVal + 'px';
+
+            const valLabel = document.getElementById('val-letter-spacing');
+            if (valLabel) {
+                valLabel.textContent = (intVal > 0 ? '+' : '') + intVal + ' px';
+            }
+
+            const sliderInput = document.getElementById('input-letter-spacing');
+            if (sliderInput) sliderInput.value = intVal;
+
+            if (shouldSave) saveHistoryDebounced();
+        }
+
+        function stepLetterSpacing(delta) {
+            const current = parseInt(canvas.style.letterSpacing) || 0;
+            let next = current + delta;
+            if (next < -2) next = -2;
+            if (next > 16) next = 16;
+            updateLetterSpacing(next);
+            showToast("Spaziatura: " + (next > 0 ? '+' : '') + next + " px");
+        }
+
+        // ==========================================
+        // 3. FORMATTAZIONE RAPIDA (B, I, U, MAIUSC)
+        // ==========================================
+        function toggleFormat(type) {
+            // Controlla se c'è una porzione di testo evidenziata con il cursore
+            let hasSelection = false;
+            const sel = window.getSelection();
+            if (sel && sel.rangeCount > 0 && !sel.isCollapsed && canvas.contains(sel.anchorNode)) {
+                hasSelection = true;
+            }
+
+            if (hasSelection) {
+                // Formatta la parte evidenziata
+                document.execCommand(type, false, null);
+            } else {
+                // Se non c'è testo evidenziato, attiva/disattiva lo stile sull'intero foglio!
+                if (type === 'bold') {
+                    isBold = !isBold;
+                    canvas.style.fontWeight = isBold ? 'bold' : 'normal';
+                    document.getElementById('btn-bold').classList.toggle('active', isBold);
+                    canvas.querySelectorAll('h1, h2, h3, p, span').forEach(el => {
+                        el.style.fontWeight = isBold ? 'bold' : 'normal';
+                    });
+                } else if (type === 'italic') {
+                    isItalic = !isItalic;
+                    canvas.style.fontStyle = isItalic ? 'italic' : 'normal';
+                    document.getElementById('btn-italic').classList.toggle('active', isItalic);
+                    canvas.querySelectorAll('h1, h2, h3, p, span').forEach(el => {
+                        el.style.fontStyle = isItalic ? 'italic' : 'normal';
+                    });
+                } else if (type === 'underline') {
+                    isUnderline = !isUnderline;
+                    canvas.style.textDecoration = isUnderline ? 'underline' : 'none';
+                    document.getElementById('btn-underline').classList.toggle('active', isUnderline);
+                }
+            }
+            saveHistoryState();
+            showToast(type.toUpperCase() + " applicato");
+        }
+
+        function toggleUppercase() {
+            isUpper = !isUpper;
+            canvas.style.textTransform = isUpper ? 'uppercase' : 'none';
+            document.getElementById('btn-upper').classList.toggle('active', isUpper);
+            saveHistoryState();
+            showToast(isUpper ? "MAIUSCOLO ATTIVO" : "Caratteri normali");
+        }
+
+        // ==========================================
+        // 4. PULISCI FOGLIO (Istantaneo, sicuro e recuperabile con Annulla)
+        // ==========================================
+        function clearCanvas() {
+            // Salva lo stato prima di cancellare
+            saveHistoryState();
+            canvas.innerHTML = '<p><br></p>';
+            canvas.focus();
+            // Salva il nuovo stato vuoto
+            saveHistoryState();
+            checkCanvasMedia();
+            showToast("Foglio pulito! Tocca 'Annulla' ↩️ per recuperarlo");
+        }
+
+        // NAVIGAZIONE SCHEDE CASSETTO
+        function openToolTab(tabId, btnElement) {
+            document.querySelectorAll('.dock-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            const targetContent = document.getElementById(tabId);
+            if (targetContent) targetContent.classList.add('active');
+
+            if (btnElement) {
+                btnElement.classList.add('active');
+            } else {
+                const matchBtn = document.querySelector(`.dock-btn[onclick*="${tabId}"]`);
+                if (matchBtn) matchBtn.classList.add('active');
+            }
+        }
+
+        // FONT FAMILY
+        const allFontClasses = [
+            'font-pacifico', 'font-borel', 'font-sedgwick', 'font-caveat',
+            'font-dancing', 'font-great-vibes', 'font-playfair', 'font-cinzel',
+            'font-fraunces', 'font-righteous', 'font-bungee', 'font-monoton',
+            'font-bangers', 'font-outfit', 'font-space'
+        ];
+
+        function setFontFamily(fontClass, fontName, cardElement) {
+            allFontClasses.forEach(cls => canvas.classList.remove(cls));
+            canvas.classList.add(fontClass);
+            
+            if (cardElement) {
+                document.querySelectorAll('.font-card').forEach(c => c.classList.remove('active'));
+                cardElement.classList.add('active');
+            }
+            showToast("Font: " + fontName);
+            saveHistoryState();
+        }
+
+        function setTextAlign(align, btnElement) {
+            canvas.style.textAlign = align;
+            if (btnElement) {
+                btnElement.parentElement.querySelectorAll('.btn-segment').forEach(b => b.classList.remove('active'));
+                btnElement.classList.add('active');
+            }
+            saveHistoryState();
+        }
+
+        // EFFETTI TESTO (Colore, Bordo Sticker, Ombre)
+        function applyTextStyles() {
+            canvas.style.color = currentTextColor;
+            canvas.style.webkitTextStroke = currentStroke;
+            canvas.style.textShadow = currentShadow;
+        }
+
+        function setTextColor(hex, element) {
+            currentTextColor = hex;
+            if (element) {
+                document.querySelectorAll('#tab-effects .color-swatch').forEach(s => s.classList.remove('active'));
+                element.classList.add('active');
+            }
+            applyTextStyles();
+            showToast("Colore applicato");
+            saveHistoryState();
+        }
+
+        function setStrokePreset(type, element) {
+            document.querySelectorAll('#tab-effects .btn-group .btn-segment').forEach(b => b.classList.remove('active'));
+            if (element) element.classList.add('active');
+
+            const sliderBox = document.getElementById('stroke-slider-box');
+
+            switch(type) {
+                case 'none':
+                    currentStroke = '0px transparent';
+                    sliderBox.style.display = 'none';
+                    break;
+                case 'white':
+                    currentStroke = '3px #ffffff';
+                    sliderBox.style.display = 'block';
+                    document.getElementById('val-stroke-width').textContent = '3 px';
+                    break;
+                case 'black':
+                    currentStroke = '2px #000000';
+                    sliderBox.style.display = 'block';
+                    document.getElementById('val-stroke-width').textContent = '2 px';
+                    break;
+                case 'gold':
+                    currentStroke = '2px #d4af37';
+                    sliderBox.style.display = 'block';
+                    document.getElementById('val-stroke-width').textContent = '2 px';
+                    break;
+            }
+            applyTextStyles();
+            showToast("Bordo contorno aggiornato");
+            saveHistoryState();
+        }
+
+        function updateStrokeWidth(widthVal) {
+            document.getElementById('val-stroke-width').textContent = widthVal + ' px';
+            let currentColor = '#ffffff';
+            if (currentStroke.includes('#000000')) currentColor = '#000000';
+            else if (currentStroke.includes('#d4af37')) currentColor = '#d4af37';
+
+            currentStroke = `${widthVal}px ${currentColor}`;
+            applyTextStyles();
+            saveHistoryDebounced();
+        }
+
+        function setTextShadowMode(mode, element) {
+            if (element && element.parentElement) {
+                element.parentElement.querySelectorAll('.option-card').forEach(b => b.classList.remove('active'));
+                element.classList.add('active');
+            }
+
+            switch(mode) {
+                case 'none':
+                    currentShadow = 'none';
+                    break;
+                case 'neon-pink':
+                    currentShadow = '0 0 6px #ec4899, 0 0 16px #ec4899, 0 0 28px #ec4899';
+                    break;
+                case 'neon-cyan':
+                    currentShadow = '0 0 6px #06b6d4, 0 0 16px #06b6d4, 0 0 28px #06b6d4';
+                    break;
+                case '3d-retro':
+                    currentShadow = '1px 1px 0 #000, 2px 2px 0 #000, 3px 3px 0 #000, 4px 4px 5px rgba(0,0,0,0.5)';
+                    break;
+                case 'soft-cinema':
+                    currentShadow = '0 6px 14px rgba(0,0,0,0.5)';
+                    break;
+                case 'gold-glow':
+                    currentShadow = '0 0 8px #facc15, 0 0 18px #eab308';
+                    break;
+            }
+            applyTextStyles();
+            showToast("Ombra applicata");
+            saveHistoryState();
+        }
+
+        // ==========================================
+        // 4. CORNICI DEL FOGLIO (Dinamiche, a colori istantanei e spessore regolabile)
+        // ==========================================
+        function applyFrameStyles() {
+            if (currentFrameStyle === 'none') {
+                canvas.style.border = 'none';
+                canvas.style.boxShadow = '0 16px 40px -10px rgba(0, 0, 0, 0.6)';
+                return;
+            }
+
+            const w = currentFrameWidth;
+            const c = currentFrameColor;
+
+            if (currentFrameStyle === 'thin') {
+                canvas.style.border = `${w}px solid ${c}`;
+                canvas.style.boxShadow = '0 16px 40px -10px rgba(0, 0, 0, 0.6)';
+            } else if (currentFrameStyle === 'double') {
+                const dWidth = Math.max(w * 2, 4);
+                canvas.style.border = `${dWidth}px double ${c}`;
+                canvas.style.boxShadow = '0 16px 40px -10px rgba(0, 0, 0, 0.6)';
+            } else if (currentFrameStyle === 'dashed') {
+                canvas.style.border = `${w}px dashed ${c}`;
+                canvas.style.boxShadow = '0 16px 40px -10px rgba(0, 0, 0, 0.6)';
+            } else if (currentFrameStyle === 'dotted') {
+                canvas.style.border = `${w}px dotted ${c}`;
+                canvas.style.boxShadow = '0 16px 40px -10px rgba(0, 0, 0, 0.6)';
+            } else if (currentFrameStyle === 'gold-ornate') {
+                const gWidth = Math.max(w, 3);
+                canvas.style.border = `${gWidth}px solid ${c}`;
+                canvas.style.boxShadow = `inset 0 0 0 3px #1e293b, inset 0 0 0 6px ${c}, 0 16px 40px -10px rgba(0, 0, 0, 0.6)`;
+            } else if (currentFrameStyle === 'neon') {
+                canvas.style.border = `${w}px solid ${c}`;
+                canvas.style.boxShadow = `0 0 14px ${c}, inset 0 0 10px ${c}55, 0 16px 40px -10px rgba(0, 0, 0, 0.6)`;
+            }
+
+            canvas.style.borderColor = c;
+        }
+
+        function setCanvasFrame(styleType, element) {
+            const cleanType = (styleType || 'none').replace('frame-', '');
+            currentFrameStyle = cleanType;
+
+            syncFrameUI();
+            if (element && element.parentElement) {
+                element.parentElement.querySelectorAll('.option-card').forEach(b => b.classList.remove('active'));
+                element.classList.add('active');
+            }
+
+            applyFrameStyles();
+
+            const names = {
+                'none': 'Nessuna cornice',
+                'thin': 'Cornice lineare semplice',
+                'double': 'Doppia linea classica',
+                'dashed': 'Cornice tratteggiata',
+                'dotted': 'Cornice puntinata',
+                'gold-ornate': 'Cornice Art Déco',
+                'neon': 'Bagliore Neon Glow'
+            };
+            showToast((names[cleanType] || 'Cornice aggiornata') + ' 🔲');
+            saveHistoryState();
+        }
+
+        function setFrameColor(hexColor, element) {
+            currentFrameColor = hexColor;
+
+            // Se la cornice era disattivata, attivala su 'thin' per rendere visibile il colore scelto
+            if (currentFrameStyle === 'none') {
+                currentFrameStyle = 'thin';
+            }
+
+            syncFrameUI();
+
+            if (element) {
+                document.querySelectorAll('#tab-frames .color-swatch').forEach(s => s.classList.remove('active'));
+                element.classList.add('active');
+            }
+
+            applyFrameStyles();
+            showToast("Colore cornice applicato! 🎨");
+            saveHistoryState();
+        }
+
+        function updateFrameWidth(val, shouldSave = true) {
+            const intVal = parseInt(val) || 2;
+            currentFrameWidth = Math.max(1, Math.min(intVal, 16));
+
+            if (currentFrameStyle === 'none') {
+                currentFrameStyle = 'thin';
+            }
+
+            syncFrameUI();
+            applyFrameStyles();
+            if (shouldSave) saveHistoryDebounced();
+        }
+
+        function stepFrameWidth(delta) {
+            const next = Math.max(1, Math.min(currentFrameWidth + delta, 16));
+            updateFrameWidth(next);
+            showToast("Spessore cornice: " + next + " px");
+        }
+
+        function syncFrameUI() {
+            // Sincronizza lo stile selezionato nei bottoni
+            document.querySelectorAll('#tab-frames .options-grid .option-card').forEach(card => {
+                const id = card.id;
+                card.classList.toggle('active', id === `frame-opt-${currentFrameStyle}`);
+            });
+
+            // Sincronizza lo spessore
+            const valLabel = document.getElementById('val-frame-width');
+            if (valLabel) valLabel.textContent = currentFrameWidth + ' px';
+            const sliderInput = document.getElementById('input-frame-width');
+            if (sliderInput) sliderInput.value = currentFrameWidth;
+
+            // Sincronizza il color picker
+            const customPicker = document.getElementById('custom-frame-color');
+            if (customPicker && currentFrameColor.startsWith('#')) {
+                customPicker.value = currentFrameColor;
+            }
+
+            // Sincronizza i swatch colore
+            document.querySelectorAll('#tab-frames .color-swatch').forEach(s => {
+                const styleAttr = s.getAttribute('style') || '';
+                const isMatch = styleAttr.toLowerCase().includes(currentFrameColor.toLowerCase());
+                s.classList.toggle('active', isMatch);
+            });
+        }
+
+        function updateBorderRadius(val) {
+            canvas.style.borderRadius = val + 'px';
+            const valLabel = document.getElementById('val-border-radius');
+            if (valLabel) valLabel.textContent = val + ' px';
+            const inputVal = document.getElementById('input-border-radius');
+            if (inputVal) inputVal.value = val;
+            saveHistoryDebounced();
+        }
+
+        function updatePadding(val) {
+            canvas.style.padding = val + 'px';
+            const valLabel = document.getElementById('val-padding');
+            if (valLabel) valLabel.textContent = val + ' px';
+            const inputVal = document.getElementById('input-padding');
+            if (inputVal) inputVal.value = val;
+            saveHistoryDebounced();
+        }
+
+        // SFONDI & FORMATO
+        const allRatioClasses = ['ratio-auto', 'ratio-square', 'ratio-story', 'ratio-portrait', 'ratio-landscape'];
+        function setCanvasRatio(ratioClass, labelText, btnElement) {
+            allRatioClasses.forEach(cls => canvas.classList.remove(cls));
+            canvas.classList.add(ratioClass);
+            ratioLabel.querySelector('span').textContent = labelText;
+            
+            if (btnElement) {
+                btnElement.parentElement.querySelectorAll('.btn-segment').forEach(b => b.classList.remove('active'));
+                btnElement.classList.add('active');
+            }
+            saveHistoryState();
+        }
+
+        const allCanvasBgClasses = [
+            'bg-pure-white', 'bg-soft-cream', 'bg-dark-slate', 'bg-midnight-black',
+            'bg-pastel-rose', 'bg-sage-green', 'bg-lavender', 'bg-vintage-paper',
+            'bg-graph-grid', 'bg-notebook-ruled', 'bg-starry-night', 'bg-sunset-gradient',
+            'bg-aurora-gradient', 'bg-transparent-grid'
+        ];
+
+        function setCanvasBgClass(bgClass, element) {
+            allCanvasBgClasses.forEach(cls => canvas.classList.remove(cls));
+            canvas.classList.add(bgClass);
+
+            if (element) {
+                if (element.classList.contains('color-swatch')) {
+                    document.querySelectorAll('#tab-background .color-swatch').forEach(s => s.classList.remove('active'));
+                    element.classList.add('active');
+                } else if (element.classList.contains('option-card')) {
+                    document.querySelectorAll('#tab-background .option-card').forEach(s => s.classList.remove('active'));
+                    element.classList.add('active');
+                }
+            }
+            showToast("Sfondo applicato 🖼️");
+            saveHistoryState();
+        }
+
+        // INSERIMENTO EMOJI E FREGI
+        function insertContent(html) {
+            canvas.focus();
+            let inserted = false;
+            if (window.getSelection) {
+                const sel = window.getSelection();
+                if (sel.rangeCount > 0) {
+                    let range = sel.getRangeAt(0);
+                    if (canvas.contains(range.commonAncestorContainer)) {
+                        range.deleteContents();
+                        const tempDiv = document.createElement("div");
+                        tempDiv.innerHTML = html;
+                        const frag = document.createDocumentFragment();
+                        let node, lastNode;
+                        while ((node = tempDiv.firstChild)) {
+                            lastNode = frag.appendChild(node);
+                        }
+                        range.insertNode(frag);
+                        if (lastNode) {
+                            range = range.cloneRange();
+                            range.setStartAfter(lastNode);
+                            range.collapse(true);
+                            sel.removeAllRanges();
+                            sel.addRange(range);
+                        }
+                        inserted = true;
                     }
+                }
+            }
+            if (!inserted) {
+                const tempDiv = document.createElement("div");
+                tempDiv.innerHTML = html;
+                while (tempDiv.firstChild) {
+                    canvas.appendChild(tempDiv.firstChild);
+                }
+            }
+            saveHistoryState();
+            showToast("Elemento inserito nel foglio ✨");
+        }
+
+        // FOTO / LOGO
+        function handleImageUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const imgDataUrl = event.target.result;
+                const mediaHtml = `
+                    <div class="user-canvas-media" id="media-wrapper">
+                        <img src="${imgDataUrl}" id="user-logo-img" alt="Logo/Foto">
+                    </div>
+                `;
+                insertContent(mediaHtml);
+                mediaControls.style.display = 'block';
+                showToast("Foto / Logo caricato! 📷");
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function resizeCanvasImage(sizeVal) {
+            const img = canvas.querySelector('#user-logo-img');
+            if (img) {
+                img.style.maxWidth = sizeVal + 'px';
+                img.style.maxHeight = (sizeVal * 0.9) + 'px';
+                document.getElementById('val-img-size').textContent = sizeVal + ' px';
+                saveHistoryDebounced();
+            }
+        }
+
+        function removeCanvasImage() {
+            const mediaWrapper = canvas.querySelector('.user-canvas-media');
+            if (mediaWrapper) {
+                mediaWrapper.remove();
+                mediaControls.style.display = 'none';
+                showToast("Immagine rimossa 🗑️");
+                saveHistoryState();
+            }
+        }
+
+        function checkCanvasMedia() {
+            const mediaWrapper = canvas.querySelector('.user-canvas-media');
+            mediaControls.style.display = mediaWrapper ? 'block' : 'none';
+        }
+
+        // TEMPLATE PREIMPOSTATI (Senza inline font-size rigidi)
+        function applyTemplate(type) {
+            switch(type) {
+                case 'notebook':
+                    setFontFamily('font-caveat', 'Caveat', null);
+                    setCanvasBgClass('bg-notebook-ruled', null);
+                    currentFrameStyle = 'thin';
+                    currentFrameColor = '#cbd5e1';
+                    currentFrameWidth = 2;
+                    currentTextColor = '#1e293b';
+                    currentStroke = '0px transparent';
+                    currentShadow = 'none';
+                    canvas.innerHTML = `
+                        <h2>Pagine di Diario 📝</h2>
+                        <div class="art-divider">~ ~ ~ 𓍢ִ໋🌷͙֒ ~ ~ ~</div>
+                        <p>Le giornate migliori iniziano con una tazza di caffè e un pensiero felice.</p>
+                    `;
+                    updateFontSize(24, false);
+                    break;
+                case 'vintage':
+                    setFontFamily('font-dancing', 'Dancing Script', null);
+                    setCanvasBgClass('bg-vintage-paper', null);
+                    currentFrameStyle = 'double';
+                    currentFrameColor = '#8c6d46';
+                    currentFrameWidth = 3;
+                    currentTextColor = '#3b2816';
+                    currentStroke = '0px transparent';
+                    currentShadow = 'none';
+                    canvas.innerHTML = `
+                        <h2>Poesia d'Altri Tempi</h2>
+                        <div class="art-divider">⋆┈┈┈┈┈ ✧ ┈┈┈┈┈⋆</div>
+                        <p style="font-style: italic;">«Non si ricordano i giorni, si ricordano gli attimi.»</p>
+                        <p style="text-align: right; opacity: 0.85;">— Cesare Pavese</p>
+                    `;
+                    updateFontSize(24, false);
+                    break;
+                case 'neon':
+                    setFontFamily('font-righteous', 'Righteous', null);
+                    setCanvasBgClass('bg-midnight-black', null);
+                    currentFrameStyle = 'neon';
+                    currentFrameColor = '#ec4899';
+                    currentFrameWidth = 2;
+                    currentTextColor = '#ffffff';
+                    currentStroke = '0px transparent';
+                    currentShadow = '0 0 6px #ec4899, 0 0 16px #ec4899, 0 0 28px #ec4899';
+                    canvas.innerHTML = `
+                        <h1>CYBER NEON</h1>
+                        <div class="art-divider">⚡ ════════════ ⚡</div>
+                        <p>NOTTI MAGICHE AL NEON</p>
+                    `;
+                    updateFontSize(28, false);
+                    break;
+                case 'birthday':
+                    setFontFamily('font-pacifico', 'Pacifico', null);
+                    setCanvasBgClass('bg-sunset-gradient', null);
+                    currentFrameStyle = 'dashed';
+                    currentFrameColor = '#f43f5e';
+                    currentFrameWidth = 3;
+                    currentTextColor = '#4a044e';
+                    currentStroke = '3px #ffffff';
+                    currentShadow = '0 6px 14px rgba(0,0,0,0.4)';
+                    canvas.innerHTML = `
+                        <h1>Buon Compleanno! 🎂</h1>
+                        <div class="art-divider">🎉 ✨ 🎈 ✨ 🎉</div>
+                        <p>Ti auguro un anno pieno di gioia, magia e sogni realizzati! 💖</p>
+                    `;
+                    updateFontSize(26, false);
+                    break;
+                case 'luxury':
+                    setFontFamily('font-cinzel', 'Cinzel Decorative', null);
+                    setCanvasBgClass('bg-dark-slate', null);
+                    currentFrameStyle = 'gold-ornate';
+                    currentFrameColor = '#d4af37';
+                    currentFrameWidth = 4;
+                    currentTextColor = '#d4af37';
+                    currentStroke = '0px transparent';
+                    currentShadow = '0 0 8px #facc15, 0 0 18px #eab308';
+                    canvas.innerHTML = `
+                        <h1>GRAN SERATA</h1>
+                        <div class="art-divider">✦ ────── ༺ ❀ ༻ ────── ✦</div>
+                        <p style="font-family: 'Playfair Display', serif;">Siete cordialmente invitati alla celebrazione esclusiva</p>
+                    `;
+                    updateFontSize(24, false);
+                    break;
+                case 'sticker':
+                    setFontFamily('font-bangers', 'Bangers', null);
+                    setCanvasBgClass('bg-transparent-grid', null);
+                    currentFrameStyle = 'none';
+                    currentTextColor = '#0f172a';
+                    currentStroke = '4px #ffffff';
+                    currentShadow = '1px 1px 0 #000, 2px 2px 0 #000, 3px 3px 0 #000';
+                    canvas.innerHTML = `
+                        <h1>STAY COOL! 🔥</h1>
+                        <p>ADESIVO TRASPARENTE</p>
+                    `;
+                    updateFontSize(32, false);
+                    break;
+                case 'graph':
+                    setFontFamily('font-space', 'Space Grotesk', null);
+                    setCanvasBgClass('bg-graph-grid', null);
+                    currentFrameStyle = 'thin';
+                    currentFrameColor = '#94a3b8';
+                    currentFrameWidth = 2;
+                    currentTextColor = '#0f172a';
+                    currentStroke = '0px transparent';
+                    currentShadow = 'none';
+                    canvas.innerHTML = `
+                        <h2>NOTE & IDEE 📐</h2>
+                        <div class="art-divider">• • • • • • • • •</div>
+                        <p>La creatività è l'intelligenza che si diverte.</p>
+                    `;
+                    updateFontSize(22, false);
+                    break;
+                case 'cozy':
+                    setFontFamily('font-dancing', 'Dancing Script', null);
+                    setCanvasBgClass('bg-soft-cream', null);
+                    currentFrameStyle = 'thin';
+                    currentFrameColor = '#d97706';
+                    currentFrameWidth = 2;
+                    currentTextColor = '#431407';
+                    currentStroke = '0px transparent';
+                    currentShadow = 'none';
+                    canvas.innerHTML = `
+                        <h1>Caffè & Pensieri ☕</h1>
+                        <div class="art-divider">~ ~ ~ 𓍢ִ໋🌷͙֒ ~ ~ ~</div>
+                        <p>Prenditi del tempo per respirare e sorridere alle piccole cose.</p>
+                    `;
+                    updateFontSize(24, false);
+                    break;
+            }
+            applyTextStyles();
+            applyFrameStyles();
+            syncFrameUI();
+            saveHistoryState();
+            checkCanvasMedia();
+            showToast("Template caricato! ✨");
+        }
+
+        // ESPORTAZIONE IMMAGINE (Cattura ed esporta ESCLUSIVAMENTE la grafica, non l'app!)
+        async function exportAsImage(autoDownload = true) {
+            showToast("Creazione immagine in corso... 📸");
+
+            // Rimuove selezioni e focus per evitare bordi blu o cursori nell'immagine
+            canvas.blur();
+            if (window.getSelection) {
+                window.getSelection().removeAllRanges();
+            }
+
+            if (document.fonts && document.fonts.ready) {
+                await document.fonts.ready;
+            }
+
+            const isTransparent = canvas.classList.contains('bg-transparent-grid');
+            const originalBgImage = canvas.style.backgroundImage;
+            const originalBgColor = canvas.style.backgroundColor;
+            
+            if (isTransparent) {
+                canvas.style.backgroundImage = 'none';
+                canvas.style.backgroundColor = 'transparent';
+            }
+
+            try {
+                // Cattura unicamente il contenitore canvas con alta fedeltà
+                const capturedCanvas = await html2canvas(canvas, {
+                    scale: 2.5,
+                    backgroundColor: isTransparent ? null : null,
+                    useCORS: true,
+                    allowTaint: true,
+                    logging: false
+                });
+
+                if (isTransparent) {
+                    canvas.style.backgroundImage = originalBgImage;
+                    canvas.style.backgroundColor = originalBgColor;
+                }
+
+                const dataURL = capturedCanvas.toDataURL('image/png');
+                exportPreviewImg.src = dataURL;
+                exportDownloadLink.href = dataURL;
+
+                capturedCanvas.toBlob(blob => {
+                    currentBlob = blob;
+                }, 'image/png');
+
+                // Scarica subito l'immagine PNG sul dispositivo
+                if (autoDownload) {
+                    const dlAnchor = document.createElement('a');
+                    dlAnchor.href = dataURL;
+                    dlAnchor.download = 'grafica_artistica.png';
+                    document.body.appendChild(dlAnchor);
+                    dlAnchor.click();
+                    document.body.removeChild(dlAnchor);
+                    showToast("Immagine PNG salvata! 📸");
+                }
+
+                exportModal.style.display = 'flex';
+            } catch (err) {
+                if (isTransparent) {
+                    canvas.style.backgroundImage = originalBgImage;
+                    canvas.style.backgroundColor = originalBgColor;
+                }
+                console.error("Errore esportazione immagine:", err);
+                showToast("Errore durante il salvataggio dell'immagine");
+            }
+        }
+
+        function closeModal() {
+            exportModal.style.display = 'none';
+        }
+
+        async function copyImageToClipboard() {
+            if (!currentBlob) {
+                showToast("Nessuna immagine pronta");
+                return;
+            }
+            try {
+                if (navigator.clipboard && window.ClipboardItem) {
+                    await navigator.clipboard.write([
+                        new ClipboardItem({ 'image/png': currentBlob })
+                    ]);
+                    showToast("Immagine copiata negli appunti! 📋");
+                } else {
+                    showToast("Usa il pulsante Scarica");
+                }
+            } catch (e) {
+                showToast("Copia non supportata dal tuo browser");
+            }
+        }
+
+        async function shareNativeImage() {
+            if (!currentBlob) return;
+            try {
+                if (navigator.canShare && navigator.canShare({ files: [new File([currentBlob], 'grafica_artistica.png', { type: 'image/png' })] })) {
+                    const file = new File([currentBlob], 'grafica_artistica.png', { type: 'image/png' });
+                    await navigator.share({
+                        title: 'La mia grafica artistica',
+                        text: 'Guarda questa grafica artistica!',
+                        files: [file]
+                    });
+                } else if (navigator.share) {
+                    await navigator.share({
+                        title: 'Testi Artistici',
+                        url: window.location.href
+                    });
+                } else {
+                    showToast("Condivisione non disponibile su questo browser");
+                }
+            } catch (err) {
+                if (err.name !== 'AbortError') {
+                    showToast("Condivisione annullata");
                 }
             }
         }
 
-        // Funzione per inserire Emoji
-        function insertEmoji(emoji) {
-            insertAtCursor(emoji);
+        // Scarica la cartolina grafica in formato HTML (100% fedele alla card creata: font, proporzioni, cornici, texture e stili)
+        function downloadArtworkHtml() {
+            const clone = canvas.cloneNode(true);
+            clone.removeAttribute('contenteditable');
+            clone.removeAttribute('spellcheck');
+            clone.id = 'cartolina-artistica';
+
+            // Copia tutti gli stili calcolati attivi dal foglio originale al clone per fedeltà assoluta al 100%
+            const cs = window.getComputedStyle(canvas);
+            clone.style.width = '100%';
+            clone.style.maxWidth = cs.maxWidth;
+            clone.style.minHeight = cs.minHeight;
+            if (cs.aspectRatio && cs.aspectRatio !== 'auto') {
+                clone.style.aspectRatio = cs.aspectRatio;
+            }
+            clone.style.padding = cs.padding;
+            clone.style.borderRadius = cs.borderRadius;
+            clone.style.border = cs.border;
+            clone.style.boxShadow = cs.boxShadow;
+            clone.style.color = cs.color;
+            clone.style.fontSize = cs.fontSize;
+            clone.style.fontFamily = cs.fontFamily;
+            clone.style.letterSpacing = cs.letterSpacing;
+            clone.style.textAlign = cs.textAlign;
+            clone.style.fontWeight = cs.fontWeight;
+            clone.style.fontStyle = cs.fontStyle;
+            clone.style.textDecoration = cs.textDecoration;
+            clone.style.textTransform = cs.textTransform;
+            clone.style.textShadow = cs.textShadow;
+            if (canvas.style.webkitTextStroke) {
+                clone.style.webkitTextStroke = canvas.style.webkitTextStroke;
+            }
+            clone.style.lineHeight = cs.lineHeight;
+            clone.style.boxSizing = 'border-box';
+            clone.style.wordWrap = 'break-word';
+            clone.style.display = 'flex';
+            clone.style.flexDirection = 'column';
+            clone.style.justifyContent = 'center';
+            clone.style.outline = 'none';
+            clone.style.cursor = 'default';
+
+            // Ricava il titolo dal primo testo significativo presente nella card
+            const headingEl = canvas.querySelector('h1, h2, h3, p');
+            const pageTitle = headingEl ? headingEl.textContent.trim().substring(0, 40) : 'Grafica Artistica';
+
+            const htmlContent = `<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${pageTitle}</title>
+    <!-- Font Google Artistici Identici -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Borel&family=Bungee+Shade&family=Caveat:wght@400..700&family=Cinzel+Decorative:wght@700&family=Dancing+Script:wght@600&family=Fraunces:opsz,wght@9..144,600&family=Great+Vibes&family=Monoton&family=Outfit:wght@400;600;800&family=Pacifico&family=Playfair+Display:ital,wght@0,600;1,600&family=Righteous&family=Sedgwick+Ave+Display&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
-        // Funzione per inserire un'immagine placeholder
-        function insertImage() {
-            // Placeholder di un'immagine di esempio adatta a temi generici
-            const imageUrl = "https://picsum.photos/400/200?random=" + Math.random();
-            const imageHtml = `<img src="${imageUrl}" style="max-width: 100%; height: auto; display: block; margin: 10px auto;" alt="Immagine aggiunta">`;
-            insertAtCursor(imageHtml);
+        body {
+            margin: 0;
+            padding: 32px 16px;
+            background: #060913;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Outfit', system-ui, -apple-system, sans-serif;
+            color: #f8fafc;
         }
 
-        // Funzione per esportare l'area come immagine
-        async function exportAsImage() {
-            // 1. Prepara l'area per la cattura (rimuove bordi/ombre)
-            editorArea.classList.add('capturing');
-
-            // 2. Cattura con html2canvas
-            const canvas = await html2canvas(editorArea, {
-                scale: 2, // Aumenta la risoluzione per dispositivi mobili
-                logging: false,
-                useCORS: true // Necessario per immagini da CDN come picsum
-            });
-
-            // 3. Ripristina lo stato dell'area
-            editorArea.classList.remove('capturing');
-
-            // 4. Mostra il risultato nel modal
-            const dataURL = canvas.toDataURL('image/png');
-            previewImage.src = dataURL;
-            downloadLink.href = dataURL;
-
-            downloadModal.style.display = 'flex';
+        .card-stage-container {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        // Funzione per chiudere il modal
-        function closeModal() {
-            downloadModal.style.display = 'none';
+        /* Regole Tipografiche del Contenuto della Card */
+        .art-canvas h1, .art-canvas h2 {
+            font-size: 1.35em;
+            margin-bottom: 6px;
+            line-height: 1.25;
         }
 
+        .art-canvas p {
+            font-size: 1em;
+            line-height: 1.45;
+            margin: 4px 0;
+        }
+
+        .art-divider {
+            text-align: center;
+            margin: 10px 0;
+            user-select: none;
+            opacity: 0.9;
+            font-size: 16px;
+            line-height: 1.2;
+        }
+
+        .user-canvas-media {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 12px 0;
+            user-select: none;
+        }
+
+        .user-canvas-media img {
+            max-width: 200px;
+            max-height: 180px;
+            border-radius: 10px;
+            object-fit: contain;
+            display: block;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        /* Formati & Aspetto Esatti */
+        .ratio-story { max-width: 320px !important; aspect-ratio: 9/16 !important; min-height: 500px !important; }
+        .ratio-square { max-width: 380px !important; aspect-ratio: 1/1 !important; min-height: 380px !important; }
+        .ratio-portrait { max-width: 360px !important; aspect-ratio: 4/5 !important; min-height: 440px !important; }
+        .ratio-landscape { max-width: 480px !important; aspect-ratio: 16/9 !important; min-height: 270px !important; }
+        .ratio-auto { max-width: 460px !important; min-height: 300px !important; }
+
+        /* Font Classes */
+        .font-pacifico { font-family: 'Pacifico', cursive !important; }
+        .font-borel { font-family: 'Borel', cursive !important; }
+        .font-sedgwick { font-family: 'Sedgwick Ave Display', cursive !important; }
+        .font-caveat { font-family: 'Caveat', cursive !important; }
+        .font-dancing { font-family: 'Dancing Script', cursive !important; }
+        .font-great-vibes { font-family: 'Great Vibes', cursive !important; }
+        .font-playfair { font-family: 'Playfair Display', serif !important; }
+        .font-cinzel { font-family: 'Cinzel Decorative', serif !important; }
+        .font-fraunces { font-family: 'Fraunces', serif !important; }
+        .font-righteous { font-family: 'Righteous', cursive !important; }
+        .font-bungee { font-family: 'Bungee Shade', cursive !important; }
+        .font-monoton { font-family: 'Monoton', cursive !important; }
+        .font-bangers { font-family: 'Bangers', cursive !important; }
+        .font-outfit { font-family: 'Outfit', sans-serif !important; }
+        .font-space { font-family: 'Space Grotesk', sans-serif !important; }
+
+        /* Sfondi & Texture */
+        .bg-pure-white { background: #ffffff !important; color: #111827; }
+        .bg-soft-cream { background: #faf5eb !important; color: #2d261e; }
+        .bg-dark-slate { background: #0f172a !important; color: #f8fafc; }
+        .bg-midnight-black { background: #09090b !important; color: #ffffff; }
+        .bg-pastel-rose { background: #fff1f2 !important; color: #881337; }
+        .bg-sage-green { background: #f0fdf4 !important; color: #14532d; }
+        .bg-lavender { background: #f5f3ff !important; color: #4c1d95; }
+        
+        .bg-notebook-ruled {
+            background-color: #ffffff !important;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='32'%3E%3Cline x1='0' y1='31' x2='100' y2='31' stroke='%2394a3b8' stroke-width='1.2'/%3E%3C/svg%3E") !important;
+            background-repeat: repeat !important;
+            line-height: 32px !important;
+            color: #1e293b;
+        }
+
+        .bg-graph-grid {
+            background-color: #ffffff !important;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Cpath d='M 24 0 L 0 0 0 24' fill='none' stroke='%23cbd5e1' stroke-width='1.2'/%3E%3C/svg%3E") !important;
+            background-repeat: repeat !important;
+            color: #0f172a;
+        }
+
+        .bg-vintage-paper {
+            background-color: #f6efe1 !important;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' opacity='0.3'%3E%3Ccircle cx='12' cy='15' r='1.2' fill='%238c6d46'/%3E%3Ccircle cx='46' cy='38' r='1' fill='%238c6d46'/%3E%3Ccircle cx='28' cy='52' r='0.8' fill='%238c6d46'/%3E%3C/svg%3E") !important;
+            background-repeat: repeat !important;
+            color: #3b2816;
+        }
+
+        .bg-starry-night {
+            background-color: #0b0c16 !important;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Ccircle cx='10' cy='20' r='1.5' fill='%23ffffff' opacity='0.9'/%3E%3Ccircle cx='50' cy='60' r='1' fill='%23ffffff' opacity='0.7'/%3E%3Ccircle cx='70' cy='15' r='1.2' fill='%23ffffff' opacity='0.8'/%3E%3C/svg%3E") !important;
+            background-repeat: repeat !important;
+            color: #f8fafc;
+        }
+
+        .bg-transparent-grid {
+            background-color: #ffffff !important;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Crect width='8' height='8' fill='%23e2e8f0'/%3E%3Crect x='8' y='8' width='8' height='8' fill='%23e2e8f0'/%3E%3C/svg%3E") !important;
+            background-repeat: repeat !important;
+            color: #0f172a;
+        }
+
+        .bg-sunset-gradient { 
+            background: linear-gradient(135deg, #fbcfe8 0%, #fed7aa 50%, #fef08a 100%) !important; 
+            color: #4a044e; 
+        }
+
+        .bg-aurora-gradient { 
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #064e3b 100%) !important; 
+            color: #ecfdf5; 
+        }
+    </style>
+</head>
+<body>
+    <div class="card-stage-container">
+        ${clone.outerHTML}
+    </div>
+</body>
+</html>`;
+
+            const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'cartolina_artistica.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast("Cartolina HTML fedele salvata! 📄");
+        }
+
+        function showToast(msg) {
+            toastText.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2200);
+        }
+
+        exportModal.addEventListener('click', (e) => {
+            if (e.target === exportModal) {
+                closeModal();
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+                e.preventDefault();
+                undo();
+            }
+            if ((e.ctrlKey || e.metaKey) && e.key === 'y') {
+                e.preventDefault();
+                redo();
+            }
+        });
+
+        // Inizializzazione pulita
+        applyTextStyles();
+        applyFrameStyles();
+        syncFrameUI();
+        updateFontSize(24, false);
+        updateLetterSpacing(0, false);
+        saveHistoryState();
     </script>
 </body>
 </html>
