@@ -1,0 +1,510 @@
+<!doctype html>
+<html lang="it" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generatore Flashcard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      box-sizing: border-box;
+    }
+    
+    .flashcard {
+      perspective: 1000px;
+      cursor: pointer;
+    }
+    
+    .flashcard-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.6s;
+      transform-style: preserve-3d;
+    }
+    
+    .flashcard.flipped .flashcard-inner {
+      transform: rotateY(180deg);
+    }
+    
+    .flashcard-front, .flashcard-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 1rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+    
+    .flashcard-back {
+      transform: rotateY(180deg);
+    }
+    
+    .card-preview {
+      transition: all 0.3s ease;
+    }
+    
+    .card-preview:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+    }
+    
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 1rem 1.5rem;
+      border-radius: 0.5rem;
+      color: white;
+      font-weight: 600;
+      z-index: 1000;
+      animation: slideIn 0.3s ease;
+    }
+    
+    @keyframes slideIn {
+      from { transform: translateX(400px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    .delete-confirmation {
+      display: inline-flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .study-mode-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.95);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .study-mode-overlay.active {
+      display: flex;
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="/_sdk/element_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full w-full m-0 p-0">
+  <main class="h-full w-full overflow-auto" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+   <div class="min-h-full w-full p-6">
+    <div class="max-w-7xl mx-auto"><!-- Header -->
+     <header class="text-center mb-8">
+      <h1 class="text-white text-5xl font-bold mb-2">Generatore Flashcard</h1>
+      <p class="text-white text-lg opacity-90">Crea e studia con flashcard digitali interattive</p>
+     </header>
+     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6"><!-- Form Section -->
+      <div class="bg-white rounded-2xl shadow-2xl p-6">
+       <h2 class="text-2xl font-bold mb-4 text-pink-900">Nuova Flashcard</h2>
+       <form id="flashcardForm">
+        <div class="mb-4"><label for="cardCategory" class="block font-semibold mb-2 text-gray-700">Categoria</label> <select id="cardCategory" required class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-pink-500 focus:outline-none"> <option value="Italiano">Italiano</option> <option value="Matematica">Matematica</option> <option value="Storia">Storia</option> <option value="Scienze">Scienze</option> <option value="Geografia">Geografia</option> <option value="Lingue">Lingue</option> <option value="Altro">Altro</option> </select>
+        </div>
+        <div class="mb-4"><label for="cardFront" class="block font-semibold mb-2 text-gray-700">Fronte (Domanda)</label> <textarea id="cardFront" required rows="3" class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-pink-500 focus:outline-none" placeholder="Es: Qual è la capitale della Francia?"></textarea>
+        </div>
+        <div class="mb-4"><label for="cardBack" class="block font-semibold mb-2 text-gray-700">Retro (Risposta)</label> <textarea id="cardBack" required rows="3" class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-pink-500 focus:outline-none" placeholder="Es: Parigi"></textarea>
+        </div><button type="submit" class="w-full py-3 px-6 rounded-xl font-semibold transition-all transform hover:scale-105 bg-pink-600 text-white hover:bg-pink-700"> Aggiungi Flashcard </button>
+       </form>
+      </div><!-- Cards List -->
+      <div class="lg:col-span-2 bg-white rounded-2xl shadow-2xl p-6">
+       <div class="flex justify-between items-center mb-4">
+        <h2 class="text-2xl font-bold text-pink-900">Le Tue Flashcard</h2>
+        <div class="flex gap-2"><button id="studyModeBtn" class="py-2 px-4 rounded-lg font-semibold transition-all transform hover:scale-105 bg-purple-600 text-white hover:bg-purple-700"> 📖 Modalità Studio </button> <button id="exportBtn" class="py-2 px-4 rounded-lg font-semibold transition-all transform hover:scale-105 bg-orange-500 text-white hover:bg-orange-600"> 📥 Esporta </button>
+        </div>
+       </div><!-- Filter by category -->
+       <div class="mb-4"><label class="block font-semibold mb-2 text-gray-700">Filtra per Categoria</label>
+        <div class="flex flex-wrap gap-2" id="categoryFilters"><button class="filter-btn active px-3 py-1 rounded-full font-semibold text-sm transition-all bg-pink-600 text-white" data-category="all"> Tutte </button>
+        </div>
+       </div>
+       <div id="cardsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[500px] overflow-y-auto"><!-- Cards will appear here -->
+       </div>
+       <div id="emptyState" class="text-center py-12 text-gray-400">
+        <div class="text-5xl">
+         🎴
+        </div>
+        <p class="mt-2">Nessuna flashcard ancora</p>
+        <p class="text-sm">Crea la tua prima card per iniziare</p>
+       </div>
+      </div>
+     </div>
+    </div>
+   </div>
+  </main><!-- Study Mode Overlay -->
+  <div id="studyModeOverlay" class="study-mode-overlay">
+   <div class="w-full max-w-2xl px-4">
+    <div class="text-center mb-6">
+     <h2 class="text-white text-3xl font-bold mb-2">Modalità Studio</h2>
+     <p class="text-white text-lg opacity-90" id="studyProgress">Card 1 di 10</p>
+    </div>
+    <div class="flashcard" id="studyCard" style="height: 400px;">
+     <div class="flashcard-inner">
+      <div class="flashcard-front bg-gradient-to-br from-pink-100 to-purple-100">
+       <div class="text-center">
+        <div class="text-sm font-semibold text-purple-600 mb-4" id="studyCategory">
+         Categoria
+        </div>
+        <p class="text-2xl font-bold text-gray-800" id="studyFront">Fronte della card</p>
+        <p class="text-sm text-gray-500 mt-6">👆 Clicca per girare</p>
+       </div>
+      </div>
+      <div class="flashcard-back bg-gradient-to-br from-green-100 to-blue-100">
+       <div class="text-center">
+        <div class="text-sm font-semibold text-green-600 mb-4">
+         Risposta
+        </div>
+        <p class="text-2xl font-bold text-gray-800" id="studyBack">Retro della card</p>
+        <p class="text-sm text-gray-500 mt-6">👆 Clicca per girare</p>
+       </div>
+      </div>
+     </div>
+    </div>
+    <div class="flex justify-between items-center mt-6"><button id="prevCardBtn" class="py-3 px-6 rounded-xl font-semibold transition-all transform hover:scale-105 bg-white text-pink-600 hover:bg-gray-100"> ← Precedente </button> <button id="exitStudyBtn" class="py-3 px-6 rounded-xl font-semibold transition-all bg-red-500 text-white hover:bg-red-600"> Esci </button> <button id="nextCardBtn" class="py-3 px-6 rounded-xl font-semibold transition-all transform hover:scale-105 bg-white text-pink-600 hover:bg-gray-100"> Successiva → </button>
+    </div>
+   </div>
+  </div>
+  <script>
+    let flashcards = [];
+    let currentStudyIndex = 0;
+    let activeFilter = 'all';
+    
+    const categoryColors = {
+      'Italiano': 'from-blue-100 to-blue-200',
+      'Matematica': 'from-green-100 to-green-200',
+      'Storia': 'from-yellow-100 to-yellow-200',
+      'Scienze': 'from-purple-100 to-purple-200',
+      'Geografia': 'from-pink-100 to-pink-200',
+      'Lingue': 'from-orange-100 to-orange-200',
+      'Altro': 'from-gray-100 to-gray-200'
+    };
+    
+    // Load data from localStorage
+    function loadData() {
+      const saved = localStorage.getItem('flashcards');
+      if (saved) {
+        flashcards = JSON.parse(saved);
+        renderCards();
+        updateCategoryFilters();
+      }
+    }
+    
+    // Save data to localStorage
+    function saveData() {
+      localStorage.setItem('flashcards', JSON.stringify(flashcards));
+    }
+    
+    function showToast(message, type = 'success') {
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.style.background = type === 'success' ? '#10b981' : '#ef4444';
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
+    }
+    
+    function deleteCard(id) {
+      flashcards = flashcards.filter(c => c.id !== id);
+      saveData();
+      renderCards();
+      updateCategoryFilters();
+      showToast('Flashcard eliminata!');
+    }
+    
+    function updateCategoryFilters() {
+      const categories = ['all', ...new Set(flashcards.map(c => c.category))];
+      const container = document.getElementById('categoryFilters');
+      
+      container.innerHTML = categories.map(cat => `
+        <button class="filter-btn ${cat === activeFilter ? 'active' : ''} px-3 py-1 rounded-full font-semibold text-sm transition-all ${cat === activeFilter ? 'bg-pink-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}" data-category="${cat}">
+          ${cat === 'all' ? 'Tutte' : cat}
+        </button>
+      `).join('');
+      
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.onclick = function() {
+          activeFilter = this.dataset.category;
+          renderCards();
+          updateCategoryFilters();
+        };
+      });
+    }
+    
+    function getFilteredCards() {
+      if (activeFilter === 'all') return flashcards;
+      return flashcards.filter(c => c.category === activeFilter);
+    }
+    
+    function renderCards() {
+      const container = document.getElementById('cardsContainer');
+      const emptyState = document.getElementById('emptyState');
+      const filteredCards = getFilteredCards();
+      
+      if (filteredCards.length === 0) {
+        container.innerHTML = '';
+        emptyState.style.display = 'block';
+        return;
+      }
+      
+      emptyState.style.display = 'none';
+      
+      container.innerHTML = filteredCards.map(card => `
+        <div class="card-preview bg-gradient-to-br ${categoryColors[card.category]} rounded-xl p-4 border-2 border-gray-200">
+          <div class="flex justify-between items-start mb-3">
+            <span class="text-xs font-semibold px-2 py-1 rounded-full bg-white bg-opacity-70">${card.category}</span>
+            <div id="deleteContainer-${card.id}">
+              <button class="delete-btn text-red-500 font-semibold text-xs px-2 py-1 rounded hover:bg-red-100" data-id="${card.id}">✕</button>
+            </div>
+          </div>
+          <div class="mb-2">
+            <div class="text-xs text-gray-600 font-semibold mb-1">Domanda:</div>
+            <p class="text-sm font-semibold text-gray-800">${card.front}</p>
+          </div>
+          <div>
+            <div class="text-xs text-gray-600 font-semibold mb-1">Risposta:</div>
+            <p class="text-sm text-gray-700">${card.back}</p>
+          </div>
+        </div>
+      `).join('');
+      
+      // Add delete listeners
+      document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.onclick = function() {
+          const id = this.dataset.id;
+          const container = document.getElementById(`deleteContainer-${id}`);
+          
+          container.innerHTML = `
+            <div class="delete-confirmation">
+              <button class="confirm-delete bg-red-500 text-white px-2 py-1 rounded text-xs font-semibold hover:bg-red-600" data-id="${id}">✓</button>
+              <button class="cancel-delete bg-gray-300 text-gray-700 px-2 py-1 rounded text-xs font-semibold hover:bg-gray-400" data-id="${id}">✕</button>
+            </div>
+          `;
+          
+          container.querySelector('.confirm-delete').onclick = function() {
+            deleteCard(id);
+          };
+          
+          container.querySelector('.cancel-delete').onclick = function() {
+            container.innerHTML = `<button class="delete-btn text-red-500 font-semibold text-xs px-2 py-1 rounded hover:bg-red-100" data-id="${id}">✕</button>`;
+            container.querySelector('.delete-btn').onclick = btn.onclick;
+          };
+        };
+      });
+    }
+    
+    document.getElementById('flashcardForm').onsubmit = function(e) {
+      e.preventDefault();
+      
+      const card = {
+        id: Date.now().toString(),
+        category: document.getElementById('cardCategory').value,
+        front: document.getElementById('cardFront').value,
+        back: document.getElementById('cardBack').value,
+        createdAt: new Date().toISOString()
+      };
+      
+      flashcards.push(card);
+      saveData();
+      renderCards();
+      updateCategoryFilters();
+      
+      showToast('Flashcard aggiunta!');
+      document.getElementById('flashcardForm').reset();
+    };
+    
+    // Study Mode
+    document.getElementById('studyModeBtn').onclick = function() {
+      if (flashcards.length === 0) {
+        showToast('Crea almeno una flashcard prima di studiare', 'error');
+        return;
+      }
+      
+      currentStudyIndex = 0;
+      document.getElementById('studyModeOverlay').classList.add('active');
+      loadStudyCard();
+    };
+    
+    document.getElementById('exitStudyBtn').onclick = function() {
+      document.getElementById('studyModeOverlay').classList.remove('active');
+      document.getElementById('studyCard').classList.remove('flipped');
+    };
+    
+    document.getElementById('studyCard').onclick = function() {
+      this.classList.toggle('flipped');
+    };
+    
+    document.getElementById('nextCardBtn').onclick = function() {
+      currentStudyIndex = (currentStudyIndex + 1) % flashcards.length;
+      document.getElementById('studyCard').classList.remove('flipped');
+      loadStudyCard();
+    };
+    
+    document.getElementById('prevCardBtn').onclick = function() {
+      currentStudyIndex = currentStudyIndex === 0 ? flashcards.length - 1 : currentStudyIndex - 1;
+      document.getElementById('studyCard').classList.remove('flipped');
+      loadStudyCard();
+    };
+    
+    function loadStudyCard() {
+      const card = flashcards[currentStudyIndex];
+      document.getElementById('studyCategory').textContent = card.category;
+      document.getElementById('studyFront').textContent = card.front;
+      document.getElementById('studyBack').textContent = card.back;
+      document.getElementById('studyProgress').textContent = `Card ${currentStudyIndex + 1} di ${flashcards.length}`;
+    }
+    
+    document.getElementById('exportBtn').onclick = function() {
+      if (flashcards.length === 0) {
+        showToast('Nessuna flashcard da esportare', 'error');
+        return;
+      }
+      
+      const htmlContent = generateHTMLExport(flashcards);
+      
+      const blob = new Blob([htmlContent], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'flashcards.html';
+      a.click();
+      URL.revokeObjectURL(url);
+      
+      showToast('Flashcard esportate con successo!');
+    };
+    
+    function generateHTMLExport(cardsData) {
+      return `<!DOCTYPE html>
+<html lang="it" style="height: 100%;">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Le Mie Flashcard</title>
+  <script src="https://cdn.tailwindcss.com"><\/script>
+  <style>
+    body { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    .flashcard {
+      perspective: 1000px;
+      cursor: pointer;
+      height: 400px;
+    }
+    
+    .flashcard-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.6s;
+      transform-style: preserve-3d;
+    }
+    
+    .flashcard.flipped .flashcard-inner {
+      transform: rotateY(180deg);
+    }
+    
+    .flashcard-front, .flashcard-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 3rem;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    }
+    
+    .flashcard-back {
+      transform: rotateY(180deg);
+    }
+  </style>
+</head>
+<body style="height: 100%; width: 100%; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+  <main style="height: 100%; width: 100%; overflow: auto;">
+    <div style="min-height: 100%; padding: 3rem 1.5rem; display: flex; align-items: center; justify-content: center;">
+      <div style="width: 100%; max-width: 48rem;">
+        <header style="text-align: center; margin-bottom: 3rem;">
+          <h1 style="color: white; font-size: 3rem; font-weight: 700; margin-bottom: 0.5rem;">Flashcard Interattive</h1>
+          <p style="color: white; font-size: 1.125rem; opacity: 0.9;" id="progress">Card 1 di ${cardsData.length}</p>
+        </header>
+        
+        <div class="flashcard" id="mainCard">
+          <div class="flashcard-inner">
+            <div class="flashcard-front" style="background: linear-gradient(to bottom right, #ddd6fe, #fae8ff);">
+              <div style="text-align: center; width: 100%;">
+                <div style="font-size: 0.875rem; font-weight: 600; color: #7c3aed; margin-bottom: 2rem;" id="category">Categoria</div>
+                <p style="font-size: 2rem; font-weight: 700; color: #1f2937; line-height: 1.4;" id="frontText">Domanda</p>
+                <p style="font-size: 1rem; color: #6b7280; margin-top: 3rem;">👆 Clicca per vedere la risposta</p>
+              </div>
+            </div>
+            <div class="flashcard-back" style="background: linear-gradient(to bottom right, #d1fae5, #bfdbfe);">
+              <div style="text-align: center; width: 100%;">
+                <div style="font-size: 0.875rem; font-weight: 600; color: #059669; margin-bottom: 2rem;">✓ Risposta</div>
+                <p style="font-size: 2rem; font-weight: 700; color: #1f2937; line-height: 1.4;" id="backText">Risposta</p>
+                <p style="font-size: 1rem; color: #6b7280; margin-top: 3rem;">👆 Clicca per tornare alla domanda</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
+          <button id="prevBtn" style="padding: 1rem 2rem; border-radius: 1rem; font-weight: 600; background: white; color: #ec4899; border: none; cursor: pointer; transition: all 0.3s; font-size: 1.125rem;">
+            ← Precedente
+          </button>
+          <button id="nextBtn" style="padding: 1rem 2rem; border-radius: 1rem; font-weight: 600; background: white; color: #ec4899; border: none; cursor: pointer; transition: all 0.3s; font-size: 1.125rem;">
+            Successiva →
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+  
+  <script>
+    const cards = ${JSON.stringify(cardsData)};
+    let currentIndex = 0;
+    
+    function loadCard() {
+      const card = cards[currentIndex];
+      document.getElementById('category').textContent = card.category;
+      document.getElementById('frontText').textContent = card.front;
+      document.getElementById('backText').textContent = card.back;
+      document.getElementById('progress').textContent = 'Card ' + (currentIndex + 1) + ' di ' + cards.length;
+      document.getElementById('mainCard').classList.remove('flipped');
+    }
+    
+    document.getElementById('mainCard').onclick = function() {
+      this.classList.toggle('flipped');
+    };
+    
+    document.getElementById('nextBtn').onclick = function() {
+      currentIndex = (currentIndex + 1) % cards.length;
+      loadCard();
+    };
+    
+    document.getElementById('prevBtn').onclick = function() {
+      currentIndex = currentIndex === 0 ? cards.length - 1 : currentIndex - 1;
+      loadCard();
+    };
+    
+    loadCard();
+  <\/script>
+</body>
+</html>`;
+    }
+    
+    // Initialize
+    loadData();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9b96ebfec42a0e73',t:'MTc2NzY1NzQ4Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
