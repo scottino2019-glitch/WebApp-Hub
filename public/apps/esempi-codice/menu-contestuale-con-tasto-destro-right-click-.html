@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="it" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Menu Preview</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  
+  
+  <style>
+    /* Base reset and modern defaults */
+    :root {
+      color-scheme: dark;
+    }
+    
+    body {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    
+    /* User Custom CSS */
+    * {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  background: #080a11;
+  color: #f8fafc;
+  min-height: 100vh;
+}
+
+.interactive-canvas {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  user-select: none;
+}
+
+.center-banner {
+  text-align: center;
+  max-width: 480px;
+  background: #111522;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 2.5rem;
+  border-radius: 18px;
+}
+
+.center-banner h2 {
+  font-size: 1.6rem;
+  margin-bottom: 0.5rem;
+}
+
+.center-banner p {
+  color: #94a3b8;
+}
+
+/* ================= CONTEXT MENU ================= */
+.context-menu {
+  position: fixed;
+  width: 240px;
+  background: #151b2a;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  padding: 6px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7);
+  display: none;
+  z-index: 10000;
+  backdrop-filter: blur(12px);
+}
+
+.ctx-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.55rem 0.8rem;
+  font-size: 0.85rem;
+  color: #cbd5e1;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.1s;
+}
+
+.ctx-item:hover {
+  background: #6366f1;
+  color: white;
+}
+
+.ctx-item.text-red {
+  color: #f87171;
+}
+
+.ctx-item.text-red:hover {
+  background: #ef4444;
+  color: white;
+}
+
+.ctx-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+  margin: 4px 0;
+}
+
+kbd {
+  font-size: 0.7rem;
+  font-family: monospace;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+  </style>
+
+  <script>
+    // Console proxy to communicate with parent window
+    (function() {
+      function sendLog(type, args) {
+        try {
+          const serialized = Array.from(args).map(arg => {
+            if (typeof arg === 'object') {
+              try { return JSON.stringify(arg); } catch(e) { return String(arg); }
+            }
+            return String(arg);
+          }).join(' ');
+
+          window.parent.postMessage({
+            source: 'menu-studio-iframe',
+            type: type,
+            message: serialized,
+            timestamp: new Date().toLocaleTimeString()
+          }, '*');
+        } catch (err) {}
+      }
+
+      const originalLog = console.log;
+      const originalWarn = console.warn;
+      const originalError = console.error;
+      const originalInfo = console.info;
+
+      console.log = function(...args) {
+        sendLog('log', args);
+        originalLog.apply(console, args);
+      };
+      console.warn = function(...args) {
+        sendLog('warn', args);
+        originalWarn.apply(console, args);
+      };
+      console.error = function(...args) {
+        sendLog('error', args);
+        originalError.apply(console, args);
+      };
+      console.info = function(...args) {
+        sendLog('info', args);
+        originalInfo.apply(console, args);
+      };
+
+      window.onerror = function(message, source, lineno, colno, error) {
+        sendLog('error', [`Errore JS (linea ${lineno}): ${message}`]);
+        return false;
+      };
+    })();
+  </script>
+</head>
+<body>
+  <!-- Custom Right-Click Context Menu -->
+<div class="interactive-canvas" id="canvasArea">
+  <div class="center-banner">
+    <h2>Menu Contestuale Custom</h2>
+    <p>Fai <strong>Click Destro</strong> in qualsiasi punto di questo schermo per visualizzare il menu contestuale.</p>
+  </div>
+
+  <!-- Context Menu Element -->
+  <div class="context-menu" id="customContextMenu">
+    <div class="ctx-item" data-action="cut">
+      <span>✂️ Taglia</span>
+      <kbd>⌘ X</kbd>
+    </div>
+    <div class="ctx-item" data-action="copy">
+      <span>📋 vai</span>
+      <kbd>⌘ C</kbd>
+    </div>
+    <div class="ctx-item" data-action="paste">
+      <span>📥 Incolla</span>
+      <kbd>⌘ V</kbd>
+    </div>
+
+    <div class="ctx-divider"></div>
+
+    <div class="ctx-item" data-action="inspect">
+      <span>🔍 Ispeziona Elemento</span>
+      <kbd>⌥ ⌘ I</kbd>
+    </div>
+    <div class="ctx-item" data-action="reload">
+      <span>🔄 Ricarica Pagina</span>
+      <kbd>⌘ R</kbd>
+    </div>
+
+    <div class="ctx-divider"></div>
+
+    <div class="ctx-item text-red" data-action="delete">
+      <span>🗑️ Elimina Selezione</span>
+      <kbd>DEL</kbd>
+    </div>
+  </div>
+</div>
+
+  <script>
+    try {
+      const contextMenu = document.getElementById('customContextMenu');
+const canvas = document.getElementById('canvasArea');
+
+canvas.addEventListener('contextmenu', (e) => {
+  e.preventDefault();
+
+  const mouseX = e.clientX;
+  const mouseY = e.clientY;
+  const menuWidth = 240;
+  const menuHeight = 220;
+
+  // Evita collisioni con i bordi dello schermo
+  const x = (mouseX + menuWidth > window.innerWidth) ? mouseX - menuWidth : mouseX;
+  const y = (mouseY + menuHeight > window.innerHeight) ? mouseY - menuHeight : mouseY;
+
+  contextMenu.style.left = `${x}px`;
+  contextMenu.style.top = `${y}px`;
+  contextMenu.style.display = 'block';
+});
+
+// Chiudi cliccando altrove
+document.addEventListener('click', (e) => {
+  if (!contextMenu.contains(e.target)) {
+    contextMenu.style.display = 'none';
+  }
+});
+
+// Gestione selezione azioni
+document.querySelectorAll('.ctx-item').forEach(item => {
+  item.addEventListener('click', () => {
+    const action = item.dataset.action;
+    console.log(`Azione menu contestuale eseguita: ${action}`);
+    contextMenu.style.display = 'none';
+  });
+});
+    } catch(err) {
+      console.error('Errore durante l\'esecuzione:', err.message);
+    }
+  </script>
+</body>
+</html>

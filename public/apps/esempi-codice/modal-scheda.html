@@ -1,0 +1,139 @@
+<!-- 1. DIPENDENZA TAILWIND CSS (Da inserire nel <head>) -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- 2. STILI CSS DEL MODAL E DEL PULSANTE -->
+<style>
+.btn-open-modal {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background-color: #0f172a;
+  color: #ffffff;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+.btn-open-modal:hover {
+  background-color: #1e293b;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 9999;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal-custom-box {
+  background: #ffffff;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 800px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+.custom-modal-body {
+  padding: 1.5rem;
+  overflow-y: auto;
+  max-height: 75vh;
+}
+</style>
+
+<!-- 3. PULSANTE DI ATTIVAZIONE (Posizionato dove vuoi nella pagina) -->
+<div style="text-align: center; padding: 2rem;">
+  <button onclick="openCustomHtmlModal()" class="btn-open-modal">
+    Apri Scheda Cinese
+  </button>
+</div>
+
+<!-- 4. STRUTTURA HTML MODAL -->
+<div id="custom-html-modal" class="modal-overlay" role="dialog" aria-modal="true">
+  <div class="modal-container modal-custom-box">
+    
+    <div class="modal-header">
+      <div class="flex items-center gap-2">
+        <span class="bg-emerald-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">SCHEDA</span>
+        <h2 class="m-0 text-lg font-bold text-slate-900">Scheda di Cinese (中文)</h2>
+      </div>
+      <button class="text-2xl text-slate-500 hover:text-red-500 bg-transparent border-0 cursor-pointer px-2" onclick="closeCustomHtmlModal()">&times;</button>
+    </div>
+
+    <div class="modal-body custom-modal-body">
+     <div class="flex justify-center items-center my-4 print:hidden">
+    <button onclick="window.print()" style="background-color:#f59e0b; color:#0f172a; font-weight:bold; padding:10px 20px; border-radius:8px; border:none; cursor:pointer; font-size:14px; box-shadow:0 2px 5px rgba(0,0,0,0.2);">
+      🖨️ Stampa / Salva in PDF
+    </button>
+  </div>
+
+  <div class="a4-page">
+    <div id="worksheet-print-area" class="w-full max-w-[210mm] min-h-[297mm] bg-white text-slate-900 p-8 sm:p-10 shadow-2xl mx-auto flex flex-col justify-between select-text font-rounded" style="box-sizing: border-box;"><div><div class="border-b-4 border-slate-900 pb-4 mb-6 relative"><div class="flex justify-center mb-2"><span class="bg-slate-900 text-white text-xs font-bold px-3.5 py-1 rounded-full uppercase tracking-wider shadow-xs">Cinese (中文)</span></div><div class="w-full text-center text-2xl sm:text-3xl font-extrabold uppercase tracking-wide       rounded px-2 py-1 text-slate-900">SCHEDA DI CINESE (中文 / MANDARINO)</div><div class="w-full text-center text-sm sm:text-base text-slate-600       rounded px-2 py-1 mt-1 font-medium">Vocaboli Fondamentali con Pinyin e Traduzione</div><div class="flex justify-between items-center text-xs text-slate-700 font-semibold mt-4 px-2 pt-2 border-t border-slate-200"><div>Nome e Cognome: ___________________________</div><div>Data: ____/____/2026</div><div>Classe: ________</div></div></div><div class="mb-6"><div class="relative"></div></div><br><br><div class="space-y-4"><div class="flex items-center gap-2 sm:gap-4 group"><div class="w-[80px] sm:w-[110px] flex-shrink-0 flex justify-center items-center"><svg width="100" height="130" viewBox="0 0 120 160" class="" xmlns="http://www.w3.org/2000/svg"><g stroke="#1f2937" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="60,10 100,25 60,40 20,25" fill="#38bdf8"></polygon><rect x="42" y="30" width="36" height="14" fill="#0284c7"></rect><line x1="85" y1="28" x2="95" y2="48" stroke-width="2.5" stroke="#f59e0b"></line><ellipse cx="60" cy="85" rx="38" ry="48" fill="#fef08a"></ellipse><ellipse cx="60" cy="95" rx="24" ry="30" fill="#fffbeb"></ellipse><circle cx="42" cy="65" r="16" fill="#ffffff" stroke-width="3"></circle><circle cx="78" cy="65" r="16" fill="#ffffff" stroke-width="3"></circle><line x1="58" y1="65" x2="62" y2="65" stroke-width="3"></line><circle cx="42" cy="65" r="6" fill="#1f2937"></circle><circle cx="78" cy="65" r="6" fill="#1f2937"></circle><polygon points="56,76 64,76 60,86" fill="#f97316"></polygon></g></svg></div><div class="flex-grow"><div class="relative w-full min-h-[110px] flex items-center "><svg class="absolute inset-0 w-full h-full preserve-3d" viewBox="0 0 800 130" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><g stroke="#1f2937" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M 10 15 L 60 15 L 60 115 L 10 115 Q 0 115 0 65 Q 0 15 10 15 Z" fill="#fca5a5"></path><rect x="60" y="15" width="25" height="100" fill="#e2e8f0"></rect><line x1="72" y1="15" x2="72" y2="115" stroke-width="1.5" stroke="#64748b"></line><path d="M 85 15 L 700 15 L 700 115 L 85 115 Z" fill="#fef08a"></path><line x1="85" y1="45" x2="700" y2="45" stroke-width="1.5" opacity="0.5"></line><line x1="85" y1="85" x2="700" y2="85" stroke-width="1.5" opacity="0.5"></line><path d="M 700 15 L 775 65 L 700 115 Z" fill="#fed7aa"></path><path d="M 750 48 L 775 65 L 750 82 Z" fill="#1f2937"></path></g></svg><div class="relative z-10 my-auto ml-[95px] mr-[110px] w-full min-h-[76px] bg-white rounded-xl border-2 border-gray-800 p-2 sm:p-3 flex items-center justify-center shadow-inner overflow-hidden"><div class="relative z-10 w-full"><div class="flex flex-col sm:flex-row items-center justify-between gap-2 px-2 py-1"><div class="w-full sm:w-2/5 border-b sm:border-b-0 sm:border-r border-slate-300 pb-1 sm:pb-0 sm:pr-3"><div class="w-full text-base sm:text-lg font-bold text-slate-900       rounded px-1">你好 (Nǐ hǎo)</div><div class="w-full text-xs sm:text-sm text-slate-600       rounded px-1 font-medium mt-0.5">Ciao / Buongiorno</div></div><div class="w-full sm:w-3/5 sm:pl-3"><div class="w-full text-xs sm:text-sm italic text-slate-700       rounded px-1">Frase: 你好，我是小明 (Ciao, io sono Xiaoming).</div></div></div></div></div></div></div></div><div class="flex items-center gap-2 sm:gap-4 group"><div class="w-[80px] sm:w-[110px] flex-shrink-0 flex justify-center items-center"><svg width="100" height="130" viewBox="0 0 120 160" class="" xmlns="http://www.w3.org/2000/svg"><g stroke="#1f2937" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="25,48 18,18 48,32" fill="#e2e8f0"></polygon><polygon points="28,42 22,24 44,32" fill="#fbcfe8"></polygon><polygon points="95,48 102,18 72,32" fill="#e2e8f0"></polygon><polygon points="92,42 98,24 76,32" fill="#fbcfe8"></polygon><ellipse cx="60" cy="58" rx="35" ry="28" fill="#f1f5f9"></ellipse><ellipse cx="44" cy="54" rx="5" ry="7" fill="#1f2937"></ellipse><ellipse cx="76" cy="54" rx="5" ry="7" fill="#1f2937"></ellipse><circle cx="42" cy="52" r="2" fill="#ffffff"></circle><circle cx="74" cy="52" r="2" fill="#ffffff"></circle><polygon points="57,60 63,60 60,64" fill="#f472b6"></polygon><path d="M60 64 Q55 69 50 67 M60 64 Q65 69 70 67" fill="none" stroke-width="2"></path><line x1="28" y1="58" x2="12" y2="54" stroke-width="1.5"></line><line x1="26" y1="64" x2="10" y2="64" stroke-width="1.5"></line><line x1="92" y1="58" x2="108" y2="54" stroke-width="1.5"></line><line x1="94" y1="64" x2="110" y2="64" stroke-width="1.5"></line><path d="M34 85 Q26 135 48 142 L72 142 Q94 135 86 85 Z" fill="#f1f5f9"></path><circle cx="102" cy="100" r="7" fill="#f1f5f9"></circle></g></svg></div><div class="flex-grow"><div class="relative w-full min-h-[110px] flex items-center "><svg class="absolute inset-0 w-full h-full preserve-3d" viewBox="0 0 800 130" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><g stroke="#1f2937" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M 10 15 L 60 15 L 60 115 L 10 115 Q 0 115 0 65 Q 0 15 10 15 Z" fill="#fca5a5"></path><rect x="60" y="15" width="25" height="100" fill="#e2e8f0"></rect><line x1="72" y1="15" x2="72" y2="115" stroke-width="1.5" stroke="#64748b"></line><path d="M 85 15 L 700 15 L 700 115 L 85 115 Z" fill="#fef08a"></path><line x1="85" y1="45" x2="700" y2="45" stroke-width="1.5" opacity="0.5"></line><line x1="85" y1="85" x2="700" y2="85" stroke-width="1.5" opacity="0.5"></line><path d="M 700 15 L 775 65 L 700 115 Z" fill="#fed7aa"></path><path d="M 750 48 L 775 65 L 750 82 Z" fill="#1f2937"></path></g></svg><div class="relative z-10 my-auto ml-[95px] mr-[110px] w-full min-h-[76px] bg-white rounded-xl border-2 border-gray-800 p-2 sm:p-3 flex items-center justify-center shadow-inner overflow-hidden"><div class="relative z-10 w-full"><div class="flex flex-col sm:flex-row items-center justify-between gap-2 px-2 py-1"><div class="w-full sm:w-2/5 border-b sm:border-b-0 sm:border-r border-slate-300 pb-1 sm:pb-0 sm:pr-3"><div class="w-full text-base sm:text-lg font-bold text-slate-900       rounded px-1">猫 (Māo)</div><div class="w-full text-xs sm:text-sm text-slate-600       rounded px-1 font-medium mt-0.5">Gatto</div></div><div class="w-full sm:w-3/5 sm:pl-3"><div class="w-full text-xs sm:text-sm italic text-slate-700       rounded px-1">Frase: 这只猫很可爱 (Questo gatto è molto carino).</div></div></div></div></div></div></div></div><div class="flex items-center gap-2 sm:gap-4 group"><div class="w-[80px] sm:w-[110px] flex-shrink-0 flex justify-center items-center"><svg width="100" height="130" viewBox="0 0 120 160" class="" xmlns="http://www.w3.org/2000/svg"><g stroke="#1f2937" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 45 C8 35, 5 60, 18 68 C25 60, 26 48, 22 45 Z" fill="#fb7185"></path><path d="M98 45 C112 35, 115 60, 102 68 C95 60, 94 48, 98 45 Z" fill="#fb7185"></path><circle cx="23" cy="50" r="4" fill="#f472b6"></circle><circle cx="97" cy="50" r="4" fill="#f472b6"></circle><ellipse cx="60" cy="52" rx="29" ry="25" fill="#fde047"></ellipse><path d="M31 40 Q45 46 60 40 Q75 46 89 40" fill="#fb7185"></path><ellipse cx="46" cy="53" rx="6" ry="8" fill="#1f2937"></ellipse><ellipse cx="74" cy="53" rx="6" ry="8" fill="#1f2937"></ellipse><circle cx="44" cy="51" r="2.5" fill="#ffffff"></circle><circle cx="72" cy="51" r="2.5" fill="#ffffff"></circle><path d="M54 62 Q60 68 66 62" fill="#f87171" stroke-width="2"></path><path d="M36 78 L84 78 L80 118 L40 118 Z" fill="#fbcfe8"></path><line x1="44" y1="78" x2="44" y2="92" stroke-width="3"></line><line x1="76" y1="78" x2="76" y2="92" stroke-width="3"></line><path d="M60 102 C56 96, 48 100, 52 105 L60 110 L68 105 C72 100, 64 96, 60 102 Z" fill="#ffffff"></path><rect x="44" y="118" width="10" height="22" fill="#fde047"></rect><rect x="66" y="118" width="10" height="22" fill="#fde047"></rect><ellipse cx="49" cy="144" rx="9" ry="6" fill="#cbd5e1"></ellipse><ellipse cx="71" cy="144" rx="9" ry="6" fill="#cbd5e1"></ellipse><path d="M84 82 Q105 88 108 100" fill="none" stroke-width="6" stroke="#fde047"></path><circle cx="108" cy="100" r="5" fill="#fde047"></circle></g></svg></div><div class="flex-grow"><div class="relative w-full min-h-[110px] flex items-center "><svg class="absolute inset-0 w-full h-full preserve-3d" viewBox="0 0 800 130" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><g stroke="#1f2937" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M 10 15 L 60 15 L 60 115 L 10 115 Q 0 115 0 65 Q 0 15 10 15 Z" fill="#fca5a5"></path><rect x="60" y="15" width="25" height="100" fill="#e2e8f0"></rect><line x1="72" y1="15" x2="72" y2="115" stroke-width="1.5" stroke="#64748b"></line><path d="M 85 15 L 700 15 L 700 115 L 85 115 Z" fill="#fef08a"></path><line x1="85" y1="45" x2="700" y2="45" stroke-width="1.5" opacity="0.5"></line><line x1="85" y1="85" x2="700" y2="85" stroke-width="1.5" opacity="0.5"></line><path d="M 700 15 L 775 65 L 700 115 Z" fill="#fed7aa"></path><path d="M 750 48 L 775 65 L 750 82 Z" fill="#1f2937"></path></g></svg><div class="relative z-10 my-auto ml-[95px] mr-[110px] w-full min-h-[76px] bg-white rounded-xl border-2 border-gray-800 p-2 sm:p-3 flex items-center justify-center shadow-inner overflow-hidden"><div class="relative z-10 w-full"><div class="flex flex-col sm:flex-row items-center justify-between gap-2 px-2 py-1"><div class="w-full sm:w-2/5 border-b sm:border-b-0 sm:border-r border-slate-300 pb-1 sm:pb-0 sm:pr-3"><div class="w-full text-base sm:text-lg font-bold text-slate-900       rounded px-1">苹果 (Píngguǒ)</div><div class="w-full text-xs sm:text-sm text-slate-600       rounded px-1 font-medium mt-0.5">Mela</div></div><div class="w-full sm:w-3/5 sm:pl-3"><div class="w-full text-xs sm:text-sm italic text-slate-700       rounded px-1">Frase: 我喜欢吃红苹果 (Mi piace mangiare le mele rosse).</div></div></div></div></div></div></div></div><div class="flex items-center gap-2 sm:gap-4 group"><div class="w-[80px] sm:w-[110px] flex-shrink-0 flex justify-center items-center"><svg width="100" height="130" viewBox="0 0 120 160" class="" xmlns="http://www.w3.org/2000/svg"><g stroke="#1f2937" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="60" y1="30" x2="60" y2="10" stroke-width="3"></line><circle cx="60" cy="8" r="6" fill="#ef4444"></circle><rect x="25" y="30" width="70" height="50" rx="10" fill="#cbd5e1"></rect><rect x="35" y="40" width="50" height="24" rx="6" fill="#1e293b"></rect><circle cx="48" cy="52" r="5" fill="#38bdf8"></circle><circle cx="72" cy="52" r="5" fill="#38bdf8"></circle><rect x="50" y="80" width="20" height="8" fill="#94a3b8"></rect><rect x="28" y="88" width="64" height="52" rx="8" fill="#cbd5e1"></rect><circle cx="48" cy="110" r="6" fill="#22c55e"></circle><circle cx="72" cy="110" r="6" fill="#eab308"></circle></g></svg></div><div class="flex-grow"><div class="relative w-full min-h-[110px] flex items-center "><svg class="absolute inset-0 w-full h-full preserve-3d" viewBox="0 0 800 130" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><g stroke="#1f2937" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M 10 15 L 60 15 L 60 115 L 10 115 Q 0 115 0 65 Q 0 15 10 15 Z" fill="#fca5a5"></path><rect x="60" y="15" width="25" height="100" fill="#e2e8f0"></rect><line x1="72" y1="15" x2="72" y2="115" stroke-width="1.5" stroke="#64748b"></line><path d="M 85 15 L 700 15 L 700 115 L 85 115 Z" fill="#fef08a"></path><line x1="85" y1="45" x2="700" y2="45" stroke-width="1.5" opacity="0.5"></line><line x1="85" y1="85" x2="700" y2="85" stroke-width="1.5" opacity="0.5"></line><path d="M 700 15 L 775 65 L 700 115 Z" fill="#fed7aa"></path><path d="M 750 48 L 775 65 L 750 82 Z" fill="#1f2937"></path></g></svg><div class="relative z-10 my-auto ml-[95px] mr-[110px] w-full min-h-[76px] bg-white rounded-xl border-2 border-gray-800 p-2 sm:p-3 flex items-center justify-center shadow-inner overflow-hidden"><div class="relative z-10 w-full"><div class="flex flex-col sm:flex-row items-center justify-between gap-2 px-2 py-1"><div class="w-full sm:w-2/5 border-b sm:border-b-0 sm:border-r border-slate-300 pb-1 sm:pb-0 sm:pr-3"><div class="w-full text-base sm:text-lg font-bold text-slate-900       rounded px-1">谢谢 (Xièxiè)</div><div class="w-full text-xs sm:text-sm text-slate-600       rounded px-1 font-medium mt-0.5">Grazie</div></div><div class="w-full sm:w-3/5 sm:pl-3"><div class="w-full text-xs sm:text-sm italic text-slate-700       rounded px-1">Frase: 非常谢谢你的帮助 (Grazie mille per il tuo aiuto).</div></div></div></div></div></div></div></div></div></div>
+  </div>
+
+    <div class="p-4 border-t border-slate-200 flex justify-end gap-2 bg-slate-50">
+      <button class="px-4 py-2 bg-slate-200 text-slate-800 rounded-lg font-semibold cursor-pointer" onclick="closeCustomHtmlModal()">Chiudi</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- 5. SCRIPT JAVASCRIPT PER APERTURA / CHIUSURA -->
+<script>
+function openCustomHtmlModal() {
+  var modal = document.getElementById('custom-html-modal');
+  if (modal) {
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+function closeCustomHtmlModal() {
+  var modal = document.getElementById('custom-html-modal');
+  if (modal) {
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+}
+
+window.openCustomHtmlModal = openCustomHtmlModal;
+window.closeCustomHtmlModal = closeCustomHtmlModal;
+window.triggerModalOpen = openCustomHtmlModal;
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeCustomHtmlModal();
+});
+</script>

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="it"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Snippet — Slider</title><script src="https://cdn.tailwindcss.com"></script>
+<style>.slide{display:none} .slide.active{display:block}</style></head>
+<body class="bg-gray-50 p-8">
+  <div class="max-w-xl mx-auto bg-white rounded-2xl shadow overflow-hidden">
+    <img class="slide active w-full h-64 object-cover" src="https://picsum.photos/seed/one/800/400">
+    <img class="slide w-full h-64 object-cover" src="https://picsum.photos/seed/two/800/400">
+    <img class="slide w-full h-64 object-cover" src="https://picsum.photos/seed/three/800/400">
+    <div class="flex justify-between p-4">
+      <button id="prev" class="px-3 py-2 bg-slate-900 text-white rounded">Prev</button>
+      <button id="next" class="px-3 py-2 bg-slate-900 text-white rounded">Next</button>
+    </div>
+  </div>
+<script>
+  const slides=[...document.querySelectorAll('.slide')]; let i=0;
+  function show(n){slides[i].classList.remove('active'); i=(n+slides.length)%slides.length; slides[i].classList.add('active');}
+  document.getElementById('prev').onclick=()=>show(i-1);
+  document.getElementById('next').onclick=()=>show(i+1);
+  setInterval(()=>show(i+1),4000);
+</script>
+</body></html>

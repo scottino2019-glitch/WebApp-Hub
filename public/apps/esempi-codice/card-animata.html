@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="it" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Progetto Tailwind CSS</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+
+  
+
+  <!-- Tailwind CSS Config -->
+  <script>
+    
+window.tailwind = window.tailwind || {};
+window.module = window.module || { exports: {} };
+window.exports = window.exports || {};
+try {
+  // Configurazione Tailwind
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        brand: '#0ea5e9',
+      }
+    }
+  }
+}
+  if (window.module && window.module.exports && Object.keys(window.module.exports).length > 0) {
+    window.tailwind.config = window.module.exports;
+  }
+} catch(e) {
+  console.warn('Errore esecuzione tailwind.config:', e.message);
+}
+    if (window.tailwind && window.tailwind.config && !window.tailwind.config.darkMode) {
+      window.tailwind.config.darkMode = 'class';
+    }
+  </script>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio"></script>
+
+  <!-- Custom CSS & Tailwind Directives -->
+  
+</head>
+<body class="bg-[#0b0f19] text-[#f1f5f9] min-h-screen ">
+<div class="p-8 max-w-sm mx-auto bg-white rounded-3xl shadow-xl space-y-4 border border-slate-150 transition-all duration-500 hover:shadow-2xl hover:-translate-y-2">
+  
+  <!-- Area Icona con Doppia Animazione (Fluttuante + Radar) -->
+  <div class="relative flex justify-center items-center h-16">
+    <!-- Effetto onda radar pulsante sullo sfondo -->
+    <span class="absolute inline-flex h-12 w-12 rounded-full bg-violet-400 opacity-30 animate-ping"></span>
+    
+    <!-- Il razzo che rimbalza/fluttua delicatamente -->
+    <div class="text-4xl select-none animate-bounce z-10">🚀</div>
+  </div>
+
+  <h2 class="text-xl font-bold text-slate-900 text-center">Spazio Sperimentale</h2>
+  <p class="text-xs text-slate-500 text-center leading-relaxed">
+    Modifica l'HTML nell'editor o usa i controlli visuali sotto per vedere le variazioni in tempo reale!
+  </p>
+  
+  <!-- Bottone con micro-interazione e transizione di scala -->
+  <div class="flex justify-center pt-2">
+    <button class="bg-violet-600 hover:bg-violet-700 text-white font-semibold px-5 py-2.5 rounded-xl text-xs transition-all duration-300 transform hover:scale-110 active:scale-95 hover:shadow-lg hover:shadow-violet-200 cursor-pointer">
+      Decolla! 🪐
+    </button>
+  </div>
+</div>
+
+
+</body>
+</html>

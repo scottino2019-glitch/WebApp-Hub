@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="it" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Progetto Tailwind CSS</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS Config -->
+  <script>
+    window.tailwind = window.tailwind || {};
+    // Configurazione Tailwind
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        brand: '#0ea5e9',
+      }
+    }
+  }
+}
+    if (window.tailwind.config && !window.tailwind.config.darkMode) {
+      window.tailwind.config.darkMode = 'class';
+    }
+  </script>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio"></script>
+
+  <!-- Custom CSS -->
+  <style>
+@keyframes polygonToSmoothCircle {
+  0% {
+    /* Quadrato (con punti doppi sui lati) */
+    clip-path: polygon(0% 0%, 50% 0%, 100% 0%, 100% 50%, 100% 100%, 50% 100%, 0% 100%, 0% 50%);
+  }
+  50% {
+    /* Stella o forma complessa a 8 punti */
+    clip-path: polygon(50% 0%, 65% 35%, 100% 50%, 65% 65%, 50% 100%, 35% 65%, 0% 50%, 35% 35%);
+  }
+  100% {
+    /* Ottagono regolare che approssima il cerchio */
+    clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
+  }
+}
+
+.target-element {
+  /* Combinare clip-path con border-radius garantisce angoli morbidi */
+  border-radius: 50%;
+  animation: polygonToSmoothCircle 3s ease-in-out infinite alternate;
+}
+</style>
+</head>
+<body class="bg-[#0b0f19] text-[#f1f5f9] min-h-screen">
+<div class="target-element w-40 h-40 bg-gradient-to-tr from-purple-600 to-amber-500 flex items-center justify-center text-white font-bold text-xl shadow-2xl">
+  MORPH
+</div>
+
+
+</body>
+</html>

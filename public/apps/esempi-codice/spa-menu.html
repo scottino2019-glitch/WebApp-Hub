@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="it"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Snippet — SPA Menu</title><script src="https://cdn.tailwindcss.com"></script></head>
+<body class="bg-gray-50 p-8">
+  <nav class="max-w-3xl mx-auto bg-white rounded-2xl shadow p-4 flex gap-4">
+    <button data-page="home" class="tab px-3 py-2 rounded bg-slate-900 text-white">Home</button>
+    <button data-page="news" class="tab px-3 py-2 rounded">Notizie</button>
+    <button data-page="books" class="tab px-3 py-2 rounded">Libri</button>
+    <button data-page="movies" class="tab px-3 py-2 rounded">Cinema</button>
+  </nav>
+  <section id="view" class="max-w-3xl mx-auto mt-6 bg-white rounded-2xl shadow p-6">Caricamento…</section>
+<script>
+  const routes = {
+    home: "<h2 class='text-xl font-bold'>Benvenuto</h2><p>Questa è una mini SPA senza ricaricare la pagina.</p>",
+    news: "<h2 class='text-xl font-bold'>Notizie</h2><ul class='list-disc pl-5'><li>Breaking 1</li><li>Breaking 2</li></ul>",
+    books: "<h2 class='text-xl font-bold'>Libri</h2><p>Elenco libri consigliati…</p>",
+    movies: "<h2 class='text-xl font-bold'>Cinema</h2><p>Trailer e recensioni…</p>"
+  };
+  const view = document.getElementById('view');
+  function navigate(hash){ const page = (hash||'#home').slice(1); view.innerHTML = routes[page]||"<h2>404</h2>"; document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('bg-slate-900', b.dataset.page===page)); document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('text-white', b.dataset.page===page)); }
+  window.addEventListener('hashchange', ()=>navigate(location.hash));
+  document.querySelectorAll('.tab').forEach(btn=>btn.addEventListener('click', ()=>location.hash = btn.dataset.page));
+  navigate(location.hash);
+</script>
+</body></html>
