@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Manager - I Miei Codici</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        .code-editor {
+            font-family: 'Courier New', monospace;
+        }
+        .preview-frame {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            background: white;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <div class="container mx-auto px-4 py-6">
+        <!-- Header -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">📝 Code Manager</h1>
+            <p class="text-gray-600">Conserva, modifica e visualizza i tuoi codici</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Sidebar - Lista Codici -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-semibold text-gray-800">I Miei Codici</h2>
+                        <button onclick="createNewCode()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                            + Nuovo
+                        </button>
+                    </div>
+                    
+                    <div id="codesList" class="space-y-2">
+                        <!-- I codici salvati appariranno qui -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Area - Editor e Anteprima -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Controlli -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <div class="flex flex-wrap gap-4">
+                        <input 
+                            type="text" 
+                            id="codeTitle" 
+                            placeholder="Nome del codice..." 
+                            class="flex-1 min-w-48 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        >
+                        <button onclick="saveCode()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                            💾 Salva
+                        </button>
+                        <button onclick="updatePreview()" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                            🔄 Aggiorna Anteprima
+                        </button>
+                        <button onclick="clearEditor()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                            🗑️ Pulisci
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Editor -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-700 mb-3">📝 Editor</h3>
+                    <textarea 
+                        id="codeEditor" 
+                        class="code-editor w-full h-80 p-4 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="Scrivi il tuo codice HTML qui..."
+                    ></textarea>
+                </div>
+
+                <!-- Anteprima -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-700 mb-3">👁️ Anteprima</h3>
+                    <div class="preview-frame">
+                        <iframe id="previewFrame" class="w-full h-80 rounded-lg" sandbox="allow-scripts allow-same-origin"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let codes = JSON.parse(localStorage.getItem('savedCodes')) || [];
+        let currentCodeId = null;
+
+        // Carica i codici salvati all'avvio
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCodesList();
+            if (codes.length > 0) {
+                loadCode(codes[0].id);
+            }
+        });
+
+        function createNewCode() {
+            const newCode = {
+                id: Date.now(),
+                title: 'Nuovo Codice',
+                content: '<!DOCTYPE html>\n<html>\n<head>\n    <title>Il Mio Codice</title>\n</head>\n<body>\n    <h1>Ciao Mondo!</h1>\n</body>\n</html>'
+            };
+            
+            codes.unshift(newCode);
+            saveToStorage();
+            loadCodesList();
+            loadCode(newCode.id);
+        }
+
+        function saveCode() {
+            const title = document.getElementById('codeTitle').value.trim() || 'Codice Senza Nome';
+            const content = document.getElementById('codeEditor').value;
+            
+            if (currentCodeId) {
+                // Aggiorna codice esistente
+                const codeIndex = codes.findIndex(c => c.id === currentCodeId);
+                if (codeIndex !== -1) {
+                    codes[codeIndex].title = title;
+                    codes[codeIndex].content = content;
+                }
+            } else {
+                // Crea nuovo codice
+                const newCode = {
+                    id: Date.now(),
+                    title: title,
+                    content: content
+                };
+                codes.unshift(newCode);
+                currentCodeId = newCode.id;
+            }
+            
+            saveToStorage();
+            loadCodesList();
+            
+            // Feedback visivo
+            const saveBtn = event.target;
+            const originalText = saveBtn.innerHTML;
+            saveBtn.innerHTML = '✅ Salvato!';
+            saveBtn.classList.add('bg-green-700');
+            setTimeout(() => {
+                saveBtn.innerHTML = originalText;
+                saveBtn.classList.remove('bg-green-700');
+            }, 1500);
+        }
+
+        function loadCode(id) {
+            const code = codes.find(c => c.id === id);
+            if (code) {
+                currentCodeId = id;
+                document.getElementById('codeTitle').value = code.title;
+                document.getElementById('codeEditor').value = code.content;
+                
+                // Aggiorna selezione visiva
+                document.querySelectorAll('.code-item').forEach(item => {
+                    item.classList.remove('bg-blue-50', 'border-blue-300');
+                    item.classList.add('bg-gray-50');
+                });
+                document.querySelector(`[data-id="${id}"]`).classList.remove('bg-gray-50');
+                document.querySelector(`[data-id="${id}"]`).classList.add('bg-blue-50', 'border-blue-300');
+                
+                updatePreview();
+            }
+        }
+
+        function deleteCode(id, event) {
+            event.stopPropagation();
+            if (confirm('Sei sicuro di voler eliminare questo codice?')) {
+                codes = codes.filter(c => c.id !== id);
+                saveToStorage();
+                loadCodesList();
+                
+                if (currentCodeId === id) {
+                    if (codes.length > 0) {
+                        loadCode(codes[0].id);
+                    } else {
+                        currentCodeId = null;
+                        document.getElementById('codeTitle').value = '';
+                        document.getElementById('codeEditor').value = '';
+                        document.getElementById('previewFrame').src = '';
+                    }
+                }
+            }
+        }
+
+        function updatePreview() {
+            const code = document.getElementById('codeEditor').value;
+            const previewFrame = document.getElementById('previewFrame');
+            
+            const blob = new Blob([code], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            previewFrame.src = url;
+            
+            // Pulisci URL precedente per evitare memory leak
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+        }
+
+        function loadCodesList() {
+            const codesList = document.getElementById('codesList');
+            
+            if (codes.length === 0) {
+                codesList.innerHTML = '<p class="text-gray-500 text-center py-4">Nessun codice salvato</p>';
+                return;
+            }
+            
+            codesList.innerHTML = codes.map(code => `
+                <div class="code-item p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors bg-gray-50" 
+                     data-id="${code.id}" onclick="loadCode(${code.id})">
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1 min-w-0">
+                            <h4 class="font-medium text-gray-800 truncate">${code.title}</h4>
+                            <p class="text-sm text-gray-500 mt-1">${new Date(code.id).toLocaleDateString('it-IT')}</p>
+                        </div>
+                        <button onclick="deleteCode(${code.id}, event)" 
+                                class="text-red-500 hover:text-red-700 ml-2 p-1">
+                            🗑️
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function clearEditor() {
+            if (confirm('Sei sicuro di voler pulire l\'editor? Il contenuto non salvato andrà perso.')) {
+                document.getElementById('codeEditor').value = '';
+                document.getElementById('previewFrame').src = '';
+                document.getElementById('codeTitle').value = '';
+                currentCodeId = null;
+                
+                // Rimuovi selezione visiva
+                document.querySelectorAll('.code-item').forEach(item => {
+                    item.classList.remove('bg-blue-50', 'border-blue-300');
+                    item.classList.add('bg-gray-50');
+                });
+            }
+        }
+
+        function saveToStorage() {
+            localStorage.setItem('savedCodes', JSON.stringify(codes));
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98654df62330ed2a',t:'MTc1OTA4NDE0OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

@@ -1,0 +1,1466 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editor HTML Semplice</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .controls {
+            background: #34495e;
+            padding: 15px 20px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .file-input {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .file-input label {
+            color: white;
+            font-weight: 500;
+        }
+
+        .file-input input {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            min-width: 200px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #229954;
+            transform: translateY(-2px);
+        }
+
+        .btn-warning {
+            background: #f39c12;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #e67e22;
+            transform: translateY(-2px);
+        }
+
+        .template-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .editor-container {
+            display: flex;
+            height: 600px;
+        }
+
+        .editor-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-header {
+            background: #ecf0f1;
+            padding: 12px 20px;
+            font-weight: 600;
+            color: #2c3e50;
+            border-bottom: 1px solid #bdc3c7;
+        }
+
+        .editor {
+            flex: 1;
+            border: none;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            resize: none;
+            outline: none;
+            background: #fafafa;
+        }
+
+        .preview {
+            flex: 1;
+            padding: 20px;
+            background: white;
+            overflow-y: auto;
+            border-left: 1px solid #bdc3c7;
+        }
+
+        .status {
+            background: #95a5a6;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .editor-container {
+                flex-direction: column;
+                height: auto;
+            }
+            
+            .editor {
+                min-height: 300px;
+            }
+            
+            .preview {
+                min-height: 300px;
+                border-left: none;
+                border-top: 1px solid #bdc3c7;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .file-input {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .file-input input {
+                min-width: auto;
+            }
+
+            .template-buttons {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📝 Editor HTML Semplice</h1>
+            <p>Scrivi il tuo codice HTML e salvalo come file</p>
+        </div>
+        
+        <div class="controls">
+            <div class="file-input">
+                <label for="filename">Nome file:</label>
+                <input type="text" id="filename" placeholder="mio-file.html" value="documento.html">
+            </div>
+            
+            <button class="btn btn-success" onclick="saveFile()">
+                💾 Salva File
+            </button>
+            
+            <button class="btn btn-warning" onclick="clearEditor()">
+                🗑️ Pulisci
+            </button>
+            
+            <div class="template-buttons">
+                <button class="btn btn-primary" onclick="insertTemplate('base')">
+                    📄 Template Base
+                </button>
+                <button class="btn btn-primary" onclick="insertTemplate('menu')">
+                    🍽️ Menu Ristorante
+                </button>
+                <button class="btn btn-primary" onclick="insertTemplate('portfolio')">
+                    💼 Portfolio
+                </button>
+                <button class="btn btn-primary" onclick="insertTemplate('blog')">
+                    📝 Blog Layout
+                </button>
+                <button class="btn btn-primary" onclick="insertTemplate('landing')">
+                    🚀 Landing Page
+                </button>
+            </div>
+        </div>
+        
+        <div class="editor-container">
+            <div class="editor-panel">
+                <div class="panel-header">Editor HTML</div>
+                <textarea class="editor" id="htmlEditor" placeholder="Scrivi qui il tuo codice HTML..."></textarea>
+            </div>
+            
+            <div class="editor-panel">
+                <div class="panel-header">Anteprima</div>
+                <div class="preview" id="preview">
+                    <p style="color: #7f8c8d; text-align: center; margin-top: 50px;">
+                        L'anteprima apparirà qui mentre scrivi...
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="status" id="status">
+            Pronto per iniziare - Scrivi il tuo HTML nell'editor
+        </div>
+    </div>
+
+    <script>
+        const editor = document.getElementById('htmlEditor');
+        const preview = document.getElementById('preview');
+        const status = document.getElementById('status');
+        const filename = document.getElementById('filename');
+
+        // Aggiorna l'anteprima in tempo reale
+        editor.addEventListener('input', function() {
+            const htmlContent = editor.value;
+            
+            if (htmlContent.trim() === '') {
+                preview.innerHTML = '<p style="color: #7f8c8d; text-align: center; margin-top: 50px;">L\'anteprima apparirà qui mentre scrivi...</p>';
+                status.textContent = 'Editor vuoto';
+            } else {
+                try {
+                    preview.innerHTML = htmlContent;
+                    status.textContent = `Caratteri: ${htmlContent.length} | Righe: ${htmlContent.split('\n').length}`;
+                } catch (error) {
+                    preview.innerHTML = '<p style="color: #e74c3c;">Errore nel rendering HTML</p>';
+                    status.textContent = 'Errore nel codice HTML';
+                }
+            }
+        });
+
+        // Funzione per salvare il file
+        function saveFile() {
+            const content = editor.value;
+            let fileName = filename.value.trim();
+            
+            if (!fileName) {
+                alert('Inserisci un nome per il file!');
+                filename.focus();
+                return;
+            }
+            
+            if (!fileName.endsWith('.html')) {
+                fileName = fileName + '.html';
+                filename.value = fileName;
+            }
+            
+            if (content.trim() === '') {
+                if (!confirm('Il file è vuoto. Vuoi salvarlo comunque?')) {
+                    return;
+                }
+            }
+            
+            try {
+                // Crea il blob e scarica il file
+                const blob = new Blob([content], { type: 'text/html;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = fileName;
+                a.style.display = 'none';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                status.textContent = `File "${fileName}" salvato con successo!`;
+                status.style.background = '#27ae60';
+                
+                // Reset del messaggio dopo 3 secondi
+                setTimeout(() => {
+                    status.style.background = '#95a5a6';
+                    const content = editor.value;
+                    if (content.trim() !== '') {
+                        status.textContent = `Caratteri: ${content.length} | Righe: ${content.split('\n').length}`;
+                    } else {
+                        status.textContent = 'Pronto per iniziare - Scrivi il tuo HTML nell\'editor';
+                    }
+                }, 3000);
+            } catch (error) {
+                alert('Errore durante il salvataggio del file');
+                console.error('Errore salvataggio:', error);
+            }
+        }
+
+        // Funzione per pulire l'editor
+        function clearEditor() {
+            if (editor.value.trim() !== '' && !confirm('Sei sicuro di voler cancellare tutto il contenuto?')) {
+                return;
+            }
+            
+            editor.value = '';
+            preview.innerHTML = '<p style="color: #7f8c8d; text-align: center; margin-top: 50px;">L\'anteprima apparirà qui mentre scrivi...</p>';
+            status.textContent = 'Editor pulito - Pronto per iniziare';
+            status.style.background = '#f39c12';
+            
+            setTimeout(() => {
+                status.style.background = '#95a5a6';
+            }, 2000);
+            
+            editor.focus();
+        }
+
+        // Funzione per inserire template
+        function insertTemplate(type = 'base') {
+            if (editor.value.trim() !== '' && !confirm('Questo sostituirà il contenuto attuale. Continuare?')) {
+                return;
+            }
+            
+            const templates = {
+                base: `<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Mia Pagina</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            line-height: 1.6;
+            color: #333;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        
+        p {
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Benvenuto nella mia pagina</h1>
+    <p>Questo è un template di base per iniziare. Modifica questo contenuto come preferisci!</p>
+    
+    <h2>Sezione di esempio</h2>
+    <p>Puoi aggiungere paragrafi, liste, immagini e molto altro.</p>
+    
+    <ul>
+        <li>Elemento lista 1</li>
+        <li>Elemento lista 2</li>
+        <li>Elemento lista 3</li>
+    </ul>
+</body>
+</html>`,
+
+                menu: `<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ristorante Da Mario - Menu</title>
+    <style>
+        body {
+            font-family: 'Georgia', serif;
+            margin: 0;
+            padding: 20px;
+            background: #f8f5f0;
+            color: #2c1810;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #d4af37;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .restaurant-name {
+            font-size: 2.5em;
+            color: #8b4513;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-style: italic;
+            color: #666;
+        }
+        
+        .menu-section {
+            margin-bottom: 40px;
+        }
+        
+        .section-title {
+            font-size: 1.8em;
+            color: #8b4513;
+            border-bottom: 2px solid #d4af37;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .menu-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px dotted #ccc;
+        }
+        
+        .item-info {
+            flex: 1;
+        }
+        
+        .item-name {
+            font-weight: bold;
+            font-size: 1.1em;
+            color: #2c1810;
+        }
+        
+        .item-description {
+            font-style: italic;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .item-price {
+            font-weight: bold;
+            color: #d4af37;
+            font-size: 1.1em;
+            margin-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="restaurant-name">🍝 Ristorante Da Mario</h1>
+            <p class="subtitle">Autentica cucina italiana dal 1952</p>
+        </div>
+        
+        <div class="menu-section">
+            <h2 class="section-title">Antipasti</h2>
+            
+            <div class="menu-item">
+                <div class="item-info">
+                    <div class="item-name">Bruschetta della Casa</div>
+                    <div class="item-description">Pane tostato con pomodori freschi, basilico e aglio</div>
+                </div>
+                <div class="item-price">€8.50</div>
+            </div>
+            
+            <div class="menu-item">
+                <div class="item-info">
+                    <div class="item-name">Antipasto Misto</div>
+                    <div class="item-description">Selezione di salumi, formaggi e verdure grigliate</div>
+                </div>
+                <div class="item-price">€12.00</div>
+            </div>
+        </div>
+        
+        <div class="menu-section">
+            <h2 class="section-title">Primi Piatti</h2>
+            
+            <div class="menu-item">
+                <div class="item-info">
+                    <div class="item-name">Spaghetti alla Carbonara</div>
+                    <div class="item-description">La ricetta tradizionale romana con guanciale e pecorino</div>
+                </div>
+                <div class="item-price">€14.00</div>
+            </div>
+            
+            <div class="menu-item">
+                <div class="item-info">
+                    <div class="item-name">Risotto ai Porcini</div>
+                    <div class="item-description">Risotto cremoso con funghi porcini e parmigiano</div>
+                </div>
+                <div class="item-price">€16.50</div>
+            </div>
+        </div>
+        
+        <div class="menu-section">
+            <h2 class="section-title">Secondi Piatti</h2>
+            
+            <div class="menu-item">
+                <div class="item-info">
+                    <div class="item-name">Bistecca alla Fiorentina</div>
+                    <div class="item-description">Bistecca di manzo alla griglia (500g)</div>
+                </div>
+                <div class="item-price">€28.00</div>
+            </div>
+            
+            <div class="menu-item">
+                <div class="item-info">
+                    <div class="item-name">Branzino in Crosta di Sale</div>
+                    <div class="item-description">Pesce fresco cotto in crosta di sale con erbe</div>
+                </div>
+                <div class="item-price">€22.00</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>`,
+
+                portfolio: `<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marco Rossi - Portfolio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+        
+        .navbar {
+            background: #2c3e50;
+            color: white;
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: #3498db;
+        }
+        
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 120px 20px 80px;
+            text-align: center;
+        }
+        
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: #3498db;
+            color: white;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+        
+        .btn:hover {
+            background: #2980b9;
+        }
+        
+        .section {
+            padding: 80px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .section h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 50px;
+            color: #2c3e50;
+        }
+        
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .project-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+        
+        .project-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .project-image {
+            height: 200px;
+            background: #ecf0f1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+        }
+        
+        .project-content {
+            padding: 20px;
+        }
+        
+        .project-title {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        
+        .project-description {
+            color: #666;
+            margin-bottom: 15px;
+        }
+        
+        .project-tech {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .tech-tag {
+            background: #3498db;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+        
+        .footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 40px 20px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">Marco Rossi</div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#progetti">Progetti</a></li>
+                <li><a href="#contatti">Contatti</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <section class="hero" id="home">
+        <h1>👋 Ciao, sono Marco</h1>
+        <p>Sviluppatore Web Full-Stack appassionato di tecnologie moderne</p>
+        <a href="#progetti" class="btn">Vedi i miei progetti</a>
+    </section>
+    
+    <section class="section" id="progetti">
+        <h2>I Miei Progetti</h2>
+        <div class="projects-grid">
+            <div class="project-card">
+                <div class="project-image">🛒</div>
+                <div class="project-content">
+                    <h3 class="project-title">E-commerce Platform</h3>
+                    <p class="project-description">Piattaforma completa per vendite online con gestione inventario e pagamenti.</p>
+                    <div class="project-tech">
+                        <span class="tech-tag">React</span>
+                        <span class="tech-tag">Node.js</span>
+                        <span class="tech-tag">MongoDB</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="project-card">
+                <div class="project-image">📱</div>
+                <div class="project-content">
+                    <h3 class="project-title">App Mobile</h3>
+                    <p class="project-description">Applicazione mobile per la gestione delle attività quotidiane.</p>
+                    <div class="project-tech">
+                        <span class="tech-tag">React Native</span>
+                        <span class="tech-tag">Firebase</span>
+                        <span class="tech-tag">Redux</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="project-card">
+                <div class="project-image">📊</div>
+                <div class="project-content">
+                    <h3 class="project-title">Dashboard Analytics</h3>
+                    <p class="project-description">Dashboard interattiva per l'analisi dei dati aziendali.</p>
+                    <div class="project-tech">
+                        <span class="tech-tag">Vue.js</span>
+                        <span class="tech-tag">D3.js</span>
+                        <span class="tech-tag">Python</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <footer class="footer" id="contatti">
+        <h3>Contattami</h3>
+        <p>📧 marco.rossi@email.com | 📱 +39 123 456 7890</p>
+        <p>© 2024 Marco Rossi. Tutti i diritti riservati.</p>
+    </footer>
+</body>
+</html>`,
+
+                blog: `<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Il Mio Blog - Tecnologia e Innovazione</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Georgia', serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f8f9fa;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .header {
+            background: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 20px 0;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .blog-title {
+            font-size: 2rem;
+            color: #2c3e50;
+        }
+        
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+        
+        .nav-menu a {
+            text-decoration: none;
+            color: #666;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .nav-menu a:hover {
+            color: #3498db;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 40px;
+            margin: 40px 0;
+        }
+        
+        .posts-section {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .post {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .post:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        
+        .post-meta {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+        
+        .post-title {
+            font-size: 1.8rem;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        
+        .post-title a {
+            text-decoration: none;
+            color: inherit;
+            transition: color 0.3s;
+        }
+        
+        .post-title a:hover {
+            color: #3498db;
+        }
+        
+        .post-excerpt {
+            color: #666;
+            margin-bottom: 15px;
+        }
+        
+        .read-more {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .read-more:hover {
+            text-decoration: underline;
+        }
+        
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        
+        .widget {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .widget-title {
+            font-size: 1.3rem;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        
+        .recent-posts {
+            list-style: none;
+        }
+        
+        .recent-posts li {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .recent-posts li:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        
+        .recent-posts a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .recent-posts a:hover {
+            color: #3498db;
+        }
+        
+        .recent-date {
+            color: #666;
+            font-size: 0.8rem;
+        }
+        
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .tag {
+            background: #ecf0f1;
+            color: #2c3e50;
+            padding: 5px 12px;
+            border-radius: 15px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: background 0.3s;
+        }
+        
+        .tag:hover {
+            background: #3498db;
+            color: white;
+        }
+        
+        .footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 30px 0;
+            margin-top: 50px;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <h1 class="blog-title">📚 TechBlog</h1>
+                <nav>
+                    <ul class="nav-menu">
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#categorie">Categorie</a></li>
+                        <li><a href="#about">Chi Sono</a></li>
+                        <li><a href="#contatti">Contatti</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="main-content">
+            <main class="posts-section">
+                <article class="post">
+                    <div class="post-meta">📅 15 Marzo 2024 | 💬 5 commenti</div>
+                    <h2 class="post-title">
+                        <a href="#">Il Futuro dell'Intelligenza Artificiale</a>
+                    </h2>
+                    <p class="post-excerpt">
+                        L'intelligenza artificiale sta rivoluzionando il modo in cui lavoriamo e viviamo. 
+                        In questo articolo esploriamo le tendenze emergenti e le implicazioni future...
+                    </p>
+                    <a href="#" class="read-more">Leggi tutto →</a>
+                </article>
+                
+                <article class="post">
+                    <div class="post-meta">📅 10 Marzo 2024 | 💬 12 commenti</div>
+                    <h2 class="post-title">
+                        <a href="#">Guida Completa a React 18</a>
+                    </h2>
+                    <p class="post-excerpt">
+                        React 18 introduce nuove funzionalità rivoluzionarie come il Concurrent Rendering. 
+                        Scopriamo insieme tutte le novità e come implementarle nei nostri progetti...
+                    </p>
+                    <a href="#" class="read-more">Leggi tutto →</a>
+                </article>
+                
+                <article class="post">
+                    <div class="post-meta">📅 5 Marzo 2024 | 💬 8 commenti</div>
+                    <h2 class="post-title">
+                        <a href="#">CSS Grid vs Flexbox: Quando Usare Cosa</a>
+                    </h2>
+                    <p class="post-excerpt">
+                        Due potenti strumenti per il layout CSS. In questa guida pratica vediamo 
+                        quando utilizzare CSS Grid e quando preferire Flexbox...
+                    </p>
+                    <a href="#" class="read-more">Leggi tutto →</a>
+                </article>
+            </main>
+            
+            <aside class="sidebar">
+                <div class="widget">
+                    <h3 class="widget-title">Articoli Recenti</h3>
+                    <ul class="recent-posts">
+                        <li>
+                            <a href="#">Come Ottimizzare le Performance Web</a>
+                            <div class="recent-date">2 Marzo 2024</div>
+                        </li>
+                        <li>
+                            <a href="#">JavaScript ES2024: Le Nuove Funzionalità</a>
+                            <div class="recent-date">28 Febbraio 2024</div>
+                        </li>
+                        <li>
+                            <a href="#">Design System: Best Practices</a>
+                            <div class="recent-date">25 Febbraio 2024</div>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="widget">
+                    <h3 class="widget-title">Tag Popolari</h3>
+                    <div class="tags">
+                        <a href="#" class="tag">JavaScript</a>
+                        <a href="#" class="tag">React</a>
+                        <a href="#" class="tag">CSS</a>
+                        <a href="#" class="tag">Node.js</a>
+                        <a href="#" class="tag">AI</a>
+                        <a href="#" class="tag">Web Design</a>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+    
+    <footer class="footer">
+        <div class="container">
+            <p>© 2024 TechBlog. Tutti i diritti riservati. | Seguimi su 🐦 Twitter e 💼 LinkedIn</p>
+        </div>
+    </footer>
+</body>
+</html>`,
+
+                landing: `<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AppMagica - La Soluzione che Stavi Cercando</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+        
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            animation: fadeInUp 1s ease;
+        }
+        
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+            animation: fadeInUp 1s ease 0.2s both;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background: #ff6b6b;
+            color: white;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            text-decoration: none;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            animation: fadeInUp 1s ease 0.4s both;
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+        }
+        
+        .cta-button:hover {
+            background: #ff5252;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.6);
+        }
+        
+        .features {
+            padding: 100px 20px;
+            background: #f8f9fa;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 60px;
+            color: #2c3e50;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+        }
+        
+        .feature-card {
+            background: white;
+            padding: 40px 30px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+        }
+        
+        .feature-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+        
+        .feature-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+        
+        .feature-description {
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        .testimonials {
+            padding: 100px 20px;
+            background: white;
+        }
+        
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 40px;
+            margin-top: 60px;
+        }
+        
+        .testimonial {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+        }
+        
+        .testimonial-text {
+            font-style: italic;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+            color: #555;
+        }
+        
+        .testimonial-author {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .cta-section {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ffa726 100%);
+            color: white;
+            padding: 100px 20px;
+            text-align: center;
+        }
+        
+        .cta-section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+        
+        .cta-section p {
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+        
+        .cta-secondary {
+            background: white;
+            color: #ff6b6b;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            text-decoration: none;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.3);
+        }
+        
+        .cta-secondary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 255, 255, 0.4);
+        }
+        
+        .footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero p {
+                font-size: 1.1rem;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <section class="hero">
+        <div class="hero-content">
+            <h1>🚀 AppMagica</h1>
+            <p>La soluzione innovativa che trasformerà il tuo business e semplificherà la tua vita</p>
+            <a href="#features" class="cta-button">Scopri di Più</a>
+        </div>
+    </section>
+    
+    <section class="features" id="features">
+        <div class="container">
+            <h2 class="section-title">Perché Scegliere AppMagica?</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3 class="feature-title">Super Veloce</h3>
+                    <p class="feature-description">
+                        Prestazioni incredibili che ti faranno risparmiare ore di lavoro ogni giorno. 
+                        Ottimizzato per la massima efficienza.
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h3 class="feature-title">Sicuro al 100%</h3>
+                    <p class="feature-description">
+                        I tuoi dati sono protetti con crittografia di livello militare. 
+                        Privacy e sicurezza sono la nostra priorità assoluta.
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3 class="feature-title">Facile da Usare</h3>
+                    <p class="feature-description">
+                        Interfaccia intuitiva che chiunque può utilizzare. 
+                        Nessuna curva di apprendimento, risultati immediati.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="testimonials">
+        <div class="container">
+            <h2 class="section-title">Cosa Dicono i Nostri Clienti</h2>
+            <div class="testimonials-grid">
+                <div class="testimonial">
+                    <p class="testimonial-text">
+                        "AppMagica ha rivoluzionato il mio modo di lavorare. 
+                        Non posso più immaginare la mia vita senza!"
+                    </p>
+                    <div class="testimonial-author">- Maria Bianchi, CEO TechStart</div>
+                </div>
+                
+                <div class="testimonial">
+                    <p class="testimonial-text">
+                        "Incredibile! In soli 30 giorni ho aumentato la mia produttività del 300%. 
+                        Consiglio AppMagica a tutti."
+                    </p>
+                    <div class="testimonial-author">- Luca Verdi, Freelancer</div>
+                </div>
+                
+                <div class="testimonial">
+                    <p class="testimonial-text">
+                        "Il miglior investimento che abbia mai fatto per la mia azienda. 
+                        ROI incredibile in tempi record."
+                    </p>
+                    <div class="testimonial-author">- Anna Rossi, Imprenditrice</div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="cta-section">
+        <div class="container">
+            <h2>Pronto a Trasformare il Tuo Business?</h2>
+            <p>Unisciti a migliaia di professionisti che hanno già scelto AppMagica</p>
+            <a href="#" class="cta-secondary">Inizia Gratis Oggi</a>
+        </div>
+    </section>
+    
+    <footer class="footer">
+        <div class="container">
+            <p>© 2024 AppMagica. Tutti i diritti riservati. | 📧 info@appmagica.com | 📱 +39 123 456 7890</p>
+        </div>
+    </footer>
+</body>
+</html>`
+            };
+            
+            const template = templates[type] || templates.base;
+            editor.value = template;
+            
+            // Forza l'aggiornamento dell'anteprima
+            const event = new Event('input', { bubbles: true });
+            editor.dispatchEvent(event);
+            
+            const templateNames = {
+                base: 'Template base',
+                menu: 'Menu ristorante',
+                portfolio: 'Portfolio',
+                blog: 'Blog layout',
+                landing: 'Landing page'
+            };
+            
+            status.textContent = `${templateNames[type]} inserito - Inizia a personalizzare!`;
+            status.style.background = '#3498db';
+            
+            setTimeout(() => {
+                status.style.background = '#95a5a6';
+                const content = editor.value;
+                status.textContent = `Caratteri: ${content.length} | Righe: ${content.split('\n').length}`;
+            }, 2000);
+        }
+
+        // Scorciatoie da tastiera
+        editor.addEventListener('keydown', function(e) {
+            // Ctrl+S per salvare
+            if (e.ctrlKey && e.key === 's') {
+                e.preventDefault();
+                saveFile();
+            }
+            
+            // Tab per indentazione
+            if (e.key === 'Tab') {
+                e.preventDefault();
+                const start = this.selectionStart;
+                const end = this.selectionEnd;
+                this.value = this.value.substring(0, start) + '    ' + this.value.substring(end);
+                this.selectionStart = this.selectionEnd = start + 4;
+            }
+        });
+
+        // Focus sull'editor all'avvio
+        window.addEventListener('load', function() {
+            editor.focus();
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9686b3c0d6be0e4f',t:'MTc1NDA2NTYzOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
