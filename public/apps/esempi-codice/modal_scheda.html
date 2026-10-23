@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Modal scheda - Manuale di Codice</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      color: #0f172a;
+      background: #f8fafc;
+      line-height: 1.6;
+      padding: 16px;
+    }
+
+    .manual-container {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 16px 0 60px 0;
+    }
+
+    /* Cover */
+    .manual-cover {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+    }
+    @media (min-width: 640px) {
+      .manual-cover { padding: 36px; }
+    }
+
+    .manual-meta-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+      margin-bottom: 12px;
+      font-size: 12px;
+      color: #64748b;
+    }
+
+    .tag-badge {
+      background: #e0f2fe;
+      color: #0369a1;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 11px;
+    }
+
+    .manual-main-title {
+      font-size: 26px;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.3;
+      margin-bottom: 8px;
+    }
+    @media (min-width: 640px) {
+      .manual-main-title { font-size: 32px; }
+    }
+
+    .manual-subtitle {
+      font-size: 15px;
+      color: #475569;
+      margin-bottom: 16px;
+    }
+
+    .manual-footer-meta {
+      font-size: 12px;
+      color: #64748b;
+      border-top: 1px solid #f1f5f9;
+      padding-top: 12px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* Section */
+    .manual-section {
+      margin-bottom: 32px;
+    }
+
+    .section-header {
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid #e2e8f0;
+    }
+
+    .section-tag {
+      font-size: 11px;
+      font-weight: 700;
+      color: #0284c7;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .section-heading {
+      font-size: 20px;
+      font-weight: 700;
+      color: #0f172a;
+      margin: 4px 0;
+    }
+    @media (min-width: 640px) {
+      .section-heading { font-size: 24px; }
+    }
+
+    .section-desc {
+      font-size: 14px;
+      color: #64748b;
+    }
+
+    .section-blocks {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Headings */
+    .manual-heading {
+      font-weight: 700;
+      color: #0f172a;
+      margin-top: 8px;
+    }
+    .heading-l1 { font-size: 20px; }
+    .heading-l2 { font-size: 18px; }
+    .heading-l3 { font-size: 16px; }
+    .manual-heading-sub {
+      font-size: 13px;
+      color: #64748b;
+      margin-top: 2px;
+    }
+
+    /* Callout / Explanation Box */
+    .explanation-box {
+      border-radius: 12px;
+      padding: 16px;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+    }
+
+    .callout-normal {
+      border-left: 4px solid #64748b;
+    }
+    .callout-tip {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-left: 4px solid #16a34a;
+    }
+    .callout-info {
+      background: #f0f9ff;
+      border: 1px solid #bae6fd;
+      border-left: 4px solid #0284c7;
+    }
+    .callout-warning {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-left: 4px solid #d97706;
+    }
+
+    .callout-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    .callout-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .callout-body {
+      font-size: 14px;
+      line-height: 1.6;
+      color: #334155;
+    }
+
+    .inline-code {
+      font-family: monospace;
+      font-size: 12.5px;
+      background: rgba(15, 23, 42, 0.06);
+      padding: 2px 5px;
+      border-radius: 4px;
+      color: #0f172a;
+    }
+
+    /* Code Card */
+    .code-card {
+      background: #0f172a;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #334155;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+    }
+
+    .code-header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      background: #1e293b;
+      border-bottom: 1px solid #334155;
+    }
+
+    .code-title {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #e2e8f0;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .code-badge {
+      font-size: 11px;
+      color: #38bdf8;
+      font-weight: bold;
+    }
+
+    .code-tabs {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .tab-btn.active {
+      background: #334155;
+      color: #ffffff;
+    }
+
+    .copy-btn, .preview-reload-btn {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #f1f5f9;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      cursor: pointer;
+    }
+
+    .code-panel {
+      padding: 14px;
+      max-height: 360px;
+      overflow: auto;
+    }
+
+    pre code {
+      font-family: monospace;
+      font-size: 12.5px;
+      line-height: 1.5;
+      color: #f8fafc;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    /* Preview Zone */
+    .preview-zone {
+      background: #ffffff;
+      border-top: 1px solid #334155;
+    }
+
+    .preview-zone-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 12px;
+      background: #f1f5f9;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .preview-zone-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #475569;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .preview-frame-container {
+      width: 100%;
+    }
+
+    .preview-frame-container iframe {
+      width: 100%;
+      border: none;
+      display: block;
+    }
+
+    .code-footer-note {
+      padding: 8px 12px;
+      font-size: 12px;
+      color: #94a3b8;
+      background: #1e293b;
+      border-top: 1px solid #334155;
+    }
+
+    /* Print rules for clean PDF output */
+    @media print {
+      body {
+        background: #ffffff !important;
+        padding: 0 !important;
+      }
+      .code-tabs button, .copy-btn, .preview-reload-btn {
+        display: none !important;
+      }
+      .manual-cover {
+        box-shadow: none !important;
+      }
+      .page-break-before {
+        page-break-before: always;
+      }
+      .page-break-inside-avoid {
+        page-break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="manual-container">
+    <header class="manual-cover">
+      <div class="manual-meta-tags">
+        <span class="tag-badge">HTML5</span><span class="tag-badge">menu</span>
+        <span>Edizione: 1.0</span>
+        <span>·</span>
+        <span>Anno: 2026</span>
+      </div>
+      <h1 class="manual-main-title">Modal scheda</h1>
+      
+      <div class="manual-footer-meta">
+        <span>Autore: <strong>DocuCode</strong></span>
+        <span>1 Sezioni</span>
+      </div>
+    </header>
+
+    <main>
+      
+      <section class="manual-section " id="section-sec-1792773314587">
+        <div class="section-header">
+          <span class="section-tag">Sezione 1</span>
+          <h2 class="section-heading">Modal</h2>
+          
+        </div>
+        <div class="section-blocks">
+          
+            <div class="code-card page-break-inside-avoid">
+              <div class="code-header">
+                <div class="code-title">
+                  <span class="code-badge">&lt;/&gt;</span>
+                  <span>Nuovo Riquadro di Codice</span>
+                </div>
+                <div class="code-tabs">
+                  <button class="tab-btn active" onclick="switchTab(this, 'blk-1792773327727', 'html')">HTML</button>
+                  
+                  
+                  <button class="copy-btn" type="button" onclick="copyCode(this, 'blk-1792773327727')">Copia</button>
+                </div>
+              </div>
+
+              <div class="code-bodies" id="panels-blk-1792773327727">
+                <div class="code-panel active" id="panel-blk-1792773327727-html">
+                  <pre><code class="language-html">&lt;!-- 1. DIPENDENZA TAILWIND CSS (Da inserire nel &lt;head&gt;) --&gt;
+&lt;script src=&quot;https://cdn.tailwindcss.com&quot;&gt;&lt;/script&gt;
+
+&lt;!-- 2. STILI CSS DEL MODAL E DEL PULSANTE --&gt;
+&lt;style&gt;
+.btn-open-modal {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background-color: #0f172a;
+  color: #ffffff;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+.btn-open-modal:hover {
+  background-color: #1e293b;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 9999;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal-custom-box {
+  background: #ffffff;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 800px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+.custom-modal-body {
+  padding: 1.5rem;
+  overflow-y: auto;
+  max-height: 75vh;
+}
+&lt;/style&gt;
+
+&lt;!-- 3. PULSANTE DI ATTIVAZIONE (Posizionato dove vuoi nella pagina) --&gt;
+&lt;div style=&quot;text-align: center; padding: 2rem;&quot;&gt;
+  &lt;button onclick=&quot;openCustomHtmlModal()&quot; class=&quot;btn-open-modal&quot;&gt;
+    Apri Scheda Cinese
+  &lt;/button&gt;
+&lt;/div&gt;
+
+&lt;!-- 4. STRUTTURA HTML MODAL --&gt;
+&lt;div id=&quot;custom-html-modal&quot; class=&quot;modal-overlay&quot; role=&quot;dialog&quot; aria-modal=&quot;true&quot;&gt;
+  &lt;div class=&quot;modal-container modal-custom-box&quot;&gt;
+    
+    &lt;div class=&quot;modal-header&quot;&gt;
+      &lt;div class=&quot;flex items-center gap-2&quot;&gt;
+        &lt;span class=&quot;bg-emerald-500 text-white text-xs font-bold px-2 py-0.5 rounded-full&quot;&gt;SCHEDA&lt;/span&gt;
+        &lt;h2 class=&quot;m-0 text-lg font-bold text-slate-900&quot;&gt;Scheda di Cinese (中文)&lt;/h2&gt;
+      &lt;/div&gt;
+      &lt;button class=&quot;text-2xl text-slate-500 hover:text-red-500 bg-transparent border-0 cursor-pointer px-2&quot; onclick=&quot;closeCustomHtmlModal()&quot;&gt;&amp;times;&lt;/button&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&quot;modal-body custom-modal-body&quot;&gt;
+     &lt;div class=&quot;flex justify-center items-center my-4 print:hidden&quot;&gt;
+    &lt;button onclick=&quot;window.print()&quot; style=&quot;background-color:#f59e0b; color:#0f172a; font-weight:bold; padding:10px 20px; border-radius:8px; border:none; cursor:pointer; font-size:14px; box-shadow:0 2px 5px rgba(0,0,0,0.2);&quot;&gt;
+      🖨️ Stampa / Salva in PDF
+    &lt;/button&gt;
+  &lt;/div&gt;
+
+  &lt;div class=&quot;a4-page&quot;&gt;
+    &lt;div id=&quot;worksheet-print-area&quot; class=&quot;w-full max-w-[210mm] min-h-[297mm] bg-white text-slate-900 p-8 sm:p-10 shadow-2xl mx-auto flex flex-col justify-between select-text font-rounded&quot; style=&quot;box-sizing: border-box;&quot;&gt;&lt;div&gt;&lt;div class=&quot;border-b-4 border-slate-900 pb-4 mb-6 relative&quot;&gt;&lt;div class=&quot;flex justify-center mb-2&quot;&gt;&lt;span class=&quot;bg-slate-900 text-white text-xs font-bold px-3.5 py-1 rounded-full uppercase tracking-wider shadow-xs&quot;&gt;Cinese (中文)&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;w-full text-center text-2xl sm:text-3xl font-extrabold uppercase tracking-wide       rounded px-2 py-1 text-slate-900&quot;&gt;SCHEDA DI CINESE (中文 / MANDARINO)&lt;/div&gt;&lt;div class=&quot;w-full text-center text-sm sm:text-base text-slate-600       rounded px-2 py-1 mt-1 font-medium&quot;&gt;Vocaboli Fondamentali con Pinyin e Traduzione&lt;/div&gt;&lt;div class=&quot;flex justify-between items-center text-xs text-slate-700 font-semibold mt-4 px-2 pt-2 border-t border-slate-200&quot;&gt;&lt;div&gt;Nome e Cognome: ___________________________&lt;/div&gt;&lt;div&gt;Data: ____/____/2026&lt;/div&gt;&lt;div&gt;Classe: ________&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;mb-6&quot;&gt;&lt;div class=&quot;relative&quot;&gt;&lt;/div&gt;&lt;/div&gt;&lt;br&gt;&lt;br&gt;&lt;div class=&quot;space-y-4&quot;&gt;&lt;div class=&quot;flex items-center gap-2 sm:gap-4 group&quot;&gt;&lt;div class=&quot;w-[80px] sm:w-[110px] flex-shrink-0 flex justify-center items-center&quot;&gt;&lt;svg width=&quot;100&quot; height=&quot;130&quot; viewBox=&quot;0 0 120 160&quot; class=&quot;&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;&gt;&lt;g stroke=&quot;#1f2937&quot; stroke-width=&quot;2.5&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;&gt;&lt;polygon points=&quot;60,10 100,25 60,40 20,25&quot; fill=&quot;#38bdf8&quot;&gt;&lt;/polygon&gt;&lt;rect x=&quot;42&quot; y=&quot;30&quot; width=&quot;36&quot; height=&quot;14&quot; fill=&quot;#0284c7&quot;&gt;&lt;/rect&gt;&lt;line x1=&quot;85&quot; y1=&quot;28&quot; x2=&quot;95&quot; y2=&quot;48&quot; stroke-width=&quot;2.5&quot; stroke=&quot;#f59e0b&quot;&gt;&lt;/line&gt;&lt;ellipse cx=&quot;60&quot; cy=&quot;85&quot; rx=&quot;38&quot; ry=&quot;48&quot; fill=&quot;#fef08a&quot;&gt;&lt;/ellipse&gt;&lt;ellipse cx=&quot;60&quot; cy=&quot;95&quot; rx=&quot;24&quot; ry=&quot;30&quot; fill=&quot;#fffbeb&quot;&gt;&lt;/ellipse&gt;&lt;circle cx=&quot;42&quot; cy=&quot;65&quot; r=&quot;16&quot; fill=&quot;#ffffff&quot; stroke-width=&quot;3&quot;&gt;&lt;/circle&gt;&lt;circle cx=&quot;78&quot; cy=&quot;65&quot; r=&quot;16&quot; fill=&quot;#ffffff&quot; stroke-width=&quot;3&quot;&gt;&lt;/circle&gt;&lt;line x1=&quot;58&quot; y1=&quot;65&quot; x2=&quot;62&quot; y2=&quot;65&quot; stroke-width=&quot;3&quot;&gt;&lt;/line&gt;&lt;circle cx=&quot;42&quot; cy=&quot;65&quot; r=&quot;6&quot; fill=&quot;#1f2937&quot;&gt;&lt;/circle&gt;&lt;circle cx=&quot;78&quot; cy=&quot;65&quot; r=&quot;6&quot; fill=&quot;#1f2937&quot;&gt;&lt;/circle&gt;&lt;polygon points=&quot;56,76 64,76 60,86&quot; fill=&quot;#f97316&quot;&gt;&lt;/polygon&gt;&lt;/g&gt;&lt;/svg&gt;&lt;/div&gt;&lt;div class=&quot;flex-grow&quot;&gt;&lt;div class=&quot;relative w-full min-h-[110px] flex items-center &quot;&gt;&lt;svg class=&quot;absolute inset-0 w-full h-full preserve-3d&quot; viewBox=&quot;0 0 800 130&quot; preserveAspectRatio=&quot;none&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;&gt;&lt;g stroke=&quot;#1f2937&quot; stroke-width=&quot;2.5&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;&gt;&lt;path d=&quot;M 10 15 L 60 15 L 60 115 L 10 115 Q 0 115 0 65 Q 0 15 10 15 Z&quot; fill=&quot;#fca5a5&quot;&gt;&lt;/path&gt;&lt;rect x=&quot;60&quot; y=&quot;15&quot; width=&quot;25&quot; height=&quot;100&quot; fill=&quot;#e2e8f0&quot;&gt;&lt;/rect&gt;&lt;line x1=&quot;72&quot; y1=&quot;15&quot; x2=&quot;72&quot; y2=&quot;115&quot; stroke-width=&quot;1.5&quot; stroke=&quot;#64748b&quot;&gt;&lt;/line&gt;&lt;path d=&quot;M 85 15 L 700 15 L 700 115 L 85 115 Z&quot; fill=&quot;#fef08a&quot;&gt;&lt;/path&gt;&lt;line x1=&quot;85&quot; y1=&quot;45&quot; x2=&quot;700&quot; y2=&quot;45&quot; stroke-width=&quot;1.5&quot; opacity=&quot;0.5&quot;&gt;&lt;/line&gt;&lt;line x1=&quot;85&quot; y1=&quot;85&quot; x2=&quot;700&quot; y2=&quot;85&quot; stroke-width=&quot;1.5&quot; opacity=&quot;0.5&quot;&gt;&lt;/line&gt;&lt;path d=&quot;M 700 15 L 775 65 L 700 115 Z&quot; fill=&quot;#fed7aa&quot;&gt;&lt;/path&gt;&lt;path d=&quot;M 750 48 L 775 65 L 750 82 Z&quot; fill=&quot;#1f2937&quot;&gt;&lt;/path&gt;&lt;/g&gt;&lt;/svg&gt;&lt;div class=&quot;relative z-10 my-auto ml-[95px] mr-[110px] w-full min-h-[76px] bg-white rounded-xl border-2 border-gray-800 p-2 sm:p-3 flex items-center justify-center shadow-inner overflow-hidden&quot;&gt;&lt;div class=&quot;relative z-10 w-full&quot;&gt;&lt;div class=&quot;flex flex-col sm:flex-row items-center justify-between gap-2 px-2 py-1&quot;&gt;&lt;div class=&quot;w-full sm:w-2/5 border-b sm:border-b-0 sm:border-r border-slate-300 pb-1 sm:pb-0 sm:pr-3&quot;&gt;&lt;div class=&quot;w-full text-base sm:text-lg font-bold text-slate-900       rounded px-1&quot;&gt;你好 (Nǐ hǎo)&lt;/div&gt;&lt;div class=&quot;w-full text-xs sm:text-sm text-slate-600       rounded px-1 font-medium mt-0.5&quot;&gt;Ciao / Buongiorno&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;w-full sm:w-3/5 sm:pl-3&quot;&gt;&lt;div class=&quot;w-full text-xs sm:text-sm italic text-slate-700       rounded px-1&quot;&gt;Frase: 你好，我是小明 (Ciao, io sono Xiaoming).&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;flex items-center gap-2 sm:gap-4 group&quot;&gt;&lt;div class=&quot;w-[80px] sm:w-[110px] flex-shrink-0 flex justify-center items-center&quot;&gt;&lt;svg width=&quot;100&quot; height=&quot;130&quot; viewBox=&quot;0 0 120 160&quot; class=&quot;&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;&gt;&lt;g stroke=&quot;#1f2937&quot; stroke-width=&quot;2.5&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;&gt;&lt;polygon points=&quot;25,48 18,18 48,32&quot; fill=&quot;#e2e8f0&quot;&gt;&lt;/polygon&gt;&lt;polygon points=&quot;28,42 22,24 44,32&quot; fill=&quot;#fbcfe8&quot;&gt;&lt;/polygon&gt;&lt;polygon points=&quot;95,48 102,18 72,32&quot; fill=&quot;#e2e8f0&quot;&gt;&lt;/polygon&gt;&lt;polygon points=&quot;92,42 98,24 76,32&quot; fill=&quot;#fbcfe8&quot;&gt;&lt;/polygon&gt;&lt;ellipse cx=&quot;60&quot; cy=&quot;58&quot; rx=&quot;35&quot; ry=&quot;28&quot; fill=&quot;#f1f5f9&quot;&gt;&lt;/ellipse&gt;&lt;ellipse cx=&quot;44&quot; cy=&quot;54&quot; rx=&quot;5&quot; ry=&quot;7&quot; fill=&quot;#1f2937&quot;&gt;&lt;/ellipse&gt;&lt;ellipse cx=&quot;76&quot; cy=&quot;54&quot; rx=&quot;5&quot; ry=&quot;7&quot; fill=&quot;#1f2937&quot;&gt;&lt;/ellipse&gt;&lt;circle cx=&quot;42&quot; cy=&quot;52&quot; r=&quot;2&quot; fill=&quot;#ffffff&quot;&gt;&lt;/circle&gt;&lt;circle cx=&quot;74&quot; cy=&quot;52&quot; r=&quot;2&quot; fill=&quot;#ffffff&quot;&gt;&lt;/circle&gt;&lt;polygon points=&quot;57,60 63,60 60,64&quot; fill=&quot;#f472b6&quot;&gt;&lt;/polygon&gt;&lt;path d=&quot;M60 64 Q55 69 50 67 M60 64 Q65 69 70 67&quot; fill=&quot;none&quot; stroke-width=&quot;2&quot;&gt;&lt;/path&gt;&lt;line x1=&quot;28&quot; y1=&quot;58&quot; x2=&quot;12&quot; y2=&quot;54&quot; stroke-width=&quot;1.5&quot;&gt;&lt;/line&gt;&lt;line x1=&quot;26&quot; y1=&quot;64&quot; x2=&quot;10&quot; y2=&quot;64&quot; stroke-width=&quot;1.5&quot;&gt;&lt;/line&gt;&lt;line x1=&quot;92&quot; y1=&quot;58&quot; x2=&quot;108&quot; y2=&quot;54&quot; stroke-width=&quot;1.5&quot;&gt;&lt;/line&gt;&lt;line x1=&quot;94&quot; y1=&quot;64&quot; x2=&quot;110&quot; y2=&quot;64&quot; stroke-width=&quot;1.5&quot;&gt;&lt;/line&gt;&lt;path d=&quot;M34 85 Q26 135 48 142 L72 142 Q94 135 86 85 Z&quot; fill=&quot;#f1f5f9&quot;&gt;&lt;/path&gt;&lt;circle cx=&quot;102&quot; cy=&quot;100&quot; r=&quot;7&quot; fill=&quot;#f1f5f9&quot;&gt;&lt;/circle&gt;&lt;/g&gt;&lt;/svg&gt;&lt;/div&gt;&lt;div class=&quot;flex-grow&quot;&gt;&lt;div class=&quot;relative w-full min-h-[110px] flex items-center &quot;&gt;&lt;svg class=&quot;absolute inset-0 w-full h-full preserve-3d&quot; viewBox=&quot;0 0 800 130&quot; preserveAspectRatio=&quot;none&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;&gt;&lt;g stroke=&quot;#1f2937&quot; stroke-width=&quot;2.5&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;&gt;&lt;path d=&quot;M 10 15 L 60 15 L 60 115 L 10 115 Q 0 115 0 65 Q 0 15 10 15 Z&quot; fill=&quot;#fca5a5&quot;&gt;&lt;/path&gt;&lt;rect x=&quot;60&quot; y=&quot;15&quot; width=&quot;25&quot; height=&quot;100&quot; fill=&quot;#e2e8f0&quot;&gt;&lt;/rect&gt;&lt;line x1=&quot;72&quot; y1=&quot;15&quot; x2=&quot;72&quot; y2=&quot;115&quot; stroke-width=&quot;1.5&quot; stroke=&quot;#64748b&quot;&gt;&lt;/line&gt;&lt;path d=&quot;M 85 15 L 700 15 L 700 115 L 85 115 Z&quot; fill=&quot;#fef08a&quot;&gt;&lt;/path&gt;&lt;line x1=&quot;85&quot; y1=&quot;45&quot; x2=&quot;700&quot; y2=&quot;45&quot; stroke-width=&quot;1.5&quot; opacity=&quot;0.5&quot;&gt;&lt;/line&gt;&lt;line x1=&quot;85&quot; y1=&quot;85&quot; x2=&quot;700&quot; y2=&quot;85&quot; stroke-width=&quot;1.5&quot; opacity=&quot;0.5&quot;&gt;&lt;/line&gt;&lt;path d=&quot;M 700 15 L 775 65 L 700 115 Z&quot; fill=&quot;#fed7aa&quot;&gt;&lt;/path&gt;&lt;path d=&quot;M 750 48 L 775 65 L 750 82 Z&quot; fill=&quot;#1f2937&quot;&gt;&lt;/path&gt;&lt;/g&gt;&lt;/svg&gt;&lt;div class=&quot;relative z-10 my-auto ml-[95px] mr-[110px] w-full min-h-[76px] bg-white rounded-xl border-2 border-gray-800 p-2 sm:p-3 flex items-center justify-center shadow-inner overflow-hidden&quot;&gt;&lt;div class=&quot;relative z-10 w-full&quot;&gt;&lt;div class=&quot;flex flex-col sm:flex-row items-center justify-between gap-2 px-2 py-1&quot;&gt;&lt;div class=&quot;w-full sm:w-2/5 border-b sm:border-b-0 sm:border-r border-slate-300 pb-1 sm:pb-0 sm:pr-3&quot;&gt;&lt;div class=&quot;w-full text-base sm:text-lg font-bold text-slate-900       rounded px-1&quot;&gt;猫 (Māo)&lt;/div&gt;&lt;div class=&quot;w-full text-xs sm:text-sm text-slate-600       rounded px-1 font-medium mt-0.5&quot;&gt;Gatto&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;w-full sm:w-3/5 sm:pl-3&quot;&gt;&lt;div class=&quot;w-full text-xs sm:text-sm italic text-slate-700       rounded px-1&quot;&gt;Frase: 这只猫很可爱 (Questo gatto è molto carino).&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;flex items-center gap-2 sm:gap-4 group&quot;&gt;&lt;div class=&quot;w-[80px] sm:w-[110px] flex-shrink-0 flex justify-center items-center&quot;&gt;&lt;svg width=&quot;100&quot; height=&quot;130&quot; viewBox=&quot;0 0 120 160&quot; class=&quot;&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;&gt;&lt;g stroke=&quot;#1f2937&quot; stroke-width=&quot;2.5&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;&gt;&lt;path d=&quot;M22 45 C8 35, 5 60, 18 68 C25 60, 26 48, 22 45 Z&quot; fill=&quot;#fb7185&quot;&gt;&lt;/path&gt;&lt;path d=&quot;M98 45 C112 35, 115 60, 102 68 C95 60, 94 48, 98 45 Z&quot; fill=&quot;#fb7185&quot;&gt;&lt;/path&gt;&lt;circle cx=&quot;23&quot; cy=&quot;50&quot; r=&quot;4&quot; fill=&quot;#f472b6&quot;&gt;&lt;/circle&gt;&lt;circle cx=&quot;97&quot; cy=&quot;50&quot; r=&quot;4&quot; fill=&quot;#f472b6&quot;&gt;&lt;/circle&gt;&lt;ellipse cx=&quot;60&quot; cy=&quot;52&quot; rx=&quot;29&quot; ry=&quot;25&quot; fill=&quot;#fde047&quot;&gt;&lt;/ellipse&gt;&lt;path d=&quot;M31 40 Q45 46 60 40 Q75 46 89 40&quot; fill=&quot;#fb7185&quot;&gt;&lt;/path&gt;&lt;ellipse cx=&quot;46&quot; cy=&quot;53&quot; rx=&quot;6&quot; ry=&quot;8&quot; fill=&quot;#1f2937&quot;&gt;&lt;/ellipse&gt;&lt;ellipse cx=&quot;74&quot; cy=&quot;53&quot; rx=&quot;6&quot; ry=&quot;8&quot; fill=&quot;#1f2937&quot;&gt;&lt;/ellipse&gt;&lt;circle cx=&quot;44&quot; cy=&quot;51&quot; r=&quot;2.5&quot; fill=&quot;#ffffff&quot;&gt;&lt;/circle&gt;&lt;circle cx=&quot;72&quot; cy=&quot;51&quot; r=&quot;2.5&quot; fill=&quot;#ffffff&quot;&gt;&lt;/circle&gt;&lt;path d=&quot;M54 62 Q60 68 66 62&quot; fill=&quot;#f87171&quot; stroke-width=&quot;2&quot;&gt;&lt;/path&gt;&lt;path d=&quot;M36 78 L84 78 L80 118 L40 118 Z&quot; fill=&quot;#fbcfe8&quot;&gt;&lt;/path&gt;&lt;line x1=&quot;44&quot; y1=&quot;78&quot; x2=&quot;44&quot; y2=&quot;92&quot; stroke-width=&quot;3&quot;&gt;&lt;/line&gt;&lt;line x1=&quot;76&quot; y1=&quot;78&quot; x2=&quot;76&quot; y2=&quot;92&quot; stroke-width=&quot;3&quot;&gt;&lt;/line&gt;&lt;path d=&quot;M60 102 C56 96, 48 100, 52 105 L60 110 L68 105 C72 100, 64 96, 60 102 Z&quot; fill=&quot;#ffffff&quot;&gt;&lt;/path&gt;&lt;rect x=&quot;44&quot; y=&quot;118&quot; width=&quot;10&quot; height=&quot;22&quot; fill=&quot;#fde047&quot;&gt;&lt;/rect&gt;&lt;rect x=&quot;66&quot; y=&quot;118&quot; width=&quot;10&quot; height=&quot;22&quot; fill=&quot;#fde047&quot;&gt;&lt;/rect&gt;&lt;ellipse cx=&quot;49&quot; cy=&quot;144&quot; rx=&quot;9&quot; ry=&quot;6&quot; fill=&quot;#cbd5e1&quot;&gt;&lt;/ellipse&gt;&lt;ellipse cx=&quot;71&quot; cy=&quot;144&quot; rx=&quot;9&quot; ry=&quot;6&quot; fill=&quot;#cbd5e1&quot;&gt;&lt;/ellipse&gt;&lt;path d=&quot;M84 82 Q105 88 108 100&quot; fill=&quot;none&quot; stroke-width=&quot;6&quot; stroke=&quot;#fde047&quot;&gt;&lt;/path&gt;&lt;circle cx=&quot;108&quot; cy=&quot;100&quot; r=&quot;5&quot; fill=&quot;#fde047&quot;&gt;&lt;/circle&gt;&lt;/g&gt;&lt;/svg&gt;&lt;/div&gt;&lt;div class=&quot;flex-grow&quot;&gt;&lt;div class=&quot;relative w-full min-h-[110px] flex items-center &quot;&gt;&lt;svg class=&quot;absolute inset-0 w-full h-full preserve-3d&quot; viewBox=&quot;0 0 800 130&quot; preserveAspectRatio=&quot;none&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;&gt;&lt;g stroke=&quot;#1f2937&quot; stroke-width=&quot;2.5&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;&gt;&lt;path d=&quot;M 10 15 L 60 15 L 60 115 L 10 115 Q 0 115 0 65 Q 0 15 10 15 Z&quot; fill=&quot;#fca5a5&quot;&gt;&lt;/path&gt;&lt;rect x=&quot;60&quot; y=&quot;15&quot; width=&quot;25&quot; height=&quot;100&quot; fill=&quot;#e2e8f0&quot;&gt;&lt;/rect&gt;&lt;line x1=&quot;72&quot; y1=&quot;15&quot; x2=&quot;72&quot; y2=&quot;115&quot; stroke-width=&quot;1.5&quot; stroke=&quot;#64748b&quot;&gt;&lt;/line&gt;&lt;path d=&quot;M 85 15 L 700 15 L 700 115 L 85 115 Z&quot; fill=&quot;#fef08a&quot;&gt;&lt;/path&gt;&lt;line x1=&quot;85&quot; y1=&quot;45&quot; x2=&quot;700&quot; y2=&quot;45&quot; stroke-width=&quot;1.5&quot; opacity=&quot;0.5&quot;&gt;&lt;/line&gt;&lt;line x1=&quot;85&quot; y1=&quot;85&quot; x2=&quot;700&quot; y2=&quot;85&quot; stroke-width=&quot;1.5&quot; opacity=&quot;0.5&quot;&gt;&lt;/line&gt;&lt;path d=&quot;M 700 15 L 775 65 L 700 115 Z&quot; fill=&quot;#fed7aa&quot;&gt;&lt;/path&gt;&lt;path d=&quot;M 750 48 L 775 65 L 750 82 Z&quot; fill=&quot;#1f2937&quot;&gt;&lt;/path&gt;&lt;/g&gt;&lt;/svg&gt;&lt;div class=&quot;relative z-10 my-auto ml-[95px] mr-[110px] w-full min-h-[76px] bg-white rounded-xl border-2 border-gray-800 p-2 sm:p-3 flex items-center justify-center shadow-inner overflow-hidden&quot;&gt;&lt;div class=&quot;relative z-10 w-full&quot;&gt;&lt;div class=&quot;flex flex-col sm:flex-row items-center justify-between gap-2 px-2 py-1&quot;&gt;&lt;div class=&quot;w-full sm:w-2/5 border-b sm:border-b-0 sm:border-r border-slate-300 pb-1 sm:pb-0 sm:pr-3&quot;&gt;&lt;div class=&quot;w-full text-base sm:text-lg font-bold text-slate-900       rounded px-1&quot;&gt;苹果 (Píngguǒ)&lt;/div&gt;&lt;div class=&quot;w-full text-xs sm:text-sm text-slate-600       rounded px-1 font-medium mt-0.5&quot;&gt;Mela&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;w-full sm:w-3/5 sm:pl-3&quot;&gt;&lt;div class=&quot;w-full text-xs sm:text-sm italic text-slate-700       rounded px-1&quot;&gt;Frase: 我喜欢吃红苹果 (Mi piace mangiare le mele rosse).&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;flex items-center gap-2 sm:gap-4 group&quot;&gt;&lt;div class=&quot;w-[80px] sm:w-[110px] flex-shrink-0 flex justify-center items-center&quot;&gt;&lt;svg width=&quot;100&quot; height=&quot;130&quot; viewBox=&quot;0 0 120 160&quot; class=&quot;&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;&gt;&lt;g stroke=&quot;#1f2937&quot; stroke-width=&quot;2.5&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;&gt;&lt;line x1=&quot;60&quot; y1=&quot;30&quot; x2=&quot;60&quot; y2=&quot;10&quot; stroke-width=&quot;3&quot;&gt;&lt;/line&gt;&lt;circle cx=&quot;60&quot; cy=&quot;8&quot; r=&quot;6&quot; fill=&quot;#ef4444&quot;&gt;&lt;/circle&gt;&lt;rect x=&quot;25&quot; y=&quot;30&quot; width=&quot;70&quot; height=&quot;50&quot; rx=&quot;10&quot; fill=&quot;#cbd5e1&quot;&gt;&lt;/rect&gt;&lt;rect x=&quot;35&quot; y=&quot;40&quot; width=&quot;50&quot; height=&quot;24&quot; rx=&quot;6&quot; fill=&quot;#1e293b&quot;&gt;&lt;/rect&gt;&lt;circle cx=&quot;48&quot; cy=&quot;52&quot; r=&quot;5&quot; fill=&quot;#38bdf8&quot;&gt;&lt;/circle&gt;&lt;circle cx=&quot;72&quot; cy=&quot;52&quot; r=&quot;5&quot; fill=&quot;#38bdf8&quot;&gt;&lt;/circle&gt;&lt;rect x=&quot;50&quot; y=&quot;80&quot; width=&quot;20&quot; height=&quot;8&quot; fill=&quot;#94a3b8&quot;&gt;&lt;/rect&gt;&lt;rect x=&quot;28&quot; y=&quot;88&quot; width=&quot;64&quot; height=&quot;52&quot; rx=&quot;8&quot; fill=&quot;#cbd5e1&quot;&gt;&lt;/rect&gt;&lt;circle cx=&quot;48&quot; cy=&quot;110&quot; r=&quot;6&quot; fill=&quot;#22c55e&quot;&gt;&lt;/circle&gt;&lt;circle cx=&quot;72&quot; cy=&quot;110&quot; r=&quot;6&quot; fill=&quot;#eab308&quot;&gt;&lt;/circle&gt;&lt;/g&gt;&lt;/svg&gt;&lt;/div&gt;&lt;div class=&quot;flex-grow&quot;&gt;&lt;div class=&quot;relative w-full min-h-[110px] flex items-center &quot;&gt;&lt;svg class=&quot;absolute inset-0 w-full h-full preserve-3d&quot; viewBox=&quot;0 0 800 130&quot; preserveAspectRatio=&quot;none&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;&gt;&lt;g stroke=&quot;#1f2937&quot; stroke-width=&quot;2.5&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;&gt;&lt;path d=&quot;M 10 15 L 60 15 L 60 115 L 10 115 Q 0 115 0 65 Q 0 15 10 15 Z&quot; fill=&quot;#fca5a5&quot;&gt;&lt;/path&gt;&lt;rect x=&quot;60&quot; y=&quot;15&quot; width=&quot;25&quot; height=&quot;100&quot; fill=&quot;#e2e8f0&quot;&gt;&lt;/rect&gt;&lt;line x1=&quot;72&quot; y1=&quot;15&quot; x2=&quot;72&quot; y2=&quot;115&quot; stroke-width=&quot;1.5&quot; stroke=&quot;#64748b&quot;&gt;&lt;/line&gt;&lt;path d=&quot;M 85 15 L 700 15 L 700 115 L 85 115 Z&quot; fill=&quot;#fef08a&quot;&gt;&lt;/path&gt;&lt;line x1=&quot;85&quot; y1=&quot;45&quot; x2=&quot;700&quot; y2=&quot;45&quot; stroke-width=&quot;1.5&quot; opacity=&quot;0.5&quot;&gt;&lt;/line&gt;&lt;line x1=&quot;85&quot; y1=&quot;85&quot; x2=&quot;700&quot; y2=&quot;85&quot; stroke-width=&quot;1.5&quot; opacity=&quot;0.5&quot;&gt;&lt;/line&gt;&lt;path d=&quot;M 700 15 L 775 65 L 700 115 Z&quot; fill=&quot;#fed7aa&quot;&gt;&lt;/path&gt;&lt;path d=&quot;M 750 48 L 775 65 L 750 82 Z&quot; fill=&quot;#1f2937&quot;&gt;&lt;/path&gt;&lt;/g&gt;&lt;/svg&gt;&lt;div class=&quot;relative z-10 my-auto ml-[95px] mr-[110px] w-full min-h-[76px] bg-white rounded-xl border-2 border-gray-800 p-2 sm:p-3 flex items-center justify-center shadow-inner overflow-hidden&quot;&gt;&lt;div class=&quot;relative z-10 w-full&quot;&gt;&lt;div class=&quot;flex flex-col sm:flex-row items-center justify-between gap-2 px-2 py-1&quot;&gt;&lt;div class=&quot;w-full sm:w-2/5 border-b sm:border-b-0 sm:border-r border-slate-300 pb-1 sm:pb-0 sm:pr-3&quot;&gt;&lt;div class=&quot;w-full text-base sm:text-lg font-bold text-slate-900       rounded px-1&quot;&gt;谢谢 (Xièxiè)&lt;/div&gt;&lt;div class=&quot;w-full text-xs sm:text-sm text-slate-600       rounded px-1 font-medium mt-0.5&quot;&gt;Grazie&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;w-full sm:w-3/5 sm:pl-3&quot;&gt;&lt;div class=&quot;w-full text-xs sm:text-sm italic text-slate-700       rounded px-1&quot;&gt;Frase: 非常谢谢你的帮助 (Grazie mille per il tuo aiuto).&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+  &lt;/div&gt;
+
+    &lt;div class=&quot;p-4 border-t border-slate-200 flex justify-end gap-2 bg-slate-50&quot;&gt;
+      &lt;button class=&quot;px-4 py-2 bg-slate-200 text-slate-800 rounded-lg font-semibold cursor-pointer&quot; onclick=&quot;closeCustomHtmlModal()&quot;&gt;Chiudi&lt;/button&gt;
+    &lt;/div&gt;
+
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- 5. SCRIPT JAVASCRIPT PER APERTURA / CHIUSURA --&gt;
+&lt;script&gt;
+function openCustomHtmlModal() {
+  var modal = document.getElementById(&#039;custom-html-modal&#039;);
+  if (modal) {
+    modal.classList.add(&#039;active&#039;);
+    document.body.style.overflow = &#039;hidden&#039;;
+  }
+}
+
+function closeCustomHtmlModal() {
+  var modal = document.getElementById(&#039;custom-html-modal&#039;);
+  if (modal) {
+    modal.classList.remove(&#039;active&#039;);
+    document.body.style.overflow = &#039;&#039;;
+  }
+}
+
+window.openCustomHtmlModal = openCustomHtmlModal;
+window.closeCustomHtmlModal = closeCustomHtmlModal;
+window.triggerModalOpen = openCustomHtmlModal;
+
+document.addEventListener(&#039;keydown&#039;, function(e) {
+  if (e.key === &#039;Escape&#039;) closeCustomHtmlModal();
+});
+&lt;/script&gt;</code></pre>
+                </div>
+                
+                
+              </div>
+
+              
+              <div class="preview-zone">
+                <div class="preview-zone-bar">
+                  <span class="preview-zone-label">Risultato / Anteprima dal Vivo</span>
+                  <button class="preview-reload-btn" onclick="reloadFrame('frame-blk-1792773327727')">Ricarica</button>
+                </div>
+                <div class="preview-frame-container" style="background: #ffffff;">
+                  <iframe id="frame-blk-1792773327727" sandbox="allow-scripts allow-modals" style="height: 220px;" srcdoc="<!DOCTYPE html>
+<html>
+<head>
+<meta charset=&quot;utf-8&quot;>
+<meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 16px; font-family: system-ui, -apple-system, sans-serif; }
+  
+</style>
+</head>
+<body>
+  <!-- 1. DIPENDENZA TAILWIND CSS (Da inserire nel <head>) -->
+<script src=&quot;https://cdn.tailwindcss.com&quot;></script>
+
+<!-- 2. STILI CSS DEL MODAL E DEL PULSANTE -->
+<style>
+.btn-open-modal {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background-color: #0f172a;
+  color: #ffffff;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+.btn-open-modal:hover {
+  background-color: #1e293b;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 9999;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal-custom-box {
+  background: #ffffff;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 800px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+.custom-modal-body {
+  padding: 1.5rem;
+  overflow-y: auto;
+  max-height: 75vh;
+}
+</style>
+
+<!-- 3. PULSANTE DI ATTIVAZIONE (Posizionato dove vuoi nella pagina) -->
+<div style=&quot;text-align: center; padding: 2rem;&quot;>
+  <button onclick=&quot;openCustomHtmlModal()&quot; class=&quot;btn-open-modal&quot;>
+    Apri Scheda Cinese
+  </button>
+</div>
+
+<!-- 4. STRUTTURA HTML MODAL -->
+<div id=&quot;custom-html-modal&quot; class=&quot;modal-overlay&quot; role=&quot;dialog&quot; aria-modal=&quot;true&quot;>
+  <div class=&quot;modal-container modal-custom-box&quot;>
+    
+    <div class=&quot;modal-header&quot;>
+      <div class=&quot;flex items-center gap-2&quot;>
+        <span class=&quot;bg-emerald-500 text-white text-xs font-bold px-2 py-0.5 rounded-full&quot;>SCHEDA</span>
+        <h2 class=&quot;m-0 text-lg font-bold text-slate-900&quot;>Scheda di Cinese (中文)</h2>
+      </div>
+      <button class=&quot;text-2xl text-slate-500 hover:text-red-500 bg-transparent border-0 cursor-pointer px-2&quot; onclick=&quot;closeCustomHtmlModal()&quot;>&amp;times;</button>
+    </div>
+
+    <div class=&quot;modal-body custom-modal-body&quot;>
+     <div class=&quot;flex justify-center items-center my-4 print:hidden&quot;>
+    <button onclick=&quot;window.print()&quot; style=&quot;background-color:#f59e0b; color:#0f172a; font-weight:bold; padding:10px 20px; border-radius:8px; border:none; cursor:pointer; font-size:14px; box-shadow:0 2px 5px rgba(0,0,0,0.2);&quot;>
+      🖨️ Stampa / Salva in PDF
+    </button>
+  </div>
+
+  <div class=&quot;a4-page&quot;>
+    <div id=&quot;worksheet-print-area&quot; class=&quot;w-full max-w-[210mm] min-h-[297mm] bg-white text-slate-900 p-8 sm:p-10 shadow-2xl mx-auto flex flex-col justify-between select-text font-rounded&quot; style=&quot;box-sizing: border-box;&quot;><div><div class=&quot;border-b-4 border-slate-900 pb-4 mb-6 relative&quot;><div class=&quot;flex justify-center mb-2&quot;><span class=&quot;bg-slate-900 text-white text-xs font-bold px-3.5 py-1 rounded-full uppercase tracking-wider shadow-xs&quot;>Cinese (中文)</span></div><div class=&quot;w-full text-center text-2xl sm:text-3xl font-extrabold uppercase tracking-wide       rounded px-2 py-1 text-slate-900&quot;>SCHEDA DI CINESE (中文 / MANDARINO)</div><div class=&quot;w-full text-center text-sm sm:text-base text-slate-600       rounded px-2 py-1 mt-1 font-medium&quot;>Vocaboli Fondamentali con Pinyin e Traduzione</div><div class=&quot;flex justify-between items-center text-xs text-slate-700 font-semibold mt-4 px-2 pt-2 border-t border-slate-200&quot;><div>Nome e Cognome: ___________________________</div><div>Data: ____/____/2026</div><div>Classe: ________</div></div></div><div class=&quot;mb-6&quot;><div class=&quot;relative&quot;></div></div><br><br><div class=&quot;space-y-4&quot;><div class=&quot;flex items-center gap-2 sm:gap-4 group&quot;><div class=&quot;w-[80px] sm:w-[110px] flex-shrink-0 flex justify-center items-center&quot;><svg width=&quot;100&quot; height=&quot;130&quot; viewBox=&quot;0 0 120 160&quot; class=&quot;&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;><g stroke=&quot;#1f2937&quot; stroke-width=&quot;2.5&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><polygon points=&quot;60,10 100,25 60,40 20,25&quot; fill=&quot;#38bdf8&quot;></polygon><rect x=&quot;42&quot; y=&quot;30&quot; width=&quot;36&quot; height=&quot;14&quot; fill=&quot;#0284c7&quot;></rect><line x1=&quot;85&quot; y1=&quot;28&quot; x2=&quot;95&quot; y2=&quot;48&quot; stroke-width=&quot;2.5&quot; stroke=&quot;#f59e0b&quot;></line><ellipse cx=&quot;60&quot; cy=&quot;85&quot; rx=&quot;38&quot; ry=&quot;48&quot; fill=&quot;#fef08a&quot;></ellipse><ellipse cx=&quot;60&quot; cy=&quot;95&quot; rx=&quot;24&quot; ry=&quot;30&quot; fill=&quot;#fffbeb&quot;></ellipse><circle cx=&quot;42&quot; cy=&quot;65&quot; r=&quot;16&quot; fill=&quot;#ffffff&quot; stroke-width=&quot;3&quot;></circle><circle cx=&quot;78&quot; cy=&quot;65&quot; r=&quot;16&quot; fill=&quot;#ffffff&quot; stroke-width=&quot;3&quot;></circle><line x1=&quot;58&quot; y1=&quot;65&quot; x2=&quot;62&quot; y2=&quot;65&quot; stroke-width=&quot;3&quot;></line><circle cx=&quot;42&quot; cy=&quot;65&quot; r=&quot;6&quot; fill=&quot;#1f2937&quot;></circle><circle cx=&quot;78&quot; cy=&quot;65&quot; r=&quot;6&quot; fill=&quot;#1f2937&quot;></circle><polygon points=&quot;56,76 64,76 60,86&quot; fill=&quot;#f97316&quot;></polygon></g></svg></div><div class=&quot;flex-grow&quot;><div class=&quot;relative w-full min-h-[110px] flex items-center &quot;><svg class=&quot;absolute inset-0 w-full h-full preserve-3d&quot; viewBox=&quot;0 0 800 130&quot; preserveAspectRatio=&quot;none&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;><g stroke=&quot;#1f2937&quot; stroke-width=&quot;2.5&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d=&quot;M 10 15 L 60 15 L 60 115 L 10 115 Q 0 115 0 65 Q 0 15 10 15 Z&quot; fill=&quot;#fca5a5&quot;></path><rect x=&quot;60&quot; y=&quot;15&quot; width=&quot;25&quot; height=&quot;100&quot; fill=&quot;#e2e8f0&quot;></rect><line x1=&quot;72&quot; y1=&quot;15&quot; x2=&quot;72&quot; y2=&quot;115&quot; stroke-width=&quot;1.5&quot; stroke=&quot;#64748b&quot;></line><path d=&quot;M 85 15 L 700 15 L 700 115 L 85 115 Z&quot; fill=&quot;#fef08a&quot;></path><line x1=&quot;85&quot; y1=&quot;45&quot; x2=&quot;700&quot; y2=&quot;45&quot; stroke-width=&quot;1.5&quot; opacity=&quot;0.5&quot;></line><line x1=&quot;85&quot; y1=&quot;85&quot; x2=&quot;700&quot; y2=&quot;85&quot; stroke-width=&quot;1.5&quot; opacity=&quot;0.5&quot;></line><path d=&quot;M 700 15 L 775 65 L 700 115 Z&quot; fill=&quot;#fed7aa&quot;></path><path d=&quot;M 750 48 L 775 65 L 750 82 Z&quot; fill=&quot;#1f2937&quot;></path></g></svg><div class=&quot;relative z-10 my-auto ml-[95px] mr-[110px] w-full min-h-[76px] bg-white rounded-xl border-2 border-gray-800 p-2 sm:p-3 flex items-center justify-center shadow-inner overflow-hidden&quot;><div class=&quot;relative z-10 w-full&quot;><div class=&quot;flex flex-col sm:flex-row items-center justify-between gap-2 px-2 py-1&quot;><div class=&quot;w-full sm:w-2/5 border-b sm:border-b-0 sm:border-r border-slate-300 pb-1 sm:pb-0 sm:pr-3&quot;><div class=&quot;w-full text-base sm:text-lg font-bold text-slate-900       rounded px-1&quot;>你好 (Nǐ hǎo)</div><div class=&quot;w-full text-xs sm:text-sm text-slate-600       rounded px-1 font-medium mt-0.5&quot;>Ciao / Buongiorno</div></div><div class=&quot;w-full sm:w-3/5 sm:pl-3&quot;><div class=&quot;w-full text-xs sm:text-sm italic text-slate-700       rounded px-1&quot;>Frase: 你好，我是小明 (Ciao, io sono Xiaoming).</div></div></div></div></div></div></div></div><div class=&quot;flex items-center gap-2 sm:gap-4 group&quot;><div class=&quot;w-[80px] sm:w-[110px] flex-shrink-0 flex justify-center items-center&quot;><svg width=&quot;100&quot; height=&quot;130&quot; viewBox=&quot;0 0 120 160&quot; class=&quot;&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;><g stroke=&quot;#1f2937&quot; stroke-width=&quot;2.5&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><polygon points=&quot;25,48 18,18 48,32&quot; fill=&quot;#e2e8f0&quot;></polygon><polygon points=&quot;28,42 22,24 44,32&quot; fill=&quot;#fbcfe8&quot;></polygon><polygon points=&quot;95,48 102,18 72,32&quot; fill=&quot;#e2e8f0&quot;></polygon><polygon points=&quot;92,42 98,24 76,32&quot; fill=&quot;#fbcfe8&quot;></polygon><ellipse cx=&quot;60&quot; cy=&quot;58&quot; rx=&quot;35&quot; ry=&quot;28&quot; fill=&quot;#f1f5f9&quot;></ellipse><ellipse cx=&quot;44&quot; cy=&quot;54&quot; rx=&quot;5&quot; ry=&quot;7&quot; fill=&quot;#1f2937&quot;></ellipse><ellipse cx=&quot;76&quot; cy=&quot;54&quot; rx=&quot;5&quot; ry=&quot;7&quot; fill=&quot;#1f2937&quot;></ellipse><circle cx=&quot;42&quot; cy=&quot;52&quot; r=&quot;2&quot; fill=&quot;#ffffff&quot;></circle><circle cx=&quot;74&quot; cy=&quot;52&quot; r=&quot;2&quot; fill=&quot;#ffffff&quot;></circle><polygon points=&quot;57,60 63,60 60,64&quot; fill=&quot;#f472b6&quot;></polygon><path d=&quot;M60 64 Q55 69 50 67 M60 64 Q65 69 70 67&quot; fill=&quot;none&quot; stroke-width=&quot;2&quot;></path><line x1=&quot;28&quot; y1=&quot;58&quot; x2=&quot;12&quot; y2=&quot;54&quot; stroke-width=&quot;1.5&quot;></line><line x1=&quot;26&quot; y1=&quot;64&quot; x2=&quot;10&quot; y2=&quot;64&quot; stroke-width=&quot;1.5&quot;></line><line x1=&quot;92&quot; y1=&quot;58&quot; x2=&quot;108&quot; y2=&quot;54&quot; stroke-width=&quot;1.5&quot;></line><line x1=&quot;94&quot; y1=&quot;64&quot; x2=&quot;110&quot; y2=&quot;64&quot; stroke-width=&quot;1.5&quot;></line><path d=&quot;M34 85 Q26 135 48 142 L72 142 Q94 135 86 85 Z&quot; fill=&quot;#f1f5f9&quot;></path><circle cx=&quot;102&quot; cy=&quot;100&quot; r=&quot;7&quot; fill=&quot;#f1f5f9&quot;></circle></g></svg></div><div class=&quot;flex-grow&quot;><div class=&quot;relative w-full min-h-[110px] flex items-center &quot;><svg class=&quot;absolute inset-0 w-full h-full preserve-3d&quot; viewBox=&quot;0 0 800 130&quot; preserveAspectRatio=&quot;none&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;><g stroke=&quot;#1f2937&quot; stroke-width=&quot;2.5&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d=&quot;M 10 15 L 60 15 L 60 115 L 10 115 Q 0 115 0 65 Q 0 15 10 15 Z&quot; fill=&quot;#fca5a5&quot;></path><rect x=&quot;60&quot; y=&quot;15&quot; width=&quot;25&quot; height=&quot;100&quot; fill=&quot;#e2e8f0&quot;></rect><line x1=&quot;72&quot; y1=&quot;15&quot; x2=&quot;72&quot; y2=&quot;115&quot; stroke-width=&quot;1.5&quot; stroke=&quot;#64748b&quot;></line><path d=&quot;M 85 15 L 700 15 L 700 115 L 85 115 Z&quot; fill=&quot;#fef08a&quot;></path><line x1=&quot;85&quot; y1=&quot;45&quot; x2=&quot;700&quot; y2=&quot;45&quot; stroke-width=&quot;1.5&quot; opacity=&quot;0.5&quot;></line><line x1=&quot;85&quot; y1=&quot;85&quot; x2=&quot;700&quot; y2=&quot;85&quot; stroke-width=&quot;1.5&quot; opacity=&quot;0.5&quot;></line><path d=&quot;M 700 15 L 775 65 L 700 115 Z&quot; fill=&quot;#fed7aa&quot;></path><path d=&quot;M 750 48 L 775 65 L 750 82 Z&quot; fill=&quot;#1f2937&quot;></path></g></svg><div class=&quot;relative z-10 my-auto ml-[95px] mr-[110px] w-full min-h-[76px] bg-white rounded-xl border-2 border-gray-800 p-2 sm:p-3 flex items-center justify-center shadow-inner overflow-hidden&quot;><div class=&quot;relative z-10 w-full&quot;><div class=&quot;flex flex-col sm:flex-row items-center justify-between gap-2 px-2 py-1&quot;><div class=&quot;w-full sm:w-2/5 border-b sm:border-b-0 sm:border-r border-slate-300 pb-1 sm:pb-0 sm:pr-3&quot;><div class=&quot;w-full text-base sm:text-lg font-bold text-slate-900       rounded px-1&quot;>猫 (Māo)</div><div class=&quot;w-full text-xs sm:text-sm text-slate-600       rounded px-1 font-medium mt-0.5&quot;>Gatto</div></div><div class=&quot;w-full sm:w-3/5 sm:pl-3&quot;><div class=&quot;w-full text-xs sm:text-sm italic text-slate-700       rounded px-1&quot;>Frase: 这只猫很可爱 (Questo gatto è molto carino).</div></div></div></div></div></div></div></div><div class=&quot;flex items-center gap-2 sm:gap-4 group&quot;><div class=&quot;w-[80px] sm:w-[110px] flex-shrink-0 flex justify-center items-center&quot;><svg width=&quot;100&quot; height=&quot;130&quot; viewBox=&quot;0 0 120 160&quot; class=&quot;&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;><g stroke=&quot;#1f2937&quot; stroke-width=&quot;2.5&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d=&quot;M22 45 C8 35, 5 60, 18 68 C25 60, 26 48, 22 45 Z&quot; fill=&quot;#fb7185&quot;></path><path d=&quot;M98 45 C112 35, 115 60, 102 68 C95 60, 94 48, 98 45 Z&quot; fill=&quot;#fb7185&quot;></path><circle cx=&quot;23&quot; cy=&quot;50&quot; r=&quot;4&quot; fill=&quot;#f472b6&quot;></circle><circle cx=&quot;97&quot; cy=&quot;50&quot; r=&quot;4&quot; fill=&quot;#f472b6&quot;></circle><ellipse cx=&quot;60&quot; cy=&quot;52&quot; rx=&quot;29&quot; ry=&quot;25&quot; fill=&quot;#fde047&quot;></ellipse><path d=&quot;M31 40 Q45 46 60 40 Q75 46 89 40&quot; fill=&quot;#fb7185&quot;></path><ellipse cx=&quot;46&quot; cy=&quot;53&quot; rx=&quot;6&quot; ry=&quot;8&quot; fill=&quot;#1f2937&quot;></ellipse><ellipse cx=&quot;74&quot; cy=&quot;53&quot; rx=&quot;6&quot; ry=&quot;8&quot; fill=&quot;#1f2937&quot;></ellipse><circle cx=&quot;44&quot; cy=&quot;51&quot; r=&quot;2.5&quot; fill=&quot;#ffffff&quot;></circle><circle cx=&quot;72&quot; cy=&quot;51&quot; r=&quot;2.5&quot; fill=&quot;#ffffff&quot;></circle><path d=&quot;M54 62 Q60 68 66 62&quot; fill=&quot;#f87171&quot; stroke-width=&quot;2&quot;></path><path d=&quot;M36 78 L84 78 L80 118 L40 118 Z&quot; fill=&quot;#fbcfe8&quot;></path><line x1=&quot;44&quot; y1=&quot;78&quot; x2=&quot;44&quot; y2=&quot;92&quot; stroke-width=&quot;3&quot;></line><line x1=&quot;76&quot; y1=&quot;78&quot; x2=&quot;76&quot; y2=&quot;92&quot; stroke-width=&quot;3&quot;></line><path d=&quot;M60 102 C56 96, 48 100, 52 105 L60 110 L68 105 C72 100, 64 96, 60 102 Z&quot; fill=&quot;#ffffff&quot;></path><rect x=&quot;44&quot; y=&quot;118&quot; width=&quot;10&quot; height=&quot;22&quot; fill=&quot;#fde047&quot;></rect><rect x=&quot;66&quot; y=&quot;118&quot; width=&quot;10&quot; height=&quot;22&quot; fill=&quot;#fde047&quot;></rect><ellipse cx=&quot;49&quot; cy=&quot;144&quot; rx=&quot;9&quot; ry=&quot;6&quot; fill=&quot;#cbd5e1&quot;></ellipse><ellipse cx=&quot;71&quot; cy=&quot;144&quot; rx=&quot;9&quot; ry=&quot;6&quot; fill=&quot;#cbd5e1&quot;></ellipse><path d=&quot;M84 82 Q105 88 108 100&quot; fill=&quot;none&quot; stroke-width=&quot;6&quot; stroke=&quot;#fde047&quot;></path><circle cx=&quot;108&quot; cy=&quot;100&quot; r=&quot;5&quot; fill=&quot;#fde047&quot;></circle></g></svg></div><div class=&quot;flex-grow&quot;><div class=&quot;relative w-full min-h-[110px] flex items-center &quot;><svg class=&quot;absolute inset-0 w-full h-full preserve-3d&quot; viewBox=&quot;0 0 800 130&quot; preserveAspectRatio=&quot;none&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;><g stroke=&quot;#1f2937&quot; stroke-width=&quot;2.5&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d=&quot;M 10 15 L 60 15 L 60 115 L 10 115 Q 0 115 0 65 Q 0 15 10 15 Z&quot; fill=&quot;#fca5a5&quot;></path><rect x=&quot;60&quot; y=&quot;15&quot; width=&quot;25&quot; height=&quot;100&quot; fill=&quot;#e2e8f0&quot;></rect><line x1=&quot;72&quot; y1=&quot;15&quot; x2=&quot;72&quot; y2=&quot;115&quot; stroke-width=&quot;1.5&quot; stroke=&quot;#64748b&quot;></line><path d=&quot;M 85 15 L 700 15 L 700 115 L 85 115 Z&quot; fill=&quot;#fef08a&quot;></path><line x1=&quot;85&quot; y1=&quot;45&quot; x2=&quot;700&quot; y2=&quot;45&quot; stroke-width=&quot;1.5&quot; opacity=&quot;0.5&quot;></line><line x1=&quot;85&quot; y1=&quot;85&quot; x2=&quot;700&quot; y2=&quot;85&quot; stroke-width=&quot;1.5&quot; opacity=&quot;0.5&quot;></line><path d=&quot;M 700 15 L 775 65 L 700 115 Z&quot; fill=&quot;#fed7aa&quot;></path><path d=&quot;M 750 48 L 775 65 L 750 82 Z&quot; fill=&quot;#1f2937&quot;></path></g></svg><div class=&quot;relative z-10 my-auto ml-[95px] mr-[110px] w-full min-h-[76px] bg-white rounded-xl border-2 border-gray-800 p-2 sm:p-3 flex items-center justify-center shadow-inner overflow-hidden&quot;><div class=&quot;relative z-10 w-full&quot;><div class=&quot;flex flex-col sm:flex-row items-center justify-between gap-2 px-2 py-1&quot;><div class=&quot;w-full sm:w-2/5 border-b sm:border-b-0 sm:border-r border-slate-300 pb-1 sm:pb-0 sm:pr-3&quot;><div class=&quot;w-full text-base sm:text-lg font-bold text-slate-900       rounded px-1&quot;>苹果 (Píngguǒ)</div><div class=&quot;w-full text-xs sm:text-sm text-slate-600       rounded px-1 font-medium mt-0.5&quot;>Mela</div></div><div class=&quot;w-full sm:w-3/5 sm:pl-3&quot;><div class=&quot;w-full text-xs sm:text-sm italic text-slate-700       rounded px-1&quot;>Frase: 我喜欢吃红苹果 (Mi piace mangiare le mele rosse).</div></div></div></div></div></div></div></div><div class=&quot;flex items-center gap-2 sm:gap-4 group&quot;><div class=&quot;w-[80px] sm:w-[110px] flex-shrink-0 flex justify-center items-center&quot;><svg width=&quot;100&quot; height=&quot;130&quot; viewBox=&quot;0 0 120 160&quot; class=&quot;&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;><g stroke=&quot;#1f2937&quot; stroke-width=&quot;2.5&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><line x1=&quot;60&quot; y1=&quot;30&quot; x2=&quot;60&quot; y2=&quot;10&quot; stroke-width=&quot;3&quot;></line><circle cx=&quot;60&quot; cy=&quot;8&quot; r=&quot;6&quot; fill=&quot;#ef4444&quot;></circle><rect x=&quot;25&quot; y=&quot;30&quot; width=&quot;70&quot; height=&quot;50&quot; rx=&quot;10&quot; fill=&quot;#cbd5e1&quot;></rect><rect x=&quot;35&quot; y=&quot;40&quot; width=&quot;50&quot; height=&quot;24&quot; rx=&quot;6&quot; fill=&quot;#1e293b&quot;></rect><circle cx=&quot;48&quot; cy=&quot;52&quot; r=&quot;5&quot; fill=&quot;#38bdf8&quot;></circle><circle cx=&quot;72&quot; cy=&quot;52&quot; r=&quot;5&quot; fill=&quot;#38bdf8&quot;></circle><rect x=&quot;50&quot; y=&quot;80&quot; width=&quot;20&quot; height=&quot;8&quot; fill=&quot;#94a3b8&quot;></rect><rect x=&quot;28&quot; y=&quot;88&quot; width=&quot;64&quot; height=&quot;52&quot; rx=&quot;8&quot; fill=&quot;#cbd5e1&quot;></rect><circle cx=&quot;48&quot; cy=&quot;110&quot; r=&quot;6&quot; fill=&quot;#22c55e&quot;></circle><circle cx=&quot;72&quot; cy=&quot;110&quot; r=&quot;6&quot; fill=&quot;#eab308&quot;></circle></g></svg></div><div class=&quot;flex-grow&quot;><div class=&quot;relative w-full min-h-[110px] flex items-center &quot;><svg class=&quot;absolute inset-0 w-full h-full preserve-3d&quot; viewBox=&quot;0 0 800 130&quot; preserveAspectRatio=&quot;none&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;><g stroke=&quot;#1f2937&quot; stroke-width=&quot;2.5&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d=&quot;M 10 15 L 60 15 L 60 115 L 10 115 Q 0 115 0 65 Q 0 15 10 15 Z&quot; fill=&quot;#fca5a5&quot;></path><rect x=&quot;60&quot; y=&quot;15&quot; width=&quot;25&quot; height=&quot;100&quot; fill=&quot;#e2e8f0&quot;></rect><line x1=&quot;72&quot; y1=&quot;15&quot; x2=&quot;72&quot; y2=&quot;115&quot; stroke-width=&quot;1.5&quot; stroke=&quot;#64748b&quot;></line><path d=&quot;M 85 15 L 700 15 L 700 115 L 85 115 Z&quot; fill=&quot;#fef08a&quot;></path><line x1=&quot;85&quot; y1=&quot;45&quot; x2=&quot;700&quot; y2=&quot;45&quot; stroke-width=&quot;1.5&quot; opacity=&quot;0.5&quot;></line><line x1=&quot;85&quot; y1=&quot;85&quot; x2=&quot;700&quot; y2=&quot;85&quot; stroke-width=&quot;1.5&quot; opacity=&quot;0.5&quot;></line><path d=&quot;M 700 15 L 775 65 L 700 115 Z&quot; fill=&quot;#fed7aa&quot;></path><path d=&quot;M 750 48 L 775 65 L 750 82 Z&quot; fill=&quot;#1f2937&quot;></path></g></svg><div class=&quot;relative z-10 my-auto ml-[95px] mr-[110px] w-full min-h-[76px] bg-white rounded-xl border-2 border-gray-800 p-2 sm:p-3 flex items-center justify-center shadow-inner overflow-hidden&quot;><div class=&quot;relative z-10 w-full&quot;><div class=&quot;flex flex-col sm:flex-row items-center justify-between gap-2 px-2 py-1&quot;><div class=&quot;w-full sm:w-2/5 border-b sm:border-b-0 sm:border-r border-slate-300 pb-1 sm:pb-0 sm:pr-3&quot;><div class=&quot;w-full text-base sm:text-lg font-bold text-slate-900       rounded px-1&quot;>谢谢 (Xièxiè)</div><div class=&quot;w-full text-xs sm:text-sm text-slate-600       rounded px-1 font-medium mt-0.5&quot;>Grazie</div></div><div class=&quot;w-full sm:w-3/5 sm:pl-3&quot;><div class=&quot;w-full text-xs sm:text-sm italic text-slate-700       rounded px-1&quot;>Frase: 非常谢谢你的帮助 (Grazie mille per il tuo aiuto).</div></div></div></div></div></div></div></div></div></div>
+  </div>
+
+    <div class=&quot;p-4 border-t border-slate-200 flex justify-end gap-2 bg-slate-50&quot;>
+      <button class=&quot;px-4 py-2 bg-slate-200 text-slate-800 rounded-lg font-semibold cursor-pointer&quot; onclick=&quot;closeCustomHtmlModal()&quot;>Chiudi</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- 5. SCRIPT JAVASCRIPT PER APERTURA / CHIUSURA -->
+<script>
+function openCustomHtmlModal() {
+  var modal = document.getElementById('custom-html-modal');
+  if (modal) {
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+function closeCustomHtmlModal() {
+  var modal = document.getElementById('custom-html-modal');
+  if (modal) {
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+}
+
+window.openCustomHtmlModal = openCustomHtmlModal;
+window.closeCustomHtmlModal = closeCustomHtmlModal;
+window.triggerModalOpen = openCustomHtmlModal;
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeCustomHtmlModal();
+});
+</script>
+  <script>
+    try {
+      
+    } catch (e) {
+      console.error(e);
+    }
+  </script>
+</body>
+</html>"></iframe>
+                </div>
+              </div>
+
+              <div class="code-footer-note">💡 Questo bottone mostra un semplice effetto al passaggio del mouse (hover).</div>
+            </div>
+          
+        </div>
+      </section>
+    
+    </main>
+  </div>
+
+  <script>
+    function switchTab(btn, blockId, tab) {
+      var header = btn.parentElement;
+      var buttons = header.querySelectorAll('.tab-btn');
+      buttons.forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+
+      var panels = document.getElementById('panels-' + blockId);
+      if (!panels) return;
+      var tabs = ['html', 'css', 'js'];
+      tabs.forEach(function(t) {
+        var p = document.getElementById('panel-' + blockId + '-' + t);
+        if (p) {
+          p.style.display = (t === tab) ? 'block' : 'none';
+        }
+      });
+    }
+
+    function reloadFrame(frameId) {
+      var iframe = document.getElementById(frameId);
+      if (iframe) {
+        var currentSrc = iframe.getAttribute('srcdoc');
+        iframe.removeAttribute('srcdoc');
+        setTimeout(function() {
+          iframe.setAttribute('srcdoc', currentSrc);
+        }, 50);
+      }
+    }
+
+    function copyCode(btn, blockId) {
+      var panels = document.getElementById('panels-' + blockId);
+      if (!panels) return;
+
+      var visiblePanel = null;
+      var allPanels = panels.querySelectorAll('.code-panel');
+      for (var i = 0; i < allPanels.length; i++) {
+        var p = allPanels[i];
+        if (p.style.display !== 'none' && window.getComputedStyle(p).display !== 'none') {
+          visiblePanel = p;
+          break;
+        }
+      }
+      if (!visiblePanel && allPanels.length > 0) {
+        visiblePanel = allPanels[0];
+      }
+
+      var codeElem = visiblePanel ? visiblePanel.querySelector('code') : null;
+      var text = codeElem ? (codeElem.textContent || codeElem.innerText) : '';
+      if (!text) return;
+
+      function showFeedback() {
+        if (!btn) return;
+        var originalText = btn.innerHTML;
+        btn.innerHTML = 'Copiato ✓';
+        btn.style.backgroundColor = '#16a34a';
+        btn.style.color = '#ffffff';
+        btn.style.borderColor = '#16a34a';
+        setTimeout(function() {
+          btn.innerHTML = originalText;
+          btn.style.backgroundColor = '';
+          btn.style.color = '';
+          btn.style.borderColor = '';
+        }, 2000);
+      }
+
+      // Try modern navigator.clipboard first
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(showFeedback).catch(function() {
+          fallbackClipboardCopy(text, showFeedback);
+        });
+      } else {
+        fallbackClipboardCopy(text, showFeedback);
+      }
+    }
+
+    function fallbackClipboardCopy(text, onSuccess) {
+      var textArea = document.createElement("textarea");
+      textArea.value = text;
+      textArea.style.position = "fixed";
+      textArea.style.top = "-9999px";
+      textArea.style.left = "-9999px";
+      textArea.style.opacity = "0";
+      textArea.setAttribute("readonly", "");
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      var copied = false;
+      try {
+        copied = document.execCommand('copy');
+      } catch (err) {
+        console.warn('execCommand copy failed', err);
+      }
+      document.body.removeChild(textArea);
+      if (copied && onSuccess) {
+        onSuccess();
+      }
+    }
+  </script>
+</body>
+</html>

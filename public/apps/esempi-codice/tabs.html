@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tabs - Manuale di Codice</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      color: #0f172a;
+      background: #f8fafc;
+      line-height: 1.6;
+      padding: 16px;
+    }
+
+    .manual-container {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 16px 0 60px 0;
+    }
+
+    /* Cover */
+    .manual-cover {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+    }
+    @media (min-width: 640px) {
+      .manual-cover { padding: 36px; }
+    }
+
+    .manual-meta-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+      margin-bottom: 12px;
+      font-size: 12px;
+      color: #64748b;
+    }
+
+    .tag-badge {
+      background: #e0f2fe;
+      color: #0369a1;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 11px;
+    }
+
+    .manual-main-title {
+      font-size: 26px;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.3;
+      margin-bottom: 8px;
+    }
+    @media (min-width: 640px) {
+      .manual-main-title { font-size: 32px; }
+    }
+
+    .manual-subtitle {
+      font-size: 15px;
+      color: #475569;
+      margin-bottom: 16px;
+    }
+
+    .manual-footer-meta {
+      font-size: 12px;
+      color: #64748b;
+      border-top: 1px solid #f1f5f9;
+      padding-top: 12px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* Section */
+    .manual-section {
+      margin-bottom: 32px;
+    }
+
+    .section-header {
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid #e2e8f0;
+    }
+
+    .section-tag {
+      font-size: 11px;
+      font-weight: 700;
+      color: #0284c7;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .section-heading {
+      font-size: 20px;
+      font-weight: 700;
+      color: #0f172a;
+      margin: 4px 0;
+    }
+    @media (min-width: 640px) {
+      .section-heading { font-size: 24px; }
+    }
+
+    .section-desc {
+      font-size: 14px;
+      color: #64748b;
+    }
+
+    .section-blocks {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Headings */
+    .manual-heading {
+      font-weight: 700;
+      color: #0f172a;
+      margin-top: 8px;
+    }
+    .heading-l1 { font-size: 20px; }
+    .heading-l2 { font-size: 18px; }
+    .heading-l3 { font-size: 16px; }
+    .manual-heading-sub {
+      font-size: 13px;
+      color: #64748b;
+      margin-top: 2px;
+    }
+
+    /* Callout / Explanation Box */
+    .explanation-box {
+      border-radius: 12px;
+      padding: 16px;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+    }
+
+    .callout-normal {
+      border-left: 4px solid #64748b;
+    }
+    .callout-tip {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-left: 4px solid #16a34a;
+    }
+    .callout-info {
+      background: #f0f9ff;
+      border: 1px solid #bae6fd;
+      border-left: 4px solid #0284c7;
+    }
+    .callout-warning {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-left: 4px solid #d97706;
+    }
+
+    .callout-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    .callout-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .callout-body {
+      font-size: 14px;
+      line-height: 1.6;
+      color: #334155;
+    }
+
+    .inline-code {
+      font-family: monospace;
+      font-size: 12.5px;
+      background: rgba(15, 23, 42, 0.06);
+      padding: 2px 5px;
+      border-radius: 4px;
+      color: #0f172a;
+    }
+
+    /* Code Card */
+    .code-card {
+      background: #0f172a;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #334155;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+    }
+
+    .code-header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      background: #1e293b;
+      border-bottom: 1px solid #334155;
+    }
+
+    .code-title {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #e2e8f0;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .code-badge {
+      font-size: 11px;
+      color: #38bdf8;
+      font-weight: bold;
+    }
+
+    .code-tabs {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .tab-btn.active {
+      background: #334155;
+      color: #ffffff;
+    }
+
+    .copy-btn, .preview-reload-btn {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #f1f5f9;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      cursor: pointer;
+    }
+
+    .code-panel {
+      padding: 14px;
+      max-height: 360px;
+      overflow: auto;
+    }
+
+    pre code {
+      font-family: monospace;
+      font-size: 12.5px;
+      line-height: 1.5;
+      color: #f8fafc;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    /* Preview Zone */
+    .preview-zone {
+      background: #ffffff;
+      border-top: 1px solid #334155;
+    }
+
+    .preview-zone-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 12px;
+      background: #f1f5f9;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .preview-zone-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #475569;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .preview-frame-container {
+      width: 100%;
+    }
+
+    .preview-frame-container iframe {
+      width: 100%;
+      border: none;
+      display: block;
+    }
+
+    .code-footer-note {
+      padding: 8px 12px;
+      font-size: 12px;
+      color: #94a3b8;
+      background: #1e293b;
+      border-top: 1px solid #334155;
+    }
+
+    /* Print rules for clean PDF output */
+    @media print {
+      body {
+        background: #ffffff !important;
+        padding: 0 !important;
+      }
+      .code-tabs button, .copy-btn, .preview-reload-btn {
+        display: none !important;
+      }
+      .manual-cover {
+        box-shadow: none !important;
+      }
+      .page-break-before {
+        page-break-before: always;
+      }
+      .page-break-inside-avoid {
+        page-break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="manual-container">
+    <header class="manual-cover">
+      <div class="manual-meta-tags">
+        <span class="tag-badge">HTML5</span><span class="tag-badge">menu</span>
+        <span>Edizione: 1.0</span>
+        <span>·</span>
+        <span>Anno: 2026</span>
+      </div>
+      <h1 class="manual-main-title">Tabs</h1>
+      
+      <div class="manual-footer-meta">
+        <span>Autore: <strong>DocuCode</strong></span>
+        <span>1 Sezioni</span>
+      </div>
+    </header>
+
+    <main>
+      
+      <section class="manual-section " id="section-sec-1792773314587">
+        <div class="section-header">
+          <span class="section-tag">Sezione 1</span>
+          <h2 class="section-heading">tabs</h2>
+          
+        </div>
+        <div class="section-blocks">
+          
+            <div class="code-card page-break-inside-avoid">
+              <div class="code-header">
+                <div class="code-title">
+                  <span class="code-badge">&lt;/&gt;</span>
+                  <span>Nuovo Riquadro di Codice</span>
+                </div>
+                <div class="code-tabs">
+                  <button class="tab-btn active" onclick="switchTab(this, 'blk-1792773327727', 'html')">HTML</button>
+                  
+                  
+                  <button class="copy-btn" type="button" onclick="copyCode(this, 'blk-1792773327727')">Copia</button>
+                </div>
+              </div>
+
+              <div class="code-bodies" id="panels-blk-1792773327727">
+                <div class="code-panel active" id="panel-blk-1792773327727-html">
+                  <pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;it&quot;&gt;&lt;head&gt;&lt;meta charset=&quot;UTF-8&quot;&gt;&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+&lt;title&gt;Snippet — Tabs&lt;/title&gt;&lt;script src=&quot;https://cdn.tailwindcss.com&quot;&gt;&lt;/script&gt;&lt;/head&gt;
+&lt;body class=&quot;bg-gray-50 p-8&quot;&gt;
+  &lt;div class=&quot;max-w-xl mx-auto bg-white rounded-2xl shadow p-6&quot;&gt;
+    &lt;div class=&quot;flex gap-2 mb-4&quot;&gt;
+      &lt;button class=&quot;t px-3 py-2 rounded bg-slate-900 text-white&quot; data-k=&quot;a&quot;&gt;Tab A&lt;/button&gt;
+      &lt;button class=&quot;t px-3 py-2 rounded&quot; data-k=&quot;b&quot;&gt;Tab B&lt;/button&gt;
+      &lt;button class=&quot;t px-3 py-2 rounded&quot; data-k=&quot;c&quot;&gt;Tab C&lt;/button&gt;
+    &lt;/div&gt;
+    &lt;div id=&quot;tabContent&quot;&gt;Contenuto A&lt;/div&gt;
+  &lt;/div&gt;
+&lt;script&gt;
+  const content={a:&quot;Contenuto A&quot;, b:&quot;Contenuto B&quot;, c:&quot;Contenuto C&quot;};
+  const view=document.getElementById(&#039;tabContent&#039;);
+  document.querySelectorAll(&#039;.t&#039;).forEach(b=&gt;b.addEventListener(&#039;click&#039;,()=&gt;{ 
+    view.textContent=content[b.dataset.k]; 
+    document.querySelectorAll(&#039;.t&#039;).forEach(x=&gt;x.classList.remove(&#039;bg-slate-900&#039;,&#039;text-white&#039;));
+    b.classList.add(&#039;bg-slate-900&#039;,&#039;text-white&#039;);
+  }));
+&lt;/script&gt;
+&lt;/body&gt;&lt;/html&gt;</code></pre>
+                </div>
+                
+                
+              </div>
+
+              
+              <div class="preview-zone">
+                <div class="preview-zone-bar">
+                  <span class="preview-zone-label">Risultato / Anteprima dal Vivo</span>
+                  <button class="preview-reload-btn" onclick="reloadFrame('frame-blk-1792773327727')">Ricarica</button>
+                </div>
+                <div class="preview-frame-container" style="background: #ffffff;">
+                  <iframe id="frame-blk-1792773327727" sandbox="allow-scripts allow-modals" style="height: 220px;" srcdoc="<!DOCTYPE html>
+<html>
+<head>
+<meta charset=&quot;utf-8&quot;>
+<meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 16px; font-family: system-ui, -apple-system, sans-serif; }
+  
+</style>
+</head>
+<body>
+  <!DOCTYPE html>
+<html lang=&quot;it&quot;><head><meta charset=&quot;UTF-8&quot;><meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;>
+<title>Snippet — Tabs</title><script src=&quot;https://cdn.tailwindcss.com&quot;></script></head>
+<body class=&quot;bg-gray-50 p-8&quot;>
+  <div class=&quot;max-w-xl mx-auto bg-white rounded-2xl shadow p-6&quot;>
+    <div class=&quot;flex gap-2 mb-4&quot;>
+      <button class=&quot;t px-3 py-2 rounded bg-slate-900 text-white&quot; data-k=&quot;a&quot;>Tab A</button>
+      <button class=&quot;t px-3 py-2 rounded&quot; data-k=&quot;b&quot;>Tab B</button>
+      <button class=&quot;t px-3 py-2 rounded&quot; data-k=&quot;c&quot;>Tab C</button>
+    </div>
+    <div id=&quot;tabContent&quot;>Contenuto A</div>
+  </div>
+<script>
+  const content={a:&quot;Contenuto A&quot;, b:&quot;Contenuto B&quot;, c:&quot;Contenuto C&quot;};
+  const view=document.getElementById('tabContent');
+  document.querySelectorAll('.t').forEach(b=>b.addEventListener('click',()=>{ 
+    view.textContent=content[b.dataset.k]; 
+    document.querySelectorAll('.t').forEach(x=>x.classList.remove('bg-slate-900','text-white'));
+    b.classList.add('bg-slate-900','text-white');
+  }));
+</script>
+</body></html>
+  <script>
+    try {
+      
+    } catch (e) {
+      console.error(e);
+    }
+  </script>
+</body>
+</html>"></iframe>
+                </div>
+              </div>
+
+              <div class="code-footer-note">💡 Questo bottone mostra un semplice effetto al passaggio del mouse (hover).</div>
+            </div>
+          
+        </div>
+      </section>
+    
+    </main>
+  </div>
+
+  <script>
+    function switchTab(btn, blockId, tab) {
+      var header = btn.parentElement;
+      var buttons = header.querySelectorAll('.tab-btn');
+      buttons.forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+
+      var panels = document.getElementById('panels-' + blockId);
+      if (!panels) return;
+      var tabs = ['html', 'css', 'js'];
+      tabs.forEach(function(t) {
+        var p = document.getElementById('panel-' + blockId + '-' + t);
+        if (p) {
+          p.style.display = (t === tab) ? 'block' : 'none';
+        }
+      });
+    }
+
+    function reloadFrame(frameId) {
+      var iframe = document.getElementById(frameId);
+      if (iframe) {
+        var currentSrc = iframe.getAttribute('srcdoc');
+        iframe.removeAttribute('srcdoc');
+        setTimeout(function() {
+          iframe.setAttribute('srcdoc', currentSrc);
+        }, 50);
+      }
+    }
+
+    function copyCode(btn, blockId) {
+      var panels = document.getElementById('panels-' + blockId);
+      if (!panels) return;
+
+      var visiblePanel = null;
+      var allPanels = panels.querySelectorAll('.code-panel');
+      for (var i = 0; i < allPanels.length; i++) {
+        var p = allPanels[i];
+        if (p.style.display !== 'none' && window.getComputedStyle(p).display !== 'none') {
+          visiblePanel = p;
+          break;
+        }
+      }
+      if (!visiblePanel && allPanels.length > 0) {
+        visiblePanel = allPanels[0];
+      }
+
+      var codeElem = visiblePanel ? visiblePanel.querySelector('code') : null;
+      var text = codeElem ? (codeElem.textContent || codeElem.innerText) : '';
+      if (!text) return;
+
+      function showFeedback() {
+        if (!btn) return;
+        var originalText = btn.innerHTML;
+        btn.innerHTML = 'Copiato ✓';
+        btn.style.backgroundColor = '#16a34a';
+        btn.style.color = '#ffffff';
+        btn.style.borderColor = '#16a34a';
+        setTimeout(function() {
+          btn.innerHTML = originalText;
+          btn.style.backgroundColor = '';
+          btn.style.color = '';
+          btn.style.borderColor = '';
+        }, 2000);
+      }
+
+      // Try modern navigator.clipboard first
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(showFeedback).catch(function() {
+          fallbackClipboardCopy(text, showFeedback);
+        });
+      } else {
+        fallbackClipboardCopy(text, showFeedback);
+      }
+    }
+
+    function fallbackClipboardCopy(text, onSuccess) {
+      var textArea = document.createElement("textarea");
+      textArea.value = text;
+      textArea.style.position = "fixed";
+      textArea.style.top = "-9999px";
+      textArea.style.left = "-9999px";
+      textArea.style.opacity = "0";
+      textArea.setAttribute("readonly", "");
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      var copied = false;
+      try {
+        copied = document.execCommand('copy');
+      } catch (err) {
+        console.warn('execCommand copy failed', err);
+      }
+      document.body.removeChild(textArea);
+      if (copied && onSuccess) {
+        onSuccess();
+      }
+    }
+  </script>
+</body>
+</html>

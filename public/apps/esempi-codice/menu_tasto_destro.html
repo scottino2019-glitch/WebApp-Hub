@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Menu Tasto destro - Manuale di Codice</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      color: #0f172a;
+      background: #f8fafc;
+      line-height: 1.6;
+      padding: 16px;
+    }
+
+    .manual-container {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 16px 0 60px 0;
+    }
+
+    /* Cover */
+    .manual-cover {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+    }
+    @media (min-width: 640px) {
+      .manual-cover { padding: 36px; }
+    }
+
+    .manual-meta-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+      margin-bottom: 12px;
+      font-size: 12px;
+      color: #64748b;
+    }
+
+    .tag-badge {
+      background: #e0f2fe;
+      color: #0369a1;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 11px;
+    }
+
+    .manual-main-title {
+      font-size: 26px;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.3;
+      margin-bottom: 8px;
+    }
+    @media (min-width: 640px) {
+      .manual-main-title { font-size: 32px; }
+    }
+
+    .manual-subtitle {
+      font-size: 15px;
+      color: #475569;
+      margin-bottom: 16px;
+    }
+
+    .manual-footer-meta {
+      font-size: 12px;
+      color: #64748b;
+      border-top: 1px solid #f1f5f9;
+      padding-top: 12px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* Section */
+    .manual-section {
+      margin-bottom: 32px;
+    }
+
+    .section-header {
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid #e2e8f0;
+    }
+
+    .section-tag {
+      font-size: 11px;
+      font-weight: 700;
+      color: #0284c7;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .section-heading {
+      font-size: 20px;
+      font-weight: 700;
+      color: #0f172a;
+      margin: 4px 0;
+    }
+    @media (min-width: 640px) {
+      .section-heading { font-size: 24px; }
+    }
+
+    .section-desc {
+      font-size: 14px;
+      color: #64748b;
+    }
+
+    .section-blocks {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Headings */
+    .manual-heading {
+      font-weight: 700;
+      color: #0f172a;
+      margin-top: 8px;
+    }
+    .heading-l1 { font-size: 20px; }
+    .heading-l2 { font-size: 18px; }
+    .heading-l3 { font-size: 16px; }
+    .manual-heading-sub {
+      font-size: 13px;
+      color: #64748b;
+      margin-top: 2px;
+    }
+
+    /* Callout / Explanation Box */
+    .explanation-box {
+      border-radius: 12px;
+      padding: 16px;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+    }
+
+    .callout-normal {
+      border-left: 4px solid #64748b;
+    }
+    .callout-tip {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-left: 4px solid #16a34a;
+    }
+    .callout-info {
+      background: #f0f9ff;
+      border: 1px solid #bae6fd;
+      border-left: 4px solid #0284c7;
+    }
+    .callout-warning {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-left: 4px solid #d97706;
+    }
+
+    .callout-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    .callout-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .callout-body {
+      font-size: 14px;
+      line-height: 1.6;
+      color: #334155;
+    }
+
+    .inline-code {
+      font-family: monospace;
+      font-size: 12.5px;
+      background: rgba(15, 23, 42, 0.06);
+      padding: 2px 5px;
+      border-radius: 4px;
+      color: #0f172a;
+    }
+
+    /* Code Card */
+    .code-card {
+      background: #0f172a;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #334155;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+    }
+
+    .code-header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      background: #1e293b;
+      border-bottom: 1px solid #334155;
+    }
+
+    .code-title {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #e2e8f0;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .code-badge {
+      font-size: 11px;
+      color: #38bdf8;
+      font-weight: bold;
+    }
+
+    .code-tabs {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .tab-btn.active {
+      background: #334155;
+      color: #ffffff;
+    }
+
+    .copy-btn, .preview-reload-btn {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #f1f5f9;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      cursor: pointer;
+    }
+
+    .code-panel {
+      padding: 14px;
+      max-height: 360px;
+      overflow: auto;
+    }
+
+    pre code {
+      font-family: monospace;
+      font-size: 12.5px;
+      line-height: 1.5;
+      color: #f8fafc;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    /* Preview Zone */
+    .preview-zone {
+      background: #ffffff;
+      border-top: 1px solid #334155;
+    }
+
+    .preview-zone-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 12px;
+      background: #f1f5f9;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .preview-zone-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #475569;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .preview-frame-container {
+      width: 100%;
+    }
+
+    .preview-frame-container iframe {
+      width: 100%;
+      border: none;
+      display: block;
+    }
+
+    .code-footer-note {
+      padding: 8px 12px;
+      font-size: 12px;
+      color: #94a3b8;
+      background: #1e293b;
+      border-top: 1px solid #334155;
+    }
+
+    /* Print rules for clean PDF output */
+    @media print {
+      body {
+        background: #ffffff !important;
+        padding: 0 !important;
+      }
+      .code-tabs button, .copy-btn, .preview-reload-btn {
+        display: none !important;
+      }
+      .manual-cover {
+        box-shadow: none !important;
+      }
+      .page-break-before {
+        page-break-before: always;
+      }
+      .page-break-inside-avoid {
+        page-break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="manual-container">
+    <header class="manual-cover">
+      <div class="manual-meta-tags">
+        <span class="tag-badge">HTML5</span><span class="tag-badge">menu</span>
+        <span>Edizione: 1.0</span>
+        <span>·</span>
+        <span>Anno: 2026</span>
+      </div>
+      <h1 class="manual-main-title">Menu Tasto destro</h1>
+      <p class="manual-subtitle">menu contestuale con varie scelte</p>
+      <div class="manual-footer-meta">
+        <span>Autore: <strong>DocuCode</strong></span>
+        <span>1 Sezioni</span>
+      </div>
+    </header>
+
+    <main>
+      
+      <section class="manual-section " id="section-cap-1">
+        <div class="section-header">
+          <span class="section-tag">Sezione 1</span>
+          <h2 class="section-heading">Menu contestuale</h2>
+          
+        </div>
+        <div class="section-blocks">
+          
+            <div class="block-heading-box">
+              <h3 class="manual-heading heading-l2">Codice menu</h3>
+              <p class="manual-heading-sub">Un componente versatile usato in tutti i siti moderni</p>
+            </div>
+          
+
+            <div class="code-card page-break-inside-avoid">
+              <div class="code-header">
+                <div class="code-title">
+                  <span class="code-badge">&lt;/&gt;</span>
+                  <span>Codice: Card con Prezzo e Bottone</span>
+                </div>
+                <div class="code-tabs">
+                  <button class="tab-btn active" onclick="switchTab(this, 'b-code-1', 'html')">HTML</button>
+                  <button class="tab-btn" onclick="switchTab(this, 'b-code-1', 'css')">CSS</button>
+                  <button class="tab-btn" onclick="switchTab(this, 'b-code-1', 'js')">JS</button>
+                  <button class="copy-btn" type="button" onclick="copyCode(this, 'b-code-1')">Copia</button>
+                </div>
+              </div>
+
+              <div class="code-bodies" id="panels-b-code-1">
+                <div class="code-panel active" id="panel-b-code-1-html">
+                  <pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;it&quot; class=&quot;dark&quot;&gt;
+&lt;head&gt;
+  &lt;meta charset=&quot;UTF-8&quot;&gt;
+  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+  &lt;title&gt;Menu Preview&lt;/title&gt;
+  
+  &lt;!-- Fonts --&gt;
+  &lt;link rel=&quot;preconnect&quot; href=&quot;https://fonts.googleapis.com&quot;&gt;
+  &lt;link rel=&quot;preconnect&quot; href=&quot;https://fonts.gstatic.com&quot; crossorigin&gt;
+  &lt;link href=&quot;https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap&quot; rel=&quot;stylesheet&quot;&gt;
+  
+  
+ 
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;!-- Custom Right-Click Context Menu --&gt;
+&lt;div class=&quot;interactive-canvas&quot; id=&quot;canvasArea&quot;&gt;
+  &lt;div class=&quot;center-banner&quot;&gt;
+    &lt;h2&gt;Menu Contestuale Custom&lt;/h2&gt;
+    &lt;p&gt;Fai &lt;strong&gt;Click Destro&lt;/strong&gt; in qualsiasi punto di questo schermo per visualizzare il menu contestuale.&lt;/p&gt;
+  &lt;/div&gt;
+
+  &lt;!-- Context Menu Element --&gt;
+  &lt;div class=&quot;context-menu&quot; id=&quot;customContextMenu&quot;&gt;
+    &lt;div class=&quot;ctx-item&quot; data-action=&quot;cut&quot;&gt;
+      &lt;span&gt;✂️ Taglia&lt;/span&gt;
+      &lt;kbd&gt;⌘ X&lt;/kbd&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;ctx-item&quot; data-action=&quot;copy&quot;&gt;
+      &lt;span&gt;📋 vai&lt;/span&gt;
+      &lt;kbd&gt;⌘ C&lt;/kbd&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;ctx-item&quot; data-action=&quot;paste&quot;&gt;
+      &lt;span&gt;📥 Incolla&lt;/span&gt;
+      &lt;kbd&gt;⌘ V&lt;/kbd&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&quot;ctx-divider&quot;&gt;&lt;/div&gt;
+
+    &lt;div class=&quot;ctx-item&quot; data-action=&quot;inspect&quot;&gt;
+      &lt;span&gt;🔍 Ispeziona Elemento&lt;/span&gt;
+      &lt;kbd&gt;⌥ ⌘ I&lt;/kbd&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;ctx-item&quot; data-action=&quot;reload&quot;&gt;
+      &lt;span&gt;🔄 Ricarica Pagina&lt;/span&gt;
+      &lt;kbd&gt;⌘ R&lt;/kbd&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&quot;ctx-divider&quot;&gt;&lt;/div&gt;
+
+    &lt;div class=&quot;ctx-item text-red&quot; data-action=&quot;delete&quot;&gt;
+      &lt;span&gt;🗑️ Elimina Selezione&lt;/span&gt;
+      &lt;kbd&gt;DEL&lt;/kbd&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+  
+
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+                </div>
+                
+                <div class="code-panel" id="panel-b-code-1-css" style="display: none;">
+                  <pre><code class="language-css">/* Base reset and modern defaults */
+    :root {
+      color-scheme: dark;
+    }
+    
+    body {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    
+    /* User Custom CSS */
+    * {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: &#039;Plus Jakarta Sans&#039;, system-ui, sans-serif;
+  background: #080a11;
+  color: #f8fafc;
+  min-height: 100vh;
+}
+
+.interactive-canvas {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  user-select: none;
+}
+
+.center-banner {
+  text-align: center;
+  max-width: 480px;
+  background: #111522;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 2.5rem;
+  border-radius: 18px;
+}
+
+.center-banner h2 {
+  font-size: 1.6rem;
+  margin-bottom: 0.5rem;
+}
+
+.center-banner p {
+  color: #94a3b8;
+}
+
+/* ================= CONTEXT MENU ================= */
+.context-menu {
+  position: fixed;
+  width: 240px;
+  background: #151b2a;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  padding: 6px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7);
+  display: none;
+  z-index: 10000;
+  backdrop-filter: blur(12px);
+}
+
+.ctx-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.55rem 0.8rem;
+  font-size: 0.85rem;
+  color: #cbd5e1;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.1s;
+}
+
+.ctx-item:hover {
+  background: #6366f1;
+  color: white;
+}
+
+.ctx-item.text-red {
+  color: #f87171;
+}
+
+.ctx-item.text-red:hover {
+  background: #ef4444;
+  color: white;
+}
+
+.ctx-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+  margin: 4px 0;
+}
+
+kbd {
+  font-size: 0.7rem;
+  font-family: monospace;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 1px 5px;
+  border-radius: 4px;
+}</code></pre>
+                </div>
+                
+                <div class="code-panel" id="panel-b-code-1-js" style="display: none;">
+                  <pre><code class="language-javascript">  // Console proxy to communicate with parent window
+    (function() {
+      function sendLog(type, args) {
+        try {
+          const serialized = Array.from(args).map(arg =&gt; {
+            if (typeof arg === &#039;object&#039;) {
+              try { return JSON.stringify(arg); } catch(e) { return String(arg); }
+            }
+            return String(arg);
+          }).join(&#039; &#039;);
+
+          window.parent.postMessage({
+            source: &#039;menu-studio-iframe&#039;,
+            type: type,
+            message: serialized,
+            timestamp: new Date().toLocaleTimeString()
+          }, &#039;*&#039;);
+        } catch (err) {}
+      }
+
+      const originalLog = console.log;
+      const originalWarn = console.warn;
+      const originalError = console.error;
+      const originalInfo = console.info;
+
+      console.log = function(...args) {
+        sendLog(&#039;log&#039;, args);
+        originalLog.apply(console, args);
+      };
+      console.warn = function(...args) {
+        sendLog(&#039;warn&#039;, args);
+        originalWarn.apply(console, args);
+      };
+      console.error = function(...args) {
+        sendLog(&#039;error&#039;, args);
+        originalError.apply(console, args);
+      };
+      console.info = function(...args) {
+        sendLog(&#039;info&#039;, args);
+        originalInfo.apply(console, args);
+      };
+
+      window.onerror = function(message, source, lineno, colno, error) {
+        sendLog(&#039;error&#039;, [`Errore JS (linea ${lineno}): ${message}`]);
+        return false;
+      };
+    })();
+
+
+try {
+      const contextMenu = document.getElementById(&#039;customContextMenu&#039;);
+const canvas = document.getElementById(&#039;canvasArea&#039;);
+
+canvas.addEventListener(&#039;contextmenu&#039;, (e) =&gt; {
+  e.preventDefault();
+
+  const mouseX = e.clientX;
+  const mouseY = e.clientY;
+  const menuWidth = 240;
+  const menuHeight = 220;
+
+  // Evita collisioni con i bordi dello schermo
+  const x = (mouseX + menuWidth &gt; window.innerWidth) ? mouseX - menuWidth : mouseX;
+  const y = (mouseY + menuHeight &gt; window.innerHeight) ? mouseY - menuHeight : mouseY;
+
+  contextMenu.style.left = `${x}px`;
+  contextMenu.style.top = `${y}px`;
+  contextMenu.style.display = &#039;block&#039;;
+});
+
+// Chiudi cliccando altrove
+document.addEventListener(&#039;click&#039;, (e) =&gt; {
+  if (!contextMenu.contains(e.target)) {
+    contextMenu.style.display = &#039;none&#039;;
+  }
+});
+
+// Gestione selezione azioni
+document.querySelectorAll(&#039;.ctx-item&#039;).forEach(item =&gt; {
+  item.addEventListener(&#039;click&#039;, () =&gt; {
+    const action = item.dataset.action;
+    console.log(`Azione menu contestuale eseguita: ${action}`);
+    contextMenu.style.display = &#039;none&#039;;
+  });
+});
+    } catch(err) {
+      console.error(&#039;Errore durante l\&#039;esecuzione:&#039;, err.message);
+    }</code></pre>
+                </div>
+              </div>
+
+              
+              <div class="preview-zone">
+                <div class="preview-zone-bar">
+                  <span class="preview-zone-label">Risultato / Anteprima dal Vivo</span>
+                  <button class="preview-reload-btn" onclick="reloadFrame('frame-b-code-1')">Ricarica</button>
+                </div>
+                <div class="preview-frame-container" style="background: #ffffff;">
+                  <iframe id="frame-b-code-1" sandbox="allow-scripts allow-modals" style="height: 250px;" srcdoc="<!DOCTYPE html>
+<html>
+<head>
+<meta charset=&quot;utf-8&quot;>
+<meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 16px; font-family: system-ui, -apple-system, sans-serif; }
+  /* Base reset and modern defaults */
+    :root {
+      color-scheme: dark;
+    }
+    
+    body {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    
+    /* User Custom CSS */
+    * {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  background: #080a11;
+  color: #f8fafc;
+  min-height: 100vh;
+}
+
+.interactive-canvas {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  user-select: none;
+}
+
+.center-banner {
+  text-align: center;
+  max-width: 480px;
+  background: #111522;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 2.5rem;
+  border-radius: 18px;
+}
+
+.center-banner h2 {
+  font-size: 1.6rem;
+  margin-bottom: 0.5rem;
+}
+
+.center-banner p {
+  color: #94a3b8;
+}
+
+/* ================= CONTEXT MENU ================= */
+.context-menu {
+  position: fixed;
+  width: 240px;
+  background: #151b2a;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  padding: 6px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7);
+  display: none;
+  z-index: 10000;
+  backdrop-filter: blur(12px);
+}
+
+.ctx-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.55rem 0.8rem;
+  font-size: 0.85rem;
+  color: #cbd5e1;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.1s;
+}
+
+.ctx-item:hover {
+  background: #6366f1;
+  color: white;
+}
+
+.ctx-item.text-red {
+  color: #f87171;
+}
+
+.ctx-item.text-red:hover {
+  background: #ef4444;
+  color: white;
+}
+
+.ctx-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+  margin: 4px 0;
+}
+
+kbd {
+  font-size: 0.7rem;
+  font-family: monospace;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+</style>
+</head>
+<body>
+  <!DOCTYPE html>
+<html lang=&quot;it&quot; class=&quot;dark&quot;>
+<head>
+  <meta charset=&quot;UTF-8&quot;>
+  <meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;>
+  <title>Menu Preview</title>
+  
+  <!-- Fonts -->
+  <link rel=&quot;preconnect&quot; href=&quot;https://fonts.googleapis.com&quot;>
+  <link rel=&quot;preconnect&quot; href=&quot;https://fonts.gstatic.com&quot; crossorigin>
+  <link href=&quot;https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap&quot; rel=&quot;stylesheet&quot;>
+  
+  
+ 
+</head>
+<body>
+  <!-- Custom Right-Click Context Menu -->
+<div class=&quot;interactive-canvas&quot; id=&quot;canvasArea&quot;>
+  <div class=&quot;center-banner&quot;>
+    <h2>Menu Contestuale Custom</h2>
+    <p>Fai <strong>Click Destro</strong> in qualsiasi punto di questo schermo per visualizzare il menu contestuale.</p>
+  </div>
+
+  <!-- Context Menu Element -->
+  <div class=&quot;context-menu&quot; id=&quot;customContextMenu&quot;>
+    <div class=&quot;ctx-item&quot; data-action=&quot;cut&quot;>
+      <span>✂️ Taglia</span>
+      <kbd>⌘ X</kbd>
+    </div>
+    <div class=&quot;ctx-item&quot; data-action=&quot;copy&quot;>
+      <span>📋 vai</span>
+      <kbd>⌘ C</kbd>
+    </div>
+    <div class=&quot;ctx-item&quot; data-action=&quot;paste&quot;>
+      <span>📥 Incolla</span>
+      <kbd>⌘ V</kbd>
+    </div>
+
+    <div class=&quot;ctx-divider&quot;></div>
+
+    <div class=&quot;ctx-item&quot; data-action=&quot;inspect&quot;>
+      <span>🔍 Ispeziona Elemento</span>
+      <kbd>⌥ ⌘ I</kbd>
+    </div>
+    <div class=&quot;ctx-item&quot; data-action=&quot;reload&quot;>
+      <span>🔄 Ricarica Pagina</span>
+      <kbd>⌘ R</kbd>
+    </div>
+
+    <div class=&quot;ctx-divider&quot;></div>
+
+    <div class=&quot;ctx-item text-red&quot; data-action=&quot;delete&quot;>
+      <span>🗑️ Elimina Selezione</span>
+      <kbd>DEL</kbd>
+    </div>
+  </div>
+</div>
+
+  
+
+</body>
+</html>
+  <script>
+    try {
+        // Console proxy to communicate with parent window
+    (function() {
+      function sendLog(type, args) {
+        try {
+          const serialized = Array.from(args).map(arg => {
+            if (typeof arg === 'object') {
+              try { return JSON.stringify(arg); } catch(e) { return String(arg); }
+            }
+            return String(arg);
+          }).join(' ');
+
+          window.parent.postMessage({
+            source: 'menu-studio-iframe',
+            type: type,
+            message: serialized,
+            timestamp: new Date().toLocaleTimeString()
+          }, '*');
+        } catch (err) {}
+      }
+
+      const originalLog = console.log;
+      const originalWarn = console.warn;
+      const originalError = console.error;
+      const originalInfo = console.info;
+
+      console.log = function(...args) {
+        sendLog('log', args);
+        originalLog.apply(console, args);
+      };
+      console.warn = function(...args) {
+        sendLog('warn', args);
+        originalWarn.apply(console, args);
+      };
+      console.error = function(...args) {
+        sendLog('error', args);
+        originalError.apply(console, args);
+      };
+      console.info = function(...args) {
+        sendLog('info', args);
+        originalInfo.apply(console, args);
+      };
+
+      window.onerror = function(message, source, lineno, colno, error) {
+        sendLog('error', [`Errore JS (linea ${lineno}): ${message}`]);
+        return false;
+      };
+    })();
+
+
+try {
+      const contextMenu = document.getElementById('customContextMenu');
+const canvas = document.getElementById('canvasArea');
+
+canvas.addEventListener('contextmenu', (e) => {
+  e.preventDefault();
+
+  const mouseX = e.clientX;
+  const mouseY = e.clientY;
+  const menuWidth = 240;
+  const menuHeight = 220;
+
+  // Evita collisioni con i bordi dello schermo
+  const x = (mouseX + menuWidth > window.innerWidth) ? mouseX - menuWidth : mouseX;
+  const y = (mouseY + menuHeight > window.innerHeight) ? mouseY - menuHeight : mouseY;
+
+  contextMenu.style.left = `${x}px`;
+  contextMenu.style.top = `${y}px`;
+  contextMenu.style.display = 'block';
+});
+
+// Chiudi cliccando altrove
+document.addEventListener('click', (e) => {
+  if (!contextMenu.contains(e.target)) {
+    contextMenu.style.display = 'none';
+  }
+});
+
+// Gestione selezione azioni
+document.querySelectorAll('.ctx-item').forEach(item => {
+  item.addEventListener('click', () => {
+    const action = item.dataset.action;
+    console.log(`Azione menu contestuale eseguita: ${action}`);
+    contextMenu.style.display = 'none';
+  });
+});
+    } catch(err) {
+      console.error('Errore durante l\'esecuzione:', err.message);
+    }
+    } catch (e) {
+      console.error(e);
+    }
+  </script>
+</body>
+</html>"></iframe>
+                </div>
+              </div>
+
+              <div class="code-footer-note">💡 Fai clic sul pulsante nell&#039;anteprima qui sotto per vederlo cambiare stato in tempo reale!</div>
+            </div>
+          
+        </div>
+      </section>
+    
+    </main>
+  </div>
+
+  <script>
+    function switchTab(btn, blockId, tab) {
+      var header = btn.parentElement;
+      var buttons = header.querySelectorAll('.tab-btn');
+      buttons.forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+
+      var panels = document.getElementById('panels-' + blockId);
+      if (!panels) return;
+      var tabs = ['html', 'css', 'js'];
+      tabs.forEach(function(t) {
+        var p = document.getElementById('panel-' + blockId + '-' + t);
+        if (p) {
+          p.style.display = (t === tab) ? 'block' : 'none';
+        }
+      });
+    }
+
+    function reloadFrame(frameId) {
+      var iframe = document.getElementById(frameId);
+      if (iframe) {
+        var currentSrc = iframe.getAttribute('srcdoc');
+        iframe.removeAttribute('srcdoc');
+        setTimeout(function() {
+          iframe.setAttribute('srcdoc', currentSrc);
+        }, 50);
+      }
+    }
+
+    function copyCode(btn, blockId) {
+      var panels = document.getElementById('panels-' + blockId);
+      if (!panels) return;
+
+      var visiblePanel = null;
+      var allPanels = panels.querySelectorAll('.code-panel');
+      for (var i = 0; i < allPanels.length; i++) {
+        var p = allPanels[i];
+        if (p.style.display !== 'none' && window.getComputedStyle(p).display !== 'none') {
+          visiblePanel = p;
+          break;
+        }
+      }
+      if (!visiblePanel && allPanels.length > 0) {
+        visiblePanel = allPanels[0];
+      }
+
+      var codeElem = visiblePanel ? visiblePanel.querySelector('code') : null;
+      var text = codeElem ? (codeElem.textContent || codeElem.innerText) : '';
+      if (!text) return;
+
+      function showFeedback() {
+        if (!btn) return;
+        var originalText = btn.innerHTML;
+        btn.innerHTML = 'Copiato ✓';
+        btn.style.backgroundColor = '#16a34a';
+        btn.style.color = '#ffffff';
+        btn.style.borderColor = '#16a34a';
+        setTimeout(function() {
+          btn.innerHTML = originalText;
+          btn.style.backgroundColor = '';
+          btn.style.color = '';
+          btn.style.borderColor = '';
+        }, 2000);
+      }
+
+      // Try modern navigator.clipboard first
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(showFeedback).catch(function() {
+          fallbackClipboardCopy(text, showFeedback);
+        });
+      } else {
+        fallbackClipboardCopy(text, showFeedback);
+      }
+    }
+
+    function fallbackClipboardCopy(text, onSuccess) {
+      var textArea = document.createElement("textarea");
+      textArea.value = text;
+      textArea.style.position = "fixed";
+      textArea.style.top = "-9999px";
+      textArea.style.left = "-9999px";
+      textArea.style.opacity = "0";
+      textArea.setAttribute("readonly", "");
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      var copied = false;
+      try {
+        copied = document.execCommand('copy');
+      } catch (err) {
+        console.warn('execCommand copy failed', err);
+      }
+      document.body.removeChild(textArea);
+      if (copied && onSuccess) {
+        onSuccess();
+      }
+    }
+  </script>
+</body>
+</html>
