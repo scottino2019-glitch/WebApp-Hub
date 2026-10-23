@@ -1,0 +1,1884 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSMaster - Impara JavaScript da Zero</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .code-editor {
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            background: #1e293b;
+            color: #e2e8f0;
+            border: 3px solid #475569;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .code-editor textarea {
+            color: #fbbf24 !important;
+            font-weight: 500;
+        }
+        .lesson-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .lesson-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+        }
+        .lesson-card.active {
+            border: 3px solid #10b981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+        .lesson-card.locked {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .lesson-card.completed {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+        .console-output {
+            background: #111827;
+            color: #10b981;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        .progress-bar {
+            transition: width 0.5s ease;
+        }
+        .star {
+            color: #fbbf24;
+            font-size: 1.5rem;
+        }
+        .star.filled {
+            color: #f59e0b;
+        }
+        .lesson-content {
+            background: #1e293b;
+            color: #f1f5f9;
+            line-height: 1.8;
+        }
+        .lesson-content h3 {
+            color: #ffffff;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+        .lesson-content p {
+            color: #cbd5e1;
+            margin-bottom: 1rem;
+        }
+        .lesson-content code {
+            background: #0f172a;
+            color: #fbbf24;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.375rem;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+        }
+        .lesson-content pre {
+            background: #0f172a;
+            color: #fbbf24;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+            border: 2px solid #334155;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 min-h-screen text-white">
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-emerald-600 to-teal-600 shadow-2xl">
+        <div class="max-w-7xl mx-auto px-6 py-8">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="w-16 h-16 bg-yellow-400 rounded-2xl flex items-center justify-center shadow-xl">
+                        <span class="text-slate-900 font-black text-4xl">JS</span>
+                    </div>
+                    <div>
+                        <h1 class="text-4xl font-black text-white">JSMaster</h1>
+                        <p class="text-emerald-100 text-lg">Diventa un esperto JavaScript</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-6">
+                    <div class="bg-white bg-opacity-20 px-6 py-3 rounded-full backdrop-blur-sm">
+                        <div class="flex items-center space-x-2">
+                            <span class="text-yellow-300 text-xl">⭐</span>
+                            <span class="text-white font-bold text-lg" id="totalStars">0</span>
+                        </div>
+                    </div>
+                    <div class="bg-white bg-opacity-20 px-6 py-3 rounded-full backdrop-blur-sm">
+                        <span class="text-white font-bold text-lg" id="progressText">0% Completato</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Barra Progresso -->
+            <div class="mt-6 bg-white bg-opacity-20 rounded-full h-3 overflow-hidden">
+                <div class="progress-bar bg-gradient-to-r from-yellow-400 to-orange-500 h-full rounded-full" id="progressBar" style="width: 0%"></div>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-7xl mx-auto px-6 py-10">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-10">
+            <!-- Sidebar Lezioni -->
+            <div class="lg:col-span-1">
+                <div class="bg-slate-800 rounded-2xl shadow-2xl p-8 sticky top-8 border border-slate-700">
+                    <h2 class="text-2xl font-bold text-white mb-8 flex items-center">
+                        <span class="text-3xl mr-3">🎓</span> Percorso di Apprendimento
+                    </h2>
+                    <div class="space-y-4" id="lessonsList">
+                        <!-- Le lezioni verranno generate dinamicamente -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contenuto Principale -->
+            <div class="lg:col-span-3">
+                <!-- Contenuto Lezione -->
+                <div class="bg-slate-800 rounded-2xl shadow-2xl p-10 mb-10 border border-slate-700" id="lessonContent">
+                    <div class="flex items-center justify-between mb-8">
+                        <div>
+                            <h2 class="text-3xl font-bold text-white mb-2" id="lessonTitle">Seleziona una lezione</h2>
+                            <div class="flex items-center space-x-4">
+                                <div class="flex items-center space-x-1" id="lessonStars">
+                                    <span class="star">☆</span>
+                                    <span class="star">☆</span>
+                                    <span class="star">☆</span>
+                                </div>
+                                <span class="text-slate-400 text-sm" id="lessonDifficulty">Principiante</span>
+                            </div>
+                        </div>
+                        <div class="flex space-x-3">
+                            <button class="bg-slate-600 hover:bg-slate-500 px-6 py-3 rounded-xl transition-all font-semibold" id="prevBtn">← Precedente</button>
+                            <button class="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-xl transition-all font-semibold" id="nextBtn">Successiva →</button>
+                        </div>
+                    </div>
+
+                    <div id="lessonText" class="lesson-content text-slate-100 text-lg leading-relaxed">
+                        <div class="text-center py-20">
+                            <div class="text-6xl mb-6">🚀</div>
+                            <h3 class="text-3xl font-bold text-white mb-6">Benvenuto in JSMaster!</h3>
+                            <p class="text-xl text-slate-200 mb-8">Seleziona una lezione dalla barra laterale per iniziare il tuo viaggio nell'apprendimento di JavaScript.</p>
+                            <div class="bg-gradient-to-r from-blue-600 to-purple-600 p-6 rounded-2xl max-w-2xl mx-auto">
+                                <h4 class="text-xl font-bold text-white mb-4">🎯 Cosa imparerai:</h4>
+                                <ul class="text-left text-blue-100 space-y-2">
+                                    <li>• Variabili e tipi di dati</li>
+                                    <li>• Funzioni e parametri</li>
+                                    <li>• Condizioni e cicli</li>
+                                    <li>• Array e oggetti</li>
+                                    <li>• DOM manipulation</li>
+                                    <li>• Programmazione asincrona</li>
+                                    <li>• Progetti pratici</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Esercizio Pratico -->
+                <div class="bg-slate-800 rounded-2xl shadow-2xl p-10 border border-slate-700" id="exerciseSection" style="display: none;">
+                    <h3 class="text-2xl font-bold text-white mb-8 flex items-center">
+                        <span class="text-3xl mr-3">💻</span> Esercizio Interattivo
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 xl:grid-cols-2 gap-10">
+                        <!-- Editor di Codice -->
+                        <div>
+                            <h4 class="text-xl font-bold text-white mb-4 flex items-center">
+                                <span class="text-2xl mr-2">⚡</span> Scrivi il codice JavaScript:
+                            </h4>
+                            <div class="code-editor rounded-2xl p-6 shadow-xl border border-slate-600">
+                                <textarea 
+                                    id="codeEditor" 
+                                    class="w-full h-64 bg-transparent resize-none outline-none font-mono text-yellow-300"
+                                    placeholder="// Scrivi il tuo codice JavaScript qui..."
+                                ></textarea>
+                            </div>
+                            <div class="mt-6 flex space-x-4">
+                                <button class="bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-4 rounded-xl transition-all font-bold text-lg shadow-lg hover:shadow-xl" id="runCode">
+                                    ▶️ Esegui Codice
+                                </button>
+                                <button class="bg-slate-600 hover:bg-slate-500 text-white px-8 py-4 rounded-xl transition-all font-bold text-lg shadow-lg hover:shadow-xl" id="resetCode">
+                                    🔄 Ripristina
+                                </button>
+                                <button class="bg-blue-500 hover:bg-blue-600 text-white px-8 py-4 rounded-xl transition-all font-bold text-lg shadow-lg hover:shadow-xl" id="hintBtn">
+                                    💡 Suggerimento
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Console Output -->
+                        <div>
+                            <h4 class="text-xl font-bold text-white mb-4 flex items-center">
+                                <span class="text-2xl mr-2">📟</span> Console Output:
+                            </h4>
+                            <div class="console-output rounded-2xl p-6 min-h-64 shadow-xl border border-slate-600">
+                                <div id="consoleOutput" class="whitespace-pre-wrap">
+                                    <span class="text-slate-400">// La console mostrerà l'output del tuo codice qui...</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Test Results -->
+                            <div class="mt-6">
+                                <h5 class="text-lg font-bold text-white mb-3">🧪 Test Automatici:</h5>
+                                <div id="testResults" class="space-y-2">
+                                    <div class="text-slate-400 text-sm">Esegui il codice per vedere i risultati dei test</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sfida -->
+                    <div class="mt-10 bg-gradient-to-r from-purple-900 to-indigo-900 border border-purple-700 p-8 rounded-2xl">
+                        <h4 class="text-2xl font-bold text-white mb-4 flex items-center">
+                            <span class="text-3xl mr-3">🎯</span> Obiettivo:
+                        </h4>
+                        <div class="bg-slate-800 p-6 rounded-xl mb-6 border border-slate-600">
+                            <p class="text-lg text-slate-200 font-medium" id="challengeText">
+                                Seleziona una lezione per vedere l'obiettivo dell'esercizio.
+                            </p>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <button class="bg-purple-500 hover:bg-purple-600 text-white px-8 py-4 rounded-xl transition-all font-bold text-lg shadow-lg hover:shadow-xl" id="checkSolution">
+                                ✅ Verifica Soluzione
+                            </button>
+                            <div id="hint" class="hidden bg-blue-900 border border-blue-700 p-4 rounded-xl max-w-md">
+                                <p class="text-blue-200 text-sm" id="hintText"></p>
+                            </div>
+                        </div>
+                        <div id="feedback" class="mt-6 hidden"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Successo -->
+    <div id="successModal" class="fixed inset-0 bg-black bg-opacity-75 hidden items-center justify-center z-50">
+        <div class="bg-slate-800 border border-slate-600 rounded-2xl p-10 max-w-lg mx-4 text-center shadow-2xl">
+            <div class="text-8xl mb-6">🎉</div>
+            <h3 class="text-3xl font-bold text-white mb-4">Lezione Completata!</h3>
+            <div class="flex justify-center mb-4" id="earnedStars">
+                <span class="star filled">★</span>
+                <span class="star filled">★</span>
+                <span class="star filled">★</span>
+            </div>
+            <p class="text-xl text-slate-300 mb-8" id="successMessage">Hai guadagnato 3 stelle!</p>
+            <div class="flex space-x-4 justify-center">
+                <button class="bg-slate-600 hover:bg-slate-500 text-white px-8 py-3 rounded-xl transition-all font-semibold" id="stayBtn">
+                    Rimani qui
+                </button>
+                <button class="bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-3 rounded-xl transition-all font-semibold" id="nextLessonBtn">
+                    Prossima Lezione
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Stato dell'applicazione
+        let currentLesson = 0;
+        let completedLessons = new Set();
+        let totalStars = 0;
+        let lessonStars = {};
+
+        // Elementi DOM
+        const codeEditor = document.getElementById('codeEditor');
+        const consoleOutput = document.getElementById('consoleOutput');
+        const testResults = document.getElementById('testResults');
+        const runCodeBtn = document.getElementById('runCode');
+        const resetCodeBtn = document.getElementById('resetCode');
+        const checkSolutionBtn = document.getElementById('checkSolution');
+        const hintBtn = document.getElementById('hintBtn');
+        const hint = document.getElementById('hint');
+        const hintText = document.getElementById('hintText');
+        const feedback = document.getElementById('feedback');
+        const successModal = document.getElementById('successModal');
+        const nextLessonBtn = document.getElementById('nextLessonBtn');
+        const stayBtn = document.getElementById('stayBtn');
+        const lessonTitle = document.getElementById('lessonTitle');
+        const lessonText = document.getElementById('lessonText');
+        const challengeText = document.getElementById('challengeText');
+        const exerciseSection = document.getElementById('exerciseSection');
+        const progressBar = document.getElementById('progressBar');
+        const progressText = document.getElementById('progressText');
+        const totalStarsEl = document.getElementById('totalStars');
+
+        // Dati delle lezioni (ristrutturate per chiarezza)
+        const lessons = [
+            {
+                id: 1,
+                title: "Variabili e Tipi di Dati",
+                difficulty: "Principiante",
+                content: `
+                    <div class="space-y-8">
+                        <div class="bg-blue-900 p-8 rounded-xl border border-blue-600">
+                            <h3 class="text-3xl font-bold text-white mb-6">📦 Le Variabili - Cosa Sono?</h3>
+                            <p class="text-blue-100 text-xl mb-6">
+                                Immagina di avere delle <strong>scatole</strong> dove puoi mettere le cose. 
+                                Le variabili sono esattamente questo: scatole digitali con un'etichetta.
+                            </p>
+                            
+                            <div class="bg-blue-800 p-6 rounded-lg mb-6">
+                                <h4 class="text-xl font-bold text-blue-100 mb-3">🏠 Esempio della Vita Reale:</h4>
+                                <p class="text-blue-200 text-lg">
+                                    Hai una scatola con scritto "GIOCATTOLI" → dentro ci metti i giocattoli<br>
+                                    Hai una variabile chiamata "nome" → dentro ci metti "Mario"
+                                </p>
+                            </div>
+                            
+                            <div class="bg-blue-700 p-6 rounded-lg">
+                                <h4 class="text-xl font-bold text-blue-100 mb-3">💻 In JavaScript:</h4>
+                                <pre class="bg-slate-900 text-yellow-300 p-4 rounded text-lg">let nome = "Mario";</pre>
+                                <p class="text-blue-200 mt-3">
+                                    <strong>let</strong> = "crea una scatola"<br>
+                                    <strong>nome</strong> = "l'etichetta della scatola"<br>
+                                    <strong>"Mario"</strong> = "quello che ci metti dentro"
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="bg-green-900 p-8 rounded-xl border border-green-600">
+                            <h3 class="text-3xl font-bold text-white mb-6">🎯 Che Tipo di Cose Puoi Mettere?</h3>
+                            
+                            <div class="space-y-6">
+                                <div class="bg-green-800 p-6 rounded-lg">
+                                    <h4 class="text-2xl font-bold text-green-100 mb-4">📝 TESTO (Parole)</h4>
+                                    <p class="text-green-200 text-lg mb-4">Tutto quello che puoi scrivere: nomi, frasi, messaggi</p>
+                                    <div class="bg-slate-900 p-4 rounded">
+                                        <code class="text-yellow-300 text-lg">let messaggio = "Ciao, come stai?";</code>
+                                    </div>
+                                    <p class="text-green-300 mt-3">⚠️ <strong>Importante:</strong> Il testo va sempre tra virgolette!</p>
+                                </div>
+                                
+                                <div class="bg-green-800 p-6 rounded-lg">
+                                    <h4 class="text-2xl font-bold text-green-100 mb-4">🔢 NUMERI</h4>
+                                    <p class="text-green-200 text-lg mb-4">Età, prezzi, punteggi, temperature...</p>
+                                    <div class="bg-slate-900 p-4 rounded">
+                                        <code class="text-yellow-300 text-lg">let età = 25;</code><br>
+                                        <code class="text-yellow-300 text-lg">let prezzo = 19.99;</code>
+                                    </div>
+                                    <p class="text-green-300 mt-3">⚠️ <strong>Importante:</strong> I numeri NON hanno virgolette!</p>
+                                </div>
+                                
+                                <div class="bg-green-800 p-6 rounded-lg">
+                                    <h4 class="text-2xl font-bold text-green-100 mb-4">✅ VERO o FALSO</h4>
+                                    <p class="text-green-200 text-lg mb-4">Come rispondere a domande: "Sei maggiorenne?" → true/false</p>
+                                    <div class="bg-slate-900 p-4 rounded">
+                                        <code class="text-yellow-300 text-lg">let isMaggiorenne = true;</code><br>
+                                        <code class="text-yellow-300 text-lg">let haPatente = false;</code>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-purple-900 p-8 rounded-xl border border-purple-600">
+                            <h3 class="text-3xl font-bold text-white mb-6">🚀 Proviamo Insieme!</h3>
+                            
+                            <div class="bg-purple-800 p-6 rounded-lg mb-6">
+                                <h4 class="text-xl font-bold text-purple-100 mb-4">Creiamo le variabili per una persona:</h4>
+                                <pre class="bg-slate-900 text-yellow-300 p-4 rounded-lg text-lg">let nome = "Mario";        // Il suo nome
+let cognome = "Rossi";     // Il suo cognome  
+let età = 30;              // Quanti anni ha
+let sposato = false;       // È sposato? No
+
+// Ora stampiamo tutto:
+console.log("Nome completo:", nome, cognome);
+console.log("Età:", età, "anni");
+console.log("Sposato:", sposato);</pre>
+                            </div>
+                            
+                            <div class="bg-purple-700 p-6 rounded-lg">
+                                <h4 class="text-xl font-bold text-purple-100 mb-4">📺 Cosa vedrai nella console:</h4>
+                                <div class="bg-slate-900 p-4 rounded text-green-300 font-mono">
+                                    Nome completo: Mario Rossi<br>
+                                    Età: 30 anni<br>
+                                    Sposato: false
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `,
+                code: `// Crea le tue variabili qui
+let nome = "Il tuo nome";
+let età = 20;
+let isStudente = true;
+
+// Stampa le variabili
+console.log("Nome:", nome);
+console.log("Età:", età);
+console.log("È studente:", isStudente);`,
+                challenge: `Crea tre variabili:
+1. Una stringa chiamata "città" con il nome della tua città
+2. Un numero chiamato "temperatura" con un valore a tua scelta  
+3. Un array chiamato "colori" con almeno 3 colori
+Poi stampa tutte le variabili con console.log()`,
+                hint: "Ricorda: le stringhe vanno tra virgolette, gli array tra parentesi quadre []. Usa console.log() per stampare ogni variabile.",
+                tests: [
+                    {
+                        name: "Variabile città definita",
+                        check: (code) => /let\s+città\s*=\s*["'][^"']+["']/.test(code) || /const\s+città\s*=\s*["'][^"']+["']/.test(code)
+                    },
+                    {
+                        name: "Variabile temperatura definita",
+                        check: (code) => /let\s+temperatura\s*=\s*\d+/.test(code) || /const\s+temperatura\s*=\s*\d+/.test(code)
+                    },
+                    {
+                        name: "Array colori con almeno 3 elementi",
+                        check: (code) => {
+                            const match = code.match(/(?:let|const)\s+colori\s*=\s*\[(.*?)\]/s);
+                            if (!match) return false;
+                            const elements = match[1].split(',').filter(el => el.trim());
+                            return elements.length >= 3;
+                        }
+                    }
+                ]
+            },
+            {
+                id: 2,
+                title: "Funzioni e Parametri",
+                difficulty: "Principiante",
+                content: `
+                    <div class="space-y-8">
+                        <div class="bg-blue-900 p-8 rounded-xl border border-blue-600">
+                            <h3 class="text-3xl font-bold text-white mb-6">🔧 Le Funzioni - Cosa Sono?</h3>
+                            <p class="text-blue-100 text-xl mb-6">
+                                Una funzione è come una <strong>macchina</strong> che fa sempre lo stesso lavoro. 
+                                Tu le dai qualcosa, lei lo trasforma e ti restituisce il risultato.
+                            </p>
+                            
+                            <div class="bg-blue-800 p-6 rounded-lg mb-6">
+                                <h4 class="text-xl font-bold text-blue-100 mb-3">🏭 Esempio della Vita Reale:</h4>
+                                <p class="text-blue-200 text-lg">
+                                    <strong>Macchina del caffè:</strong><br>
+                                    • Tu metti → caffè in polvere + acqua<br>
+                                    • Lei fa → il suo lavoro<br>
+                                    • Ti dà → una tazza di caffè pronto
+                                </p>
+                            </div>
+                            
+                            <div class="bg-blue-700 p-6 rounded-lg">
+                                <h4 class="text-xl font-bold text-blue-100 mb-3">💻 In JavaScript:</h4>
+                                <p class="text-blue-200 text-lg">
+                                    <strong>Funzione "saluta":</strong><br>
+                                    • Tu le dai → un nome<br>
+                                    • Lei fa → crea un messaggio<br>
+                                    • Ti restituisce → "Ciao [nome]!"
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="bg-green-900 p-8 rounded-xl border border-green-600">
+                            <h3 class="text-3xl font-bold text-white mb-6">🛠️ Come Si Crea una Funzione</h3>
+                            
+                            <div class="bg-green-800 p-6 rounded-lg mb-6">
+                                <h4 class="text-xl font-bold text-green-100 mb-4">La struttura base:</h4>
+                                <pre class="bg-slate-900 text-yellow-300 p-4 rounded-lg text-lg">function nomeFunzione(cosaDarle) {
+    // Qui scrivi cosa deve fare
+    return ilRisultato;
+}</pre>
+                            </div>
+                            
+                            <div class="space-y-4">
+                                <div class="bg-green-700 p-4 rounded-lg">
+                                    <h5 class="text-lg font-bold text-green-100">1️⃣ <code>function</code></h5>
+                                    <p class="text-green-200">Dice a JavaScript: "Sto creando una funzione"</p>
+                                </div>
+                                <div class="bg-green-700 p-4 rounded-lg">
+                                    <h5 class="text-lg font-bold text-green-100">2️⃣ <code>nomeFunzione</code></h5>
+                                    <p class="text-green-200">Il nome che dai alla tua funzione (scegli tu!)</p>
+                                </div>
+                                <div class="bg-green-700 p-4 rounded-lg">
+                                    <h5 class="text-lg font-bold text-green-100">3️⃣ <code>(cosaDarle)</code></h5>
+                                    <p class="text-green-200">Quello che la funzione ha bisogno per lavorare</p>
+                                </div>
+                                <div class="bg-green-700 p-4 rounded-lg">
+                                    <h5 class="text-lg font-bold text-green-100">4️⃣ <code>return</code></h5>
+                                    <p class="text-green-200">Il risultato che ti restituisce</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-purple-900 p-8 rounded-xl border border-purple-600">
+                            <h3 class="text-3xl font-bold text-white mb-6">🚀 Esempio Passo-Passo</h3>
+                            
+                            <div class="bg-purple-800 p-6 rounded-lg mb-6">
+                                <h4 class="text-xl font-bold text-purple-100 mb-4">Creiamo una funzione che saluta:</h4>
+                                <pre class="bg-slate-900 text-yellow-300 p-4 rounded-lg text-lg">// PASSO 1: Creo la funzione
+function saluta(nome) {
+    let messaggio = "Ciao " + nome + "!";
+    return messaggio;
+}
+
+// PASSO 2: Uso la funzione
+let risultato = saluta("Mario");
+console.log(risultato);  // Stampa: Ciao Mario!</pre>
+                            </div>
+                            
+                            <div class="bg-purple-700 p-6 rounded-lg mb-6">
+                                <h4 class="text-xl font-bold text-purple-100 mb-4">🔍 Cosa succede quando la chiami:</h4>
+                                <div class="space-y-3 text-purple-200 text-lg">
+                                    <p>1. Chiami <code class="bg-slate-800 px-2 py-1 rounded">saluta("Mario")</code></p>
+                                    <p>2. JavaScript sostituisce <code class="bg-slate-800 px-2 py-1 rounded">nome</code> con <code class="bg-slate-800 px-2 py-1 rounded">"Mario"</code></p>
+                                    <p>3. Crea il messaggio: <code class="bg-slate-800 px-2 py-1 rounded">"Ciao Mario!"</code></p>
+                                    <p>4. Te lo restituisce con <code class="bg-slate-800 px-2 py-1 rounded">return</code></p>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-purple-700 p-6 rounded-lg">
+                                <h4 class="text-xl font-bold text-purple-100 mb-4">📺 Risultato nella console:</h4>
+                                <div class="bg-slate-900 p-4 rounded text-green-300 font-mono text-lg">
+                                    Ciao Mario!
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `,
+                code: `// Crea una funzione che saluta
+function saluta(nome) {
+    return "Ciao " + nome + "!";
+}
+
+// Testa la funzione
+console.log(saluta("Mario"));`,
+                challenge: `Crea una funzione chiamata "calcolatrice" che:
+1. Accetta tre parametri: numero1, numero2, operazione
+2. L'operazione può essere: "+", "-", "*", "/"
+3. Restituisce il risultato del calcolo
+4. Testa la funzione con almeno 2 operazioni diverse`,
+                hint: "Usa if/else o switch per gestire le diverse operazioni. Esempio: if(operazione === '+') return numero1 + numero2;",
+                tests: [
+                    {
+                        name: "Funzione calcolatrice definita",
+                        check: (code) => /function\s+calcolatrice\s*\(/.test(code)
+                    },
+                    {
+                        name: "Funzione accetta 3 parametri",
+                        check: (code) => {
+                            const match = code.match(/function\s+calcolatrice\s*\(([^)]+)\)/);
+                            if (!match) return false;
+                            const params = match[1].split(',').filter(p => p.trim());
+                            return params.length === 3;
+                        }
+                    },
+                    {
+                        name: "Funzione testata con chiamate",
+                        check: (code) => /calcolatrice\s*\(/.test(code) && code.split('calcolatrice(').length >= 3
+                    }
+                ]
+            },
+            {
+                id: 3,
+                title: "Condizioni e Controllo del Flusso",
+                difficulty: "Principiante",
+                content: `
+                    <div class="space-y-8">
+                        <div class="bg-blue-900 p-8 rounded-xl border border-blue-600">
+                            <h3 class="text-3xl font-bold text-white mb-6">🤔 Le Condizioni - Prendere Decisioni</h3>
+                            <p class="text-blue-100 text-xl mb-6">
+                                Le condizioni sono come quando tu devi <strong>decidere cosa fare</strong> 
+                                in base a una situazione. Il computer fa la stessa cosa!
+                            </p>
+                            
+                            <div class="bg-blue-800 p-6 rounded-lg mb-6">
+                                <h4 class="text-xl font-bold text-blue-100 mb-3">🌧️ Esempio della Vita Reale:</h4>
+                                <p class="text-blue-200 text-lg">
+                                    <strong>Quando esci di casa:</strong><br>
+                                    • SE piove → prendi l'ombrello<br>
+                                    • SE c'è il sole → metti gli occhiali<br>
+                                    • ALTRIMENTI → esci normale
+                                </p>
+                            </div>
+                            
+                            <div class="bg-blue-700 p-6 rounded-lg">
+                                <h4 class="text-xl font-bold text-blue-100 mb-3">💻 In JavaScript:</h4>
+                                <p class="text-blue-200 text-lg">
+                                    <strong>Controllo dell'età:</strong><br>
+                                    • SE hai 18+ anni → puoi guidare<br>
+                                    • SE hai 14+ anni → puoi guidare il motorino<br>
+                                    • ALTRIMENTI → devi camminare
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="bg-green-900 p-8 rounded-xl border border-green-600">
+                            <h3 class="text-3xl font-bold text-white mb-6">🔑 Le Parole Magiche</h3>
+                            
+                            <div class="space-y-6">
+                                <div class="bg-green-800 p-6 rounded-lg">
+                                    <h4 class="text-2xl font-bold text-green-100 mb-4">🎯 if = "SE"</h4>
+                                    <p class="text-green-200 text-lg mb-3">Controlla se qualcosa è vero</p>
+                                    <div class="bg-slate-900 p-4 rounded">
+                                        <code class="text-yellow-300 text-lg">if (età >= 18) {</code><br>
+                                        <code class="text-yellow-300 text-lg">    console.log("Sei maggiorenne!");</code><br>
+                                        <code class="text-yellow-300 text-lg">}</code>
+                                    </div>
+                                    <p class="text-green-300 mt-3">💡 Leggi come: "SE l'età è maggiore o uguale a 18..."</p>
+                                </div>
+                                
+                                <div class="bg-green-800 p-6 rounded-lg">
+                                    <h4 class="text-2xl font-bold text-green-100 mb-4">🔄 else if = "ALTRIMENTI SE"</h4>
+                                    <p class="text-green-200 text-lg mb-3">Se la prima condizione è falsa, prova questa</p>
+                                    <div class="bg-slate-900 p-4 rounded">
+                                        <code class="text-yellow-300 text-lg">else if (età >= 14) {</code><br>
+                                        <code class="text-yellow-300 text-lg">    console.log("Puoi guidare il motorino!");</code><br>
+                                        <code class="text-yellow-300 text-lg">}</code>
+                                    </div>
+                                    <p class="text-green-300 mt-3">💡 Leggi come: "ALTRIMENTI SE l'età è almeno 14..."</p>
+                                </div>
+                                
+                                <div class="bg-green-800 p-6 rounded-lg">
+                                    <h4 class="text-2xl font-bold text-green-100 mb-4">🏁 else = "ALTRIMENTI"</h4>
+                                    <p class="text-green-200 text-lg mb-3">Se niente altro è vero, fai questo</p>
+                                    <div class="bg-slate-900 p-4 rounded">
+                                        <code class="text-yellow-300 text-lg">else {</code><br>
+                                        <code class="text-yellow-300 text-lg">    console.log("Devi camminare!");</code><br>
+                                        <code class="text-yellow-300 text-lg">}</code>
+                                    </div>
+                                    <p class="text-green-300 mt-3">💡 Leggi come: "In tutti gli altri casi..."</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-purple-900 p-8 rounded-xl border border-purple-600">
+                            <h3 class="text-3xl font-bold text-white mb-6">🚀 Esempio Completo</h3>
+                            
+                            <div class="bg-purple-800 p-6 rounded-lg mb-6">
+                                <h4 class="text-xl font-bold text-purple-100 mb-4">Controlliamo l'età di una persona:</h4>
+                                <pre class="bg-slate-900 text-yellow-300 p-4 rounded-lg text-lg">let età = 16;
+
+if (età >= 18) {
+    console.log("🚗 Puoi guidare la macchina!");
+} else if (età >= 14) {
+    console.log("🛵 Puoi guidare il motorino!");
+} else {
+    console.log("🚶 Per ora devi camminare!");
+}</pre>
+                            </div>
+                            
+                            <div class="bg-purple-700 p-6 rounded-lg mb-6">
+                                <h4 class="text-xl font-bold text-purple-100 mb-4">🔍 Cosa succede passo-passo:</h4>
+                                <div class="space-y-3 text-purple-200 text-lg">
+                                    <p><strong>1.</strong> L'età è 16</p>
+                                    <p><strong>2.</strong> Controlla: 16 >= 18? <span class="text-red-300">❌ FALSO</span></p>
+                                    <p><strong>3.</strong> Controlla: 16 >= 14? <span class="text-green-300">✅ VERO</span></p>
+                                    <p><strong>4.</strong> Esegue il codice del secondo blocco</p>
+                                    <p><strong>5.</strong> Salta tutto il resto</p>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-purple-700 p-6 rounded-lg">
+                                <h4 class="text-xl font-bold text-purple-100 mb-4">📺 Risultato nella console:</h4>
+                                <div class="bg-slate-900 p-4 rounded text-green-300 font-mono text-lg">
+                                    🛵 Puoi guidare il motorino!
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `,
+                code: `let età = 16;
+
+if (età >= 18) {
+    console.log("Puoi guidare!");
+} else {
+    console.log("Non puoi ancora guidare.");
+}
+
+console.log("La tua età è:", età);`,
+                challenge: `Crea una funzione "valutaVoto" che:
+1. Accetta un voto numerico (0-100)
+2. Restituisce:
+   - "Eccellente" per voti >= 90
+   - "Buono" per voti >= 70
+   - "Sufficiente" per voti >= 60
+   - "Insufficiente" per voti < 60
+3. Testa la funzione con almeno 4 voti diversi`,
+                hint: "Usa if/else if per creare le condizioni. Ricorda di usare >= per i confronti e testa con voti come 95, 75, 65, 45.",
+                tests: [
+                    {
+                        name: "Funzione valutaVoto definita",
+                        check: (code) => /function\s+valutaVoto\s*\(/.test(code)
+                    },
+                    {
+                        name: "Usa condizioni if/else",
+                        check: (code) => /if\s*\(/.test(code) && /else/.test(code)
+                    },
+                    {
+                        name: "Funzione testata con chiamate",
+                        check: (code) => /valutaVoto\s*\(/.test(code) && code.split('valutaVoto(').length >= 4
+                    }
+                ]
+            },
+            {
+                id: 4,
+                title: "Cicli e Ripetizioni",
+                difficulty: "Intermedio",
+                content: `
+                    <div class="space-y-6">
+                        <div class="bg-orange-900 p-6 rounded-xl border border-orange-600">
+                            <h3 class="text-2xl font-bold text-white mb-4">🔄 Cosa sono i Cicli?</h3>
+                            <p class="text-orange-100 text-lg mb-4">
+                                I cicli permettono di <strong>ripetere</strong> lo stesso codice più volte, 
+                                senza doverlo riscrivere.
+                            </p>
+                            <div class="bg-orange-800 p-4 rounded-lg">
+                                <p class="text-orange-200">💡 <strong>Esempio:</strong> "Stampa i numeri da 1 a 10"</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-teal-900 p-6 rounded-xl border border-teal-600">
+                            <h3 class="text-2xl font-bold text-white mb-4">🛠️ Il Ciclo FOR</h3>
+                            
+                            <pre class="bg-slate-900 text-yellow-300 p-4 rounded-lg mb-4 text-base">for (let i = 1; i <= 5; i++) {
+    console.log("Numero:", i);
+}</pre>
+                            
+                            <div class="space-y-3">
+                                <div class="bg-teal-800 p-3 rounded-lg">
+                                    <strong class="text-teal-100">let i = 1:</strong> <span class="text-teal-200">Inizia da 1</span>
+                                </div>
+                                <div class="bg-teal-800 p-3 rounded-lg">
+                                    <strong class="text-teal-100">i <= 5:</strong> <span class="text-teal-200">Continua fino a 5</span>
+                                </div>
+                                <div class="bg-teal-800 p-3 rounded-lg">
+                                    <strong class="text-teal-100">i++:</strong> <span class="text-teal-200">Aumenta di 1 ogni volta</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-purple-900 p-6 rounded-xl border border-purple-600">
+                            <h3 class="text-2xl font-bold text-white mb-4">⚡ Ciclo con Array</h3>
+                            
+                            <pre class="bg-slate-900 text-yellow-300 p-4 rounded-lg mb-4 text-base">let frutti = ["mela", "banana", "arancia"];
+
+for (let frutto of frutti) {
+    console.log("Frutto:", frutto);
+}</pre>
+                            
+                            <div class="bg-purple-800 p-4 rounded-lg">
+                                <h4 class="text-lg font-bold text-purple-100 mb-2">🎯 Risultato:</h4>
+                                <ul class="text-purple-200 space-y-1">
+                                    <li>• Frutto: mela</li>
+                                    <li>• Frutto: banana</li>
+                                    <li>• Frutto: arancia</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                `,
+                code: `// Esempio di ciclo for
+for (let i = 1; i <= 5; i++) {
+    console.log("Iterazione numero:", i);
+}
+
+// Esempio con array
+let numeri = [10, 20, 30, 40, 50];
+for (let numero of numeri) {
+    console.log("Numero:", numero);
+}`,
+                challenge: `Crea una funzione "tabelline" che:
+1. Accetta un numero come parametro
+2. Stampa la tabellina di quel numero da 1 a 10
+3. Usa un ciclo for
+4. Testa la funzione con almeno 2 numeri diversi
+Esempio output: "5 x 1 = 5", "5 x 2 = 10", ecc.`,
+                hint: "Usa un ciclo for da 1 a 10. All'interno stampa: numero + ' x ' + i + ' = ' + (numero * i)",
+                tests: [
+                    {
+                        name: "Funzione tabelline definita",
+                        check: (code) => /function\s+tabelline\s*\(/.test(code)
+                    },
+                    {
+                        name: "Usa ciclo for",
+                        check: (code) => /for\s*\(/.test(code)
+                    },
+                    {
+                        name: "Funzione testata con chiamate",
+                        check: (code) => /tabelline\s*\(/.test(code) && code.split('tabelline(').length >= 3
+                    }
+                ]
+            },
+            {
+                id: 5,
+                title: "Array e Liste",
+                difficulty: "Intermedio",
+                content: `
+                    <div class="space-y-6">
+                        <div class="bg-teal-900 p-6 rounded-xl border border-teal-600">
+                            <h3 class="text-2xl font-bold text-white mb-4">📋 Cosa sono gli Array?</h3>
+                            <p class="text-teal-100 text-lg mb-4">
+                                Gli array sono <strong>liste</strong> che contengono più elementi. 
+                                Come una lista della spesa digitale.
+                            </p>
+                            <div class="bg-teal-800 p-4 rounded-lg">
+                                <p class="text-teal-200">💡 <strong>Esempio:</strong> ["mela", "banana", "arancia"]</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-indigo-900 p-6 rounded-xl border border-indigo-600">
+                            <h3 class="text-2xl font-bold text-white mb-4">🛠️ Operazioni Base</h3>
+                            
+                            <div class="space-y-3">
+                                <div class="bg-indigo-800 p-4 rounded-lg">
+                                    <h4 class="text-xl font-bold text-indigo-100 mb-2">➕ Aggiungere</h4>
+                                    <code class="bg-slate-900 text-yellow-300 px-3 py-1 rounded">array.push("nuovo")</code>
+                                    <p class="text-indigo-200 mt-2">Aggiunge alla fine</p>
+                                </div>
+                                
+                                <div class="bg-indigo-800 p-4 rounded-lg">
+                                    <h4 class="text-xl font-bold text-indigo-100 mb-2">➖ Rimuovere</h4>
+                                    <code class="bg-slate-900 text-yellow-300 px-3 py-1 rounded">array.pop()</code>
+                                    <p class="text-indigo-200 mt-2">Rimuove l'ultimo</p>
+                                </div>
+                                
+                                <div class="bg-indigo-800 p-4 rounded-lg">
+                                    <h4 class="text-xl font-bold text-indigo-100 mb-2">📏 Lunghezza</h4>
+                                    <code class="bg-slate-900 text-yellow-300 px-3 py-1 rounded">array.length</code>
+                                    <p class="text-indigo-200 mt-2">Quanti elementi ci sono</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-purple-900 p-6 rounded-xl border border-purple-600">
+                            <h3 class="text-2xl font-bold text-white mb-4">⚡ Esempio Pratico</h3>
+                            
+                            <pre class="bg-slate-900 text-yellow-300 p-4 rounded-lg mb-4 text-base">let frutti = ["mela", "banana"];
+
+// Aggiungi un frutto
+frutti.push("arancia");
+console.log(frutti); // ["mela", "banana", "arancia"]
+
+// Quanti frutti?
+console.log("Totale:", frutti.length); // 3</pre>
+                            
+                            <div class="bg-purple-800 p-4 rounded-lg">
+                                <h4 class="text-lg font-bold text-purple-100 mb-2">🎯 Risultato:</h4>
+                                <ul class="text-purple-200 space-y-1">
+                                    <li>• Array iniziale: ["mela", "banana"]</li>
+                                    <li>• Dopo push: ["mela", "banana", "arancia"]</li>
+                                    <li>• Lunghezza: 3</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                `,
+                code: `let frutti = ["mela", "banana", "arancia"];
+
+// Aggiungi un frutto
+frutti.push("kiwi");
+console.log("Frutti:", frutti);
+
+// Trasforma in maiuscolo
+let fruttiFruttaiolo = frutti.map(frutto => frutto.toUpperCase());
+console.log("Maiuscoli:", fruttiFruttaiolo);`,
+                challenge: `Crea una funzione "analizzaNumeri" che:
+1. Accetta un array di numeri come parametro
+2. Restituisce un oggetto con:
+   - pari: array dei numeri pari
+   - dispari: array dei numeri dispari  
+   - somma: somma di tutti i numeri
+   - media: media dei numeri
+3. Testa con l'array [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]`,
+                hint: "Usa filter() per pari/dispari, reduce() per la somma, e dividi per length per la media. Restituisci un oggetto con le proprietà richieste.",
+                tests: [
+                    {
+                        name: "Funzione analizzaNumeri definita",
+                        check: (code) => /function\s+analizzaNumeri\s*\(/.test(code)
+                    },
+                    {
+                        name: "Usa metodi array (filter, map, reduce)",
+                        check: (code) => /\.filter\s*\(/.test(code) || /\.map\s*\(/.test(code) || /\.reduce\s*\(/.test(code)
+                    },
+                    {
+                        name: "Restituisce un oggetto",
+                        check: (code) => /return\s*{/.test(code) || /return\s*\{/.test(code)
+                    }
+                ]
+            },
+            {
+                id: 6,
+                title: "Oggetti e Proprietà",
+                difficulty: "Intermedio",
+                content: `
+                    <div class="space-y-8">
+                        <div class="bg-gradient-to-r from-indigo-600 to-indigo-800 p-8 rounded-2xl border border-indigo-500">
+                            <h3 class="text-3xl font-bold text-white mb-6 flex items-center">
+                                <span class="text-4xl mr-4">🏗️</span>
+                                Cosa sono gli Oggetti?
+                            </h3>
+                            <p class="text-xl text-indigo-100 mb-6">
+                                Gli <strong>oggetti</strong> sono collezioni di proprietà (coppie chiave-valore) 
+                                che rappresentano entità del mondo reale nel codice.
+                            </p>
+                            <div class="bg-indigo-700 p-6 rounded-xl border border-indigo-500">
+                                <p class="text-indigo-100 text-lg">
+                                    💡 <strong>Pensa così:</strong> Un oggetto "persona" può avere nome, età, città, 
+                                    e anche azioni come "saluta" o "cammina".
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="bg-gradient-to-r from-emerald-600 to-emerald-800 p-8 rounded-2xl border border-emerald-500">
+                            <h3 class="text-3xl font-bold text-white mb-6 flex items-center">
+                                <span class="text-4xl mr-4">🔧</span>
+                                Lavorare con gli Oggetti
+                            </h3>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="bg-emerald-700 p-6 rounded-xl border border-emerald-500">
+                                    <h4 class="text-2xl font-bold text-emerald-100 mb-3">🎯 Notazione Punto</h4>
+                                    <p class="text-emerald-100 mb-3">Accesso diretto alle proprietà</p>
+                                    <pre class="bg-slate-900 text-yellow-300 p-3 rounded text-sm">oggetto.proprietà</pre>
+                                </div>
+                                
+                                <div class="bg-emerald-700 p-6 rounded-xl border border-emerald-500">
+                                    <h4 class="text-2xl font-bold text-emerald-100 mb-3">📋 Notazione Parentesi</h4>
+                                    <p class="text-emerald-100 mb-3">Accesso dinamico</p>
+                                    <pre class="bg-slate-900 text-yellow-300 p-3 rounded text-sm">oggetto["proprietà"]</pre>
+                                </div>
+                                
+                                <div class="bg-emerald-700 p-6 rounded-xl border border-emerald-500">
+                                    <h4 class="text-2xl font-bold text-emerald-100 mb-3">⚡ Metodi</h4>
+                                    <p class="text-emerald-100 mb-3">Funzioni dentro oggetti</p>
+                                    <pre class="bg-slate-900 text-yellow-300 p-3 rounded text-sm">oggetto.metodo()</pre>
+                                </div>
+                                
+                                <div class="bg-emerald-700 p-6 rounded-xl border border-emerald-500">
+                                    <h4 class="text-2xl font-bold text-emerald-100 mb-3">🔗 this</h4>
+                                    <p class="text-emerald-100 mb-3">Riferimento all'oggetto corrente</p>
+                                    <pre class="bg-slate-900 text-yellow-300 p-3 rounded text-sm">this.proprietà</pre>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-gradient-to-r from-purple-600 to-purple-800 p-8 rounded-2xl border border-purple-500">
+                            <h3 class="text-3xl font-bold text-white mb-6 flex items-center">
+                                <span class="text-4xl mr-4">👤</span>
+                                Esempio Completo
+                            </h3>
+                            
+                            <pre class="bg-slate-900 text-yellow-300 p-6 rounded-xl mb-6 text-lg border border-slate-600">let persona = {
+    nome: "Mario",
+    età: 30,
+    città: "Roma",
+    hobby: ["calcio", "lettura"],
+    
+    // Metodo
+    saluta: function() {
+        return "Ciao, sono " + this.nome;
+    },
+    
+    // Metodo con informazioni complete
+    presentati: function() {
+        return this.nome + ", " + this.età + " anni, vivo a " + this.città;
+    }
+};
+
+console.log(persona.nome);           // Mario
+console.log(persona.saluta());       // Ciao, sono Mario
+console.log(persona.presentati());   // Mario, 30 anni, vivo a Roma</pre>
+                        </div>
+                    </div>
+                `,
+                code: `let auto = {
+    marca: "Toyota",
+    modello: "Corolla",
+    anno: 2020,
+    colore: "blu",
+    
+    descrivi: function() {
+        return this.marca + " " + this.modello + " del " + this.anno;
+    }
+};
+
+console.log("Auto:", auto.descrivi());
+console.log("Colore:", auto.colore);`,
+                challenge: `Crea un oggetto "calcolatrice" che:
+1. Ha proprietà: nome, versione
+2. Ha metodi: somma, sottrazione, moltiplicazione, divisione
+3. Ogni metodo accetta due parametri e restituisce il risultato
+4. Aggiungi un metodo "info" che restituisce nome e versione
+5. Testa tutti i metodi con esempi`,
+                hint: "Crea l'oggetto con le proprietà e i metodi. Usa 'this' per accedere alle proprietà dell'oggetto. Ogni metodo matematico dovrebbe fare return parametro1 operazione parametro2.",
+                tests: [
+                    {
+                        name: "Oggetto calcolatrice definito",
+                        check: (code) => /calcolatrice\s*=\s*{/.test(code)
+                    },
+                    {
+                        name: "Ha metodi matematici",
+                        check: (code) => /somma\s*:/.test(code) && /sottrazione\s*:/.test(code) && /moltiplicazione\s*:/.test(code)
+                    },
+                    {
+                        name: "Metodi testati con chiamate",
+                        check: (code) => /calcolatrice\./.test(code) && code.split('calcolatrice.').length >= 4
+                    }
+                ]
+            },
+            {
+                id: 7,
+                title: "DOM Manipulation",
+                difficulty: "Avanzato",
+                content: `
+                    <div class="space-y-8">
+                        <div class="bg-gradient-to-r from-red-600 to-red-800 p-8 rounded-2xl border border-red-500">
+                            <h3 class="text-3xl font-bold text-white mb-6 flex items-center">
+                                <span class="text-4xl mr-4">🌐</span>
+                                Cos'è il DOM?
+                            </h3>
+                            <p class="text-xl text-red-100 mb-6">
+                                Il <strong>DOM (Document Object Model)</strong> rappresenta la struttura HTML della pagina. 
+                                JavaScript può modificare dinamicamente elementi, stili e contenuti.
+                            </p>
+                            <div class="bg-red-700 p-6 rounded-xl border border-red-500">
+                                <p class="text-red-100 text-lg">
+                                    💡 <strong>Pensa così:</strong> Il DOM è come un albero dove ogni elemento HTML 
+                                    è un ramo che puoi modificare con JavaScript.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="bg-gradient-to-r from-blue-600 to-blue-800 p-8 rounded-2xl border border-blue-500">
+                            <h3 class="text-3xl font-bold text-white mb-6 flex items-center">
+                                <span class="text-4xl mr-4">🎯</span>
+                                Metodi DOM Essenziali
+                            </h3>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="bg-blue-700 p-6 rounded-xl border border-blue-500">
+                                    <h4 class="text-2xl font-bold text-blue-100 mb-3">🔍 getElementById()</h4>
+                                    <p class="text-blue-100 mb-3">Seleziona elemento per ID</p>
+                                    <pre class="bg-slate-900 text-yellow-300 p-3 rounded text-sm">document.getElementById('id')</pre>
+                                </div>
+                                
+                                <div class="bg-blue-700 p-6 rounded-xl border border-blue-500">
+                                    <h4 class="text-2xl font-bold text-blue-100 mb-3">🎯 querySelector()</h4>
+                                    <p class="text-blue-100 mb-3">Seleziona con CSS selector</p>
+                                    <pre class="bg-slate-900 text-yellow-300 p-3 rounded text-sm">document.querySelector('.class')</pre>
+                                </div>
+                                
+                                <div class="bg-blue-700 p-6 rounded-xl border border-blue-500">
+                                    <h4 class="text-2xl font-bold text-blue-100 mb-3">📝 innerHTML</h4>
+                                    <p class="text-blue-100 mb-3">Modifica contenuto HTML</p>
+                                    <pre class="bg-slate-900 text-yellow-300 p-3 rounded text-sm">element.innerHTML = 'nuovo'</pre>
+                                </div>
+                                
+                                <div class="bg-blue-700 p-6 rounded-xl border border-blue-500">
+                                    <h4 class="text-2xl font-bold text-blue-100 mb-3">👂 addEventListener()</h4>
+                                    <p class="text-blue-100 mb-3">Gestisce eventi</p>
+                                    <pre class="bg-slate-900 text-yellow-300 p-3 rounded text-sm">element.addEventListener('click')</pre>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-gradient-to-r from-green-600 to-green-800 p-8 rounded-2xl border border-green-500">
+                            <h3 class="text-3xl font-bold text-white mb-6 flex items-center">
+                                <span class="text-4xl mr-4">⚡</span>
+                                Esempio Interattivo
+                            </h3>
+                            
+                            <pre class="bg-slate-900 text-yellow-300 p-6 rounded-xl mb-6 text-lg border border-slate-600">// Seleziona elementi
+let titolo = document.getElementById('titolo');
+let bottone = document.querySelector('.btn');
+
+// Modifica contenuto
+titolo.innerHTML = 'Nuovo Titolo!';
+titolo.style.color = 'blue';
+
+// Gestisci eventi
+bottone.addEventListener('click', function() {
+    alert('Bottone cliccato!');
+});
+
+// Crea nuovo elemento
+let nuovoParagrafo = document.createElement('p');
+nuovoParagrafo.textContent = 'Paragrafo creato dinamicamente';
+document.body.appendChild(nuovoParagrafo);</pre>
+                        </div>
+                    </div>
+                `,
+                code: `// Simula la manipolazione del DOM
+// (In questo ambiente non abbiamo accesso al DOM reale)
+
+// Crea un oggetto che simula un elemento DOM
+let elementoSimulato = {
+    innerHTML: "Testo originale",
+    style: {},
+    
+    addEventListener: function(evento, callback) {
+        console.log("Event listener aggiunto per:", evento);
+        // Simula il click dopo 2 secondi
+        setTimeout(callback, 2000);
+    }
+};
+
+// Modifica il contenuto
+elementoSimulato.innerHTML = "Testo modificato!";
+console.log("Contenuto:", elementoSimulato.innerHTML);
+
+// Aggiungi event listener
+elementoSimulato.addEventListener('click', function() {
+    console.log("Elemento cliccato!");
+});`,
+                challenge: `Crea una funzione "gestoreElementi" che:
+1. Simula la creazione di 3 elementi (oggetti con proprietà: id, contenuto, tipo)
+2. Ha una funzione "modificaContenuto" che cambia il contenuto di un elemento per ID
+3. Ha una funzione "aggiungiStile" che aggiunge una proprietà style a un elemento
+4. Ha una funzione "listaElementi" che stampa tutti gli elementi
+5. Testa tutte le funzioni`,
+                hint: "Crea un array per memorizzare gli elementi. Usa find() per trovare elementi per ID. Ogni elemento dovrebbe essere un oggetto con id, contenuto, tipo, e style.",
+                tests: [
+                    {
+                        name: "Funzione gestoreElementi definita",
+                        check: (code) => /function\s+gestoreElementi\s*\(/.test(code) || /gestoreElementi\s*=/.test(code)
+                    },
+                    {
+                        name: "Crea elementi simulati",
+                        check: (code) => /elementi/.test(code) && (/push\(/.test(code) || /\[.*{/.test(code))
+                    },
+                    {
+                        name: "Ha funzioni per manipolare elementi",
+                        check: (code) => /modificaContenuto/.test(code) && /aggiungiStile/.test(code)
+                    }
+                ]
+            },
+            {
+                id: 8,
+                title: "Async/Await e Promises",
+                difficulty: "Avanzato",
+                content: `
+                    <div class="space-y-8">
+                        <div class="bg-gradient-to-r from-yellow-600 to-yellow-800 p-8 rounded-2xl border border-yellow-500">
+                            <h3 class="text-3xl font-bold text-white mb-6 flex items-center">
+                                <span class="text-4xl mr-4">⏰</span>
+                                Programmazione Asincrona
+                            </h3>
+                            <p class="text-xl text-yellow-100 mb-6">
+                                La programmazione <strong>asincrona</strong> permette di eseguire operazioni che richiedono tempo 
+                                (come chiamate API) senza bloccare l'esecuzione del resto del codice.
+                            </p>
+                            <div class="bg-yellow-700 p-6 rounded-xl border border-yellow-500">
+                                <p class="text-yellow-100 text-lg">
+                                    💡 <strong>Pensa così:</strong> È come ordinare una pizza: fai l'ordine (avvii l'operazione), 
+                                    poi fai altro mentre aspetti che arrivi (codice asincrono).
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="bg-gradient-to-r from-purple-600 to-purple-800 p-8 rounded-2xl border border-purple-500">
+                            <h3 class="text-3xl font-bold text-white mb-6 flex items-center">
+                                <span class="text-4xl mr-4">🔧</span>
+                                Concetti Chiave
+                            </h3>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="bg-purple-700 p-6 rounded-xl border border-purple-500">
+                                    <h4 class="text-2xl font-bold text-purple-100 mb-3">🤝 Promise</h4>
+                                    <p class="text-purple-100 mb-3">Rappresenta un'operazione futura</p>
+                                    <pre class="bg-slate-900 text-yellow-300 p-3 rounded text-sm">new Promise((resolve, reject))</pre>
+                                </div>
+                                
+                                <div class="bg-purple-700 p-6 rounded-xl border border-purple-500">
+                                    <h4 class="text-2xl font-bold text-purple-100 mb-3">⚡ async/await</h4>
+                                    <p class="text-purple-100 mb-3">Sintassi moderna per promises</p>
+                                    <pre class="bg-slate-900 text-yellow-300 p-3 rounded text-sm">async function() { await }</pre>
+                                </div>
+                                
+                                <div class="bg-purple-700 p-6 rounded-xl border border-purple-500">
+                                    <h4 class="text-2xl font-bold text-purple-100 mb-3">🌐 fetch()</h4>
+                                    <p class="text-purple-100 mb-3">Per chiamate HTTP</p>
+                                    <pre class="bg-slate-900 text-yellow-300 p-3 rounded text-sm">fetch('url').then()</pre>
+                                </div>
+                                
+                                <div class="bg-purple-700 p-6 rounded-xl border border-purple-500">
+                                    <h4 class="text-2xl font-bold text-purple-100 mb-3">🛡️ try/catch</h4>
+                                    <p class="text-purple-100 mb-3">Gestione errori</p>
+                                    <pre class="bg-slate-900 text-yellow-300 p-3 rounded text-sm">try { await } catch (error)</pre>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-gradient-to-r from-green-600 to-green-800 p-8 rounded-2xl border border-green-500">
+                            <h3 class="text-3xl font-bold text-white mb-6 flex items-center">
+                                <span class="text-4xl mr-4">🌐</span>
+                                Esempio Pratico
+                            </h3>
+                            
+                            <pre class="bg-slate-900 text-yellow-300 p-6 rounded-xl mb-6 text-lg border border-slate-600">// Funzione asincrona
+async function caricaDati() {
+    try {
+        console.log("Inizio caricamento...");
+        
+        // Simula chiamata API
+        let response = await fetch('https://api.esempio.com/dati');
+        let dati = await response.json();
+        
+        console.log("Dati caricati:", dati);
+        return dati;
+    } catch (error) {
+        console.error("Errore:", error);
+    }
+}
+
+// Promise manuale
+function aspetta(millisecondi) {
+    return new Promise(resolve => {
+        setTimeout(resolve, millisecondi);
+    });
+}</pre>
+                        </div>
+                    </div>
+                `,
+                code: `// Simula operazioni asincrone
+function simulaCaricamento(tempo, messaggio) {
+    return new Promise((resolve, reject) => {
+        console.log("Inizio:", messaggio);
+        
+        setTimeout(() => {
+            if (Math.random() > 0.2) { // 80% successo
+                resolve("Completato: " + messaggio);
+            } else {
+                reject("Errore in: " + messaggio);
+            }
+        }, tempo);
+    });
+}
+
+// Funzione async/await
+async function eseguiOperazioni() {
+    try {
+        let risultato1 = await simulaCaricamento(1000, "Caricamento dati");
+        console.log(risultato1);
+        
+        let risultato2 = await simulaCaricamento(500, "Elaborazione");
+        console.log(risultato2);
+        
+        console.log("Tutte le operazioni completate!");
+    } catch (error) {
+        console.error("Si è verificato un errore:", error);
+    }
+}
+
+// Esegui
+eseguiOperazioni();`,
+                challenge: `Crea un sistema di "download" simulato:
+1. Funzione "downloadFile" che simula il download di un file (usa Promise)
+2. Funzione "downloadMultipleFiles" che scarica più file in parallelo (usa Promise.all)
+3. Funzione "downloadSequential" che scarica file uno dopo l'altro
+4. Ogni download ha una durata casuale (500-2000ms) e può fallire (20% probabilità)
+5. Testa tutte le funzioni con esempi`,
+                hint: "Usa Promise con setTimeout per simulare il tempo. Promise.all() per parallelo, await in loop per sequenziale. Gestisci errori con try/catch.",
+                tests: [
+                    {
+                        name: "Funzione downloadFile definita",
+                        check: (code) => /function\s+downloadFile/.test(code) || /downloadFile\s*=/.test(code)
+                    },
+                    {
+                        name: "Usa Promise",
+                        check: (code) => /new\s+Promise/.test(code) || /Promise\.all/.test(code)
+                    },
+                    {
+                        name: "Usa async/await",
+                        check: (code) => /async\s+function/.test(code) && /await/.test(code)
+                    }
+                ]
+            },
+            {
+                id: 9,
+                title: "Gestione degli Errori",
+                difficulty: "Avanzato",
+                content: `
+                    <div class="space-y-8">
+                        <div class="bg-gradient-to-r from-red-600 to-red-800 p-8 rounded-2xl border border-red-500">
+                            <h3 class="text-3xl font-bold text-white mb-6 flex items-center">
+                                <span class="text-4xl mr-4">🛡️</span>
+                                Perché Gestire gli Errori?
+                            </h3>
+                            <p class="text-xl text-red-100 mb-6">
+                                La <strong>gestione degli errori</strong> è fondamentale per creare applicazioni robuste 
+                                che non si bloccano quando qualcosa va storto.
+                            </p>
+                            <div class="bg-red-700 p-6 rounded-xl border border-red-500">
+                                <p class="text-red-100 text-lg">
+                                    💡 <strong>Pensa così:</strong> È come avere un piano B quando qualcosa non funziona: 
+                                    invece di fermarsi, il programma sa cosa fare.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="bg-gradient-to-r from-orange-600 to-orange-800 p-8 rounded-2xl border border-orange-500">
+                            <h3 class="text-3xl font-bold text-white mb-6 flex items-center">
+                                <span class="text-4xl mr-4">🔧</span>
+                                Strumenti per Gestire gli Errori
+                            </h3>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="bg-orange-700 p-6 rounded-xl border border-orange-500">
+                                    <h4 class="text-2xl font-bold text-orange-100 mb-3">🎯 try/catch</h4>
+                                    <p class="text-orange-100 mb-3">Cattura errori sincroni</p>
+                                    <pre class="bg-slate-900 text-yellow-300 p-3 rounded text-sm">try { codice } catch (error)</pre>
+                                </div>
+                                
+                                <div class="bg-orange-700 p-6 rounded-xl border border-orange-500">
+                                    <h4 class="text-2xl font-bold text-orange-100 mb-3">🏁 finally</h4>
+                                    <p class="text-orange-100 mb-3">Esegue sempre, errore o no</p>
+                                    <pre class="bg-slate-900 text-yellow-300 p-3 rounded text-sm">finally { cleanup }</pre>
+                                </div>
+                                
+                                <div class="bg-orange-700 p-6 rounded-xl border border-orange-500">
+                                    <h4 class="text-2xl font-bold text-orange-100 mb-3">💥 throw</h4>
+                                    <p class="text-orange-100 mb-3">Lancia errori personalizzati</p>
+                                    <pre class="bg-slate-900 text-yellow-300 p-3 rounded text-sm">throw new Error("messaggio")</pre>
+                                </div>
+                                
+                                <div class="bg-orange-700 p-6 rounded-xl border border-orange-500">
+                                    <h4 class="text-2xl font-bold text-orange-100 mb-3">📊 Error Object</h4>
+                                    <p class="text-orange-100 mb-3">Informazioni sull'errore</p>
+                                    <pre class="bg-slate-900 text-yellow-300 p-3 rounded text-sm">error.message, error.name</pre>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-gradient-to-r from-purple-600 to-purple-800 p-8 rounded-2xl border border-purple-500">
+                            <h3 class="text-3xl font-bold text-white mb-6 flex items-center">
+                                <span class="text-4xl mr-4">🎯</span>
+                                Esempi Pratici
+                            </h3>
+                            
+                            <pre class="bg-slate-900 text-yellow-300 p-6 rounded-xl mb-6 text-lg border border-slate-600">// Esempio base
+function dividi(a, b) {
+    try {
+        if (b === 0) {
+            throw new Error("Divisione per zero non permessa!");
+        }
+        return a / b;
+    } catch (error) {
+        console.error("Errore:", error.message);
+        return null;
+    } finally {
+        console.log("Operazione completata");
+    }
+}
+
+// Con async/await
+async function caricaDatiSicuri() {
+    try {
+        let dati = await fetch('/api/dati');
+        return await dati.json();
+    } catch (error) {
+        console.error("Errore nel caricamento:", error);
+        return { errore: true, messaggio: error.message };
+    }
+}</pre>
+                        </div>
+                    </div>
+                `,
+                code: `// Esempio di gestione errori
+function calcolaRadiceQuadrata(numero) {
+    try {
+        if (typeof numero !== 'number') {
+            throw new Error("Il parametro deve essere un numero");
+        }
+        if (numero < 0) {
+            throw new Error("Non posso calcolare la radice di un numero negativo");
+        }
+        return Math.sqrt(numero);
+    } catch (error) {
+        console.error("Errore:", error.message);
+        return null;
+    } finally {
+        console.log("Calcolo terminato");
+    }
+}
+
+// Test
+console.log(calcolaRadiceQuadrata(16));  // 4
+console.log(calcolaRadiceQuadrata(-4));  // null (con errore)
+console.log(calcolaRadiceQuadrata("abc")); // null (con errore)`,
+                challenge: `Crea una funzione "validatoreEmail" che:
+1. Accetta una stringa come parametro
+2. Controlla se è una email valida (contiene @ e .)
+3. Lancia errori specifici per diversi problemi:
+   - "Email vuota" se la stringa è vuota
+   - "Manca @" se non contiene @
+   - "Manca dominio" se non contiene . dopo @
+4. Restituisce true se l'email è valida
+5. Testa con email valide e non valide, gestendo gli errori`,
+                hint: "Usa try/catch per gestire gli errori. Controlla la stringa con includes() per @ e ., e indexOf() per verificare l'ordine.",
+                tests: [
+                    {
+                        name: "Funzione validatoreEmail definita",
+                        check: (code) => /function\s+validatoreEmail\s*\(/.test(code)
+                    },
+                    {
+                        name: "Usa try/catch",
+                        check: (code) => /try\s*{/.test(code) && /catch\s*\(/.test(code)
+                    },
+                    {
+                        name: "Lancia errori con throw",
+                        check: (code) => /throw/.test(code) && /Error/.test(code)
+                    }
+                ]
+            },
+            {
+                id: 10,
+                title: "Progetto Finale - Todo App",
+                difficulty: "Progetto",
+                content: `
+                    <div class="space-y-8">
+                        <div class="bg-gradient-to-r from-emerald-600 to-emerald-800 p-8 rounded-2xl border border-emerald-500">
+                            <h3 class="text-3xl font-bold text-white mb-6 flex items-center">
+                                <span class="text-4xl mr-4">🚀</span>
+                                Progetto Finale: Todo App
+                            </h3>
+                            <p class="text-xl text-emerald-100 mb-6">
+                                È arrivato il momento di mettere insieme tutto quello che hai imparato! 
+                                Creeremo una <strong>Todo App</strong> completa e funzionale.
+                            </p>
+                            <div class="bg-emerald-700 p-6 rounded-xl border border-emerald-500">
+                                <p class="text-emerald-100 text-lg">
+                                    💡 <strong>Obiettivo:</strong> Creare un'applicazione per gestire una lista di compiti 
+                                    con tutte le funzionalità principali.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="bg-gradient-to-r from-blue-600 to-blue-800 p-8 rounded-2xl border border-blue-500">
+                            <h3 class="text-3xl font-bold text-white mb-6 flex items-center">
+                                <span class="text-4xl mr-4">📋</span>
+                                Funzionalità Richieste
+                            </h3>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="bg-blue-700 p-6 rounded-xl border border-blue-500">
+                                    <h4 class="text-2xl font-bold text-blue-100 mb-3">➕ Aggiungere Todo</h4>
+                                    <p class="text-blue-100">Creare nuovi compiti nella lista</p>
+                                </div>
+                                
+                                <div class="bg-blue-700 p-6 rounded-xl border border-blue-500">
+                                    <h4 class="text-2xl font-bold text-blue-100 mb-3">✅ Completare Todo</h4>
+                                    <p class="text-blue-100">Segnare i compiti come completati</p>
+                                </div>
+                                
+                                <div class="bg-blue-700 p-6 rounded-xl border border-blue-500">
+                                    <h4 class="text-2xl font-bold text-blue-100 mb-3">🗑️ Eliminare Todo</h4>
+                                    <p class="text-blue-100">Rimuovere compiti dalla lista</p>
+                                </div>
+                                
+                                <div class="bg-blue-700 p-6 rounded-xl border border-blue-500">
+                                    <h4 class="text-2xl font-bold text-blue-100 mb-3">📊 Statistiche</h4>
+                                    <p class="text-blue-100">Mostrare totale e completati</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-gradient-to-r from-purple-600 to-purple-800 p-8 rounded-2xl border border-purple-500">
+                            <h3 class="text-3xl font-bold text-white mb-6 flex items-center">
+                                <span class="text-4xl mr-4">🏗️</span>
+                                Struttura Suggerita
+                            </h3>
+                            
+                            <pre class="bg-slate-900 text-yellow-300 p-6 rounded-xl mb-6 text-lg border border-slate-600">// Struttura base della Todo App
+let todoApp = {
+    todos: [],
+    
+    // Aggiunge un nuovo todo
+    aggiungiTodo: function(testo) {
+        // Il tuo codice qui
+    },
+    
+    // Segna un todo come completato
+    completaTodo: function(id) {
+        // Il tuo codice qui
+    },
+    
+    // Elimina un todo
+    eliminaTodo: function(id) {
+        // Il tuo codice qui
+    },
+    
+    // Mostra tutti i todos
+    mostraTodos: function() {
+        // Il tuo codice qui
+    },
+    
+    // Calcola statistiche
+    getStatistiche: function() {
+        // Il tuo codice qui
+    }
+};</pre>
+                        </div>
+
+                        <div class="bg-gradient-to-r from-yellow-600 to-yellow-800 p-8 rounded-2xl border border-yellow-500">
+                            <h3 class="text-3xl font-bold text-white mb-6 flex items-center">
+                                <span class="text-4xl mr-4">💡</span>
+                                Suggerimenti
+                            </h3>
+                            
+                            <ul class="text-yellow-100 space-y-3 text-lg">
+                                <li>• Ogni todo dovrebbe essere un oggetto con: id, testo, completato, dataCreazione</li>
+                                <li>• Usa Date.now() per generare ID unici</li>
+                                <li>• Usa array.find() per trovare todos specifici</li>
+                                <li>• Usa array.filter() per filtrare todos completati/non completati</li>
+                                <li>• Gestisci errori con try/catch</li>
+                                <li>• Testa ogni funzione con esempi pratici</li>
+                            </ul>
+                        </div>
+                    </div>
+                `,
+                code: `// Inizia il tuo progetto Todo App qui!
+let todoApp = {
+    todos: [],
+    
+    // Aggiunge un nuovo todo
+    aggiungiTodo: function(testo) {
+        // Implementa questa funzione
+        console.log("Aggiungendo todo:", testo);
+    },
+    
+    // Segna un todo come completato
+    completaTodo: function(id) {
+        // Implementa questa funzione
+        console.log("Completando todo con ID:", id);
+    },
+    
+    // Elimina un todo
+    eliminaTodo: function(id) {
+        // Implementa questa funzione
+        console.log("Eliminando todo con ID:", id);
+    },
+    
+    // Mostra tutti i todos
+    mostraTodos: function() {
+        // Implementa questa funzione
+        console.log("Todos attuali:", this.todos);
+    },
+    
+    // Calcola statistiche
+    getStatistiche: function() {
+        // Implementa questa funzione
+        return {
+            totale: this.todos.length,
+            completati: 0,
+            daCompletare: this.todos.length
+        };
+    }
+};
+
+// Test iniziale
+console.log("Todo App inizializzata!");
+console.log("Statistiche:", todoApp.getStatistiche());`,
+                challenge: `Completa la Todo App implementando tutte le funzioni:
+
+1. **aggiungiTodo(testo)**: Crea un nuovo todo con id unico, testo, completato=false, dataCreazione
+2. **completaTodo(id)**: Trova il todo per ID e cambia completato a true
+3. **eliminaTodo(id)**: Rimuove il todo dall'array
+4. **mostraTodos()**: Stampa tutti i todos in formato leggibile
+5. **getStatistiche()**: Restituisce oggetto con totale, completati, daCompletare
+
+Poi testa l'app:
+- Aggiungi almeno 3 todos
+- Completa 1-2 todos
+- Elimina 1 todo
+- Mostra la lista finale
+- Stampa le statistiche`,
+                hint: "Usa Date.now() per ID unici. Per completaTodo/eliminaTodo usa find() e findIndex(). Per statistiche usa filter() per contare i completati.",
+                tests: [
+                    {
+                        name: "Funzione aggiungiTodo implementata",
+                        check: (code) => /aggiungiTodo\s*:\s*function/.test(code) && /push/.test(code)
+                    },
+                    {
+                        name: "Funzione completaTodo implementata",
+                        check: (code) => /completaTodo\s*:\s*function/.test(code) && (/find/.test(code) || /forEach/.test(code))
+                    },
+                    {
+                        name: "App testata con esempi",
+                        check: (code) => /aggiungiTodo\s*\(/.test(code) && code.split('aggiungiTodo(').length >= 3
+                    }
+                ]
+            }
+        ];
+
+        // Funzioni di utilità
+        function updateProgress() {
+            const completed = completedLessons.size;
+            const total = lessons.length;
+            const percentage = Math.round((completed / total) * 100);
+            
+            progressBar.style.width = percentage + '%';
+            progressText.textContent = percentage + '% Completato';
+            totalStarsEl.textContent = totalStars;
+        }
+
+        function generateLessonsList() {
+            const lessonsList = document.getElementById('lessonsList');
+            lessonsList.innerHTML = '';
+            
+            lessons.forEach((lesson, index) => {
+                const isCompleted = completedLessons.has(lesson.id);
+                const isLocked = false; // Tutte le lezioni sono sbloccate
+                
+                const card = document.createElement('div');
+                card.className = `lesson-card p-5 rounded-xl shadow-lg border-2 border-slate-600 ${
+                    isCompleted ? 'completed' : 
+                    isLocked ? 'locked bg-slate-700' : 
+                    'bg-slate-700 hover:bg-slate-600'
+                }`;
+                
+                if (!isLocked) {
+                    card.dataset.lesson = lesson.id;
+                }
+                
+                const difficultyColors = {
+                    'Principiante': 'text-green-400',
+                    'Intermedio': 'text-yellow-400', 
+                    'Avanzato': 'text-red-400',
+                    'Progetto': 'text-purple-400'
+                };
+                
+                card.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <div class="flex-1">
+                            <h3 class="font-bold text-lg ${isCompleted ? 'text-white' : 'text-slate-200'} mb-1">
+                                ${lesson.id}. ${lesson.title}
+                            </h3>
+                            <p class="text-sm ${isCompleted ? 'text-green-100' : difficultyColors[lesson.difficulty] || 'text-slate-400'} mb-2">
+                                ${lesson.difficulty}
+                            </p>
+                            ${isCompleted ? `
+                                <div class="flex items-center space-x-1">
+                                    <span class="star filled">★</span>
+                                    <span class="star filled">★</span>
+                                    <span class="star filled">★</span>
+                                    <span class="text-green-200 text-xs ml-2">Completata</span>
+                                </div>
+                            ` : ''}
+                        </div>
+                        <div class="text-2xl">
+                            ${isCompleted ? '✅' : isLocked ? '🔒' : lesson.difficulty === 'Progetto' ? '🚀' : '📚'}
+                        </div>
+                    </div>
+                `;
+                
+                if (!isLocked) {
+                    card.addEventListener('click', () => loadLesson(lesson.id));
+                }
+                
+                lessonsList.appendChild(card);
+            });
+        }
+
+        function loadLesson(lessonId) {
+            const lesson = lessons.find(l => l.id === lessonId);
+            if (!lesson) return;
+            
+            currentLesson = lessonId;
+            
+            // Aggiorna contenuto
+            lessonTitle.textContent = lesson.title;
+            lessonText.innerHTML = lesson.content;
+            challengeText.innerHTML = lesson.challenge;
+            codeEditor.value = lesson.code;
+            hintText.textContent = lesson.hint;
+            
+            // Aggiorna difficoltà
+            document.getElementById('lessonDifficulty').textContent = lesson.difficulty;
+            
+            // Mostra sezione esercizio
+            exerciseSection.style.display = 'block';
+            
+            // Reset stato
+            runCode();
+            feedback.classList.add('hidden');
+            hint.classList.add('hidden');
+            
+            // Aggiorna stato visivo
+            updateLessonCards();
+        }
+
+        function updateLessonCards() {
+            document.querySelectorAll('.lesson-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            
+            const activeCard = document.querySelector(`[data-lesson="${currentLesson}"]`);
+            if (activeCard) {
+                activeCard.classList.add('active');
+            }
+        }
+
+        function runCode() {
+            const code = codeEditor.value;
+            consoleOutput.innerHTML = '';
+            
+            // Intercetta console.log
+            const originalLog = console.log;
+            const logs = [];
+            
+            console.log = function(...args) {
+                logs.push(args.map(arg => 
+                    typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+                ).join(' '));
+                originalLog.apply(console, args);
+            };
+            
+            try {
+                // Esegui il codice in un contesto sicuro
+                const func = new Function(code);
+                func();
+                
+                // Mostra output
+                if (logs.length > 0) {
+                    consoleOutput.innerHTML = logs.join('\n');
+                } else {
+                    consoleOutput.innerHTML = '<span class="text-slate-400">// Nessun output</span>';
+                }
+            } catch (error) {
+                consoleOutput.innerHTML = `<span class="text-red-400">❌ Errore: ${error.message}</span>`;
+            } finally {
+                console.log = originalLog;
+            }
+        }
+
+        function resetCode() {
+            const lesson = lessons.find(l => l.id === currentLesson);
+            if (lesson) {
+                codeEditor.value = lesson.code;
+                runCode();
+                feedback.classList.add('hidden');
+                hint.classList.add('hidden');
+            }
+        }
+
+        function showHint() {
+            hint.classList.toggle('hidden');
+        }
+
+        function checkSolution() {
+            const lesson = lessons.find(l => l.id === currentLesson);
+            if (!lesson) return;
+            
+            const code = codeEditor.value;
+            const testResults = lesson.tests.map(test => ({
+                name: test.name,
+                passed: test.check(code)
+            }));
+            
+            // Mostra risultati test
+            const testResultsEl = document.getElementById('testResults');
+            testResultsEl.innerHTML = testResults.map(result => `
+                <div class="flex items-center space-x-2 p-2 rounded ${result.passed ? 'bg-green-900 text-green-200' : 'bg-red-900 text-red-200'}">
+                    <span class="text-lg">${result.passed ? '✅' : '❌'}</span>
+                    <span class="text-sm">${result.name}</span>
+                </div>
+            `).join('');
+            
+            const allPassed = testResults.every(result => result.passed);
+            
+            feedback.classList.remove('hidden');
+            
+            if (allPassed) {
+                feedback.innerHTML = `
+                    <div class="bg-green-900 border-2 border-green-400 text-green-100 px-6 py-4 rounded-xl">
+                        <div class="flex items-center">
+                            <span class="text-3xl mr-4">🎉</span>
+                            <div>
+                                <div class="font-bold text-xl">Perfetto!</div>
+                                <div class="text-green-200">Hai completato tutti i test correttamente!</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Completa lezione
+                if (!completedLessons.has(currentLesson)) {
+                    completedLessons.add(currentLesson);
+                    lessonStars[currentLesson] = 3;
+                    totalStars += 3;
+                    
+                    setTimeout(() => {
+                        document.getElementById('earnedStars').innerHTML = `
+                            <span class="star filled">★</span>
+                            <span class="star filled">★</span>
+                            <span class="star filled">★</span>
+                        `;
+                        document.getElementById('successMessage').textContent = 'Hai guadagnato 3 stelle!';
+                        successModal.classList.remove('hidden');
+                        successModal.classList.add('flex');
+                    }, 1500);
+                    
+                    updateProgress();
+                    generateLessonsList();
+                }
+            } else {
+                const failedTests = testResults.filter(r => !r.passed);
+                feedback.innerHTML = `
+                    <div class="bg-red-900 border-2 border-red-400 text-red-100 px-6 py-4 rounded-xl">
+                        <div class="flex items-center">
+                            <span class="text-3xl mr-4">❌</span>
+                            <div>
+                                <div class="font-bold text-xl">Non ancora!</div>
+                                <div class="text-red-200 mb-2">Test falliti: ${failedTests.length}/${testResults.length}</div>
+                                <div class="text-red-300 text-sm">Controlla i requisiti e riprova.</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // Event Listeners
+        runCodeBtn.addEventListener('click', runCode);
+        resetCodeBtn.addEventListener('click', resetCode);
+        hintBtn.addEventListener('click', showHint);
+        checkSolutionBtn.addEventListener('click', checkSolution);
+
+        // Navigazione
+        document.getElementById('prevBtn').addEventListener('click', () => {
+            if (currentLesson > 1) {
+                loadLesson(currentLesson - 1);
+            }
+        });
+
+        document.getElementById('nextBtn').addEventListener('click', () => {
+            if (currentLesson < lessons.length) {
+                loadLesson(currentLesson + 1);
+            }
+        });
+
+        // Modal
+        stayBtn.addEventListener('click', () => {
+            successModal.classList.add('hidden');
+            successModal.classList.remove('flex');
+        });
+
+        nextLessonBtn.addEventListener('click', () => {
+            successModal.classList.add('hidden');
+            successModal.classList.remove('flex');
+            
+            if (currentLesson < lessons.length) {
+                loadLesson(currentLesson + 1);
+            }
+        });
+
+        // Auto-run code
+        codeEditor.addEventListener('input', () => {
+            clearTimeout(window.updateTimeout);
+            window.updateTimeout = setTimeout(runCode, 1000);
+        });
+
+        // Inizializzazione
+        generateLessonsList();
+        updateProgress();
+        
+        // Carica prima lezione automaticamente
+        setTimeout(() => {
+            loadLesson(1);
+        }, 500);
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9749b0b71372edde',t:'MTc1NjExMDIzNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

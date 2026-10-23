@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editor JavaScript - Esercizi Interattivi</title>
+    <style>
+        body {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+            min-height: calc(100vh - 40px);
+        }
+
+        .sidebar {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            height: fit-content;
+        }
+
+        .sidebar h2 {
+            margin: 0 0 20px 0;
+            color: #333;
+            font-size: 1.4em;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .exercise-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .exercise-item {
+            padding: 12px 16px;
+            margin: 8px 0;
+            background: #f8f9fa;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+
+        .exercise-item:hover {
+            background: #e9ecef;
+            transform: translateX(4px);
+        }
+
+        .exercise-item.active {
+            background: #667eea;
+            color: white;
+            border-left-color: #4c63d2;
+        }
+
+        .exercise-item.example {
+            border-left-color: #28a745;
+        }
+
+        .exercise-item.exercise {
+            border-left-color: #ffc107;
+        }
+
+        .exercise-item.challenge {
+            border-left-color: #dc3545;
+        }
+
+        .exercise-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .exercise-difficulty {
+            font-size: 0.85em;
+            opacity: 0.8;
+        }
+
+        .exercise-type {
+            font-size: 0.75em;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-weight: 500;
+        }
+
+        .type-example {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .type-exercise {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .type-challenge {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .main-content {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            padding: 20px;
+            background: #667eea;
+            color: white;
+        }
+
+        .header h1 {
+            margin: 0 0 8px 0;
+            font-size: 1.6em;
+        }
+
+        .header p {
+            margin: 0;
+            opacity: 0.9;
+        }
+
+        .editor-container {
+            flex: 1;
+            display: grid;
+            grid-template-rows: auto 1fr auto 250px;
+            min-height: 0;
+        }
+
+        .exercise-description {
+            padding: 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .exercise-description h3 {
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+
+        .exercise-description p {
+            margin: 0;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .code-editor {
+            position: relative;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .editor-textarea {
+            width: 100%;
+            height: 100%;
+            border: none;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            resize: none;
+            outline: none;
+        }
+
+        .controls {
+            padding: 15px 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #dee2e6;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5a67d8;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .btn-warning:hover {
+            background: #e0a800;
+        }
+
+        .output-container {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            overflow-y: auto;
+            border-top: 1px solid #dee2e6;
+        }
+
+        .output-tabs {
+            display: flex;
+            background: #2d2d2d;
+            border-bottom: 1px solid #404040;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            background: transparent;
+            border: none;
+            color: #ccc;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+
+        .tab-btn:hover {
+            background: #404040;
+            color: white;
+        }
+
+        .tab-btn.active {
+            color: white;
+            border-bottom-color: #667eea;
+            background: #404040;
+        }
+
+        .tab-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tab-panel {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+        }
+
+        .tab-panel.active {
+            display: flex;
+        }
+
+        .output-content {
+            padding: 15px 20px;
+            white-space: pre-wrap;
+            min-height: 140px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .error {
+            color: #ff6b6b;
+        }
+
+        .success {
+            color: #51cf66;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                gap: 15px;
+                padding: 15px;
+            }
+            
+            .sidebar {
+                order: 2;
+            }
+            
+            .main-content {
+                order: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <h2>📚 Esercizi JavaScript</h2>
+            <ul class="exercise-list" id="exerciseList">
+                <!-- Gli esercizi verranno caricati qui -->
+            </ul>
+        </div>
+
+        <div class="main-content">
+            <div class="header">
+                <h1 id="currentTitle">Seleziona un esercizio</h1>
+                <p id="currentDifficulty">Scegli un esercizio dalla lista per iniziare</p>
+            </div>
+
+            <div class="editor-container">
+                <div class="exercise-description" id="exerciseDescription">
+                    <h3>Benvenuto nell'Editor JavaScript!</h3>
+                    <p>Seleziona un esercizio dalla lista a sinistra per iniziare a programmare. Troverai esempi da studiare, esercizi da completare e sfide avanzate!</p>
+                </div>
+
+                <div class="code-editor">
+                    <textarea 
+                        id="codeEditor" 
+                        class="editor-textarea" 
+                        placeholder="// Seleziona un esercizio per iniziare a scrivere codice JavaScript
+console.log('Ciao mondo!');"
+                    ></textarea>
+                </div>
+
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="runCode()">▶️ Esegui Codice</button>
+                    <button class="btn btn-secondary" onclick="clearOutput()">🗑️ Pulisci Output</button>
+                    <button class="btn btn-success" onclick="resetExercise()">🔄 Reset Esercizio</button>
+                    <button class="btn btn-warning" onclick="showSolution()" id="solutionBtn" style="display: none;">💡 Mostra Soluzione</button>
+                </div>
+
+                <div class="output-container">
+                    <div class="output-tabs">
+                        <button class="tab-btn active" onclick="switchTab('console')">📋 Console</button>
+                        <button class="tab-btn" onclick="switchTab('preview')">👁️ Anteprima HTML</button>
+                    </div>
+                    <div class="tab-content">
+                        <div class="tab-panel active" id="consolePanel">
+                            <div class="output-content" id="output">Premi "Esegui Codice" per vedere i risultati qui...</div>
+                        </div>
+                        <div class="tab-panel" id="previewPanel">
+                            <iframe id="previewFrame" style="width: 100%; height: 100%; border: none; background: white;"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Database degli esercizi
+        const exercises = [
+            // ESEMPI (per imparare)
+            {
+                id: 1,
+                title: "Hello World",
+                difficulty: "Principiante",
+                type: "example",
+                description: "Esempio: Il tuo primo programma JavaScript! Osserva come si stampa un messaggio nella console.",
+                startingCode: "// Il tuo primo programma JavaScript\nconsole.log('Ciao mondo!');\nconsole.log('Benvenuto nella programmazione!');",
+                category: "base"
+            },
+            {
+                id: 2,
+                title: "Variabili - Esempio",
+                difficulty: "Principiante",
+                type: "example",
+                description: "Esempio: Come creare e usare le variabili in JavaScript.",
+                startingCode: "// Esempi di variabili\nlet nome = \"Mario\";\nlet eta = 25;\nlet studente = true;\n\n// Stampiamo le variabili\nconsole.log(\"Nome:\", nome);\nconsole.log(\"Età:\", eta);\nconsole.log(\"È studente:\", studente);\n\n// Possiamo anche cambiare i valori\neta = 26;\nconsole.log(\"Nuova età:\", eta);",
+                category: "base"
+            },
+
+            // ESERCIZI DA COMPLETARE
+            {
+                id: 3,
+                title: "Le Tue Prime Variabili",
+                difficulty: "Principiante",
+                type: "exercise",
+                description: "ESERCIZIO: Crea le tue variabili seguendo le istruzioni nei commenti.",
+                startingCode: "// ESERCIZIO: Crea le seguenti variabili\n// 1. Una variabile 'tuoNome' con il tuo nome\n// 2. Una variabile 'tuaEta' con la tua età\n// 3. Una variabile 'tiPiacceLaProgrammazione' con true o false\n\n// SCRIVI IL TUO CODICE QUI:\n\n\n// NON MODIFICARE: Test per verificare\nconsole.log('Il tuo nome è:', tuoNome);\nconsole.log('Hai', tuaEta, 'anni');\nconsole.log('Ti piace programmare?', tiPiacceLaProgrammazione);",
+                solution: "// SOLUZIONE:\nlet tuoNome = \"Il tuo nome qui\";\nlet tuaEta = 20; // La tua età\nlet tiPiacceLaProgrammazione = true;\n\n// NON MODIFICARE: Test per verificare\nconsole.log('Il tuo nome è:', tuoNome);\nconsole.log('Hai', tuaEta, 'anni');\nconsole.log('Ti piace programmare?', tiPiacceLaProgrammazione);",
+                category: "base"
+            },
+            {
+                id: 4,
+                title: "Funzione Somma",
+                difficulty: "Principiante",
+                type: "exercise",
+                description: "ESERCIZIO: Completa la funzione per sommare due numeri.",
+                startingCode: "// ESERCIZIO: Completa questa funzione\nfunction somma(a, b) {\n    // SCRIVI IL TUO CODICE QUI\n    // La funzione deve restituire la somma di a e b\n    \n}\n\n// NON MODIFICARE: Test della funzione\nconsole.log('5 + 3 =', somma(5, 3)); // Dovrebbe essere 8\nconsole.log('10 + (-2) =', somma(10, -2)); // Dovrebbe essere 8\nconsole.log('0 + 0 =', somma(0, 0)); // Dovrebbe essere 0",
+                solution: "// SOLUZIONE:\nfunction somma(a, b) {\n    return a + b;\n}\n\n// NON MODIFICARE: Test della funzione\nconsole.log('5 + 3 =', somma(5, 3)); // Dovrebbe essere 8\nconsole.log('10 + (-2) =', somma(10, -2)); // Dovrebbe essere 8\nconsole.log('0 + 0 =', somma(0, 0)); // Dovrebbe essere 0",
+                category: "funzioni"
+            },
+            {
+                id: 5,
+                title: "Pari o Dispari?",
+                difficulty: "Principiante",
+                type: "exercise",
+                description: "ESERCIZIO: Crea una funzione che determina se un numero è pari o dispari.",
+                startingCode: "// ESERCIZIO: Completa questa funzione\nfunction pariODispari(numero) {\n    // SCRIVI IL TUO CODICE QUI\n    // Restituisci \"pari\" se il numero è pari\n    // Restituisci \"dispari\" se il numero è dispari\n    // SUGGERIMENTO: usa l'operatore % (modulo)\n    \n}\n\n// NON MODIFICARE: Test della funzione\nconsole.log('4 è', pariODispari(4)); // Dovrebbe essere \"pari\"\nconsole.log('7 è', pariODispari(7)); // Dovrebbe essere \"dispari\"\nconsole.log('0 è', pariODispari(0)); // Dovrebbe essere \"pari\"",
+                solution: "// SOLUZIONE:\nfunction pariODispari(numero) {\n    if (numero % 2 === 0) {\n        return \"pari\";\n    } else {\n        return \"dispari\";\n    }\n}\n\n// NON MODIFICARE: Test della funzione\nconsole.log('4 è', pariODispari(4)); // Dovrebbe essere \"pari\"\nconsole.log('7 è', pariODispari(7)); // Dovrebbe essere \"dispari\"\nconsole.log('0 è', pariODispari(0)); // Dovrebbe essere \"pari\"",
+                category: "condizioni"
+            },
+            {
+                id: 6,
+                title: "Conta fino a 10",
+                difficulty: "Principiante",
+                type: "exercise",
+                description: "ESERCIZIO: Usa un ciclo for per stampare i numeri da 1 a 10.",
+                startingCode: "// ESERCIZIO: Scrivi un ciclo for che stampa i numeri da 1 a 10\n// SCRIVI IL TUO CODICE QUI:\n\n\n// BONUS: Prova anche a stampare solo i numeri pari da 2 a 10",
+                solution: "// SOLUZIONE:\nfor (let i = 1; i <= 10; i++) {\n    console.log(i);\n}\n\n// BONUS: Numeri pari da 2 a 10\nconsole.log('\\nNumeri pari:');\nfor (let i = 2; i <= 10; i += 2) {\n    console.log(i);\n}",
+                category: "cicli"
+            },
+
+            // ESERCIZI HTML INTERATTIVI
+            {
+                id: 7,
+                title: "Il Tuo Primo Bottone",
+                difficulty: "Intermedio",
+                type: "exercise",
+                description: "ESERCIZIO: Crea un bottone che mostra un messaggio personalizzato quando viene cliccato. Usa il tab 'Anteprima HTML'!",
+                startingCode: "// ESERCIZIO: Completa il codice per creare un bottone funzionante\n\n// 1. Crea l'HTML per un bottone e un paragrafo per il messaggio\ndocument.body.innerHTML = '/* SCRIVI QUI L\\'HTML */';\n\n// 2. Aggiungi la funzionalità al bottone\n// SUGGERIMENTO: usa document.getElementById e onclick\n\n// SCRIVI IL TUO CODICE QUI:\n",
+                solution: "// SOLUZIONE:\ndocument.body.innerHTML = '<div style=\"padding: 20px; font-family: Arial;\"><h2>Il Mio Primo Bottone</h2><button id=\"mioBottone\" style=\"padding: 10px 20px; font-size: 16px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer;\">Cliccami!</button><p id=\"messaggio\" style=\"margin-top: 20px; font-size: 18px; color: #333;\"></p></div>';\n\ndocument.getElementById('mioBottone').onclick = function() {\n    document.getElementById('messaggio').textContent = 'Complimenti! Hai creato il tuo primo bottone! 🎉';\n    console.log('Bottone cliccato!');\n};",
+                category: "dom",
+                isHTML: true
+            },
+
+            // SFIDE AVANZATE
+            {
+                id: 8,
+                title: "Trova il Numero Maggiore",
+                difficulty: "Intermedio",
+                type: "challenge",
+                description: "SFIDA: Crea una funzione che trova il numero più grande in un array di numeri.",
+                startingCode: "// SFIDA: Completa questa funzione\nfunction trovaMassimo(numeri) {\n    // SCRIVI IL TUO CODICE QUI\n    // La funzione deve restituire il numero più grande nell'array\n    // NON usare Math.max() - fallo con un ciclo!\n    \n}\n\n// NON MODIFICARE: Test della funzione\nlet test1 = [3, 7, 2, 9, 1, 5];\nlet test2 = [-5, -2, -10, -1];\nlet test3 = [42];\n\nconsole.log('Massimo di', test1, '=', trovaMassimo(test1)); // Dovrebbe essere 9\nconsole.log('Massimo di', test2, '=', trovaMassimo(test2)); // Dovrebbe essere -1\nconsole.log('Massimo di', test3, '=', trovaMassimo(test3)); // Dovrebbe essere 42",
+                solution: "// SOLUZIONE:\nfunction trovaMassimo(numeri) {\n    let massimo = numeri[0];\n    for (let i = 1; i < numeri.length; i++) {\n        if (numeri[i] > massimo) {\n            massimo = numeri[i];\n        }\n    }\n    return massimo;\n}\n\n// NON MODIFICARE: Test della funzione\nlet test1 = [3, 7, 2, 9, 1, 5];\nlet test2 = [-5, -2, -10, -1];\nlet test3 = [42];\n\nconsole.log('Massimo di', test1, '=', trovaMassimo(test1)); // Dovrebbe essere 9\nconsole.log('Massimo di', test2, '=', trovaMassimo(test2)); // Dovrebbe essere -1\nconsole.log('Massimo di', test3, '=', trovaMassimo(test3)); // Dovrebbe essere 42",
+                category: "array"
+            },
+            {
+                id: 9,
+                title: "Contatore Avanzato",
+                difficulty: "Avanzato",
+                type: "challenge",
+                description: "SFIDA: Crea un contatore interattivo con bottoni +, -, reset e funzionalità avanzate!",
+                startingCode: "// SFIDA: Crea un contatore completo\n// Requisiti:\n// 1. Bottoni per +1, -1, +5, -5, reset\n// 2. Il contatore non può andare sotto 0\n// 3. Cambia colore quando raggiunge 10 o più\n// 4. Mostra un messaggio speciale a 20\n\n// SCRIVI IL TUO CODICE QUI:\nlet contatore = 0;\n\n// Crea l'HTML\ndocument.body.innerHTML = '/* CREA QUI L\\'INTERFACCIA */';\n\n// Aggiungi le funzionalità\n",
+                solution: "// SOLUZIONE:\nlet contatore = 0;\n\ndocument.body.innerHTML = '<div style=\"padding: 30px; text-align: center; font-family: Arial;\"><h2>Contatore Avanzato</h2><div style=\"font-size: 48px; margin: 20px; color: #667eea;\" id=\"display\">0</div><div><button id=\"meno5\" style=\"padding: 10px 15px; margin: 5px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer;\">-5</button><button id=\"meno1\" style=\"padding: 10px 15px; margin: 5px; background: #fd7e14; color: white; border: none; border-radius: 5px; cursor: pointer;\">-1</button><button id=\"reset\" style=\"padding: 10px 15px; margin: 5px; background: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer;\">Reset</button><button id=\"piu1\" style=\"padding: 10px 15px; margin: 5px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer;\">+1</button><button id=\"piu5\" style=\"padding: 10px 15px; margin: 5px; background: #20c997; color: white; border: none; border-radius: 5px; cursor: pointer;\">+5</button></div><p id=\"messaggio\" style=\"margin-top: 20px; font-size: 16px; min-height: 20px;\"></p></div>';\n\nfunction aggiorna() {\n    const display = document.getElementById('display');\n    const messaggio = document.getElementById('messaggio');\n    \n    display.textContent = contatore;\n    \n    if (contatore >= 20) {\n        display.style.color = '#dc3545';\n        messaggio.textContent = '🎉 WOW! Hai raggiunto 20! Sei un campione!';\n    } else if (contatore >= 10) {\n        display.style.color = '#ffc107';\n        messaggio.textContent = '⭐ Ottimo! Hai superato 10!';\n    } else {\n        display.style.color = '#667eea';\n        messaggio.textContent = '';\n    }\n}\n\ndocument.getElementById('piu1').onclick = () => { contatore++; aggiorna(); };\ndocument.getElementById('piu5').onclick = () => { contatore += 5; aggiorna(); };\ndocument.getElementById('meno1').onclick = () => { if(contatore > 0) contatore--; aggiorna(); };\ndocument.getElementById('meno5').onclick = () => { contatore = Math.max(0, contatore - 5); aggiorna(); };\ndocument.getElementById('reset').onclick = () => { contatore = 0; aggiorna(); };",
+                category: "dom",
+                isHTML: true
+            }
+        ];
+
+        let currentExercise = null;
+        let outputLogs = [];
+
+        // Inizializza l'applicazione
+        function init() {
+            loadExerciseList();
+        }
+
+        // Carica la lista degli esercizi
+        function loadExerciseList() {
+            const exerciseList = document.getElementById('exerciseList');
+            exerciseList.innerHTML = '';
+
+            exercises.forEach(exercise => {
+                const li = document.createElement('li');
+                li.className = 'exercise-item ' + exercise.type;
+                li.onclick = function() { selectExercise(exercise); };
+                
+                const titleDiv = document.createElement('div');
+                titleDiv.className = 'exercise-title';
+                
+                // Aggiungi emoji in base al tipo
+                let emoji = '';
+                if (exercise.type === 'example') emoji = '📖';
+                else if (exercise.type === 'exercise') emoji = '✏️';
+                else if (exercise.type === 'challenge') emoji = '🏆';
+                
+                titleDiv.innerHTML = emoji + ' ' + exercise.title;
+                
+                const difficultyDiv = document.createElement('div');
+                difficultyDiv.className = 'exercise-difficulty';
+                difficultyDiv.textContent = exercise.difficulty;
+                
+                const typeDiv = document.createElement('div');
+                typeDiv.className = 'exercise-type type-' + exercise.type;
+                if (exercise.type === 'example') typeDiv.textContent = 'Esempio';
+                else if (exercise.type === 'exercise') typeDiv.textContent = 'Esercizio';
+                else if (exercise.type === 'challenge') typeDiv.textContent = 'Sfida';
+                
+                li.appendChild(titleDiv);
+                li.appendChild(difficultyDiv);
+                li.appendChild(typeDiv);
+                exerciseList.appendChild(li);
+            });
+        }
+
+        // Seleziona un esercizio
+        function selectExercise(exercise) {
+            currentExercise = exercise;
+            
+            // Aggiorna UI
+            document.getElementById('currentTitle').textContent = exercise.title;
+            document.getElementById('currentDifficulty').textContent = 'Livello: ' + exercise.difficulty;
+            
+            const descDiv = document.getElementById('exerciseDescription');
+            descDiv.innerHTML = '';
+            
+            const h3 = document.createElement('h3');
+            h3.textContent = exercise.title;
+            
+            const p = document.createElement('p');
+            p.textContent = exercise.description;
+            
+            descDiv.appendChild(h3);
+            descDiv.appendChild(p);
+            
+            document.getElementById('codeEditor').value = exercise.startingCode;
+            
+            // Mostra/nascondi bottone soluzione
+            const solutionBtn = document.getElementById('solutionBtn');
+            if (exercise.solution) {
+                solutionBtn.style.display = 'inline-block';
+            } else {
+                solutionBtn.style.display = 'none';
+            }
+            
+            // Aggiorna classe attiva
+            document.querySelectorAll('.exercise-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Trova l'elemento cliccato e aggiungi la classe active
+            const items = document.querySelectorAll('.exercise-item');
+            items.forEach(item => {
+                const titleElement = item.querySelector('.exercise-title');
+                if (titleElement && titleElement.textContent.includes(exercise.title)) {
+                    item.classList.add('active');
+                }
+            });
+            
+            clearOutput();
+        }
+
+        // Mostra la soluzione
+        function showSolution() {
+            if (currentExercise && currentExercise.solution) {
+                if (confirm('Sei sicuro di voler vedere la soluzione? Prova prima a risolverlo da solo!')) {
+                    document.getElementById('codeEditor').value = currentExercise.solution;
+                }
+            }
+        }
+
+        // Cambia tab
+        function switchTab(tabName) {
+            // Aggiorna bottoni tab
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Aggiorna pannelli
+            document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
+            
+            if (tabName === 'console') {
+                document.getElementById('consolePanel').classList.add('active');
+            } else if (tabName === 'preview') {
+                document.getElementById('previewPanel').classList.add('active');
+            }
+        }
+
+        // Esegue il codice
+        function runCode() {
+            const code = document.getElementById('codeEditor').value;
+            const output = document.getElementById('output');
+            const previewFrame = document.getElementById('previewFrame');
+            
+            // Reset logs
+            outputLogs = [];
+            output.innerHTML = '';
+            
+            // Cattura console.log
+            const originalLog = console.log;
+            const originalError = console.error;
+            
+            console.log = function() {
+                const args = Array.from(arguments);
+                const message = args.join(' ');
+                outputLogs.push({ type: 'log', content: message });
+                originalLog.apply(console, arguments);
+                updateOutput();
+            };
+            
+            console.error = function() {
+                const args = Array.from(arguments);
+                const message = args.join(' ');
+                outputLogs.push({ type: 'error', content: message });
+                originalError.apply(console, arguments);
+                updateOutput();
+            };
+            
+            try {
+                // Se è un esercizio HTML, mostra nell'anteprima
+                if (currentExercise && currentExercise.isHTML) {
+                    const htmlDoc = '<!DOCTYPE html><html><head><meta charset="UTF-8"><style>body { margin: 0; padding: 0; }</style></head><body><script>const originalLog = console.log; console.log = function() { const args = Array.from(arguments); const message = args.join(" "); originalLog.apply(console, arguments); window.parent.postMessage({ type: "console", content: message }, "*"); }; try { ' + code + ' } catch (error) { window.parent.postMessage({ type: "error", content: error.message }, "*"); }<\/script></body></html>';
+                    
+                    previewFrame.srcdoc = htmlDoc;
+                    
+                    // Listener per messaggi dall'iframe
+                    window.onmessage = function(event) {
+                        if (event.data && event.data.type) {
+                            outputLogs.push({ type: event.data.type, content: event.data.content });
+                            updateOutput();
+                        }
+                    };
+                } else {
+                    // Esegui codice normale
+                    eval(code);
+                    if (outputLogs.length === 0) {
+                        outputLogs.push({ type: 'log', content: 'Codice eseguito senza output.' });
+                    }
+                    updateOutput();
+                }
+                
+            } catch (error) {
+                outputLogs.push({ type: 'error', content: 'Errore: ' + error.message });
+                updateOutput();
+            }
+            
+            // Ripristina console
+            console.log = originalLog;
+            console.error = originalError;
+        }
+
+        // Aggiorna output
+        function updateOutput() {
+            const output = document.getElementById('output');
+            output.innerHTML = '';
+            
+            outputLogs.forEach(log => {
+                const div = document.createElement('div');
+                div.textContent = log.content;
+                if (log.type === 'error') {
+                    div.className = 'error';
+                    div.textContent = '❌ ' + log.content;
+                }
+                output.appendChild(div);
+            });
+        }
+
+        // Pulisce l'output
+        function clearOutput() {
+            outputLogs = [];
+            document.getElementById('output').textContent = 'Premi "Esegui Codice" per vedere i risultati qui...';
+            
+            // Pulisci anche l'anteprima HTML
+            const previewFrame = document.getElementById('previewFrame');
+            previewFrame.srcdoc = '';
+        }
+
+        // Reset dell'esercizio corrente
+        function resetExercise() {
+            if (currentExercise) {
+                document.getElementById('codeEditor').value = currentExercise.startingCode;
+                clearOutput();
+            }
+        }
+
+        // Inizializza quando la pagina è caricata
+        window.onload = init;
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'987f74f060aefb0d',t:'MTc1OTM1ODM3NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

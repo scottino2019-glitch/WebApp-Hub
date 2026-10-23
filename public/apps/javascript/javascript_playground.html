@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript - Esempi Interattivi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        .code-editor {
+            font-family: 'Courier New', monospace;
+            background: #1e293b;
+            color: #e2e8f0;
+            border: none;
+            outline: none;
+            resize: vertical;
+            padding: 16px;
+            border-radius: 8px;
+        }
+        .preview-box {
+            min-height: 200px;
+            background: #f8fafc;
+            border: 2px dashed #cbd5e1;
+            border-radius: 8px;
+            padding: 16px;
+            overflow: auto;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-7xl">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-800 mb-4">⚡ JavaScript Playground</h1>
+            <p class="text-gray-600 text-lg">Modifica il codice JavaScript e vedi le funzioni in azione</p>
+        </div>
+
+        <!-- Example 1: Animated Counter -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-6">📊 Counter Animato</h2>
+            <div class="grid lg:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Codice HTML + JavaScript:</label>
+                    <textarea class="code-editor w-full h-64" onkeyup="updateCounter()">
+<!-- Sezione Hero -->
+<div class="bg-gray-100 p-8 rounded-xl mb-8">
+  <h2 class="text-3xl font-bold text-center mb-4">Benvenuto nella nostra azienda</h2>
+  <p class="text-center text-gray-600 mb-8">Scorri verso il basso per vedere le nostre statistiche</p>
+</div>
+
+<!-- Sezione Statistiche (si anima quando diventa visibile) -->
+<div class="text-center p-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl text-white" id="stats-section">
+  <h3 class="text-2xl font-bold mb-8">I Nostri Numeri</h3>
+  <div class="grid grid-cols-3 gap-6">
+    <div>
+      <div class="text-4xl font-bold counter" data-target="1250">0</div>
+      <p class="text-blue-100">Clienti Felici</p>
+    </div>
+    <div>
+      <div class="text-4xl font-bold counter" data-target="89">0</div>
+      <p class="text-blue-100">Progetti</p>
+    </div>
+    <div>
+      <div class="text-4xl font-bold counter" data-target="15">0</div>
+      <p class="text-blue-100">Anni Esperienza</p>
+    </div>
+  </div>
+</div>
+
+<!-- Altra sezione per testare lo scroll -->
+<div class="bg-gray-100 p-8 rounded-xl mt-8">
+  <p class="text-center text-gray-600">I contatori si sono animati quando questa sezione è diventata visibile! 🎉</p>
+</div>
+
+<script>
+// Intersection Observer per rilevare quando la sezione diventa visibile
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      // Avvia l'animazione dei contatori
+      const counters = entry.target.querySelectorAll('.counter');
+      counters.forEach(counter => {
+        animateCounter(counter, parseInt(counter.dataset.target));
+      });
+      // Smetti di osservare dopo la prima animazione
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.5 }); // Si attiva quando il 50% della sezione è visibile
+
+// Osserva la sezione statistiche
+observer.observe(document.getElementById('stats-section'));
+
+function animateCounter(element, target, duration = 2000) {
+  let start = 0;
+  const increment = target / (duration / 16);
+  
+  function updateCount() {
+    start += increment;
+    if (start < target) {
+      element.textContent = Math.floor(start);
+      requestAnimationFrame(updateCount);
+    } else {
+      element.textContent = target;
+    }
+  }
+  updateCount();
+}
+</script></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Anteprima:</label>
+                    <div class="preview-box" id="counter-preview"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Example 2: Mobile Menu -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-6">🧭 Menu Mobile Interattivo</h2>
+            <div class="grid lg:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Codice HTML + JavaScript:</label>
+                    <textarea class="code-editor w-full h-64" onkeyup="updateMenu()">
+<nav class="bg-indigo-600 rounded-lg shadow-lg">
+  <div class="max-w-6xl mx-auto px-4">
+    <div class="flex justify-between items-center py-4">
+      <div class="text-white text-xl font-bold">🚀 MioSito</div>
+      
+      <!-- Desktop Menu -->
+      <div class="hidden md:flex space-x-6">
+        <a href="#" class="text-white hover:text-indigo-200 transition-colors">Home</a>
+        <a href="#" class="text-white hover:text-indigo-200 transition-colors">Servizi</a>
+        <a href="#" class="text-white hover:text-indigo-200 transition-colors">Chi Siamo</a>
+        <a href="#" class="text-white hover:text-indigo-200 transition-colors">Contatti</a>
+      </div>
+      
+      <!-- Mobile Menu Button -->
+      <button onclick="toggleMenu()" class="md:hidden text-white focus:outline-none" id="menu-btn">
+        <span id="menu-icon">☰</span>
+      </button>
+    </div>
+    
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="md:hidden hidden pb-4">
+      <a href="#" class="block text-white hover:text-indigo-200 py-2 transition-colors">Home</a>
+      <a href="#" class="block text-white hover:text-indigo-200 py-2 transition-colors">Servizi</a>
+      <a href="#" class="block text-white hover:text-indigo-200 py-2 transition-colors">Chi Siamo</a>
+      <a href="#" class="block text-white hover:text-indigo-200 py-2 transition-colors">Contatti</a>
+    </div>
+  </div>
+</nav>
+
+<script>
+function toggleMenu() {
+  const menu = document.getElementById('mobile-menu');
+  const icon = document.getElementById('menu-icon');
+  
+  if (menu.classList.contains('hidden')) {
+    menu.classList.remove('hidden');
+    icon.textContent = '✕';
+  } else {
+    menu.classList.add('hidden');
+    icon.textContent = '☰';
+  }
+}
+</script></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Anteprima:</label>
+                    <div class="preview-box" id="menu-preview"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Example 3: Interactive Timeline -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-6">⏰ Timeline Interattiva</h2>
+            <div class="grid lg:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Codice HTML + JavaScript:</label>
+                    <textarea class="code-editor w-full h-72" onkeyup="updateTimeline()">
+<div class="max-w-2xl mx-auto p-4">
+  <h3 class="text-xl font-bold text-center mb-6">Il Nostro Processo</h3>
+  <div class="relative">
+    <div class="absolute left-4 top-0 bottom-0 w-1 bg-gray-200" id="progress-line"></div>
+    
+    <div class="timeline-step relative flex items-start mb-8 cursor-pointer" onclick="activateStep(0)">
+      <div class="step-circle flex-shrink-0 w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center transition-colors" id="circle-0">
+        <span class="text-white text-sm font-bold">1</span>
+      </div>
+      <div class="ml-6">
+        <h4 class="text-lg font-semibold text-gray-900">Analisi</h4>
+        <p class="text-gray-600 step-content hidden" id="content-0">Studiamo le tue esigenze e definiamo gli obiettivi del progetto.</p>
+      </div>
+    </div>
+    
+    <div class="timeline-step relative flex items-start mb-8 cursor-pointer" onclick="activateStep(1)">
+      <div class="step-circle flex-shrink-0 w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center transition-colors" id="circle-1">
+        <span class="text-white text-sm font-bold">2</span>
+      </div>
+      <div class="ml-6">
+        <h4 class="text-lg font-semibold text-gray-900">Design</h4>
+        <p class="text-gray-600 step-content hidden" id="content-1">Creiamo mockup e prototipi per visualizzare la soluzione.</p>
+      </div>
+    </div>
+    
+    <div class="timeline-step relative flex items-start mb-8 cursor-pointer" onclick="activateStep(2)">
+      <div class="step-circle flex-shrink-0 w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center transition-colors" id="circle-2">
+        <span class="text-white text-sm font-bold">3</span>
+      </div>
+      <div class="ml-6">
+        <h4 class="text-lg font-semibold text-gray-900">Sviluppo</h4>
+        <p class="text-gray-600 step-content hidden" id="content-2">Implementiamo la soluzione con le migliori tecnologie.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentStep = -1;
+
+function activateStep(stepIndex) {
+  // Reset all steps
+  for (let i = 0; i <= 2; i++) {
+    document.getElementById('circle-' + i).className = 'step-circle flex-shrink-0 w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center transition-colors';
+    document.getElementById('content-' + i).classList.add('hidden');
+  }
+  
+  // Activate clicked step
+  if (currentStep !== stepIndex) {
+    document.getElementById('circle-' + stepIndex).className = 'step-circle flex-shrink-0 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center transition-colors';
+    document.getElementById('content-' + stepIndex).classList.remove('hidden');
+    currentStep = stepIndex;
+  } else {
+    currentStep = -1;
+  }
+}
+</script></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Anteprima:</label>
+                    <div class="preview-box" id="timeline-preview"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Example 4: Quiz -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-6">❓ Quiz Interattivo</h2>
+            <div class="grid lg:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Codice HTML + JavaScript:</label>
+                    <textarea class="code-editor w-full h-80" onkeyup="updateQuiz()">
+<div class="max-w-md mx-auto bg-white p-6 rounded-xl shadow-lg border">
+  <div id="quiz-container">
+    <div class="text-center mb-6">
+      <h3 class="text-xl font-bold text-gray-800">Quiz JavaScript</h3>
+      <p class="text-gray-600">Domanda <span id="question-num">1</span> di 3</p>
+    </div>
+    
+    <div id="question-container">
+      <h4 class="text-lg font-semibold mb-4" id="question-text">Quale metodo aggiunge un elemento alla fine di un array?</h4>
+      <div class="space-y-2" id="answers-container">
+        <button onclick="selectAnswer(0)" class="answer-btn w-full text-left p-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+          push()
+        </button>
+        <button onclick="selectAnswer(1)" class="answer-btn w-full text-left p-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+          pop()
+        </button>
+        <button onclick="selectAnswer(2)" class="answer-btn w-full text-left p-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+          shift()
+        </button>
+      </div>
+    </div>
+    
+    <div class="mt-6 text-center">
+      <button onclick="nextQuestion()" id="next-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors disabled:opacity-50" disabled>
+        Prossima
+      </button>
+    </div>
+    
+    <div id="result-container" class="hidden text-center">
+      <div class="text-4xl mb-4">🎉</div>
+      <h3 class="text-xl font-bold mb-2">Quiz Completato!</h3>
+      <p class="text-gray-600 mb-4">Hai risposto correttamente a <span id="score">0</span> domande su 3</p>
+      <button onclick="restartQuiz()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg transition-colors">
+        Ricomincia
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+const questions = [
+  { question: "Quale metodo aggiunge un elemento alla fine di un array?", answers: ["push()", "pop()", "shift()"], correct: 0 },
+  { question: "Come si dichiara una variabile in JavaScript?", answers: ["var x", "variable x", "v x"], correct: 0 },
+  { question: "Quale operatore confronta valore e tipo?", answers: ["==", "===", "="], correct: 1 }
+];
+
+let currentQuestion = 0;
+let score = 0;
+let selectedAnswer = -1;
+
+function selectAnswer(index) {
+  selectedAnswer = index;
+  document.querySelectorAll('.answer-btn').forEach((btn, i) => {
+    btn.className = i === index ? 
+      'answer-btn w-full text-left p-3 border-2 border-blue-500 bg-blue-50 rounded-lg transition-colors' :
+      'answer-btn w-full text-left p-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors';
+  });
+  document.getElementById('next-btn').disabled = false;
+}
+
+function nextQuestion() {
+  if (selectedAnswer === questions[currentQuestion].correct) {
+    score++;
+  }
+  
+  currentQuestion++;
+  
+  if (currentQuestion < questions.length) {
+    loadQuestion();
+  } else {
+    showResults();
+  }
+}
+
+function loadQuestion() {
+  const q = questions[currentQuestion];
+  document.getElementById('question-num').textContent = currentQuestion + 1;
+  document.getElementById('question-text').textContent = q.question;
+  
+  const container = document.getElementById('answers-container');
+  container.innerHTML = '';
+  q.answers.forEach((answer, i) => {
+    container.innerHTML += '<button onclick="selectAnswer(' + i + ')" class="answer-btn w-full text-left p-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">' + answer + '</button>';
+  });
+  
+  selectedAnswer = -1;
+  document.getElementById('next-btn').disabled = true;
+}
+
+function showResults() {
+  document.getElementById('question-container').classList.add('hidden');
+  document.getElementById('next-btn').classList.add('hidden');
+  document.getElementById('result-container').classList.remove('hidden');
+  document.getElementById('score').textContent = score;
+}
+
+function restartQuiz() {
+  currentQuestion = 0;
+  score = 0;
+  selectedAnswer = -1;
+  document.getElementById('question-container').classList.remove('hidden');
+  document.getElementById('next-btn').classList.remove('hidden');
+  document.getElementById('result-container').classList.add('hidden');
+  loadQuestion();
+}
+</script></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Anteprima:</label>
+                    <div class="preview-box" id="quiz-preview"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Example 5: Todo List -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-6">📝 Todo List Dinamica</h2>
+            <div class="grid lg:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Codice HTML + JavaScript:</label>
+                    <textarea class="code-editor w-full h-72" onkeyup="updateTodo()">
+<div class="max-w-md mx-auto bg-white p-6 rounded-xl shadow-lg border">
+  <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">📝 La Mia Todo List</h3>
+  
+  <div class="flex mb-4">
+    <input type="text" id="todo-input" placeholder="Aggiungi un nuovo task..." 
+           class="flex-1 px-3 py-2 border border-gray-300 rounded-l-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+           onkeypress="if(event.key==='Enter') addTodo()">
+    <button onclick="addTodo()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-r-lg transition-colors">
+      +
+    </button>
+  </div>
+  
+  <div id="todo-list" class="space-y-2">
+    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+      <div class="flex items-center">
+        <input type="checkbox" class="mr-3" onchange="toggleTodo(this)">
+        <span>Esempio di task</span>
+      </div>
+      <button onclick="removeTodo(this)" class="text-red-500 hover:text-red-700 transition-colors">
+        🗑️
+      </button>
+    </div>
+  </div>
+  
+  <div class="mt-4 text-center text-sm text-gray-500">
+    <span id="todo-count">1</span> task rimanenti
+  </div>
+</div>
+
+<script>
+let todoCount = 1;
+
+function addTodo() {
+  const input = document.getElementById('todo-input');
+  const text = input.value.trim();
+  
+  if (text === '') return;
+  
+  const todoList = document.getElementById('todo-list');
+  const todoItem = document.createElement('div');
+  todoItem.className = 'flex items-center justify-between p-3 bg-gray-50 rounded-lg';
+  todoItem.innerHTML = '<div class="flex items-center"><input type="checkbox" class="mr-3" onchange="toggleTodo(this)"><span>' + text + '</span></div><button onclick="removeTodo(this)" class="text-red-500 hover:text-red-700 transition-colors">🗑️</button>';
+  
+  todoList.appendChild(todoItem);
+  input.value = '';
+  todoCount++;
+  updateTodoCount();
+}
+
+function removeTodo(button) {
+  const todoItem = button.closest('div.flex');
+  const checkbox = todoItem.querySelector('input[type="checkbox"]');
+  
+  if (!checkbox.checked) {
+    todoCount--;
+  }
+  
+  todoItem.remove();
+  updateTodoCount();
+}
+
+function toggleTodo(checkbox) {
+  const span = checkbox.nextElementSibling;
+  
+  if (checkbox.checked) {
+    span.style.textDecoration = 'line-through';
+    span.style.color = '#9CA3AF';
+    todoCount--;
+  } else {
+    span.style.textDecoration = 'none';
+    span.style.color = 'inherit';
+    todoCount++;
+  }
+  
+  updateTodoCount();
+}
+
+function updateTodoCount() {
+  document.getElementById('todo-count').textContent = todoCount;
+}
+</script></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Anteprima:</label>
+                    <div class="preview-box" id="todo-preview"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Example 6: Notification System -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-6">🔔 Sistema di Notifiche</h2>
+            <div class="grid lg:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Codice HTML + JavaScript:</label>
+                    <textarea class="code-editor w-full h-80" onkeyup="updateNotifications()">
+<div class="max-w-md mx-auto p-4">
+  <h3 class="text-xl font-bold text-center mb-6">🔔 Centro Notifiche</h3>
+  
+  <div class="space-y-3 mb-6">
+    <button onclick="showNotification('success', '✅ Operazione completata con successo!')" 
+            class="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg transition-colors">
+      Notifica Successo
+    </button>
+    <button onclick="showNotification('error', '❌ Si è verificato un errore!')" 
+            class="w-full bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-lg transition-colors">
+      Notifica Errore
+    </button>
+    <button onclick="showNotification('info', '💡 Nuova funzionalità disponibile!')" 
+            class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition-colors">
+      Notifica Info
+    </button>
+    <button onclick="showNotification('warning', '⚠️ Attenzione: memoria quasi piena!')" 
+            class="w-full bg-yellow-600 hover:bg-yellow-700 text-white py-2 px-4 rounded-lg transition-colors">
+      Notifica Warning
+    </button>
+  </div>
+</div>
+
+<!-- Container per le notifiche -->
+<div id="notifications-container" class="fixed top-4 right-4 space-y-2 z-50" style="position: absolute; top: 16px; right: 16px;"></div>
+
+<script>
+function showNotification(type, message, duration = 4000) {
+  const container = document.getElementById('notifications-container');
+  
+  // Crea la notifica
+  const notification = document.createElement('div');
+  notification.className = `notification transform translate-x-full transition-transform duration-300 ease-out p-4 rounded-lg shadow-lg max-w-sm ${getNotificationClass(type)}`;
+  notification.innerHTML = `
+    <div class="flex items-center justify-between">
+      <span class="text-sm font-medium">${message}</span>
+      <button onclick="closeNotification(this)" class="ml-4 text-lg hover:opacity-70">×</button>
+    </div>
+  `;
+  
+  container.appendChild(notification);
+  
+  // Anima l'entrata
+  setTimeout(() => {
+    notification.classList.remove('translate-x-full');
+  }, 10);
+  
+  // Auto-rimozione
+  setTimeout(() => {
+    closeNotification(notification.querySelector('button'));
+  }, duration);
+}
+
+function getNotificationClass(type) {
+  switch(type) {
+    case 'success': return 'bg-green-500 text-white';
+    case 'error': return 'bg-red-500 text-white';
+    case 'warning': return 'bg-yellow-500 text-white';
+    case 'info': return 'bg-blue-500 text-white';
+    default: return 'bg-gray-500 text-white';
+  }
+}
+
+function closeNotification(button) {
+  const notification = button.closest('.notification');
+  notification.classList.add('translate-x-full');
+  setTimeout(() => {
+    notification.remove();
+  }, 300);
+}
+</script></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Anteprima:</label>
+                    <div class="preview-box" id="notifications-preview"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Example 7: Image Carousel -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-6">🖼️ Carosello Immagini</h2>
+            <div class="grid lg:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Codice HTML + JavaScript:</label>
+                    <textarea class="code-editor w-full h-80" onkeyup="updateCarousel()">
+<div class="max-w-lg mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
+  <div class="relative">
+    <!-- Immagini del carosello -->
+    <div class="carousel-container overflow-hidden">
+      <div class="carousel-track flex transition-transform duration-500 ease-in-out" id="carousel-track">
+        <div class="carousel-slide w-full flex-shrink-0 bg-gradient-to-br from-purple-400 to-pink-400 h-64 flex items-center justify-center">
+          <div class="text-center text-white">
+            <div class="text-6xl mb-4">🌅</div>
+            <h3 class="text-xl font-bold">Tramonto</h3>
+            <p class="text-purple-100">Bellissimo tramonto in montagna</p>
+          </div>
+        </div>
+        <div class="carousel-slide w-full flex-shrink-0 bg-gradient-to-br from-blue-400 to-cyan-400 h-64 flex items-center justify-center">
+          <div class="text-center text-white">
+            <div class="text-6xl mb-4">🏔️</div>
+            <h3 class="text-xl font-bold">Montagne</h3>
+            <p class="text-blue-100">Paesaggio montano innevato</p>
+          </div>
+        </div>
+        <div class="carousel-slide w-full flex-shrink-0 bg-gradient-to-br from-green-400 to-emerald-400 h-64 flex items-center justify-center">
+          <div class="text-center text-white">
+            <div class="text-6xl mb-4">🌊</div>
+            <h3 class="text-xl font-bold">Oceano</h3>
+            <p class="text-green-100">Onde cristalline sulla spiaggia</p>
+          </div>
+        </div>
+        <div class="carousel-slide w-full flex-shrink-0 bg-gradient-to-br from-orange-400 to-red-400 h-64 flex items-center justify-center">
+          <div class="text-center text-white">
+            <div class="text-6xl mb-4">🌲</div>
+            <h3 class="text-xl font-bold">Foresta</h3>
+            <p class="text-orange-100">Bosco autunnale colorato</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Controlli -->
+    <button onclick="previousSlide()" class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-70 transition-opacity">
+      ←
+    </button>
+    <button onclick="nextSlide()" class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-70 transition-opacity">
+      →
+    </button>
+  </div>
+  
+  <!-- Indicatori -->
+  <div class="flex justify-center space-x-2 p-4">
+    <button onclick="goToSlide(0)" class="indicator w-3 h-3 rounded-full bg-gray-400 hover:bg-gray-600 transition-colors" id="indicator-0"></button>
+    <button onclick="goToSlide(1)" class="indicator w-3 h-3 rounded-full bg-gray-400 hover:bg-gray-600 transition-colors" id="indicator-1"></button>
+    <button onclick="goToSlide(2)" class="indicator w-3 h-3 rounded-full bg-gray-400 hover:bg-gray-600 transition-colors" id="indicator-2"></button>
+    <button onclick="goToSlide(3)" class="indicator w-3 h-3 rounded-full bg-gray-400 hover:bg-gray-600 transition-colors" id="indicator-3"></button>
+  </div>
+  
+  <!-- Auto-play controls -->
+  <div class="text-center pb-4">
+    <button onclick="toggleAutoplay()" id="autoplay-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
+      ⏸️ Pausa
+    </button>
+  </div>
+</div>
+
+<script>
+let currentSlide = 0;
+let totalSlides = 4;
+let autoplayInterval;
+let isAutoplay = true;
+
+function updateCarousel() {
+  const track = document.getElementById('carousel-track');
+  track.style.transform = `translateX(-${currentSlide * 100}%)`;
+  
+  // Aggiorna indicatori
+  document.querySelectorAll('.indicator').forEach((indicator, index) => {
+    indicator.className = index === currentSlide ? 
+      'indicator w-3 h-3 rounded-full bg-blue-600 transition-colors' :
+      'indicator w-3 h-3 rounded-full bg-gray-400 hover:bg-gray-600 transition-colors';
+  });
+}
+
+function nextSlide() {
+  currentSlide = (currentSlide + 1) % totalSlides;
+  updateCarousel();
+}
+
+function previousSlide() {
+  currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+  updateCarousel();
+}
+
+function goToSlide(index) {
+  currentSlide = index;
+  updateCarousel();
+}
+
+function startAutoplay() {
+  autoplayInterval = setInterval(nextSlide, 3000);
+}
+
+function stopAutoplay() {
+  clearInterval(autoplayInterval);
+}
+
+function toggleAutoplay() {
+  const btn = document.getElementById('autoplay-btn');
+  if (isAutoplay) {
+    stopAutoplay();
+    btn.textContent = '▶️ Play';
+    isAutoplay = false;
+  } else {
+    startAutoplay();
+    btn.textContent = '⏸️ Pausa';
+    isAutoplay = true;
+  }
+}
+
+// Inizializza
+updateCarousel();
+startAutoplay();
+</script></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Anteprima:</label>
+                    <div class="preview-box" id="carousel-preview"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Example 8: Interactive Calculator -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-6">🧮 Calcolatore Interattivo</h2>
+            <div class="grid lg:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Codice HTML + JavaScript:</label>
+                    <textarea class="code-editor w-full h-80" onkeyup="updateCalculator()">
+<div class="max-w-sm mx-auto bg-gray-900 p-6 rounded-2xl shadow-2xl">
+  <div class="mb-4">
+    <div class="bg-black p-4 rounded-lg">
+      <div class="text-gray-400 text-right text-sm" id="calc-history"></div>
+      <div class="text-white text-right text-3xl font-mono" id="calc-display">0</div>
+    </div>
+  </div>
+  
+  <div class="grid grid-cols-4 gap-3">
+    <!-- Prima riga -->
+    <button onclick="clearAll()" class="calc-btn bg-gray-600 hover:bg-gray-500 text-white font-semibold py-4 rounded-lg transition-colors">C</button>
+    <button onclick="clearEntry()" class="calc-btn bg-gray-600 hover:bg-gray-500 text-white font-semibold py-4 rounded-lg transition-colors">CE</button>
+    <button onclick="backspace()" class="calc-btn bg-gray-600 hover:bg-gray-500 text-white font-semibold py-4 rounded-lg transition-colors">⌫</button>
+    <button onclick="inputOperator('/')" class="calc-btn bg-orange-600 hover:bg-orange-500 text-white font-semibold py-4 rounded-lg transition-colors">÷</button>
+    
+    <!-- Seconda riga -->
+    <button onclick="inputNumber('7')" class="calc-btn bg-gray-700 hover:bg-gray-600 text-white font-semibold py-4 rounded-lg transition-colors">7</button>
+    <button onclick="inputNumber('8')" class="calc-btn bg-gray-700 hover:bg-gray-600 text-white font-semibold py-4 rounded-lg transition-colors">8</button>
+    <button onclick="inputNumber('9')" class="calc-btn bg-gray-700 hover:bg-gray-600 text-white font-semibold py-4 rounded-lg transition-colors">9</button>
+    <button onclick="inputOperator('*')" class="calc-btn bg-orange-600 hover:bg-orange-500 text-white font-semibold py-4 rounded-lg transition-colors">×</button>
+    
+    <!-- Terza riga -->
+    <button onclick="inputNumber('4')" class="calc-btn bg-gray-700 hover:bg-gray-600 text-white font-semibold py-4 rounded-lg transition-colors">4</button>
+    <button onclick="inputNumber('5')" class="calc-btn bg-gray-700 hover:bg-gray-600 text-white font-semibold py-4 rounded-lg transition-colors">5</button>
+    <button onclick="inputNumber('6')" class="calc-btn bg-gray-700 hover:bg-gray-600 text-white font-semibold py-4 rounded-lg transition-colors">6</button>
+    <button onclick="inputOperator('-')" class="calc-btn bg-orange-600 hover:bg-orange-500 text-white font-semibold py-4 rounded-lg transition-colors">−</button>
+    
+    <!-- Quarta riga -->
+    <button onclick="inputNumber('1')" class="calc-btn bg-gray-700 hover:bg-gray-600 text-white font-semibold py-4 rounded-lg transition-colors">1</button>
+    <button onclick="inputNumber('2')" class="calc-btn bg-gray-700 hover:bg-gray-600 text-white font-semibold py-4 rounded-lg transition-colors">2</button>
+    <button onclick="inputNumber('3')" class="calc-btn bg-gray-700 hover:bg-gray-600 text-white font-semibold py-4 rounded-lg transition-colors">3</button>
+    <button onclick="inputOperator('+')" class="calc-btn bg-orange-600 hover:bg-orange-500 text-white font-semibold py-4 rounded-lg transition-colors">+</button>
+    
+    <!-- Quinta riga -->
+    <button onclick="inputNumber('0')" class="calc-btn bg-gray-700 hover:bg-gray-600 text-white font-semibold py-4 rounded-lg transition-colors col-span-2">0</button>
+    <button onclick="inputDecimal()" class="calc-btn bg-gray-700 hover:bg-gray-600 text-white font-semibold py-4 rounded-lg transition-colors">.</button>
+    <button onclick="calculate()" class="calc-btn bg-blue-600 hover:bg-blue-500 text-white font-semibold py-4 rounded-lg transition-colors">=</button>
+  </div>
+</div>
+
+<script>
+let currentInput = '0';
+let previousInput = '';
+let operator = '';
+let waitingForOperand = false;
+
+function updateDisplay() {
+  document.getElementById('calc-display').textContent = currentInput;
+  document.getElementById('calc-history').textContent = previousInput + ' ' + (operator === '*' ? '×' : operator === '/' ? '÷' : operator === '-' ? '−' : operator);
+}
+
+function inputNumber(num) {
+  if (waitingForOperand) {
+    currentInput = num;
+    waitingForOperand = false;
+  } else {
+    currentInput = currentInput === '0' ? num : currentInput + num;
+  }
+  updateDisplay();
+}
+
+function inputDecimal() {
+  if (waitingForOperand) {
+    currentInput = '0.';
+    waitingForOperand = false;
+  } else if (currentInput.indexOf('.') === -1) {
+    currentInput += '.';
+  }
+  updateDisplay();
+}
+
+function inputOperator(nextOperator) {
+  const inputValue = parseFloat(currentInput);
+
+  if (previousInput === '') {
+    previousInput = inputValue;
+  } else if (operator) {
+    const currentValue = previousInput || 0;
+    const newValue = performCalculation(currentValue, inputValue, operator);
+
+    currentInput = String(newValue);
+    previousInput = newValue;
+  }
+
+  waitingForOperand = true;
+  operator = nextOperator;
+  updateDisplay();
+}
+
+function calculate() {
+  const inputValue = parseFloat(currentInput);
+
+  if (previousInput !== '' && operator) {
+    const newValue = performCalculation(previousInput, inputValue, operator);
+    currentInput = String(newValue);
+    previousInput = '';
+    operator = '';
+    waitingForOperand = true;
+  }
+  updateDisplay();
+}
+
+function performCalculation(firstValue, secondValue, operator) {
+  switch (operator) {
+    case '+': return firstValue + secondValue;
+    case '-': return firstValue - secondValue;
+    case '*': return firstValue * secondValue;
+    case '/': return firstValue / secondValue;
+    default: return secondValue;
+  }
+}
+
+function clearAll() {
+  currentInput = '0';
+  previousInput = '';
+  operator = '';
+  waitingForOperand = false;
+  updateDisplay();
+}
+
+function clearEntry() {
+  currentInput = '0';
+  updateDisplay();
+}
+
+function backspace() {
+  if (currentInput.length > 1) {
+    currentInput = currentInput.slice(0, -1);
+  } else {
+    currentInput = '0';
+  }
+  updateDisplay();
+}
+
+// Inizializza
+updateDisplay();
+</script></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Anteprima:</label>
+                    <div class="preview-box" id="calculator-preview"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tips Section -->
+        <div class="bg-green-50 rounded-xl p-6">
+            <h3 class="text-xl font-semibold text-green-800 mb-4">💡 Suggerimenti JavaScript:</h3>
+            <div class="grid md:grid-cols-2 gap-4 text-green-700">
+                <ul class="space-y-2">
+                    <li>• Modifica i valori numerici per cambiare velocità/durata</li>
+                    <li>• Cambia i testi delle domande nel quiz</li>
+                    <li>• Aggiungi nuovi step alla timeline</li>
+                    <li>• Personalizza i messaggi delle notifiche</li>
+                </ul>
+                <ul class="space-y-2">
+                    <li>• Sperimenta con setTimeout() e setInterval()</li>
+                    <li>• Prova a modificare le animazioni CSS</li>
+                    <li>• Aggiungi console.log() per debug</li>
+                    <li>• Cambia i colori del carosello e calcolatore</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateCounter() {
+            const code = document.querySelector('textarea[onkeyup="updateCounter()"]').value;
+            document.getElementById('counter-preview').innerHTML = code;
+            
+            // Execute any scripts in the preview
+            const scripts = document.getElementById('counter-preview').querySelectorAll('script');
+            scripts.forEach(script => {
+                const newScript = document.createElement('script');
+                newScript.textContent = script.textContent;
+                document.getElementById('counter-preview').appendChild(newScript);
+            });
+        }
+
+        function updateMenu() {
+            const code = document.querySelector('textarea[onkeyup="updateMenu()"]').value;
+            document.getElementById('menu-preview').innerHTML = code;
+            
+            const scripts = document.getElementById('menu-preview').querySelectorAll('script');
+            scripts.forEach(script => {
+                const newScript = document.createElement('script');
+                newScript.textContent = script.textContent;
+                document.getElementById('menu-preview').appendChild(newScript);
+            });
+        }
+
+        function updateTimeline() {
+            const code = document.querySelector('textarea[onkeyup="updateTimeline()"]').value;
+            document.getElementById('timeline-preview').innerHTML = code;
+            
+            const scripts = document.getElementById('timeline-preview').querySelectorAll('script');
+            scripts.forEach(script => {
+                const newScript = document.createElement('script');
+                newScript.textContent = script.textContent;
+                document.getElementById('timeline-preview').appendChild(newScript);
+            });
+        }
+
+        function updateQuiz() {
+            const code = document.querySelector('textarea[onkeyup="updateQuiz()"]').value;
+            document.getElementById('quiz-preview').innerHTML = code;
+            
+            const scripts = document.getElementById('quiz-preview').querySelectorAll('script');
+            scripts.forEach(script => {
+                const newScript = document.createElement('script');
+                newScript.textContent = script.textContent;
+                document.getElementById('quiz-preview').appendChild(newScript);
+            });
+        }
+
+        function updateTodo() {
+            const code = document.querySelector('textarea[onkeyup="updateTodo()"]').value;
+            document.getElementById('todo-preview').innerHTML = code;
+            
+            const scripts = document.getElementById('todo-preview').querySelectorAll('script');
+            scripts.forEach(script => {
+                const newScript = document.createElement('script');
+                newScript.textContent = script.textContent;
+                document.getElementById('todo-preview').appendChild(newScript);
+            });
+        }
+
+        function updateNotifications() {
+            const code = document.querySelector('textarea[onkeyup="updateNotifications()"]').value;
+            document.getElementById('notifications-preview').innerHTML = code;
+            
+            const scripts = document.getElementById('notifications-preview').querySelectorAll('script');
+            scripts.forEach(script => {
+                const newScript = document.createElement('script');
+                newScript.textContent = script.textContent;
+                document.getElementById('notifications-preview').appendChild(newScript);
+            });
+        }
+
+        function updateCarousel() {
+            const code = document.querySelector('textarea[onkeyup="updateCarousel()"]').value;
+            document.getElementById('carousel-preview').innerHTML = code;
+            
+            const scripts = document.getElementById('carousel-preview').querySelectorAll('script');
+            scripts.forEach(script => {
+                const newScript = document.createElement('script');
+                newScript.textContent = script.textContent;
+                document.getElementById('carousel-preview').appendChild(newScript);
+            });
+        }
+
+        function updateCalculator() {
+            const code = document.querySelector('textarea[onkeyup="updateCalculator()"]').value;
+            document.getElementById('calculator-preview').innerHTML = code;
+            
+            const scripts = document.getElementById('calculator-preview').querySelectorAll('script');
+            scripts.forEach(script => {
+                const newScript = document.createElement('script');
+                newScript.textContent = script.textContent;
+                document.getElementById('calculator-preview').appendChild(newScript);
+            });
+        }
+
+        // Initialize all previews when page loads
+        window.onload = function() {
+            updateCounter();
+            updateMenu();
+            updateTimeline();
+            updateQuiz();
+            updateTodo();
+            updateNotifications();
+            updateCarousel();
+            updateCalculator();
+        };
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98648373c0c6ed1c',t:'MTc1OTA3NTg1My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
