@@ -1,0 +1,905 @@
+<!doctype html>
+<html lang="it" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book Creator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&amp;family=Playfair+Display:wght@400;600;700&amp;family=Lora:ital,wght@0,400;0,600;1,400&amp;family=Merriweather:wght@300;400;700&amp;family=EB+Garamond:ital,wght@0,400;0,600;1,400&amp;family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&amp;family=Comic+Neue:wght@400;700&amp;family=Caveat:wght@400;600&amp;family=Noto+Sans+KR:wght@400;600;700&amp;family=Noto+Sans+SC:wght@400;600;700&amp;family=Noto+Sans+JP:wght@400;600;700&amp;family=Noto+Sans+Arabic:wght@400;600;700&amp;display=swap" rel="stylesheet">
+  <style>
+    body { box-sizing: border-box; }
+    
+    .book-container {
+      perspective: 2000px;
+    }
+    
+    .book {
+      transform-style: preserve-3d;
+      position: relative;
+    }
+    
+    .page {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      transform-origin: left center;
+      transition: transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1);
+      transform-style: preserve-3d;
+      backface-visibility: hidden;
+    }
+    
+    .page-front, .page-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 0 8px 8px 0;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+    
+    .page-back {
+      transform: rotateY(180deg);
+    }
+    
+    .page.flipped {
+      transform: rotateY(-180deg);
+    }
+    
+    .page-content {
+      padding: 2rem;
+      height: 100%;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    
+    .book-spine {
+      position: absolute;
+      left: -20px;
+      width: 20px;
+      height: 100%;
+      background: linear-gradient(to right, #8B4513, #A0522D, #8B4513);
+      border-radius: 4px 0 0 4px;
+      box-shadow: -2px 0 8px rgba(0,0,0,0.3);
+    }
+    
+    .page-number {
+      position: absolute;
+      bottom: 1rem;
+      font-size: 0.875rem;
+      opacity: 0.6;
+    }
+    
+    .page-number.left { left: 1.5rem; }
+    .page-number.right { right: 1.5rem; }
+    
+    .emoji-picker {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 4px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    
+    .emoji-btn {
+      font-size: 1.5rem;
+      padding: 4px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .emoji-btn:hover {
+      background: rgba(139, 69, 19, 0.2);
+      transform: scale(1.2);
+    }
+    
+    .color-option {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: transform 0.2s;
+      border: 2px solid transparent;
+    }
+    
+    .color-option:hover {
+      transform: scale(1.15);
+    }
+    
+    .color-option.selected {
+      border-color: #8B4513;
+      box-shadow: 0 0 0 2px white, 0 0 0 4px #8B4513;
+    }
+    
+    .font-option {
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 2px solid transparent;
+    }
+    
+    .font-option:hover {
+      background: rgba(139, 69, 19, 0.1);
+    }
+    
+    .font-option.selected {
+      background: rgba(139, 69, 19, 0.2);
+      border-color: #8B4513;
+    }
+    
+    .tab-btn {
+      padding: 8px 16px;
+      border-radius: 8px 8px 0 0;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-weight: 500;
+    }
+    
+    .tab-btn.active {
+      background: #FFF8F0;
+      color: #8B4513;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #8B4513, #A0522D);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: all 0.2s;
+      box-shadow: 0 4px 12px rgba(139, 69, 19, 0.3);
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(139, 69, 19, 0.4);
+    }
+    
+    .btn-secondary {
+      background: #FFF8F0;
+      color: #8B4513;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: 500;
+      transition: all 0.2s;
+      border: 2px solid #D2B48C;
+    }
+    
+    .btn-secondary:hover {
+      background: #F5E6D3;
+    }
+    
+    .nav-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: rgba(139, 69, 19, 0.9);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    
+    .nav-btn:hover:not(:disabled) {
+      transform: scale(1.1);
+      background: #8B4513;
+    }
+    
+    .nav-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    
+    .paper-texture {
+      background-image: 
+        radial-gradient(ellipse at 20% 30%, rgba(255,248,240,0.8) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 70%, rgba(210,180,140,0.1) 0%, transparent 50%);
+    }
+    
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    
+    .modal-content {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      max-width: 90%;
+      max-height: 80%;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #2D5016;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 500;
+      z-index: 1001;
+      animation: slideUp 0.3s ease;
+    }
+    
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+      to { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+
+    .loading-spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="/_sdk/element_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 overflow-auto">
+  <div id="app" class="h-full flex flex-col"><!-- Header -->
+   <header class="bg-gradient-to-r from-amber-900 via-amber-800 to-amber-900 text-white p-4 shadow-lg">
+    <div class="max-w-6xl mx-auto flex items-center justify-between flex-wrap gap-3">
+     <div class="flex items-center gap-3"><span class="text-3xl">📚</span>
+      <div>
+       <h1 id="main-title" class="text-xl font-bold" style="font-family: 'Playfair Display', serif;">Book Creator</h1>
+       <p class="text-amber-200 text-sm">Crea il tuo libro sfogliabile</p>
+      </div>
+     </div>
+     <div class="flex gap-2 flex-wrap"><button onclick="openExportModal()" class="btn-secondary text-sm flex items-center gap-2"> <span>📤</span> Esporta HTML </button>
+     </div>
+    </div>
+   </header>
+   <main class="flex-1 flex flex-col lg:flex-row gap-4 p-4 max-w-7xl mx-auto w-full"><!-- Editor Panel -->
+    <div class="lg:w-96 bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col"><!-- Tabs -->
+     <div class="flex bg-amber-100"><button class="tab-btn flex-1 active" data-tab="editor" onclick="switchTab('editor')">✏️ Editor</button> <button class="tab-btn flex-1" data-tab="style" onclick="switchTab('style')">🎨 Stile</button> <button class="tab-btn flex-1" data-tab="pages" onclick="switchTab('pages')">📄 Pagine</button>
+     </div><!-- Editor Tab -->
+     <div id="tab-editor" class="flex-1 p-4 overflow-y-auto">
+      <div class="space-y-4">
+       <div><label class="block text-sm font-medium text-amber-900 mb-2">Contenuto Pagina <span id="current-page-label">1</span></label> <textarea id="page-content" class="w-full h-48 p-3 border-2 border-amber-200 rounded-xl focus:border-amber-500 focus:outline-none resize-none" placeholder="Scrivi il contenuto della pagina..." oninput="updateCurrentPage()"></textarea>
+       </div>
+       <div><label class="block text-sm font-medium text-amber-900 mb-2">Emoji Rapidi</label>
+        <div class="emoji-picker bg-amber-50 p-3 rounded-xl"><!-- Emoji popolari -->
+        </div>
+       </div>
+      </div>
+     </div><!-- Style Tab -->
+     <div id="tab-style" class="flex-1 p-4 overflow-y-auto hidden">
+      <div class="space-y-6"><!-- Font Selection -->
+       <div><label class="block text-sm font-medium text-amber-900 mb-3">🔤 Font</label>
+        <div class="space-y-2 max-h-48 overflow-y-auto" id="font-options"><!-- Font options -->
+        </div>
+       </div><!-- Font Size -->
+       <div><label class="block text-sm font-medium text-amber-900 mb-2">📏 Dimensione Testo</label>
+        <div class="flex items-center gap-3"><input type="range" id="font-size" min="12" max="32" value="18" class="flex-1 accent-amber-600" oninput="updateFontSize()"> <span id="font-size-label" class="text-amber-700 font-medium w-12">18px</span>
+        </div>
+       </div><!-- Text Color -->
+       <div><label class="block text-sm font-medium text-amber-900 mb-3">🎨 Colore Testo</label>
+        <div class="flex flex-wrap gap-2" id="text-colors"><!-- Color options -->
+        </div>
+       </div><!-- Background Color -->
+       <div><label class="block text-sm font-medium text-amber-900 mb-3">📄 Sfondo Pagina</label>
+        <div class="flex flex-wrap gap-2" id="bg-colors"><!-- Color options -->
+        </div>
+       </div>
+      </div>
+     </div><!-- Pages Tab -->
+     <div id="tab-pages" class="flex-1 p-4 overflow-y-auto hidden">
+      <div class="space-y-4">
+       <div class="flex justify-between items-center"><span class="text-sm font-medium text-amber-900">Gestisci Pagine</span> <button onclick="addNewPage()" class="btn-primary text-sm" id="add-page-btn">+ Nuova Pagina</button>
+       </div>
+       <div id="pages-list" class="space-y-2"><!-- Pages list -->
+       </div>
+       <div id="page-limit-warning" class="hidden text-red-600 text-sm p-3 bg-red-50 rounded-lg">
+        ⚠️ Limite massimo di 999 pagine raggiunto
+       </div>
+      </div>
+     </div>
+    </div><!-- Book Preview -->
+    <div class="flex-1 flex flex-col items-center justify-center py-8">
+     <div class="book-container w-full max-w-lg mx-auto" style="height: 500px;">
+      <div class="book relative w-full h-full">
+       <div class="book-spine"></div>
+       <div id="book-pages" class="absolute inset-0 ml-5"><!-- Pages will be rendered here -->
+       </div>
+      </div>
+     </div><!-- Navigation -->
+     <div class="flex items-center gap-6 mt-6"><button id="prev-btn" class="nav-btn" onclick="prevPage()" disabled>
+       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+       </svg></button> <span id="page-indicator" class="text-amber-800 font-medium">Pagina 1 di 1</span> <button id="next-btn" class="nav-btn" onclick="nextPage()">
+       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+       </svg></button>
+     </div>
+    </div>
+   </main>
+  </div><!-- Export Modal -->
+  <div id="export-modal" class="modal-overlay hidden">
+   <div class="modal-content w-full max-w-2xl">
+    <div class="flex justify-between items-center mb-4">
+     <h2 class="text-xl font-bold text-amber-900" style="font-family: 'Playfair Display', serif;">📤 Esporta Libro</h2><button onclick="closeExportModal()" class="text-gray-400 hover:text-gray-600 text-2xl">×</button>
+    </div>
+    <p class="text-amber-700 mb-4">Il tuo libro verrà esportato come file HTML autonomo che potrai aprire in qualsiasi browser.</p>
+    <div class="bg-amber-50 p-4 rounded-xl mb-4">
+     <h3 class="font-medium text-amber-900 mb-2">Anteprima:</h3>
+     <pre id="export-preview" class="text-xs text-amber-800 overflow-x-auto max-h-64 overflow-y-auto bg-white p-3 rounded-lg border border-amber-200"></pre>
+    </div>
+    <div class="flex gap-3 justify-end"><button onclick="closeExportModal()" class="btn-secondary">Annulla</button> <button onclick="downloadHTML()" class="btn-primary flex items-center gap-2"> <span>💾</span> Scarica HTML </button>
+    </div>
+   </div>
+  </div><!-- Toast Container -->
+  <div id="toast-container"></div>
+  <script>
+    // Configuration
+    const defaultConfig = {
+      book_title: 'Il Mio Libro',
+      primary_color: '#78350F',
+      secondary_color: '#FFF8F0',
+      text_color: '#1C1917',
+      accent_color: '#D97706',
+      surface_color: '#FFFBEB'
+    };
+
+    let config = { ...defaultConfig };
+
+    // App State
+    let pages = [];
+    let currentPageIndex = 0;
+    let currentViewIndex = 0;
+    let isLoading = false;
+
+    // Constants
+    const fonts = [
+      { name: 'Playfair Display', family: "'Playfair Display', serif", style: 'Elegante' },
+      { name: 'Crimson Text', family: "'Crimson Text', serif", style: 'Classico' },
+      { name: 'Lora', family: "'Lora', serif", style: 'Moderno' },
+      { name: 'Merriweather', family: "'Merriweather', serif", style: 'Leggibile' },
+      { name: 'EB Garamond', family: "'EB Garamond', serif", style: 'Tradizionale' },
+      { name: 'Libre Baskerville', family: "'Libre Baskerville', serif", style: 'Raffinato' },
+      { name: 'Comic Neue', family: "'Comic Neue', cursive", style: 'Giocoso' },
+      { name: 'Caveat', family: "'Caveat', cursive", style: 'Manoscritto' },
+      { name: 'Noto Sans KR', family: "'Noto Sans KR', sans-serif", style: 'Coreano' },
+      { name: 'Noto Sans SC', family: "'Noto Sans SC', sans-serif", style: 'Cinese' },
+      { name: 'Noto Sans JP', family: "'Noto Sans JP', sans-serif", style: 'Giapponese' },
+      { name: 'Noto Sans Arabic', family: "'Noto Sans Arabic', sans-serif", style: 'Arabo' }
+    ];
+
+    const textColors = [
+      '#1C1917', '#78350F', '#1E3A8A', '#14532D', '#7C2D12', 
+      '#4C1D95', '#831843', '#0F766E', '#374151', '#92400E'
+    ];
+
+    const bgColors = [
+      '#FFFBEB', '#FFF8F0', '#FEFCE8', '#F0FDF4', '#FDF2F8',
+      '#EFF6FF', '#FEF3C7', '#ECFDF5', '#FCE7F3', '#E0E7FF'
+    ];
+
+    const emojis = [
+      '📖', '✨', '🌟', '💫', '🌸', '🌺', '🦋', '😂', '🥰', '🤣', '😭','😉', '🤩', '😋', '🤪', '😬', '🤔', '🤫', '😱', '☹️', '⭐', '💥', '💢', '💤', '🔥', '🙀',
+      '💓', '💕', '💖', '🎀', '🎁', '💌', '👍', '👎', '🎊', '🎉', '🎈', '🧧', '🎎', '🎃', '🀄',
+      '🌙', '⭐', '☀️', '🌤️', '🌻', '🌷', '🌹', '🍀', '🌚', '🌝', '🌜', '🌛', '🌧️', '🌩️', '🌪️', '🌈',
+      '📚', '📝', '✏️', '🖋️', '📜', '📃', '🏆', '👑', '✍️', '🤳', '🙏', '🖍️', '📷', '🎭',
+      '🐱', '🐶', '🐰', '🦊', '🐻', '🐼', '🦁', '🐸', '🐲', '🐉', '🦥', '🐤', '🐪', '🐅', '🦉', '🦢', '🐕', '🐢',
+      '☕', '🍰', '🎂', '🍪', '🍭', '🍬', '🧁', '🍩', '🍙', '🍘', '🍜', '🍲', '🥡', '🍱', '☕', '🍾', '🍵',
+       '⛵', '⛲', '🗻', '⛪', '🏯', '🏘️', '🛖', '🏫', '🌆', '⛱️', '🌐', '⛩️', '🛸', '✈️', '🚔', '🚕', '🛵', '🎠', '🧳'
+       
+    ];
+
+    // Initialize App
+    async function initApp() {
+      // Initialize UI
+      renderEmojiPicker();
+      renderFontOptions();
+      renderColorOptions();
+      applyConfig();
+      
+      // Add first page automatically
+      addNewPage();
+    }
+
+    function applyConfig() {
+      const title = document.getElementById('main-title');
+      if (title) {
+        title.textContent = config.book_title || defaultConfig.book_title;
+      }
+    }
+
+    // UI Rendering
+    function renderEmojiPicker() {
+      const container = document.querySelector('.emoji-picker');
+      container.innerHTML = emojis.map(emoji => 
+        `<button type="button" class="emoji-btn" onclick="insertEmoji('${emoji}')">${emoji}</button>`
+      ).join('');
+    }
+
+    function renderFontOptions() {
+      const container = document.getElementById('font-options');
+      container.innerHTML = fonts.map((font, i) => `
+        <div class="font-option ${i === 0 ? 'selected' : ''}" 
+             style="font-family: ${font.family}"
+             onclick="selectFont(${i})"
+             data-font-index="${i}">
+          <div class="font-medium">${font.name}</div>
+          <div class="text-xs text-amber-600">${font.style}</div>
+        </div>
+      `).join('');
+    }
+
+    function renderColorOptions() {
+      const textContainer = document.getElementById('text-colors');
+      textContainer.innerHTML = textColors.map((color, i) => `
+        <div class="color-option ${i === 0 ? 'selected' : ''}" 
+             style="background: ${color}"
+             onclick="selectTextColor(${i})"
+             data-color-index="${i}"
+             title="${color}">
+        </div>
+      `).join('');
+
+      const bgContainer = document.getElementById('bg-colors');
+      bgContainer.innerHTML = bgColors.map((color, i) => `
+        <div class="color-option ${i === 0 ? 'selected' : ''}" 
+             style="background: ${color}; border: 1px solid #D2B48C;"
+             onclick="selectBgColor(${i})"
+             data-bg-index="${i}"
+             title="${color}">
+        </div>
+      `).join('');
+    }
+
+    function renderBook() {
+      const container = document.getElementById('book-pages');
+      
+      if (pages.length === 0) {
+        container.innerHTML = `
+          <div class="absolute inset-0 flex items-center justify-center bg-amber-50 rounded-r-lg paper-texture">
+            <div class="text-center p-8">
+              <span class="text-6xl mb-4 block">📖</span>
+              <p class="text-amber-700 font-medium">Nessuna pagina ancora</p>
+              <p class="text-amber-500 text-sm mt-2">Clicca "Nuova Pagina" per iniziare</p>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      // Create page spreads
+      const spreads = [];
+      for (let i = 0; i < pages.length; i += 2) {
+        spreads.push({
+          left: pages[i],
+          right: pages[i + 1] || null
+        });
+      }
+
+      container.innerHTML = spreads.map((spread, spreadIndex) => {
+        const isFlipped = spreadIndex < currentViewIndex;
+        const zIndex = spreads.length - spreadIndex;
+        
+        return `
+          <div class="page ${isFlipped ? 'flipped' : ''}" style="z-index: ${zIndex}">
+            <div class="page-front paper-texture" style="background: ${spread.left.bg_color || bgColors[0]}">
+              <div class="page-content" style="font-family: ${spread.left.font_family || fonts[0].family}; font-size: ${spread.left.font_size || 18}px; color: ${spread.left.text_color || textColors[0]}">
+                ${escapeHtml(spread.left.content || '')}
+              </div>
+              <div class="page-number left">${spread.left.page_number}</div>
+            </div>
+            <div class="page-back paper-texture" style="background: ${spread.right ? (spread.right.bg_color || bgColors[0]) : bgColors[0]}">
+              ${spread.right ? `
+                <div class="page-content" style="font-family: ${spread.right.font_family || fonts[0].family}; font-size: ${spread.right.font_size || 18}px; color: ${spread.right.text_color || textColors[0]}">
+                  ${escapeHtml(spread.right.content || '')}
+                </div>
+                <div class="page-number right">${spread.right.page_number}</div>
+              ` : '<div class="page-content flex items-center justify-center text-amber-300 text-4xl">📄</div>'}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderPagesList() {
+      const container = document.getElementById('pages-list');
+      
+      if (pages.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-8 text-amber-500">
+            <span class="text-4xl block mb-2">📄</span>
+            <p>Nessuna pagina</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = pages.map((page, index) => `
+        <div class="flex items-center gap-3 p-3 rounded-lg ${index === currentPageIndex ? 'bg-amber-100 border-2 border-amber-400' : 'bg-amber-50 border-2 border-transparent'} cursor-pointer hover:bg-amber-100 transition-all"
+             onclick="selectPage(${index})">
+          <span class="w-8 h-8 rounded-full bg-amber-200 flex items-center justify-center text-amber-800 font-bold text-sm">${page.page_number}</span>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm text-amber-900 truncate">${page.content ? page.content.substring(0, 30) + (page.content.length > 30 ? '...' : '') : 'Pagina vuota'}</p>
+          </div>
+          <button onclick="event.stopPropagation(); confirmDeletePage(${index})" class="text-red-400 hover:text-red-600 p-1" title="Elimina">
+            🗑️
+          </button>
+        </div>
+      `).join('');
+
+      // Show warning if approaching limit
+      const warning = document.getElementById('page-limit-warning');
+      if (pages.length >= 999) {
+        warning.classList.remove('hidden');
+      } else {
+        warning.classList.add('hidden');
+      }
+    }
+
+    // Page Navigation
+    function updatePageIndicator() {
+      const indicator = document.getElementById('page-indicator');
+      const totalPages = pages.length;
+      const currentPage = currentPageIndex + 1;
+      indicator.textContent = `Pagina ${currentPage} di ${totalPages || 1}`;
+
+      const prevBtn = document.getElementById('prev-btn');
+      const nextBtn = document.getElementById('next-btn');
+      
+      prevBtn.disabled = currentViewIndex <= 0;
+      nextBtn.disabled = currentViewIndex >= Math.ceil(pages.length / 2) - 1;
+    }
+
+    function prevPage() {
+      if (currentViewIndex > 0) {
+        currentViewIndex--;
+        currentPageIndex = currentViewIndex * 2;
+        loadPageToEditor();
+        renderBook();
+        updatePageIndicator();
+      }
+    }
+
+    function nextPage() {
+      if (currentViewIndex < Math.ceil(pages.length / 2) - 1) {
+        currentViewIndex++;
+        currentPageIndex = currentViewIndex * 2;
+        loadPageToEditor();
+        renderBook();
+        updatePageIndicator();
+      }
+    }
+
+    function selectPage(index) {
+      currentPageIndex = index;
+      currentViewIndex = Math.floor(index / 2);
+      loadPageToEditor();
+      renderBook();
+      renderPagesList();
+      updatePageIndicator();
+    }
+
+    function loadPageToEditor() {
+      const page = pages[currentPageIndex];
+      if (!page) return;
+
+      document.getElementById('page-content').value = page.content || '';
+      document.getElementById('current-page-label').textContent = page.page_number;
+      document.getElementById('font-size').value = page.font_size || 18;
+      document.getElementById('font-size-label').textContent = `${page.font_size || 18}px`;
+
+      // Update font selection
+      const fontIndex = fonts.findIndex(f => f.family === page.font_family);
+      document.querySelectorAll('[data-font-index]').forEach((el, i) => {
+        el.classList.toggle('selected', i === (fontIndex >= 0 ? fontIndex : 0));
+      });
+
+      // Update color selections
+      const textColorIndex = textColors.indexOf(page.text_color);
+      document.querySelectorAll('[data-color-index]').forEach((el, i) => {
+        el.classList.toggle('selected', i === (textColorIndex >= 0 ? textColorIndex : 0));
+      });
+
+      const bgColorIndex = bgColors.indexOf(page.bg_color);
+      document.querySelectorAll('[data-bg-index]').forEach((el, i) => {
+        el.classList.toggle('selected', i === (bgColorIndex >= 0 ? bgColorIndex : 0));
+      });
+    }
+
+    // Page Actions
+    async function addNewPage() {
+      if (pages.length >= 999) {
+        showToast('Limite massimo di pagine raggiunto', 'error');
+        return;
+      }
+
+      if (isLoading) return;
+      isLoading = true;
+
+      const btn = document.getElementById('add-page-btn');
+      btn.innerHTML = '<span class="loading-spinner inline-block"></span>';
+      btn.disabled = true;
+
+      const newPage = {
+        page_id: 'page_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+        page_number: pages.length + 1,
+        content: '',
+        font_family: fonts[0].family,
+        font_size: 18,
+        text_color: textColors[0],
+        bg_color: bgColors[0],
+        created_at: new Date().toISOString()
+      };
+
+      pages.push(newPage);
+      currentPageIndex = pages.length - 1;
+      currentViewIndex = Math.floor(currentPageIndex / 2);
+      
+      loadPageToEditor();
+      renderBook();
+      renderPagesList();
+      updatePageIndicator();
+
+      showToast('Nuova pagina aggiunta! 📄');
+
+      btn.innerHTML = '+ Nuova Pagina';
+      btn.disabled = false;
+      isLoading = false;
+    }
+
+    async function updateCurrentPage() {
+      const page = pages[currentPageIndex];
+      if (!page) return;
+
+      const content = document.getElementById('page-content').value;
+      const fontSize = parseInt(document.getElementById('font-size').value);
+      const selectedFontEl = document.querySelector('[data-font-index].selected');
+      const fontIndex = selectedFontEl ? parseInt(selectedFontEl.dataset.fontIndex) : 0;
+      const selectedColorEl = document.querySelector('[data-color-index].selected');
+      const colorIndex = selectedColorEl ? parseInt(selectedColorEl.dataset.colorIndex) : 0;
+      const selectedBgEl = document.querySelector('[data-bg-index].selected');
+      const bgIndex = selectedBgEl ? parseInt(selectedBgEl.dataset.bgIndex) : 0;
+
+      page.content = content;
+      page.font_size = fontSize;
+      page.font_family = fonts[fontIndex].family;
+      page.text_color = textColors[colorIndex];
+      page.bg_color = bgColors[bgIndex];
+      
+      renderBook();
+      renderPagesList();
+    }
+
+    let deleteConfirmIndex = null;
+
+    function confirmDeletePage(index) {
+      if (deleteConfirmIndex === index) {
+        deletePage(index);
+        deleteConfirmIndex = null;
+      } else {
+        deleteConfirmIndex = index;
+        showToast('Clicca di nuovo per confermare eliminazione', 'warning');
+        setTimeout(() => { deleteConfirmIndex = null; }, 3000);
+      }
+    }
+
+    async function deletePage(index) {
+      const page = pages[index];
+      if (!page) return;
+
+      pages.splice(index, 1);
+      
+      // Renumber remaining pages
+      pages.forEach((p, i) => {
+        p.page_number = i + 1;
+      });
+
+      if (currentPageIndex >= pages.length && currentPageIndex > 0) {
+        currentPageIndex--;
+        currentViewIndex = Math.floor(currentPageIndex / 2);
+      }
+
+      loadPageToEditor();
+      renderBook();
+      renderPagesList();
+      updatePageIndicator();
+      
+      showToast('Pagina eliminata');
+    }
+
+    // Style Controls
+    async function selectFont(index) {
+      const page = pages[currentPageIndex];
+      if (!page) return;
+
+      document.querySelectorAll('[data-font-index]').forEach((el, i) => {
+        el.classList.toggle('selected', i === index);
+      });
+
+      page.font_family = fonts[index].family;
+      renderBook();
+    }
+
+    async function updateFontSize() {
+      const page = pages[currentPageIndex];
+      if (!page) return;
+
+      const size = parseInt(document.getElementById('font-size').value);
+      document.getElementById('font-size-label').textContent = `${size}px`;
+
+      page.font_size = size;
+      renderBook();
+    }
+
+    async function selectTextColor(index) {
+      const page = pages[currentPageIndex];
+      if (!page) return;
+
+      document.querySelectorAll('[data-color-index]').forEach((el, i) => {
+        el.classList.toggle('selected', i === index);
+      });
+
+      page.text_color = textColors[index];
+      renderBook();
+    }
+
+    async function selectBgColor(index) {
+      const page = pages[currentPageIndex];
+      if (!page) return;
+
+      document.querySelectorAll('[data-bg-index]').forEach((el, i) => {
+        el.classList.toggle('selected', i === index);
+      });
+
+      page.bg_color = bgColors[index];
+      renderBook();
+    }
+
+    function insertEmoji(emoji) {
+      const textarea = document.getElementById('page-content');
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const text = textarea.value;
+      textarea.value = text.substring(0, start) + emoji + text.substring(end);
+      textarea.selectionStart = textarea.selectionEnd = start + emoji.length;
+      textarea.focus();
+      updateCurrentPage();
+    }
+
+    // Tab Switching
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.tab === tabName);
+      });
+      
+      ['editor', 'style', 'pages'].forEach(tab => {
+        const el = document.getElementById(`tab-${tab}`);
+        el.classList.toggle('hidden', tab !== tabName);
+      });
+    }
+
+    // Export Functions
+    function openExportModal() {
+      const modal = document.getElementById('export-modal');
+      const preview = document.getElementById('export-preview');
+      preview.textContent = generateExportHTML().substring(0, 2000) + '...';
+      modal.classList.remove('hidden');
+    }
+
+    function closeExportModal() {
+      document.getElementById('export-modal').classList.add('hidden');
+    }
+
+    function generateExportHTML() {
+      const bookTitle = config.book_title || defaultConfig.book_title;
+      
+      return `<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${escapeHtml(bookTitle)}</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Georgia', serif; background: linear-gradient(135deg, #FEF3C7, #FDE68A); min-height: 100vh; padding: 2rem; }
+    .book-container { max-width: 800px; margin: 0 auto; }
+    .book-title { text-align: center; font-size: 2.5rem; color: #78350F; margin-bottom: 2rem; font-family: 'Georgia', serif; }
+    .page { background: white; border-radius: 8px; padding: 2rem; margin-bottom: 1rem; box-shadow: 0 4px 12px rgba(0,0,0,0.1); position: relative; min-height: 400px; }
+    .page-number { position: absolute; bottom: 1rem; right: 1.5rem; color: #92400E; font-size: 0.875rem; }
+    .page-content { white-space: pre-wrap; word-wrap: break-word; line-height: 1.8; }
+    .nav { display: flex; justify-content: center; gap: 1rem; margin-top: 2rem; }
+    .nav button { background: #78350F; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 1rem; }
+    .nav button:hover { background: #92400E; }
+    .nav button:disabled { opacity: 0.5; cursor: not-allowed; }
+  </style>
+</head>
+<body>
+  <div class="book-container">
+    <h1 class="book-title">📚 ${escapeHtml(bookTitle)}</h1>
+    <div id="pages">
+${pages.map(page => `      <div class="page" style="background: ${page.bg_color || '#FFFBEB'}; display: none;" data-page="${page.page_number}">
+        <div class="page-content" style="font-family: ${page.font_family || "'Georgia', serif"}; font-size: ${page.font_size || 18}px; color: ${page.text_color || '#1C1917'};">${escapeHtml(page.content || '')}</div>
+        <div class="page-number">Pagina ${page.page_number}</div>
+      </div>`).join('\n')}
+    </div>
+    <div class="nav">
+      <button onclick="prevPage()" id="prevBtn">◀ Precedente</button>
+      <span id="indicator" style="display: flex; align-items: center; color: #78350F; font-weight: bold;">Pagina 1 di ${pages.length}</span>
+      <button onclick="nextPage()" id="nextBtn">Successiva ▶</button>
+    </div>
+  </div>
+  <script>
+    let current = 0;
+    const total = ${pages.length};
+    const pageEls = document.querySelectorAll('[data-page]');
+    
+    function showPage() {
+      pageEls.forEach((p, i) => p.style.display = i === current ? 'block' : 'none');
+      document.getElementById('indicator').textContent = 'Pagina ' + (current + 1) + ' di ' + total;
+      document.getElementById('prevBtn').disabled = current === 0;
+      document.getElementById('nextBtn').disabled = current === total - 1;
+    }
+    
+    function prevPage() { if (current > 0) { current--; showPage(); } }
+    function nextPage() { if (current < total - 1) { current++; showPage(); } }
+    
+    showPage();
+  <\/script>
+</body>
+</html>`;
+    }
+
+    function downloadHTML() {
+      const html = generateExportHTML();
+      const blob = new Blob([html], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${(config.book_title || 'libro').replace(/[^a-zA-Z0-9]/g, '_')}.html`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      closeExportModal();
+      showToast('Libro esportato con successo! 🎉');
+    }
+
+    // Utilities
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.style.background = type === 'error' ? '#DC2626' : type === 'warning' ? '#D97706' : '#2D5016';
+      toast.textContent = message;
+      container.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
+    }
+
+    // Initialize
+    initApp();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9ca61fe5c43bee88',t:'MTc3MDUwMTI1NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

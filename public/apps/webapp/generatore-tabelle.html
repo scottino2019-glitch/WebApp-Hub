@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="it" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generatore Tabelle</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    html, body, #app {
+      height: 100%;
+      width: 100%;
+    }
+    
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-weight: 500;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.3s ease;
+      z-index: 1000;
+    }
+    
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .editable-cell {
+      min-height: 40px;
+      padding: 8px;
+      border: 2px solid transparent;
+      transition: border-color 0.2s;
+      cursor: text;
+    }
+    
+    .editable-cell:hover {
+      border-color: #e0e0e0;
+    }
+    
+    .editable-cell:focus {
+      outline: none;
+      border-color: #3b82f6;
+      background-color: #f8fafc;
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="/_sdk/element_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full">
+  <main id="app" class="w-full h-full overflow-auto bg-gradient-to-br from-blue-50 to-indigo-100">
+   <div class="max-w-7xl mx-auto p-6">
+    <div class="text-center mb-8">
+     <h1 class="text-4xl font-bold text-gray-800 mb-2">📊 Generatore Tabelle</h1>
+     <p class="text-gray-600">Crea, modifica ed esporta le tue tabelle personalizzate</p>
+    </div>
+    <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+     <h2 class="text-xl font-semibold mb-4 text-gray-800">✨ Crea Nuova Tabella</h2>
+     <form id="new-table-form" class="space-y-4">
+      <div><label for="table-title" class="block mb-2 font-medium text-gray-700 text-sm">Titolo Tabella</label> <input type="text" id="table-title" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Es: Orario Lezioni, Budget Mensile, Lista Spesa..." required>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+       <div><label for="table-rows" class="block mb-2 font-medium text-gray-700 text-sm">Numero Righe</label> <input type="number" id="table-rows" min="1" max="50" value="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+       </div>
+       <div><label for="table-cols" class="block mb-2 font-medium text-gray-700 text-sm">Numero Colonne</label> <input type="number" id="table-cols" min="1" max="20" value="4" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+       </div>
+      </div><button type="submit" class="w-full bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors shadow-md"> ➕ Crea Tabella </button>
+     </form>
+    </div>
+    <div id="tables-container" class="space-y-6">
+     <div class="bg-white rounded-xl shadow-lg p-12 text-center">
+      <div class="text-6xl mb-4">
+       📋
+      </div>
+      <p class="text-xl text-gray-800 font-semibold mt-4">Nessuna tabella creata ancora</p>
+      <p class="text-sm text-gray-600 mt-2">Inizia creando la tua prima tabella con il modulo qui sopra</p>
+     </div>
+    </div>
+   </div>
+  </main>
+  <script>
+    let allTables = [];
+
+    function loadTables() {
+      const stored = localStorage.getItem('generatore_tabelle');
+      if (stored) {
+        try {
+          allTables = JSON.parse(stored);
+        } catch (e) {
+          allTables = [];
+        }
+      }
+      renderTables();
+    }
+
+    function saveTables() {
+      localStorage.setItem('generatore_tabelle', JSON.stringify(allTables));
+    }
+
+    function showToast(message, type = 'success') {
+      const toast = document.createElement('div');
+      toast.className = `toast ${type === 'success' ? 'bg-green-500' : 'bg-red-500'} text-white`;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      
+      setTimeout(() => toast.classList.add('show'), 10);
+      setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+
+    function renderTables() {
+      const container = document.getElementById('tables-container');
+      if (!container) return;
+
+      if (allTables.length === 0) {
+        container.innerHTML = `
+          <div class="bg-white rounded-xl shadow-lg p-12 text-center">
+            <div class="text-6xl mb-4">📋</div>
+            <p class="text-xl text-gray-800 font-semibold mt-4">Nessuna tabella creata ancora</p>
+            <p class="text-sm text-gray-600 mt-2">Inizia creando la tua prima tabella con il modulo qui sopra</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = allTables.map((table, tableIndex) => {
+        return `
+          <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow">
+            <div class="flex justify-between items-start mb-4 flex-wrap gap-3">
+              <input 
+                type="text" 
+                value="${table.title}" 
+                data-table-index="${tableIndex}"
+                class="table-title-input text-2xl font-bold border-2 border-transparent px-2 py-1 rounded hover:border-gray-300 focus:border-blue-500 focus:outline-none flex-1 min-w-[200px]"
+              />
+              <div class="flex gap-2 flex-wrap">
+                <button 
+                  class="export-csv-btn px-4 py-2 rounded-lg font-medium text-white bg-green-500 hover:bg-green-600 transition-colors text-sm shadow"
+                  data-table-index="${tableIndex}"
+                >
+                  📥 CSV
+                </button>
+                <button 
+                  class="export-html-btn px-4 py-2 rounded-lg font-medium text-white bg-purple-500 hover:bg-purple-600 transition-colors text-sm shadow"
+                  data-table-index="${tableIndex}"
+                >
+                  📄 HTML
+                </button>
+                <button 
+                  class="delete-btn px-4 py-2 rounded-lg font-medium text-white bg-red-500 hover:bg-red-600 transition-colors text-sm shadow"
+                  data-table-index="${tableIndex}"
+                >
+                  🗑️ Elimina
+                </button>
+              </div>
+            </div>
+
+            <div class="overflow-x-auto rounded-lg border border-gray-200">
+              <table class="w-full border-collapse">
+                <thead>
+                  <tr>
+                    ${table.headers.map((header, colIndex) => `
+                      <th class="text-left text-white font-semibold p-3 bg-blue-600 border-r border-blue-500 last:border-r-0">
+                        <div 
+                          contenteditable="true"
+                          class="editable-cell"
+                          data-table-index="${tableIndex}"
+                          data-type="header"
+                          data-col="${colIndex}"
+                          style="color: white; min-width: 100px;"
+                        >${header}</div>
+                      </th>
+                    `).join('')}
+                  </tr>
+                </thead>
+                <tbody>
+                  ${table.data.map((row, rowIndex) => `
+                    <tr class="${rowIndex % 2 === 0 ? 'bg-gray-50' : 'bg-white'} hover:bg-blue-50 transition-colors">
+                      ${row.map((cell, colIndex) => `
+                        <td class="border border-gray-200 p-3">
+                          <div 
+                            contenteditable="true"
+                            class="editable-cell"
+                            data-table-index="${tableIndex}"
+                            data-type="data"
+                            data-row="${rowIndex}"
+                            data-col="${colIndex}"
+                            style="min-width: 100px;"
+                          >${cell}</div>
+                        </td>
+                      `).join('')}
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+            
+            <div class="mt-3 text-xs text-gray-500 text-right">
+              Creata il: ${new Date(table.createdAt).toLocaleString('it-IT')}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      attachTableEventListeners();
+    }
+
+    function attachTableEventListeners() {
+      document.querySelectorAll('.table-title-input').forEach(input => {
+        input.addEventListener('blur', (e) => {
+          const tableIndex = parseInt(e.target.dataset.tableIndex);
+          allTables[tableIndex].title = e.target.value;
+          saveTables();
+        });
+      });
+
+      document.querySelectorAll('.editable-cell').forEach(cell => {
+        cell.addEventListener('blur', (e) => {
+          const tableIndex = parseInt(e.target.dataset.tableIndex);
+          const type = e.target.dataset.type;
+          const newValue = e.target.textContent;
+
+          if (type === 'header') {
+            const colIndex = parseInt(e.target.dataset.col);
+            allTables[tableIndex].headers[colIndex] = newValue;
+          } else {
+            const rowIndex = parseInt(e.target.dataset.row);
+            const colIndex = parseInt(e.target.dataset.col);
+            allTables[tableIndex].data[rowIndex][colIndex] = newValue;
+          }
+          saveTables();
+        });
+      });
+
+      document.querySelectorAll('.export-csv-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const tableIndex = parseInt(e.currentTarget.dataset.tableIndex);
+          exportTableAsCSV(allTables[tableIndex]);
+        });
+      });
+
+      document.querySelectorAll('.export-html-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const tableIndex = parseInt(e.currentTarget.dataset.tableIndex);
+          exportTableAsHTML(allTables[tableIndex]);
+        });
+      });
+
+      document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const tableIndex = parseInt(e.currentTarget.dataset.tableIndex);
+          
+          if (!e.currentTarget.dataset.confirming) {
+            e.currentTarget.dataset.confirming = 'true';
+            e.currentTarget.textContent = '⚠️ Conferma?';
+            
+            setTimeout(() => {
+              e.currentTarget.dataset.confirming = '';
+              e.currentTarget.textContent = '🗑️ Elimina';
+            }, 3000);
+          } else {
+            allTables.splice(tableIndex, 1);
+            saveTables();
+            renderTables();
+            showToast('Tabella eliminata');
+          }
+        });
+      });
+    }
+
+    function createNewTable(title, rows, cols) {
+      const headers = Array(cols).fill('').map((_, i) => `Colonna ${i + 1}`);
+      const data = Array(rows).fill(null).map(() => Array(cols).fill(''));
+
+      const newTable = {
+        id: `table-${Date.now()}`,
+        title: title || 'Nuova Tabella',
+        rows: rows,
+        cols: cols,
+        headers: headers,
+        data: data,
+        createdAt: new Date().toISOString()
+      };
+
+      allTables.push(newTable);
+      saveTables();
+      renderTables();
+      showToast('Tabella creata con successo!');
+    }
+
+    function exportTableAsCSV(table) {
+      let csv = table.headers.join(',') + '\n';
+      table.data.forEach(row => {
+        csv += row.map(cell => `"${cell.replace(/"/g, '""')}"`).join(',') + '\n';
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `${table.title}.csv`;
+      link.click();
+      
+      showToast('Tabella esportata come CSV!');
+    }
+
+    function exportTableAsHTML(table) {
+      let html = `<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${table.title}</title>
+  <style>
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; 
+      padding: 40px; 
+      background: #f5f5f5;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    h1 { 
+      color: #333; 
+      margin-bottom: 20px;
+      font-size: 2em;
+    }
+    table { 
+      border-collapse: collapse; 
+      width: 100%; 
+      margin-top: 20px;
+    }
+    th, td { 
+      border: 1px solid #ddd; 
+      padding: 12px; 
+      text-align: left; 
+    }
+    th { 
+      background-color: #2563eb; 
+      color: white; 
+      font-weight: 600;
+    }
+    tr:nth-child(even) { 
+      background-color: #f9fafb; 
+    }
+    tr:hover {
+      background-color: #eff6ff;
+    }
+    .footer {
+      margin-top: 20px;
+      text-align: right;
+      color: #666;
+      font-size: 0.9em;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>${table.title}</h1>
+    <table>
+      <thead>
+        <tr>${table.headers.map(h => `<th>${h}</th>`).join('')}</tr>
+      </thead>
+      <tbody>
+        ${table.data.map(row => `<tr>${row.map(cell => `<td>${cell}</td>`).join('')}</tr>`).join('\n        ')}
+      </tbody>
+    </table>
+    <div class="footer">
+      Generata il: ${new Date().toLocaleString('it-IT')}
+    </div>
+  </div>
+</body>
+</html>`;
+
+      const blob = new Blob([html], { type: 'text/html;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `${table.title}.html`;
+      link.click();
+      
+      showToast('Tabella esportata come HTML!');
+    }
+
+    document.getElementById('new-table-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const title = document.getElementById('table-title').value;
+      const rows = parseInt(document.getElementById('table-rows').value);
+      const cols = parseInt(document.getElementById('table-cols').value);
+      
+      createNewTable(title, rows, cols);
+      e.target.reset();
+    });
+
+    loadTables();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9b8ef3f0a2bced53',t:'MTc2NzU3MzkyNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

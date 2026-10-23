@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creatore di Testi Artistici Mobile</title>
+    <!-- Google Fonts CDN per Font Artistici -->
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Borel&family=Sedgwick+Ave+Display&display=swap" rel="stylesheet">
+    <!-- html2canvas CDN per l'esportazione in immagine -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <style>
+        /* CSS Reset e Setup Globale */
+        :root {
+            --primary-color: #3f51b5;
+            --accent-color: #ff4081;
+            --bg-color: #f0f4f8;
+            --control-height: 60px;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Controlli e Barra Strumenti (Sempre visibile in alto o in basso) */
+        #controls {
+            width: 100%;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 8px 10px;
+            box-sizing: border-box;
+        }
+
+        .control-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 5px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        /* Stile per i pulsanti */
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.2s;
+            flex-grow: 1; /* Permette ai pulsanti di espandersi orizzontalmente */
+            min-width: 80px;
+        }
+
+        button:hover {
+            background-color: #303f9f;
+        }
+
+        /* Stile specifico per i font */
+        .font-selector {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            background-color: #e0e7ff;
+            min-width: 40px;
+        }
+
+        /* Area di Visualizzazione e Modifica (L'output finale) */
+        #editor-container {
+            flex-grow: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        #editor-area {
+            width: 100%;
+            max-width: 600px;
+            min-height: 300px;
+            padding: 20px;
+            background-color: white;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            line-height: 1.5;
+            outline: none;
+            cursor: text;
+            word-wrap: break-word;
+            /* Stile base */
+            font-size: 20px;
+            transition: font-family 0.3s ease;
+        }
+
+        #editor-area:focus {
+            border-color: var(--accent-color);
+        }
+
+        /* Stile per le immagini all'interno dell'editor */
+        #editor-area img {
+            max-width: 95%;
+            height: auto;
+            display: block;
+            margin: 10px auto;
+            border-radius: 5px;
+        }
+
+        /* Classe temporanea per la cattura dell'immagine */
+        .capturing {
+            border: none !important;
+            box-shadow: none !important;
+        }
+
+        /* Stile specifico per i font */
+        .font-pacifico { font-family: 'Pacifico', cursive; }
+        .font-borel { font-family: 'Borel', cursive; }
+        .font-sedgwick { font-family: 'Sedgwick Ave Display', cursive; }
+
+        /* Modal per la Preview/Download */
+        #download-modal {
+            display: none;
+            position: fixed;
+            z-index: 200;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.8);
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        #preview-image {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #ccc;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="controls">
+        <!-- Gruppo Font -->
+        <div class="control-group">
+            <button class="font-selector" onclick="setFont('Arial')">Aa (Standard)</button>
+            <button class="font-selector font-pacifico" onclick="setFont('Pacifico')">Aa</button>
+            <button class="font-selector font-borel" onclick="setFont('Borel')">Aa</button>
+            <button class="font-selector font-sedgwick" onclick="setFont('Sedgwick Ave Display')">Aa</button>
+        </div>
+
+        <!-- Gruppo Contenuti -->
+        <div class="control-group">
+            <button onclick="insertImage()">🖼️ Aggiungi Immagine</button>
+            <button onclick="insertEmoji('😊')">😊</button>
+            <button onclick="insertEmoji('❤️')">❤️</button>
+            <button onclick="insertEmoji('🔥')">🔥</button>
+            <button onclick="insertEmoji('✨')">✨</button>
+            <button onclick="insertEmoji('🍕')">🍕</button>
+        </div>
+
+        <!-- Gruppo Esporta -->
+        <div class="control-group">
+            <button style="background-color: var(--accent-color);" onclick="exportAsImage()">📸 ESPORTA COME IMMAGINE</button>
+        </div>
+    </div>
+
+    <div id="editor-container">
+        <div id="editor-area" contenteditable="true">
+            <h1>Il tuo testo artistico qui!</h1>
+            <p>Seleziona un font e aggiungi contenuti.</p>
+        </div>
+    </div>
+
+    <!-- Modal di download -->
+    <div id="download-modal">
+        <div class="modal-content">
+            <h3>Anteprima Immagine</h3>
+            <img id="preview-image" alt="Anteprima del contenuto esportato">
+            <a id="download-link" download="testo_artistico.png">
+                <button style="background-color: green; margin-top: 10px;">⬇️ Scarica Immagine</button>
+            </a>
+            <button onclick="closeModal()" style="background-color: gray; margin-top: 10px;">Chiudi</button>
+        </div>
+    </div>
+
+    <script>
+        const editorArea = document.getElementById('editor-area');
+        const downloadModal = document.getElementById('download-modal');
+        const previewImage = document.getElementById('preview-image');
+        const downloadLink = document.getElementById('download-link');
+
+        // Funzione per impostare il font
+        function setFont(fontName) {
+            editorArea.style.fontFamily = fontName;
+            
+            // Rimuove tutte le classi di font
+            editorArea.classList.remove('font-pacifico', 'font-borel', 'font-sedgwick');
+
+            // Aggiunge la classe se è un font specifico
+            if (fontName.includes('Pacifico')) {
+                editorArea.classList.add('font-pacifico');
+            } else if (fontName.includes('Borel')) {
+                editorArea.classList.add('font-borel');
+            } else if (fontName.includes('Sedgwick')) {
+                editorArea.classList.add('font-sedgwick');
+            }
+        }
+
+        // Funzione per inserire contenuto (Emoji o testo)
+        function insertAtCursor(html) {
+            editorArea.focus();
+            if (window.getSelection) {
+                const selection = window.getSelection();
+                if (selection.getRangeAt && selection.rangeCount) {
+                    let range = selection.getRangeAt(0);
+                    range.deleteContents();
+                    
+                    const el = document.createElement("div");
+                    el.innerHTML = html;
+                    let frag = document.createDocumentFragment(), node, lastNode;
+                    while ( (node = el.firstChild) ) {
+                        lastNode = frag.appendChild(node);
+                    }
+                    range.insertNode(frag);
+
+                    // Pulisce e sposta il cursore dopo il contenuto inserito
+                    if (lastNode) {
+                        range = range.cloneRange();
+                        range.setStartAfter(lastNode);
+                        range.collapse(true);
+                        selection.removeAllRanges();
+                        selection.addRange(range);
+                    }
+                }
+            }
+        }
+
+        // Funzione per inserire Emoji
+        function insertEmoji(emoji) {
+            insertAtCursor(emoji);
+        }
+
+        // Funzione per inserire un'immagine placeholder
+        function insertImage() {
+            // Placeholder di un'immagine di esempio adatta a temi generici
+            const imageUrl = "https://picsum.photos/400/200?random=" + Math.random();
+            const imageHtml = `<img src="${imageUrl}" style="max-width: 100%; height: auto; display: block; margin: 10px auto;" alt="Immagine aggiunta">`;
+            insertAtCursor(imageHtml);
+        }
+
+        // Funzione per esportare l'area come immagine
+        async function exportAsImage() {
+            // 1. Prepara l'area per la cattura (rimuove bordi/ombre)
+            editorArea.classList.add('capturing');
+
+            // 2. Cattura con html2canvas
+            const canvas = await html2canvas(editorArea, {
+                scale: 2, // Aumenta la risoluzione per dispositivi mobili
+                logging: false,
+                useCORS: true // Necessario per immagini da CDN come picsum
+            });
+
+            // 3. Ripristina lo stato dell'area
+            editorArea.classList.remove('capturing');
+
+            // 4. Mostra il risultato nel modal
+            const dataURL = canvas.toDataURL('image/png');
+            previewImage.src = dataURL;
+            downloadLink.href = dataURL;
+
+            downloadModal.style.display = 'flex';
+        }
+
+        // Funzione per chiudere il modal
+        function closeModal() {
+            downloadModal.style.display = 'none';
+        }
+
+    </script>
+</body>
+</html>

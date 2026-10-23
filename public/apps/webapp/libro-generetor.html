@@ -1,0 +1,752 @@
+<!doctype html>
+<html lang="it" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Libro di Grammatica Digitale</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;500;600;700&amp;family=Source+Sans+3:wght@400;500;600&amp;display=swap" rel="stylesheet">
+  <style>
+    body {
+      box-sizing: border-box;
+    }
+    .font-serif-book {
+      font-family: 'Crimson Pro', Georgia, serif;
+    }
+    .font-sans-book {
+      font-family: 'Source Sans 3', system-ui, sans-serif;
+    }
+    .page-shadow {
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .sidebar-item:hover {
+      background: linear-gradient(90deg, rgba(139,90,43,0.1) 0%, transparent 100%);
+    }
+    .sidebar-item.active {
+      background: linear-gradient(90deg, rgba(139,90,43,0.15) 0%, transparent 100%);
+      border-left: 3px solid #8B5A2B;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #8B5A2B 0%, #6B4423 100%);
+      transition: all 0.2s ease;
+    }
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(139,90,43,0.3);
+    }
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+    .content-area table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      overflow-x: auto;
+      display: block;
+    }
+    .content-area th, .content-area td {
+      border: 1px solid #d4c4b0;
+      padding: 0.75rem;
+      text-align: left;
+    }
+    .content-area th {
+      background: #f5f0e8;
+      font-weight: 600;
+    }
+    .content-area h1, .content-area h2, .content-area h3 {
+      font-family: 'Crimson Pro', Georgia, serif;
+      color: #3d2914;
+      margin-top: 1.5rem;
+      margin-bottom: 0.75rem;
+    }
+    .content-area h1 { font-size: 1.75rem; }
+    .content-area h2 { font-size: 1.5rem; }
+    .content-area h3 { font-size: 1.25rem; }
+    .content-area p { margin-bottom: 1rem; line-height: 1.7; }
+    .content-area ul, .content-area ol { margin: 1rem 0; padding-left: 1.5rem; }
+    .content-area li { margin-bottom: 0.5rem; }
+    .content-area blockquote {
+      border-left: 4px solid #8B5A2B;
+      padding-left: 1rem;
+      margin: 1rem 0;
+      font-style: italic;
+      color: #5c4a3a;
+    }
+    .chapter-badge {
+      background: linear-gradient(135deg, #e8dfd4 0%, #d4c4b0 100%);
+    }
+    .modal-overlay {
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(4px);
+    }
+    .editor-toolbar button {
+      transition: all 0.15s ease;
+    }
+    .editor-toolbar button:hover {
+      background: #e8dfd4;
+    }
+    .delete-confirm {
+      animation: fadeIn 0.2s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .toast {
+      animation: slideIn 0.3s ease;
+    }
+    @keyframes slideIn {
+      from { transform: translateY(100%); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .sidebar-toggle {
+      position: fixed;
+      bottom: 1rem;
+      right: 1rem;
+      z-index: 40;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    @media (min-width: 768px) {
+      .sidebar-toggle {
+        display: none;
+      }
+    }
+    @media (max-width: 767px) {
+      .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        z-index: 30;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+      }
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      .sidebar-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 25;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+      }
+      .sidebar-backdrop.open {
+        opacity: 1;
+        pointer-events: auto;
+      }
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="/_sdk/element_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full font-sans-book bg-stone-100 text-stone-800">
+  <div id="app" class="h-full flex flex-col w-full overflow-auto"><!-- Header -->
+   <header id="main-header" class="bg-gradient-to-r from-amber-900 via-amber-800 to-amber-900 text-amber-50 px-4 md:px-6 py-3 md:py-4 flex items-center justify-between flex-shrink-0">
+    <div class="flex items-center gap-2 md:gap-4 min-w-0">
+     <div class="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-amber-50/20 flex items-center justify-center flex-shrink-0">
+      <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+      </svg>
+     </div>
+     <div class="min-w-0">
+      <h1 id="book-title-display" class="font-serif-book text-base md:text-xl font-semibold truncate">Grammatica Italiana</h1>
+      <p id="author-display" class="text-amber-200 text-xs md:text-sm truncate">di Prof. Rossi</p>
+     </div>
+    </div><button onclick="openExportModal()" class="flex items-center gap-1 md:gap-2 px-3 md:px-4 py-2 bg-amber-50/20 hover:bg-amber-50/30 rounded-lg transition-colors flex-shrink-0">
+     <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+     </svg><span class="hidden md:inline">Esporta HTML</span> <span class="md:hidden text-xs">Esporta</span> </button>
+   </header><!-- Main Content -->
+   <div class="flex flex-1 overflow-hidden relative"><!-- Mobile Backdrop -->
+    <div id="sidebar-backdrop" class="sidebar-backdrop" onclick="toggleSidebar()"></div><!-- Sidebar / Index -->
+    <aside id="sidebar" class="sidebar w-72 bg-gradient-to-b from-stone-50 to-stone-100 border-r border-stone-200 flex flex-col flex-shrink-0 overflow-hidden">
+     <div class="p-4 border-b border-stone-200">
+      <div class="flex items-center justify-between mb-3">
+       <h2 class="font-serif-book text-lg font-semibold text-stone-700">📚 Indice</h2><button onclick="toggleSidebar()" class="md:hidden p-2 hover:bg-stone-200 rounded-lg transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg></button>
+      </div><button onclick="openAddModal()" class="w-full btn-primary text-white px-4 py-2.5 rounded-lg flex items-center justify-center gap-2 font-medium">
+       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+       </svg> Aggiungi Pagina </button>
+     </div>
+     <div id="index-list" class="flex-1 overflow-y-auto p-2">
+      <p class="text-stone-400 text-center py-8 text-sm">Nessuna pagina ancora.<br>
+       Clicca "Aggiungi Pagina" per iniziare.</p>
+     </div>
+     <div id="page-count" class="p-3 border-t border-stone-200 text-xs text-stone-500 text-center">
+      0 pagine
+     </div>
+    </aside><!-- Content Area -->
+    <main class="flex-1 overflow-y-auto p-4 md:p-8 bg-stone-100 w-full">
+     <div id="content-container" class="max-w-4xl mx-auto"><!-- Welcome State -->
+      <div id="welcome-state" class="bg-white rounded-2xl page-shadow p-6 md:p-12 text-center">
+       <div class="w-16 h-16 md:w-20 md:h-20 mx-auto mb-4 md:mb-6 rounded-full bg-amber-100 flex items-center justify-center">
+        <svg class="w-8 h-8 md:w-10 md:h-10 text-amber-700" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+        </svg>
+       </div>
+       <h2 class="font-serif-book text-xl md:text-2xl font-semibold text-stone-800 mb-3">Benvenuto nel tuo Libro Digitale</h2>
+       <p class="text-stone-600 text-sm md:text-base mb-6 max-w-md mx-auto">Crea pagine con spiegazioni grammaticali, tabelle, esempi e molto altro. Organizza i contenuti in capitoli e naviga facilmente con l'indice.</p><button onclick="openAddModal()" class="btn-primary text-white px-5 md:px-6 py-2.5 md:py-3 rounded-lg font-medium inline-flex items-center gap-2">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+        </svg> Crea la tua prima pagina </button>
+      </div><!-- Page View -->
+      <div id="page-view" class="hidden">
+       <div class="bg-white rounded-2xl page-shadow overflow-hidden">
+        <div id="page-header" class="bg-gradient-to-r from-amber-50 to-stone-50 px-4 md:px-8 py-4 md:py-6 border-b border-stone-200">
+         <div class="flex items-start justify-between gap-2">
+          <div class="min-w-0 flex-1"><span id="page-chapter" class="chapter-badge text-amber-800 text-xs font-medium px-3 py-1 rounded-full inline-block"></span>
+           <h1 id="page-title" class="font-serif-book text-xl md:text-3xl font-bold text-stone-800 mt-2 md:mt-3 break-words"></h1>
+          </div>
+          <div class="flex gap-1 md:gap-2 flex-shrink-0"><button onclick="editCurrentPage()" class="p-2 text-stone-500 hover:text-amber-700 hover:bg-amber-50 rounded-lg transition-colors" title="Modifica">
+            <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg></button> <button id="delete-btn" onclick="showDeleteConfirm()" class="p-2 text-stone-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Elimina">
+            <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg></button>
+           <div id="delete-confirm" class="hidden delete-confirm flex gap-2"><button onclick="confirmDelete()" class="px-2 md:px-3 py-1 md:py-1.5 bg-red-600 text-white text-xs md:text-sm rounded-lg hover:bg-red-700">Conferma</button> <button onclick="cancelDelete()" class="px-2 md:px-3 py-1 md:py-1.5 bg-stone-200 text-stone-700 text-xs md:text-sm rounded-lg hover:bg-stone-300">Annulla</button>
+           </div>
+          </div>
+         </div>
+        </div>
+        <div id="page-content" class="content-area px-4 md:px-8 py-4 md:py-6 text-stone-700 leading-relaxed text-sm md:text-base">
+        </div>
+       </div><!-- Navigation -->
+       <div id="page-nav" class="flex justify-between items-center mt-4 md:mt-6 gap-2"><button id="prev-btn" onclick="navigatePage(-1)" class="flex items-center gap-1 md:gap-2 px-3 md:px-4 py-2 bg-white rounded-lg page-shadow text-stone-600 hover:text-amber-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm">
+         <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+         </svg><span class="hidden sm:inline">Precedente</span> </button> <span id="page-indicator" class="text-stone-500 text-xs md:text-sm text-center"></span> <button id="next-btn" onclick="navigatePage(1)" class="flex items-center gap-1 md:gap-2 px-3 md:px-4 py-2 bg-white rounded-lg page-shadow text-stone-600 hover:text-amber-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"> <span class="hidden sm:inline">Successivo</span>
+         <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+         </svg></button>
+       </div>
+      </div>
+     </div>
+    </main><!-- Mobile Sidebar Toggle --> <button onclick="toggleSidebar()" class="sidebar-toggle md:hidden btn-primary text-white w-14 h-14 rounded-full flex items-center justify-center">
+     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+     </svg></button>
+   </div><!-- Add/Edit Modal -->
+   <div id="page-modal" class="hidden fixed inset-0 modal-overlay z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-3xl w-full max-h-[90%] overflow-hidden flex flex-col page-shadow">
+     <div class="px-4 md:px-6 py-3 md:py-4 border-b border-stone-200 flex items-center justify-between bg-stone-50">
+      <h3 id="modal-title" class="font-serif-book text-lg md:text-xl font-semibold text-stone-800">Nuova Pagina</h3><button onclick="closeModal()" class="p-2 text-stone-500 hover:text-stone-700 hover:bg-stone-200 rounded-lg transition-colors">
+       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+       </svg></button>
+     </div>
+     <div class="p-4 md:p-6 overflow-y-auto flex-1">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+       <div><label class="block text-sm font-medium text-stone-700 mb-1">Titolo Pagina *</label> <input type="text" id="input-title" class="w-full px-3 md:px-4 py-2 md:py-2.5 border border-stone-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none text-sm md:text-base" placeholder="Es: I Verbi Irregolari">
+       </div>
+       <div><label class="block text-sm font-medium text-stone-700 mb-1">Capitolo</label> <input type="text" id="input-chapter" class="w-full px-3 md:px-4 py-2 md:py-2.5 border border-stone-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none text-sm md:text-base" placeholder="Es: Capitolo 3 - I Verbi">
+       </div>
+      </div>
+      <div class="mb-4"><label class="block text-sm font-medium text-stone-700 mb-1">Tipo Contenuto</label>
+       <div class="flex gap-2"><button type="button" onclick="setContentType('text')" id="type-text" class="flex-1 px-3 md:px-4 py-2 border-2 border-amber-500 bg-amber-50 text-amber-700 rounded-lg font-medium transition-colors text-sm">📝 Testo</button> <button type="button" onclick="setContentType('table')" id="type-table" class="flex-1 px-3 md:px-4 py-2 border-2 border-stone-300 text-stone-600 rounded-lg font-medium hover:border-stone-400 transition-colors text-sm">📊 Tabella</button> <button type="button" onclick="setContentType('mixed')" id="type-mixed" class="flex-1 px-3 md:px-4 py-2 border-2 border-stone-300 text-stone-600 rounded-lg font-medium hover:border-stone-400 transition-colors text-sm">📚 Misto</button>
+       </div>
+      </div><!-- Toolbar -->
+      <div class="editor-toolbar flex flex-wrap gap-1 mb-2 p-2 bg-stone-100 rounded-lg border border-stone-200"><button type="button" onclick="insertFormat('h2')" class="px-2 md:px-3 py-1 md:py-1.5 text-xs md:text-sm font-medium rounded" title="Titolo">H2</button> <button type="button" onclick="insertFormat('h3')" class="px-2 md:px-3 py-1 md:py-1.5 text-xs md:text-sm font-medium rounded" title="Sottotitolo">H3</button> 
+<button type="button" onclick="insertFormat('p')" class="px-2 md:px-3 py-1 md:py-0.70 text-xs md:text-sm font-medium rounded" title="Paragrafo">p</button> <span class="w-px bg-stone-300 mx-1"></span> <button type="button" onclick="insertFormat('bold')" class="px-2 md:px-3 py-1 md:py-1.5 text-xs md:text-sm font-bold rounded" title="Grassetto">B</button> <button type="button" onclick="insertFormat('italic')" class="px-2 md:px-3 py-1 md:py-1.5 text-xs md:text-sm italic rounded" title="Corsivo">I</button> <span class="w-px bg-stone-300 mx-1"></span> <button type="button" onclick="insertFormat('ul')" class="px-2 md:px-3 py-1 md:py-1.5 text-xs md:text-sm rounded" title="Elenco puntato">• Lista</button> <button type="button" onclick="insertFormat('ol')" class="px-2 md:px-3 py-1 md:py-1.5 text-xs md:text-sm rounded" title="Elenco numerato">1. Lista</button> <span class="w-px bg-stone-300 mx-1"></span> <button type="button" onclick="insertFormat('quote')" class="px-2 md:px-3 py-1 md:py-1.5 text-xs md:text-sm rounded" title="Citazione">❝</button> <button type="button" onclick="insertFormat('table')" class="px-2 md:px-3 py-1 md:py-1.5 text-xs md:text-sm rounded" title="Tabella">⊞</button> <button type="button" onclick="insertFormat('example')" class="px-2 md:px-3 py-1 md:py-1.5 text-xs md:text-sm rounded" title="Esempio">💡</button>
+      </div>
+      <div><label class="block text-sm font-medium text-stone-700 mb-1">Contenuto (supporta HTML)</label> <textarea id="input-content" class="w-full px-3 md:px-4 py-2 md:py-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none font-mono text-xs md:text-sm" rows="10" placeholder="Scrivi il contenuto della pagina...
+
+Puoi usare HTML per formattare:
+<h2>Titolo</h2>
+<p>Paragrafo</p>
+<table>...</table>"></textarea>
+      </div>
+     </div>
+     <div class="px-4 md:px-6 py-3 md:py-4 border-t border-stone-200 flex justify-end gap-3 bg-stone-50"><button onclick="closeModal()" class="px-4 md:px-5 py-2 md:py-2.5 text-stone-600 hover:text-stone-800 hover:bg-stone-200 rounded-lg font-medium transition-colors text-sm">Annulla</button> <button id="save-btn" onclick="savePage()" class="btn-primary text-white px-5 md:px-6 py-2 md:py-2.5 rounded-lg font-medium flex items-center gap-2 text-sm"> <span>Salva Pagina</span> </button>
+     </div>
+    </div>
+   </div><!-- Export Modal -->
+   <div id="export-modal" class="hidden fixed inset-0 modal-overlay z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full page-shadow">
+     <div class="px-4 md:px-6 py-3 md:py-4 border-b border-stone-200 flex items-center justify-between bg-stone-50">
+      <h3 class="font-serif-book text-lg md:text-xl font-semibold text-stone-800">Esporta Libro HTML</h3><button onclick="closeExportModal()" class="p-2 text-stone-500 hover:text-stone-700 hover:bg-stone-200 rounded-lg transition-colors">
+       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+       </svg></button>
+     </div>
+     <div class="p-4 md:p-6">
+      <p class="text-stone-600 text-sm md:text-base mb-4">Verrà generato un file HTML completo con tutto il contenuto del tuo libro, pronto per essere visualizzato in qualsiasi browser.</p>
+      <div class="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4">
+       <div class="flex items-center gap-3"><span class="text-2xl">📖</span>
+        <div>
+         <p id="export-book-title" class="font-semibold text-stone-800">Grammatica Italiana</p>
+         <p id="export-page-count" class="text-sm text-stone-600">0 pagine</p>
+        </div>
+       </div>
+      </div>
+     </div>
+     <div class="px-4 md:px-6 py-3 md:py-4 border-t border-stone-200 flex justify-end gap-3 bg-stone-50"><button onclick="closeExportModal()" class="px-4 md:px-5 py-2 md:py-2.5 text-stone-600 hover:text-stone-800 hover:bg-stone-200 rounded-lg font-medium transition-colors text-sm">Annulla</button> <button onclick="exportBook()" class="btn-primary text-white px-5 md:px-6 py-2 md:py-2.5 rounded-lg font-medium flex items-center gap-2 text-sm">
+       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+       </svg><span>Scarica HTML</span> </button>
+     </div>
+    </div>
+   </div><!-- Toast -->
+   <div id="toast" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 px-6 py-3 bg-stone-800 text-white rounded-lg page-shadow toast z-50 text-sm"><span id="toast-message"></span>
+   </div>
+  </div>
+  <script>
+    // State
+    let pages = [];
+    let currentPageId = null;
+    let editingPageId = null;
+    let contentType = 'text';
+    let sidebarOpen = false;
+    
+    const STORAGE_KEY = 'grammar_book_pages';
+    const CONFIG_KEY = 'grammar_book_config';
+
+    const defaultConfig = {
+      book_title: 'Grammatica Italiana',
+      author_name: 'Prof. Rossi'
+    };
+
+    // Load data from localStorage
+    function loadPages() {
+      try {
+        const data = localStorage.getItem(STORAGE_KEY);
+        if (data) {
+          pages = JSON.parse(data);
+        }
+      } catch (e) {
+        console.error('Error loading pages:', e);
+      }
+      updateUI();
+    }
+
+    // Save data to localStorage
+    function savePages() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(pages));
+      } catch (e) {
+        showToast('Errore nel salvataggio');
+      }
+    }
+
+    // Load config
+    function loadConfig() {
+      try {
+        const data = localStorage.getItem(CONFIG_KEY);
+        if (data) {
+          const config = JSON.parse(data);
+          updateConfigUI(config);
+        }
+      } catch (e) {
+        console.error('Error loading config:', e);
+      }
+    }
+
+    // Save config
+    function saveConfig(config) {
+      try {
+        localStorage.setItem(CONFIG_KEY, JSON.stringify(config));
+      } catch (e) {
+        console.error('Error saving config:', e);
+      }
+    }
+
+    // Update UI based on config
+    function updateConfigUI(config) {
+      const bookTitle = config.book_title || defaultConfig.book_title;
+      const authorName = config.author_name || defaultConfig.author_name;
+
+      document.getElementById('book-title-display').textContent = bookTitle;
+      document.getElementById('author-display').textContent = `di ${authorName}`;
+      document.getElementById('export-book-title').textContent = bookTitle;
+    }
+
+    // UI Functions
+    function updateUI() {
+      renderIndex();
+      updatePageCount();
+      
+      if (pages.length === 0) {
+        showWelcome();
+      } else if (currentPageId) {
+        const currentPage = pages.find(p => p.id === currentPageId);
+        if (currentPage) {
+          renderPage(currentPage);
+        } else {
+          showPage(pages[0].id);
+        }
+      }
+    }
+
+    function renderIndex() {
+      const container = document.getElementById('index-list');
+      
+      if (pages.length === 0) {
+        container.innerHTML = '<p class="text-stone-400 text-center py-8 text-sm px-2">Nessuna pagina ancora.<br>Clicca "Aggiungi Pagina" per iniziare.</p>';
+        return;
+      }
+
+      const chapters = {};
+      pages.forEach(page => {
+        const chapter = page.chapter || 'Senza Capitolo';
+        if (!chapters[chapter]) chapters[chapter] = [];
+        chapters[chapter].push(page);
+      });
+
+      let html = '';
+      Object.entries(chapters).forEach(([chapter, chapterPages]) => {
+        html += `<div class="mb-3">
+          <h3 class="text-xs font-semibold text-stone-500 uppercase tracking-wide px-3 py-2">${escapeHtml(chapter)}</h3>`;
+        chapterPages.forEach(page => {
+          const isActive = page.id === currentPageId;
+          html += `<button onclick="showPage('${page.id}')" 
+            class="sidebar-item w-full text-left px-3 py-2.5 rounded-lg text-sm text-stone-700 hover:text-stone-900 transition-colors ${isActive ? 'active' : ''}">
+            <span class="line-clamp-2">${escapeHtml(page.title)}</span>
+          </button>`;
+        });
+        html += '</div>';
+      });
+
+      container.innerHTML = html;
+    }
+
+    function updatePageCount() {
+      const countEl = document.getElementById('page-count');
+      const exportCountEl = document.getElementById('export-page-count');
+      const count = pages.length;
+      const text = `${count} ${count === 1 ? 'pagina' : 'pagine'}`;
+      countEl.textContent = text;
+      exportCountEl.textContent = text;
+    }
+
+    function showWelcome() {
+      currentPageId = null;
+      document.getElementById('welcome-state').classList.remove('hidden');
+      document.getElementById('page-view').classList.add('hidden');
+      renderIndex();
+    }
+
+    function showPage(pageId) {
+      const page = pages.find(p => p.id === pageId);
+      if (!page) return;
+      
+      currentPageId = pageId;
+      document.getElementById('welcome-state').classList.add('hidden');
+      document.getElementById('page-view').classList.remove('hidden');
+      renderPage(page);
+      renderIndex();
+      
+      // Close sidebar on mobile after selection
+      if (window.innerWidth < 768) {
+        closeSidebar();
+      }
+    }
+
+    function renderPage(page) {
+      document.getElementById('page-chapter').textContent = page.chapter || 'Senza Capitolo';
+      document.getElementById('page-title').textContent = page.title;
+      document.getElementById('page-content').innerHTML = page.content || '<p class="text-stone-400">Nessun contenuto</p>';
+      
+      const currentIndex = pages.findIndex(p => p.id === page.id);
+      document.getElementById('prev-btn').disabled = currentIndex <= 0;
+      document.getElementById('next-btn').disabled = currentIndex >= pages.length - 1;
+      document.getElementById('page-indicator').textContent = `Pagina ${currentIndex + 1} di ${pages.length}`;
+    }
+
+    function navigatePage(direction) {
+      const currentIndex = pages.findIndex(p => p.id === currentPageId);
+      const newIndex = currentIndex + direction;
+      if (newIndex >= 0 && newIndex < pages.length) {
+        showPage(pages[newIndex].id);
+      }
+    }
+
+    // Sidebar toggle for mobile
+    function toggleSidebar() {
+      sidebarOpen = !sidebarOpen;
+      const sidebar = document.getElementById('sidebar');
+      const backdrop = document.getElementById('sidebar-backdrop');
+      
+      if (sidebarOpen) {
+        sidebar.classList.add('open');
+        backdrop.classList.add('open');
+      } else {
+        sidebar.classList.remove('open');
+        backdrop.classList.remove('open');
+      }
+    }
+
+    function closeSidebar() {
+      sidebarOpen = false;
+      document.getElementById('sidebar').classList.remove('open');
+      document.getElementById('sidebar-backdrop').classList.remove('open');
+    }
+
+    // Modal Functions
+    function openAddModal() {
+      editingPageId = null;
+      document.getElementById('modal-title').textContent = 'Nuova Pagina';
+      document.getElementById('input-title').value = '';
+      document.getElementById('input-chapter').value = '';
+      document.getElementById('input-content').value = '';
+      setContentType('text');
+      document.getElementById('page-modal').classList.remove('hidden');
+      closeSidebar();
+    }
+
+    function editCurrentPage() {
+      const page = pages.find(p => p.id === currentPageId);
+      if (!page) return;
+      
+      editingPageId = currentPageId;
+      document.getElementById('modal-title').textContent = 'Modifica Pagina';
+      document.getElementById('input-title').value = page.title;
+      document.getElementById('input-chapter').value = page.chapter || '';
+      document.getElementById('input-content').value = page.content || '';
+      setContentType(page.type || 'text');
+      document.getElementById('page-modal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+      document.getElementById('page-modal').classList.add('hidden');
+      editingPageId = null;
+    }
+
+    function setContentType(type) {
+      contentType = type;
+      ['text', 'table', 'mixed'].forEach(t => {
+        const btn = document.getElementById(`type-${t}`);
+        if (t === type) {
+          btn.classList.add('border-amber-500', 'bg-amber-50', 'text-amber-700');
+          btn.classList.remove('border-stone-300', 'text-stone-600');
+        } else {
+          btn.classList.remove('border-amber-500', 'bg-amber-50', 'text-amber-700');
+          btn.classList.add('border-stone-300', 'text-stone-600');
+        }
+      });
+    }
+
+    function insertFormat(format) {
+      const textarea = document.getElementById('input-content');
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const text = textarea.value;
+      const selected = text.substring(start, end);
+      
+      let insert = '';
+      switch(format) {
+        case 'h2': insert = `<h2>${selected || 'Titolo'}</h2>\n`; break;
+        case 'h3': insert = `<h3>${selected || 'Sottotitolo'}</h3>\n`; break;
+        case 'p': insert = `<p>${selected || 'Paragrafo'}</p>\n`; break;
+        case 'bold': insert = `<strong>${selected || 'testo'}</strong>`; break;
+        case 'italic': insert = `<em>${selected || 'testo'}</em>`; break;
+        case 'ul': insert = `<ul>\n  <li>${selected || 'Elemento'}</li>\n  <li>Elemento</li>\n</ul>\n`; break;
+        case 'ol': insert = `<ol>\n  <li>${selected || 'Primo'}</li>\n  <li>Secondo</li>\n</ol>\n`; break;
+        case 'quote': insert = `<blockquote>${selected || 'Citazione o nota importante'}</blockquote>\n`; break;
+        case 'table': insert = `<table>\n  <thead>\n    <tr>\n      <th>Colonna 1</th>\n      <th>Colonna 2</th>\n      <th>Colonna 3</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <td>Dato 1</td>\n      <td>Dato 2</td>\n      <td>Dato 3</td>\n    </tr>\n  </tbody>\n</table>\n`; break;
+        case 'example': insert = `<div style="background:#fef3c7;padding:1rem;border-radius:0.5rem;margin:1rem 0;">\n  <strong>💡 Esempio:</strong>\n  <p>${selected || 'Scrivi qui il tuo esempio...'}</p>\n</div>\n`; break;
+      }
+      
+      textarea.value = text.substring(0, start) + insert + text.substring(end);
+      textarea.focus();
+      textarea.setSelectionRange(start + insert.length, start + insert.length);
+    }
+
+    function savePage() {
+      const title = document.getElementById('input-title').value.trim();
+      const chapter = document.getElementById('input-chapter').value.trim();
+      const content = document.getElementById('input-content').value;
+      
+      if (!title) {
+        showToast('Inserisci un titolo per la pagina');
+        return;
+      }
+
+      if (editingPageId) {
+        const pageIndex = pages.findIndex(p => p.id === editingPageId);
+        if (pageIndex !== -1) {
+          pages[pageIndex] = {
+            ...pages[pageIndex],
+            title,
+            chapter,
+            content,
+            type: contentType
+          };
+          showToast('Pagina aggiornata');
+        }
+      } else {
+        const newPage = {
+          id: Date.now().toString(),
+          type: contentType,
+          title,
+          chapter,
+          content,
+          order_index: pages.length,
+          created_at: new Date().toISOString()
+        };
+        pages.push(newPage);
+        showToast('Pagina creata');
+        currentPageId = newPage.id;
+      }
+
+      savePages();
+      updateUI();
+      closeModal();
+    }
+
+    // Delete Functions
+    function showDeleteConfirm() {
+      document.getElementById('delete-btn').classList.add('hidden');
+      document.getElementById('delete-confirm').classList.remove('hidden');
+    }
+
+    function cancelDelete() {
+      document.getElementById('delete-btn').classList.remove('hidden');
+      document.getElementById('delete-confirm').classList.add('hidden');
+    }
+
+    function confirmDelete() {
+      const pageIndex = pages.findIndex(p => p.id === currentPageId);
+      if (pageIndex === -1) return;
+
+      pages.splice(pageIndex, 1);
+      savePages();
+      showToast('Pagina eliminata');
+      cancelDelete();
+
+      if (pages.length > 0) {
+        const nextIdx = pageIndex > 0 ? pageIndex - 1 : 0;
+        showPage(pages[nextIdx].id);
+      } else {
+        showWelcome();
+      }
+    }
+
+    // Export Functions
+    function openExportModal() {
+      const configData = localStorage.getItem(CONFIG_KEY);
+      const config = configData ? JSON.parse(configData) : defaultConfig;
+      document.getElementById('export-book-title').textContent = config.book_title || defaultConfig.book_title;
+      document.getElementById('export-modal').classList.remove('hidden');
+    }
+
+    function closeExportModal() {
+      document.getElementById('export-modal').classList.add('hidden');
+    }
+
+    function exportBook() {
+      const configData = localStorage.getItem(CONFIG_KEY);
+      const config = configData ? JSON.parse(configData) : defaultConfig;
+      const bookTitle = config.book_title || defaultConfig.book_title;
+      const authorName = config.author_name || defaultConfig.author_name;
+
+      const chapters = {};
+      pages.forEach(page => {
+        const chapter = page.chapter || 'Senza Capitolo';
+        if (!chapters[chapter]) chapters[chapter] = [];
+        chapters[chapter].push(page);
+      });
+
+      let tocHtml = '';
+      let contentHtml = '';
+      let pageNum = 1;
+
+      Object.entries(chapters).forEach(([chapter, chapterPages]) => {
+        tocHtml += `<li class="toc-chapter">${escapeHtml(chapter)}<ul>`;
+        chapterPages.forEach(page => {
+          tocHtml += `<li><a href="#page-${pageNum}">${escapeHtml(page.title)}</a></li>`;
+          contentHtml += `
+            <section id="page-${pageNum}" class="page">
+              <span class="chapter-label">${escapeHtml(chapter)}</span>
+              <h2>${escapeHtml(page.title)}</h2>
+              <div class="content">${page.content || ''}</div>
+            </section>
+          `;
+          pageNum++;
+        });
+        tocHtml += '</ul></li>';
+      });
+
+      const html = `<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${escapeHtml(bookTitle)}</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Georgia, serif; line-height: 1.7; color: #333; background: #f5f5f4; }
+    .book-header { background: #8B5A2B; color: white; padding: 2rem 1rem; text-align: center; }
+    .book-header h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+    .book-header p { opacity: 0.9; }
+    .container { max-width: 800px; margin: 0 auto; padding: 1rem; }
+    .toc { background: white; padding: 1.5rem; border-radius: 1rem; margin-bottom: 1.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+    .toc h3 { font-size: 1.5rem; margin-bottom: 1rem; color: #8B5A2B; }
+    .toc ul { list-style: none; }
+    .toc-chapter { font-weight: bold; margin-top: 1rem; color: #555; }
+    .toc a { color: #8B5A2B; text-decoration: none; }
+    .toc a:hover { text-decoration: underline; }
+    .page { background: white; padding: 1.5rem; border-radius: 1rem; margin-bottom: 1.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+    .chapter-label { display: inline-block; background: #f0e6d9; color: #8B5A2B; padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.8rem; margin-bottom: 1rem; }
+    .page h2 { font-size: 1.75rem; color: #333; margin-bottom: 1rem; }
+    .content p { margin-bottom: 1rem; }
+    .content h2, .content h3 { margin: 1.5rem 0 0.75rem; color: #333; }
+    .content table { width: 100%; border-collapse: collapse; margin: 1rem 0; overflow-x: auto; display: block; }
+    .content th, .content td { border: 1px solid #ddd; padding: 0.75rem; text-align: left; }
+    .content th { background: #f5f0e8; }
+    .content ul, .content ol { margin: 1rem 0; padding-left: 1.5rem; }
+    .content blockquote { border-left: 4px solid #8B5A2B; padding-left: 1rem; margin: 1rem 0; font-style: italic; color: #666; }
+    @media (min-width: 768px) {
+      .book-header { padding: 3rem 2rem; }
+      .book-header h1 { font-size: 2.5rem; }
+      .container { padding: 2rem; }
+      .toc, .page { padding: 2rem; }
+    }
+    @media print { 
+      body { background: white; } 
+      .container { max-width: 100%; } 
+      .page { box-shadow: none; page-break-after: always; } 
+    }
+  </style>
+</head>
+<body>
+  <header class="book-header">
+    <h1>${escapeHtml(bookTitle)}</h1>
+    <p>di ${escapeHtml(authorName)}</p>
+  </header>
+  <div class="container">
+    <nav class="toc">
+      <h3>📚 Indice</h3>
+      <ul>${tocHtml}</ul>
+    </nav>
+    ${contentHtml}
+  </div>
+</body>
+</html>`;
+
+      const blob = new Blob([html], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${bookTitle.replace(/[^a-z0-9]/gi, '_')}.html`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      closeExportModal();
+      showToast('Libro esportato con successo!');
+    }
+
+    // Utility Functions
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-message').textContent = message;
+      toast.classList.remove('hidden');
+      setTimeout(() => toast.classList.add('hidden'), 3000);
+    }
+
+    // Initialize
+    loadPages();
+    loadConfig();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9bcdde2926aeeddb',t:'MTc2ODIzMzYzNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

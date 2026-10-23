@@ -1,0 +1,1003 @@
+<!doctype html>
+<html lang="it" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hero Generator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=Playfair+Display:wght@400;500;600;700;800&amp;family=Montserrat:wght@400;500;600;700;800&amp;family=Raleway:wght@400;500;600;700;800&amp;family=Poppins:wght@400;500;600;700;800&amp;family=Lora:wght@400;500;600;700&amp;family=Merriweather:wght@400;700;900&amp;family=Oswald:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+  <style>
+    body {
+      box-sizing: border-box;
+    }
+    
+    .hero-container {
+      position: relative;
+      overflow: hidden;
+    }
+    
+    /* Wave Shape */
+    .shape-wave::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 150px;
+      background: inherit;
+      clip-path: path('M0,100 C150,150 350,0 500,50 C650,100 800,0 1000,80 L1000,150 L0,150 Z');
+      transform: scaleX(2);
+    }
+    
+    /* Diagonal Shape */
+    .shape-diagonal::before {
+      content: '';
+      position: absolute;
+      bottom: -50px;
+      left: 0;
+      width: 100%;
+      height: 150px;
+      background: white;
+      transform: skewY(-3deg);
+    }
+    
+    /* Blob Shape */
+    .shape-blob::after {
+      content: '';
+      position: absolute;
+      bottom: -80px;
+      right: -100px;
+      width: 400px;
+      height: 400px;
+      border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+      background: rgba(255,255,255,0.1);
+      animation: blob 8s ease-in-out infinite;
+    }
+    
+    .shape-blob::before {
+      content: '';
+      position: absolute;
+      top: -80px;
+      left: -100px;
+      width: 300px;
+      height: 300px;
+      border-radius: 40% 60% 70% 30% / 40% 70% 30% 60%;
+      background: rgba(255,255,255,0.08);
+      animation: blob 10s ease-in-out infinite reverse;
+    }
+    
+    @keyframes blob {
+      0%, 100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+      50% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
+    }
+    
+    /* Geometric Shape */
+    .shape-geometric::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      right: 5%;
+      width: 300px;
+      height: 300px;
+      border: 3px solid rgba(255,255,255,0.2);
+      transform: translateY(-50%) rotate(45deg);
+    }
+    
+    .shape-geometric::before {
+      content: '';
+      position: absolute;
+      bottom: 10%;
+      left: 10%;
+      width: 150px;
+      height: 150px;
+      border: 3px solid rgba(255,255,255,0.15);
+      border-radius: 50%;
+    }
+    
+    /* Circle Shape */
+    .shape-circle::after {
+      content: '';
+      position: absolute;
+      top: -200px;
+      right: -200px;
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.05);
+    }
+    
+    .shape-circle::before {
+      content: '';
+      position: absolute;
+      bottom: -100px;
+      left: -100px;
+      width: 400px;
+      height: 400px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.08);
+    }
+    
+    /* Zigzag Shape */
+    .shape-zigzag::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 200%;
+      height: 60px;
+      background: linear-gradient(135deg, white 25%, transparent 25%) -50px 0,
+                  linear-gradient(225deg, white 25%, transparent 25%) -50px 0,
+                  linear-gradient(315deg, white 25%, transparent 25%),
+                  linear-gradient(45deg, white 25%, transparent 25%);
+      background-size: 60px 60px;
+    }
+    
+    /* Floating elements animation */
+    .float-element {
+      animation: float 6s ease-in-out infinite;
+    }
+    
+    .float-element-delay {
+      animation: float 6s ease-in-out 2s infinite;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-20px) rotate(5deg); }
+    }
+    
+    /* Gradient animation */
+    .animated-gradient {
+      background-size: 200% 200%;
+      animation: gradient-shift 8s ease infinite;
+    }
+    
+    @keyframes gradient-shift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    
+    .style-btn {
+      transition: all 0.3s ease;
+    }
+    
+    .style-btn:hover {
+      transform: translateY(-2px);
+    }
+    
+    .style-btn.active {
+      transform: scale(1.05);
+      box-shadow: 0 0 0 3px rgba(255,255,255,0.5);
+    }
+    
+    .control-panel {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    }
+    
+    .control-group {
+      background: rgba(255,255,255,0.05);
+      border-radius: 12px;
+      padding: 16px;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .color-input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .color-preview {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      border: 2px solid rgba(255,255,255,0.2);
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    
+    .color-preview:hover {
+      transform: scale(1.1);
+    }
+    
+    input[type="color"] {
+      width: 0;
+      height: 0;
+      opacity: 0;
+      position: absolute;
+    }
+    
+    .slider {
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: rgba(255,255,255,0.2);
+      outline: none;
+      -webkit-appearance: none;
+    }
+    
+    .slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #ffffff;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    
+    .slider::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #ffffff;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    
+    .download-btn {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      transition: all 0.3s ease;
+    }
+    
+    .download-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(16,185,129,0.4);
+    }
+    
+    select, input[type="text"] {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: white;
+      border-radius: 8px;
+      padding: 8px 12px;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+    
+    select:focus, input[type="text"]:focus {
+      border-color: rgba(255,255,255,0.4);
+      background: rgba(255,255,255,0.15);
+    }
+    
+    select option {
+      background: #1e293b;
+      color: white;
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full m-0 p-0">
+  <div id="app" class="h-full w-full flex"><!-- Control Panel -->
+   <div class="control-panel w-80 overflow-y-auto p-6 flex-shrink-0">
+    <h2 class="text-2xl font-bold text-white mb-6" style="font-family: 'Inter', sans-serif;">⚡ Personalizza</h2><!-- Style Preset -->
+    <div class="control-group mb-4"><label class="block text-white font-semibold mb-3 text-sm">🎨 Preset Stile</label>
+     <div class="grid grid-cols-2 gap-2"><button class="style-btn active px-3 py-2 rounded-lg text-xs font-medium bg-gradient-to-r from-purple-500 to-pink-500 text-white" data-style="aurora">Aurora</button> <button class="style-btn px-3 py-2 rounded-lg text-xs font-medium bg-gradient-to-r from-emerald-500 to-teal-500 text-white" data-style="nature">Natura</button> <button class="style-btn px-3 py-2 rounded-lg text-xs font-medium bg-gradient-to-r from-orange-500 to-red-500 text-white" data-style="sunset">Tramonto</button> <button class="style-btn px-3 py-2 rounded-lg text-xs font-medium bg-gradient-to-r from-blue-500 to-cyan-500 text-white" data-style="ocean">Oceano</button> <button class="style-btn px-3 py-2 rounded-lg text-xs font-medium bg-gradient-to-r from-slate-700 to-slate-900 text-white border border-slate-500" data-style="minimal">Minimal</button> <button class="style-btn px-3 py-2 rounded-lg text-xs font-medium bg-gradient-to-r from-yellow-400 to-orange-400 text-slate-900" data-style="golden">Dorato</button>
+     </div>
+    </div><!-- Shape Selector -->
+    <div class="control-group mb-4"><label class="block text-white font-semibold mb-3 text-sm">✨ Forma</label>
+     <div class="grid grid-cols-3 gap-2"><button class="shape-btn active px-2 py-1.5 rounded-lg text-xs font-medium bg-slate-600 text-white hover:bg-slate-500 transition-colors" data-shape="blob">Blob</button> <button class="shape-btn px-2 py-1.5 rounded-lg text-xs font-medium bg-slate-700 text-slate-300 hover:bg-slate-500 transition-colors" data-shape="diagonal">Diagonale</button> <button class="shape-btn px-2 py-1.5 rounded-lg text-xs font-medium bg-slate-700 text-slate-300 hover:bg-slate-500 transition-colors" data-shape="geometric">Geometrico</button> <button class="shape-btn px-2 py-1.5 rounded-lg text-xs font-medium bg-slate-700 text-slate-300 hover:bg-slate-500 transition-colors" data-shape="circle">Cerchi</button> <button class="shape-btn px-2 py-1.5 rounded-lg text-xs font-medium bg-slate-700 text-slate-300 hover:bg-slate-500 transition-colors" data-shape="zigzag">Zigzag</button> <button class="shape-btn px-2 py-1.5 rounded-lg text-xs font-medium bg-slate-700 text-slate-300 hover:bg-slate-500 transition-colors" data-shape="wave">Onda</button>
+     </div>
+    </div><!-- Colors -->
+    <div class="control-group mb-4"><label class="block text-white font-semibold mb-3 text-sm">🎨 Colori</label>
+     <div class="mb-3"><label class="block text-slate-300 text-xs mb-2">Colore 1 (Inizio)</label>
+      <div class="color-input-wrapper">
+       <div class="color-preview" id="color1-preview" style="background: #667eea;"></div><input type="color" id="color1-input" value="#667eea"> <input type="text" id="color1-text" value="#667eea" class="flex-1 text-xs">
+      </div>
+     </div>
+     <div class="mb-3"><label class="block text-slate-300 text-xs mb-2">Colore 2 (Centro)</label>
+      <div class="color-input-wrapper">
+       <div class="color-preview" id="color2-preview" style="background: #764ba2;"></div><input type="color" id="color2-input" value="#764ba2"> <input type="text" id="color2-text" value="#764ba2" class="flex-1 text-xs">
+      </div>
+     </div>
+     <div class="mb-3"><label class="block text-slate-300 text-xs mb-2">Colore 3 (Fine)</label>
+      <div class="color-input-wrapper">
+       <div class="color-preview" id="color3-preview" style="background: #f093fb;"></div><input type="color" id="color3-input" value="#f093fb"> <input type="text" id="color3-text" value="#f093fb" class="flex-1 text-xs">
+      </div>
+     </div>
+     <div class="mb-3"><label class="block text-slate-300 text-xs mb-2">Colore Testo</label>
+      <div class="color-input-wrapper">
+       <div class="color-preview" id="text-color-preview" style="background: #ffffff;"></div><input type="color" id="text-color-input" value="#ffffff"> <input type="text" id="text-color-text" value="#ffffff" class="flex-1 text-xs">
+      </div>
+     </div>
+     <div><label class="block text-slate-300 text-xs mb-2">Colore Pulsante</label>
+      <div class="color-input-wrapper">
+       <div class="color-preview" id="button-color-preview" style="background: #ffffff;"></div><input type="color" id="button-color-input" value="#ffffff"> <input type="text" id="button-color-text" value="#ffffff" class="flex-1 text-xs">
+      </div>
+     </div>
+    </div><!-- Typography -->
+    <div class="control-group mb-4"><label class="block text-white font-semibold mb-3 text-sm">📝 Tipografia</label>
+     <div class="mb-3"><label class="block text-slate-300 text-xs mb-2">Font Titolo</label> <select id="title-font" class="w-full"> <option value="Playfair Display" selected>Playfair Display</option> <option value="Montserrat">Montserrat</option> <option value="Poppins">Poppins</option> <option value="Raleway">Raleway</option> <option value="Oswald">Oswald</option> <option value="Merriweather">Merriweather</option> <option value="Lora">Lora</option> <option value="Inter">Inter</option> </select>
+     </div>
+     <div class="mb-3"><label class="block text-slate-300 text-xs mb-2">Dimensione Titolo: <span id="title-size-value">64</span>px</label> <input type="range" id="title-size" min="32" max="120" value="64" class="slider">
+     </div>
+     <div class="mb-3"><label class="block text-slate-300 text-xs mb-2">Font Sottotitolo</label> <select id="subtitle-font" class="w-full"> <option value="Inter">Inter</option> <option value="Poppins">Poppins</option> <option value="Raleway">Raleway</option> <option value="Montserrat">Montserrat</option> <option value="Lora">Lora</option> </select>
+     </div>
+     <div><label class="block text-slate-300 text-xs mb-2">Dimensione Sottotitolo: <span id="subtitle-size-value">20</span>px</label> <input type="range" id="subtitle-size" min="14" max="36" value="20" class="slider">
+     </div>
+    </div><!-- Download Button --> <button id="download-btn" class="download-btn w-full py-4 rounded-xl text-white font-bold text-sm shadow-lg flex items-center justify-center gap-2"> <span>⬇️</span> <span>Scarica HTML</span> </button>
+    <p class="text-slate-400 text-xs mt-3 text-center">Il file HTML sarà completamente autonomo e pronto all'uso!</p>
+   </div><!-- Hero Preview -->
+   <div id="hero-preview" class="flex-1 overflow-hidden">
+    <div id="hero-section" class="hero-container w-full h-full flex items-center justify-center shape-blob animated-gradient" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);"><!-- Floating decorative elements -->
+     <div class="absolute top-20 left-10 w-16 h-16 rounded-full bg-white/10 float-element"></div>
+     <div class="absolute top-40 right-20 w-10 h-10 rounded-full bg-white/15 float-element-delay"></div>
+     <div class="absolute bottom-32 left-1/4 w-8 h-8 rounded-lg bg-white/10 rotate-45 float-element"></div><!-- Hero Content -->
+     <div class="relative z-10 text-center px-6 max-w-4xl">
+      <h1 id="hero-title" class="font-bold text-white mb-6 leading-tight" style="font-family: 'Playfair Display', serif; font-size: 64px; text-shadow: 0 4px 30px rgba(0,0,0,0.3);">Crea Qualcosa di Straordinario</h1>
+      <p id="hero-subtitle" class="text-white/90 mb-10 max-w-2xl mx-auto" style="font-family: 'Inter', sans-serif; font-size: 20px;">Trasforma le tue idee in realtà con strumenti creativi all'avanguardia</p><button id="hero-button" class="px-8 py-4 bg-white text-purple-600 rounded-full font-semibold text-lg hover:bg-opacity-90 transform hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl" style="font-family: 'Inter', sans-serif;"> Inizia Ora → </button>
+     </div>
+    </div>
+   </div>
+  </div>
+  <script>
+    const defaultConfig = {
+      hero_title: "Crea Qualcosa di Straordinario",
+      hero_subtitle: "Trasforma le tue idee in realtà con strumenti creativi all'avanguardia",
+      button_text: "Inizia Ora →",
+      current_style: "aurora",
+      current_shape: "blob",
+      color1: "#667eea",
+      color2: "#764ba2",
+      color3: "#f093fb",
+      text_color: "#ffffff",
+      button_color: "#ffffff",
+      title_font: "Playfair Display",
+      subtitle_font: "Inter",
+      title_size: 64,
+      subtitle_size: 20
+    };
+
+    const styles = {
+      aurora: {
+        color1: "#667eea",
+        color2: "#764ba2",
+        color3: "#f093fb",
+        textColor: "#ffffff",
+        buttonColor: "#ffffff"
+      },
+      nature: {
+        color1: "#134e5e",
+        color2: "#71b280",
+        color3: "#a8e063",
+        textColor: "#ffffff",
+        buttonColor: "#ffffff"
+      },
+      sunset: {
+        color1: "#ff512f",
+        color2: "#f09819",
+        color3: "#ffb75e",
+        textColor: "#ffffff",
+        buttonColor: "#1a1a2e"
+      },
+      ocean: {
+        color1: "#0077b6",
+        color2: "#00b4d8",
+        color3: "#90e0ef",
+        textColor: "#ffffff",
+        buttonColor: "#ffffff"
+      },
+      minimal: {
+        color1: "#1a1a2e",
+        color2: "#16213e",
+        color3: "#0f3460",
+        textColor: "#ffffff",
+        buttonColor: "#ffffff"
+      },
+      golden: {
+        color1: "#f7971e",
+        color2: "#ffd200",
+        color3: "#ffe066",
+        textColor: "#1a1a2e",
+        buttonColor: "#1a1a2e"
+      }
+    };
+
+    let config = { ...defaultConfig };
+
+    function updateGradient() {
+      const heroSection = document.getElementById('hero-section');
+      const gradient = `linear-gradient(135deg, ${config.color1} 0%, ${config.color2} 50%, ${config.color3} 100%)`;
+      heroSection.style.background = gradient;
+    }
+
+    function updateColors() {
+      const heroTitle = document.getElementById('hero-title');
+      const heroSubtitle = document.getElementById('hero-subtitle');
+      const heroButton = document.getElementById('hero-button');
+      
+      heroTitle.style.color = config.text_color;
+      heroSubtitle.style.color = config.text_color;
+      heroButton.style.backgroundColor = config.button_color;
+      
+      // Calculate contrasting text color for button
+      const buttonTextColor = getContrastColor(config.button_color);
+      heroButton.style.color = buttonTextColor;
+    }
+
+    function getContrastColor(hexColor) {
+      const r = parseInt(hexColor.substr(1, 2), 16);
+      const g = parseInt(hexColor.substr(3, 2), 16);
+      const b = parseInt(hexColor.substr(5, 2), 16);
+      const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+      return brightness > 128 ? '#000000' : '#ffffff';
+    }
+
+    function setupColorInput(inputId, previewId, textId, configKey) {
+      const input = document.getElementById(inputId);
+      const preview = document.getElementById(previewId);
+      const text = document.getElementById(textId);
+      
+      preview.addEventListener('click', () => input.click());
+      
+      input.addEventListener('input', (e) => {
+        const color = e.target.value;
+        preview.style.background = color;
+        text.value = color;
+        config[configKey] = color;
+        if (configKey.startsWith('color')) {
+          updateGradient();
+        } else {
+          updateColors();
+        }
+        if (window.elementSdk) {
+          const update = {};
+          update[configKey] = color;
+          window.elementSdk.setConfig(update);
+        }
+      });
+      
+      text.addEventListener('input', (e) => {
+        let color = e.target.value;
+        if (!color.startsWith('#')) color = '#' + color;
+        if (/^#[0-9A-F]{6}$/i.test(color)) {
+          preview.style.background = color;
+          input.value = color;
+          config[configKey] = color;
+          if (configKey.startsWith('color')) {
+            updateGradient();
+          } else {
+            updateColors();
+          }
+          if (window.elementSdk) {
+            const update = {};
+            update[configKey] = color;
+            window.elementSdk.setConfig(update);
+          }
+        }
+      });
+    }
+
+    function applyStyle(styleName) {
+      const style = styles[styleName];
+      
+      config.color1 = style.color1;
+      config.color2 = style.color2;
+      config.color3 = style.color3;
+      config.text_color = style.textColor;
+      config.button_color = style.buttonColor;
+      
+      // Update color inputs
+      document.getElementById('color1-input').value = style.color1;
+      document.getElementById('color1-text').value = style.color1;
+      document.getElementById('color1-preview').style.background = style.color1;
+      
+      document.getElementById('color2-input').value = style.color2;
+      document.getElementById('color2-text').value = style.color2;
+      document.getElementById('color2-preview').style.background = style.color2;
+      
+      document.getElementById('color3-input').value = style.color3;
+      document.getElementById('color3-text').value = style.color3;
+      document.getElementById('color3-preview').style.background = style.color3;
+      
+      document.getElementById('text-color-input').value = style.textColor;
+      document.getElementById('text-color-text').value = style.textColor;
+      document.getElementById('text-color-preview').style.background = style.textColor;
+      
+      document.getElementById('button-color-input').value = style.buttonColor;
+      document.getElementById('button-color-text').value = style.buttonColor;
+      document.getElementById('button-color-preview').style.background = style.buttonColor;
+      
+      updateGradient();
+      updateColors();
+      
+      // Update style buttons
+      document.querySelectorAll('.style-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.style === styleName) {
+          btn.classList.add('active');
+        }
+      });
+      
+      if (window.elementSdk) {
+        window.elementSdk.setConfig({
+          current_style: styleName,
+          color1: style.color1,
+          color2: style.color2,
+          color3: style.color3,
+          text_color: style.textColor,
+          button_color: style.buttonColor
+        });
+      }
+    }
+
+    function applyShape(shapeName) {
+      const heroSection = document.getElementById('hero-section');
+      
+      heroSection.classList.remove('shape-wave', 'shape-diagonal', 'shape-blob', 'shape-geometric', 'shape-circle', 'shape-zigzag');
+      heroSection.classList.add(`shape-${shapeName}`);
+      
+      document.querySelectorAll('.shape-btn').forEach(btn => {
+        btn.classList.remove('active', 'bg-slate-600');
+        btn.classList.add('bg-slate-700', 'text-slate-300');
+        if (btn.dataset.shape === shapeName) {
+          btn.classList.add('active', 'bg-slate-600');
+          btn.classList.remove('bg-slate-700', 'text-slate-300');
+          btn.classList.add('text-white');
+        }
+      });
+      
+      config.current_shape = shapeName;
+      if (window.elementSdk) {
+        window.elementSdk.setConfig({ current_shape: shapeName });
+      }
+    }
+
+    function updateTypography() {
+      const heroTitle = document.getElementById('hero-title');
+      const heroSubtitle = document.getElementById('hero-subtitle');
+      
+      heroTitle.style.fontFamily = `'${config.title_font}', serif`;
+      heroTitle.style.fontSize = `${config.title_size}px`;
+      
+      heroSubtitle.style.fontFamily = `'${config.subtitle_font}', sans-serif`;
+      heroSubtitle.style.fontSize = `${config.subtitle_size}px`;
+    }
+
+    function generateHTML() {
+      const heroTitle = document.getElementById('hero-title').textContent;
+      const heroSubtitle = document.getElementById('hero-subtitle').textContent;
+      const heroButton = document.getElementById('hero-button').textContent;
+      const gradient = `linear-gradient(135deg, ${config.color1} 0%, ${config.color2} 50%, ${config.color3} 100%)`;
+      const shapeClass = config.current_shape;
+      const buttonTextColor = getContrastColor(config.button_color);
+      
+      let shapeStyles = '';
+      if (shapeClass === 'wave') {
+        shapeStyles = `.shape-wave::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 150px;
+      background: inherit;
+      clip-path: path('M0,100 C150,150 350,0 500,50 C650,100 800,0 1000,80 L1000,150 L0,150 Z');
+      transform: scaleX(2);
+    }`;
+      } else if (shapeClass === 'diagonal') {
+        shapeStyles = `.shape-diagonal::before {
+      content: '';
+      position: absolute;
+      bottom: -50px;
+      left: 0;
+      width: 100%;
+      height: 150px;
+      background: white;
+      transform: skewY(-3deg);
+    }`;
+      } else if (shapeClass === 'blob') {
+        shapeStyles = `.shape-blob::after {
+      content: '';
+      position: absolute;
+      bottom: -80px;
+      right: -100px;
+      width: 400px;
+      height: 400px;
+      border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+      background: rgba(255,255,255,0.1);
+      animation: blob 8s ease-in-out infinite;
+    }
+    .shape-blob::before {
+      content: '';
+      position: absolute;
+      top: -80px;
+      left: -100px;
+      width: 300px;
+      height: 300px;
+      border-radius: 40% 60% 70% 30% / 40% 70% 30% 60%;
+      background: rgba(255,255,255,0.08);
+      animation: blob 10s ease-in-out infinite reverse;
+    }
+    @keyframes blob {
+      0%, 100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+      50% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
+    }`;
+      } else if (shapeClass === 'geometric') {
+        shapeStyles = `.shape-geometric::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      right: 5%;
+      width: 300px;
+      height: 300px;
+      border: 3px solid rgba(255,255,255,0.2);
+      transform: translateY(-50%) rotate(45deg);
+    }
+    .shape-geometric::before {
+      content: '';
+      position: absolute;
+      bottom: 10%;
+      left: 10%;
+      width: 150px;
+      height: 150px;
+      border: 3px solid rgba(255,255,255,0.15);
+      border-radius: 50%;
+    }`;
+      } else if (shapeClass === 'circle') {
+        shapeStyles = `.shape-circle::after {
+      content: '';
+      position: absolute;
+      top: -200px;
+      right: -200px;
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.05);
+    }
+    .shape-circle::before {
+      content: '';
+      position: absolute;
+      bottom: -100px;
+      left: -100px;
+      width: 400px;
+      height: 400px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.08);
+    }`;
+      } else if (shapeClass === 'zigzag') {
+        shapeStyles = `.shape-zigzag::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 200%;
+      height: 60px;
+      background: linear-gradient(135deg, white 25%, transparent 25%) -50px 0,
+                  linear-gradient(225deg, white 25%, transparent 25%) -50px 0,
+                  linear-gradient(315deg, white 25%, transparent 25%),
+                  linear-gradient(45deg, white 25%, transparent 25%);
+      background-size: 60px 60px;
+    }`;
+      }
+      
+      const html = `<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hero Section</title>
+  <link href="https://fonts.googleapis.com/css2?family=${config.title_font.replace(' ', '+')}:wght@400;500;600;700;800&family=${config.subtitle_font.replace(' ', '+')}:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: sans-serif;
+      overflow-x: hidden;
+    }
+    
+    .hero-container {
+      position: relative;
+      overflow: hidden;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: ${gradient};
+      background-size: 200% 200%;
+      animation: gradient-shift 8s ease infinite;
+    }
+    
+    @keyframes gradient-shift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    
+    ${shapeStyles}
+    
+    .float-element {
+      position: absolute;
+      animation: float 6s ease-in-out infinite;
+    }
+    
+    .float-element-delay {
+      animation: float 6s ease-in-out 2s infinite;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-20px) rotate(5deg); }
+    }
+    
+    .hero-content {
+      position: relative;
+      z-index: 10;
+      text-align: center;
+      padding: 0 24px;
+      max-width: 1024px;
+    }
+    
+    .hero-title {
+      font-family: '${config.title_font}', serif;
+      font-size: ${config.title_size}px;
+      font-weight: bold;
+      color: ${config.text_color};
+      margin-bottom: 24px;
+      line-height: 1.2;
+      text-shadow: 0 4px 30px rgba(0,0,0,0.3);
+    }
+    
+    .hero-subtitle {
+      font-family: '${config.subtitle_font}', sans-serif;
+      font-size: ${config.subtitle_size}px;
+      color: ${config.text_color};
+      margin-bottom: 40px;
+      max-width: 672px;
+      margin-left: auto;
+      margin-right: auto;
+      opacity: 0.9;
+    }
+    
+    .hero-button {
+      padding: 16px 32px;
+      background-color: ${config.button_color};
+      color: ${buttonTextColor};
+      border-radius: 9999px;
+      font-weight: 600;
+      font-size: 18px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+      font-family: '${config.subtitle_font}', sans-serif;
+    }
+    
+    .hero-button:hover {
+      opacity: 0.9;
+      transform: scale(1.05);
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+    }
+    
+    @media (max-width: 768px) {
+      .hero-title {
+        font-size: ${Math.round(config.title_size * 0.6)}px;
+      }
+      
+      .hero-subtitle {
+        font-size: ${Math.round(config.subtitle_size * 0.8)}px;
+      }
+      
+      .hero-button {
+        font-size: 16px;
+        padding: 14px 28px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="hero-container shape-${shapeClass}">
+    <!-- Decorative floating elements -->
+    <div class="float-element" style="top: 80px; left: 40px; width: 64px; height: 64px; border-radius: 50%; background: rgba(255,255,255,0.1);"></div>
+    <div class="float-element-delay" style="top: 160px; right: 80px; width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.15);"></div>
+    <div class="float-element" style="bottom: 128px; left: 25%; width: 32px; height: 32px; border-radius: 4px; background: rgba(255,255,255,0.1); transform: rotate(45deg);"></div>
+    
+    <!-- Hero Content -->
+    <div class="hero-content">
+      <h1 class="hero-title">${heroTitle}</h1>
+      <p class="hero-subtitle">${heroSubtitle}</p>
+      <button class="hero-button">${heroButton}</button>
+    </div>
+  </div>
+</body>
+</html>`;
+      
+      return html;
+    }
+
+    function downloadHTML() {
+      const html = generateHTML();
+      const blob = new Blob([html], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'hero-section.html';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      // Show feedback
+      const btn = document.getElementById('download-btn');
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '<span>✅</span><span>Scaricato!</span>';
+      btn.style.background = 'linear-gradient(135deg, #059669 0%, #047857 100%)';
+      setTimeout(() => {
+        btn.innerHTML = originalText;
+        btn.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+      }, 2000);
+    }
+
+    async function onConfigChange(cfg) {
+      const heroTitle = document.getElementById('hero-title');
+      const heroSubtitle = document.getElementById('hero-subtitle');
+      const heroButton = document.getElementById('hero-button');
+      
+      if (heroTitle) heroTitle.textContent = cfg.hero_title || defaultConfig.hero_title;
+      if (heroSubtitle) heroSubtitle.textContent = cfg.hero_subtitle || defaultConfig.hero_subtitle;
+      if (heroButton) heroButton.textContent = cfg.button_text || defaultConfig.button_text;
+      
+      if (cfg.current_style) applyStyle(cfg.current_style);
+      if (cfg.current_shape) applyShape(cfg.current_shape);
+      
+      config = { ...config, ...cfg };
+      updateGradient();
+      updateColors();
+      updateTypography();
+    }
+
+    function mapToCapabilities(cfg) {
+      return {
+        recolorables: [
+          {
+            get: () => cfg.color1 || defaultConfig.color1,
+            set: (value) => {
+              config.color1 = value;
+              window.elementSdk.setConfig({ color1: value });
+            }
+          },
+          {
+            get: () => cfg.color2 || defaultConfig.color2,
+            set: (value) => {
+              config.color2 = value;
+              window.elementSdk.setConfig({ color2: value });
+            }
+          },
+          {
+            get: () => cfg.color3 || defaultConfig.color3,
+            set: (value) => {
+              config.color3 = value;
+              window.elementSdk.setConfig({ color3: value });
+            }
+          },
+          {
+            get: () => cfg.text_color || defaultConfig.text_color,
+            set: (value) => {
+              config.text_color = value;
+              window.elementSdk.setConfig({ text_color: value });
+            }
+          },
+          {
+            get: () => cfg.button_color || defaultConfig.button_color,
+            set: (value) => {
+              config.button_color = value;
+              window.elementSdk.setConfig({ button_color: value });
+            }
+          }
+        ],
+        borderables: [],
+        fontEditable: {
+          get: () => cfg.title_font || defaultConfig.title_font,
+          set: (value) => {
+            config.title_font = value;
+            window.elementSdk.setConfig({ title_font: value });
+          }
+        },
+        fontSizeable: {
+          get: () => cfg.title_size || defaultConfig.title_size,
+          set: (value) => {
+            config.title_size = value;
+            window.elementSdk.setConfig({ title_size: value });
+          }
+        }
+      };
+    }
+
+    function mapToEditPanelValues(cfg) {
+      return new Map([
+        ["hero_title", cfg.hero_title || defaultConfig.hero_title],
+        ["hero_subtitle", cfg.hero_subtitle || defaultConfig.hero_subtitle],
+        ["button_text", cfg.button_text || defaultConfig.button_text]
+      ]);
+    }
+
+    // Setup color inputs
+    setupColorInput('color1-input', 'color1-preview', 'color1-text', 'color1');
+    setupColorInput('color2-input', 'color2-preview', 'color2-text', 'color2');
+    setupColorInput('color3-input', 'color3-preview', 'color3-text', 'color3');
+    setupColorInput('text-color-input', 'text-color-preview', 'text-color-text', 'text_color');
+    setupColorInput('button-color-input', 'button-color-preview', 'button-color-text', 'button_color');
+
+    // Style buttons
+    document.querySelectorAll('.style-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const styleName = btn.dataset.style;
+        config.current_style = styleName;
+        applyStyle(styleName);
+      });
+    });
+
+    // Shape buttons
+    document.querySelectorAll('.shape-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const shapeName = btn.dataset.shape;
+        applyShape(shapeName);
+      });
+    });
+
+    // Typography controls
+    document.getElementById('title-font').addEventListener('change', (e) => {
+      config.title_font = e.target.value;
+      updateTypography();
+      if (window.elementSdk) {
+        window.elementSdk.setConfig({ title_font: e.target.value });
+      }
+    });
+
+    document.getElementById('title-size').addEventListener('input', (e) => {
+      const size = e.target.value;
+      document.getElementById('title-size-value').textContent = size;
+      config.title_size = parseInt(size);
+      updateTypography();
+      if (window.elementSdk) {
+        window.elementSdk.setConfig({ title_size: parseInt(size) });
+      }
+    });
+
+    document.getElementById('subtitle-font').addEventListener('change', (e) => {
+      config.subtitle_font = e.target.value;
+      updateTypography();
+      if (window.elementSdk) {
+        window.elementSdk.setConfig({ subtitle_font: e.target.value });
+      }
+    });
+
+    document.getElementById('subtitle-size').addEventListener('input', (e) => {
+      const size = e.target.value;
+      document.getElementById('subtitle-size-value').textContent = size;
+      config.subtitle_size = parseInt(size);
+      updateTypography();
+      if (window.elementSdk) {
+        window.elementSdk.setConfig({ subtitle_size: parseInt(size) });
+      }
+    });
+
+    // Download button
+    document.getElementById('download-btn').addEventListener('click', downloadHTML);
+
+    // Initialize SDK
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange,
+        mapToCapabilities,
+        mapToEditPanelValues
+      });
+      config = window.elementSdk.config || config;
+    }
+
+    // Initial render
+    onConfigChange(config);
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9bc8819987bceddb',t:'MTc2ODE3NzQxNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

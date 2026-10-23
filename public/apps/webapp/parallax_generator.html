@@ -1,0 +1,742 @@
+<!doctype html>
+<html lang="it">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Parallax Generator</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <style>
+    body {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(to bottom, #1e3c72, #2a5298);
+      color: #fff;
+      min-height: 100%;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    h1 {
+      font-size: 48px;
+      margin: 0 0 15px 0;
+      font-weight: bold;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .subtitle {
+      font-size: 18px;
+      opacity: 0.9;
+    }
+
+    .add-layer-section {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .add-btn {
+      background: #ff6b6b;
+      color: white;
+      border: none;
+      padding: 18px 40px;
+      font-size: 18px;
+      font-weight: bold;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+      transition: all 0.3s;
+    }
+
+    .add-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(255, 107, 107, 0.6);
+    }
+
+    .layers-section {
+      margin-bottom: 50px;
+    }
+
+    .layer-card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    }
+
+    .layer-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #e0e0e0;
+    }
+
+    .layer-number {
+      font-size: 24px;
+      font-weight: bold;
+      color: #1e3c72;
+    }
+
+    .delete-btn {
+      background: #ff4757;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .delete-btn:hover {
+      background: #ff3838;
+    }
+
+    .input-group {
+      margin-bottom: 20px;
+    }
+
+    .input-group label {
+      display: block;
+      color: #333;
+      font-weight: bold;
+      margin-bottom: 8px;
+      font-size: 15px;
+    }
+
+    .input-group input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      font-size: 15px;
+      color: #333;
+    }
+
+    .input-group input[type="text"]:focus {
+      outline: none;
+      border-color: #1e3c72;
+    }
+
+    .slider-group {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .slider-group input[type="range"] {
+      flex: 1;
+      height: 8px;
+      border-radius: 4px;
+      background: #ddd;
+      outline: none;
+      -webkit-appearance: none;
+    }
+
+    .slider-group input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #1e3c72;
+      cursor: pointer;
+    }
+
+    .slider-group input[type="range"]::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #1e3c72;
+      cursor: pointer;
+      border: none;
+    }
+
+    .speed-display {
+      background: #1e3c72;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: bold;
+      min-width: 60px;
+      text-align: center;
+    }
+
+    .preview-section {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 15px;
+      padding: 30px;
+      margin-bottom: 40px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    }
+
+    .preview-section h2 {
+      color: #1e3c72;
+      margin: 0 0 20px 0;
+      font-size: 28px;
+    }
+
+    .preview-container {
+      background: #000;
+      border-radius: 10px;
+      height: 400px;
+      overflow-y: scroll;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    .preview-layer {
+      height: 100vh;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .preview-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      background-color: #333;
+    }
+
+    .preview-content {
+      position: relative;
+      z-index: 10;
+      background: rgba(0,0,0,0.6);
+      padding: 30px 40px;
+      border-radius: 15px;
+      text-align: center;
+    }
+
+    .preview-content h3 {
+      font-size: 36px;
+      margin: 0 0 10px 0;
+      color: white;
+    }
+
+    .preview-content p {
+      font-size: 18px;
+      margin: 0;
+      color: #ddd;
+    }
+
+    .code-section {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    }
+
+    .code-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .code-header h2 {
+      color: #1e3c72;
+      margin: 0;
+      font-size: 28px;
+    }
+
+    .copy-btn {
+      background: #10ac84;
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .copy-btn:hover {
+      background: #0e9770;
+    }
+
+    .copy-btn.copied {
+      background: #5f27cd;
+    }
+
+    .code-box {
+      background: #1e1e1e;
+      border-radius: 10px;
+      padding: 20px;
+      overflow-x: auto;
+    }
+
+    .code-box pre {
+      margin: 0;
+      color: #d4d4d4;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    .empty-message {
+      text-align: center;
+      color: #666;
+      font-size: 18px;
+      padding: 60px 20px;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: #10ac84;
+      color: white;
+      padding: 16px 30px;
+      border-radius: 10px;
+      font-weight: bold;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.3s;
+      z-index: 1000;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 32px;
+      }
+
+      .layer-card {
+        padding: 20px;
+      }
+
+      .code-header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: stretch;
+      }
+
+      .copy-btn {
+        width: 100%;
+      }
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
+ </head>
+ <body>
+  <div class="container">
+   <header>
+    <h1 id="main-title">Parallax Code Generator</h1>
+    <p class="subtitle">Crea effetti parallax professionali in pochi click</p>
+   </header>
+   <div class="add-layer-section"><button class="add-btn" id="add-btn">➕ Add New Layer</button>
+   </div>
+   <div class="layers-section" id="layers-container"></div>
+   <section class="preview-section">
+    <h2>👁️ Live Preview</h2>
+    <div class="preview-container" id="preview">
+     <div class="empty-message">
+      <p>👆 Aggiungi un layer per vedere l'anteprima</p>
+     </div>
+    </div>
+   </section>
+   <section class="code-section">
+    <div class="code-header">
+     <h2>📝 Generated HTML Code</h2><button class="copy-btn" id="copy-btn">Copy HTML Code</button>
+    </div>
+    <div class="code-box">
+     <pre id="code-output">// Aggiungi layer per generare il codice HTML...</pre>
+    </div>
+   </section>
+  </div>
+  <div class="toast" id="toast">
+   ✓ Codice copiato negli appunti!
+  </div>
+  <script>
+    const defaultConfig = {
+      main_title: "Parallax Code Generator",
+      add_layer_text: "Add New Layer",
+      copy_code_text: "Copy HTML Code",
+      primary_color: "#1e3c72",
+      secondary_color: "#ff6b6b",
+      accent_color: "#10ac84",
+      text_color: "#ffffff",
+      surface_color: "#ffffff",
+      font_family: "Arial",
+      font_size: 16
+    };
+
+    let layers = [];
+    let nextId = 1;
+
+    function addLayer() {
+      layers.push({
+        id: nextId++,
+        title: `Section ${layers.length + 1}`,
+        imageUrl: '',
+        speed: 0.5
+      });
+      updateAll();
+    }
+
+    function removeLayer(id) {
+      layers = layers.filter(l => l.id !== id);
+      updateAll();
+    }
+
+    function updateLayer(id, field, value) {
+      const layer = layers.find(l => l.id === id);
+      if (layer) {
+        layer[field] = value;
+        // Non ri-renderizzare i layer, solo preview e codice
+        renderPreview();
+        renderCode();
+      }
+    }
+
+    function updateAll() {
+      renderLayers();
+      renderPreview();
+      renderCode();
+    }
+
+    function renderLayers() {
+      const container = document.getElementById('layers-container');
+      
+      if (layers.length === 0) {
+        container.innerHTML = '';
+        return;
+      }
+
+      container.innerHTML = layers.map(layer => `
+        <div class="layer-card">
+          <div class="layer-header">
+            <span class="layer-number">🎬 Layer ${layer.id}</span>
+            <button class="delete-btn" onclick="removeLayer(${layer.id})">🗑️ Delete</button>
+          </div>
+
+          <div class="input-group">
+            <label>Titolo Sezione</label>
+            <input type="text" value="${layer.title}" 
+                   oninput="updateLayer(${layer.id}, 'title', this.value)">
+          </div>
+
+          <div class="input-group">
+            <label>URL Immagine di Sfondo</label>
+            <input type="text" placeholder="https://example.com/image.jpg" 
+                   value="${layer.imageUrl}"
+                   oninput="updateLayer(${layer.id}, 'imageUrl', this.value)">
+          </div>
+
+          <div class="input-group">
+            <label>Velocità Effetto Parallax</label>
+            <div class="slider-group">
+              <input type="range" min="0" max="1" step="0.1" value="${layer.speed}"
+                     oninput="updateLayer(${layer.id}, 'speed', parseFloat(this.value)); this.nextElementSibling.textContent = this.value + 'x'">
+              <span class="speed-display">${layer.speed}x</span>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderPreview() {
+      const preview = document.getElementById('preview');
+      
+      if (layers.length === 0) {
+        preview.innerHTML = `
+          <div class="empty-message">
+            <p>👆 Aggiungi un layer per vedere l'anteprima</p>
+          </div>
+        `;
+        return;
+      }
+
+      preview.innerHTML = layers.map(layer => `
+        <div class="preview-layer">
+          <div class="preview-bg" data-speed="${layer.speed}"
+               style="background-image: url('${layer.imageUrl || 'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1920'}');"></div>
+          <div class="preview-content">
+            <h3>${layer.title}</h3>
+            <p>Parallax Speed: ${layer.speed}x</p>
+          </div>
+        </div>
+      `).join('');
+
+      setupParallax();
+    }
+
+    function setupParallax() {
+      const preview = document.getElementById('preview');
+      
+      preview.addEventListener('scroll', () => {
+        const scrollTop = preview.scrollTop;
+        
+        document.querySelectorAll('.preview-bg').forEach(bg => {
+          const layer = bg.closest('.preview-layer');
+          const layerTop = layer.offsetTop;
+          const speed = parseFloat(bg.dataset.speed);
+          const offset = (scrollTop - layerTop) * speed;
+          
+          bg.style.transform = `translateY(${offset}px)`;
+        });
+      });
+    }
+
+    function renderCode() {
+      const output = document.getElementById('code-output');
+      
+      if (layers.length === 0) {
+        output.textContent = '// Aggiungi layer per generare il codice HTML...';
+        return;
+      }
+
+      const htmlCode = `<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Parallax Scrolling Effect</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: Arial, sans-serif;
+      overflow-x: hidden;
+    }
+
+    .parallax-section {
+      position: relative;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .parallax-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      will-change: transform;
+    }
+
+    .parallax-content {
+      position: relative;
+      z-index: 10;
+      text-align: center;
+      color: white;
+      background: rgba(0,0,0,0.6);
+      padding: 40px 60px;
+      border-radius: 15px;
+    }
+
+    .parallax-content h2 {
+      font-size: 48px;
+      margin-bottom: 15px;
+    }
+
+    .parallax-content p {
+      font-size: 20px;
+    }
+  </style>
+</head>
+<body>
+
+${layers.map(layer => `  <div class="parallax-section">
+    <div class="parallax-bg" data-speed="${layer.speed}"
+         style="background-image: url('${layer.imageUrl || 'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1920'}');">
+    </div>
+    <div class="parallax-content">
+      <h2>${layer.title}</h2>
+      <p>Your amazing content here</p>
+    </div>
+  </div>
+`).join('\n')}
+  <script>
+    window.addEventListener('scroll', () => {
+      const scrollTop = window.pageYOffset;
+      
+      document.querySelectorAll('.parallax-bg').forEach(bg => {
+        const section = bg.closest('.parallax-section');
+        const sectionTop = section.offsetTop;
+        const speed = parseFloat(bg.dataset.speed);
+        const offset = (scrollTop - sectionTop) * speed;
+        
+        bg.style.transform = \`translateY(\${offset}px)\`;
+      });
+    });
+  <\/script>
+</body>
+</html>`;
+
+      output.textContent = htmlCode;
+    }
+
+    document.getElementById('add-btn').addEventListener('click', addLayer);
+
+    document.getElementById('copy-btn').addEventListener('click', () => {
+      const code = document.getElementById('code-output').textContent;
+      
+      const textarea = document.createElement('textarea');
+      textarea.value = code;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+
+      const toast = document.getElementById('toast');
+      const btn = document.getElementById('copy-btn');
+      
+      btn.classList.add('copied');
+      btn.textContent = '✓ Copiato!';
+      toast.classList.add('show');
+
+      setTimeout(() => {
+        toast.classList.remove('show');
+        btn.classList.remove('copied');
+        const config = window.elementSdk?.config || defaultConfig;
+        btn.textContent = config.copy_code_text;
+      }, 2500);
+    });
+
+    async function onConfigChange(config) {
+      const font = config.font_family || defaultConfig.font_family;
+      const baseSize = config.font_size || defaultConfig.font_size;
+
+      document.body.style.fontFamily = `${font}, sans-serif`;
+
+      const title = document.getElementById('main-title');
+      title.textContent = config.main_title || defaultConfig.main_title;
+      title.style.fontSize = `${baseSize * 3}px`;
+
+      const addBtn = document.getElementById('add-btn');
+      addBtn.textContent = `➕ ${config.add_layer_text || defaultConfig.add_layer_text}`;
+      addBtn.style.backgroundColor = config.secondary_color || defaultConfig.secondary_color;
+      addBtn.style.fontSize = `${baseSize * 1.125}px`;
+
+      const copyBtn = document.getElementById('copy-btn');
+      copyBtn.textContent = config.copy_code_text || defaultConfig.copy_code_text;
+      copyBtn.style.backgroundColor = config.accent_color || defaultConfig.accent_color;
+      copyBtn.style.fontSize = `${baseSize}px`;
+
+      document.querySelectorAll('.layer-number').forEach(el => {
+        el.style.color = config.primary_color || defaultConfig.primary_color;
+        el.style.fontSize = `${baseSize * 1.5}px`;
+      });
+
+      document.querySelectorAll('.speed-display').forEach(el => {
+        el.style.backgroundColor = config.primary_color || defaultConfig.primary_color;
+      });
+
+      document.querySelectorAll('.input-group label').forEach(el => {
+        el.style.fontSize = `${baseSize * 0.9375}px`;
+      });
+
+      document.querySelectorAll('.input-group input[type="text"]').forEach(el => {
+        el.style.fontSize = `${baseSize * 0.9375}px`;
+      });
+    }
+
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange,
+        mapToCapabilities: (config) => ({
+          recolorables: [
+            {
+              get: () => config.primary_color || defaultConfig.primary_color,
+              set: (value) => {
+                config.primary_color = value;
+                window.elementSdk.setConfig({ primary_color: value });
+              }
+            },
+            {
+              get: () => config.secondary_color || defaultConfig.secondary_color,
+              set: (value) => {
+                config.secondary_color = value;
+                window.elementSdk.setConfig({ secondary_color: value });
+              }
+            },
+            {
+              get: () => config.accent_color || defaultConfig.accent_color,
+              set: (value) => {
+                config.accent_color = value;
+                window.elementSdk.setConfig({ accent_color: value });
+              }
+            },
+            {
+              get: () => config.text_color || defaultConfig.text_color,
+              set: (value) => {
+                config.text_color = value;
+                window.elementSdk.setConfig({ text_color: value });
+              }
+            },
+            {
+              get: () => config.surface_color || defaultConfig.surface_color,
+              set: (value) => {
+                config.surface_color = value;
+                window.elementSdk.setConfig({ surface_color: value });
+              }
+            }
+          ],
+          borderables: [],
+          fontEditable: {
+            get: () => config.font_family || defaultConfig.font_family,
+            set: (value) => {
+              config.font_family = value;
+              window.elementSdk.setConfig({ font_family: value });
+            }
+          },
+          fontSizeable: {
+            get: () => config.font_size || defaultConfig.font_size,
+            set: (value) => {
+              config.font_size = value;
+              window.elementSdk.setConfig({ font_size: value });
+            }
+          }
+        }),
+        mapToEditPanelValues: (config) => new Map([
+          ["main_title", config.main_title || defaultConfig.main_title],
+          ["add_layer_text", config.add_layer_text || defaultConfig.add_layer_text],
+          ["copy_code_text", config.copy_code_text || defaultConfig.copy_code_text]
+        ])
+      });
+    }
+
+    updateAll();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99b499cb23284c43',t:'MTc2MjU5OTk4NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

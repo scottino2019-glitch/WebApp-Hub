@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emoji Web Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .checkerboard {
+            background-image: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), 
+                              linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), 
+                              linear-gradient(45deg, transparent 75%, #f0f0f0 75%), 
+                              linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+        }
+        
+        #previewText {
+            display: inline-block;
+            transition: transform 0.1s;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen p-4 flex items-center justify-center font-sans">
+
+    <div class="max-w-5xl w-full grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        <!-- Configurazione -->
+        <div class="bg-white rounded-3xl shadow-xl p-8 border border-slate-200">
+            <h1 class="text-2xl font-black text-slate-800 mb-6">Configura Emoji</h1>
+            
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 uppercase mb-2">Scegli o incolla Emoji</label>
+                    <input type="text" id="emojiIn" value="⚡" class="w-full text-4xl p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl text-center focus:border-blue-500 outline-none transition-all">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 uppercase mb-2">Animazione</label>
+                    <select id="animType" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl outline-none focus:border-blue-500">
+                        <option value="bounce">Rimbalzo</option>
+                        <option value="spin">Rotazione</option>
+                        <option value="pulse">Pulsazione</option>
+                        <option value="float">Fluttuazione</option>
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase mb-2">Durata (s)</label>
+                        <input type="range" id="durIn" min="0.1" max="4" step="0.1" value="1" class="w-full">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase mb-2">Dimensione (px)</label>
+                        <input type="range" id="sizeIn" min="20" max="150" step="5" value="80" class="w-full">
+                    </div>
+                </div>
+
+                <!-- Pulsante di copia corretto -->
+                <button id="copyBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-5 rounded-2xl shadow-lg shadow-blue-200 transition-all active:scale-95 flex items-center justify-center gap-3">
+                    COPIA CODICE PER SITO
+                </button>
+            </div>
+        </div>
+
+        <!-- Anteprima e Codice -->
+        <div class="flex flex-col gap-6">
+            <div class="bg-white rounded-3xl shadow-xl p-6 border border-slate-200 flex-1 flex flex-col">
+                <span class="text-xs font-bold text-slate-400 uppercase mb-4">Anteprima</span>
+                <div class="checkerboard rounded-2xl flex-1 flex items-center justify-center min-h-[200px]">
+                    <span id="previewText">⚡</span>
+                </div>
+            </div>
+
+            <div class="bg-slate-900 rounded-3xl shadow-xl p-6 border border-slate-800">
+                <span class="text-xs font-bold text-slate-500 uppercase mb-4 block">Codice da incollare (HTML/CSS)</span>
+                <!-- Textarea per copia manuale o automatica -->
+                <textarea id="codeOut" readonly class="w-full h-48 bg-slate-950 text-blue-400 font-mono text-[10px] p-4 rounded-xl border border-slate-800 outline-none focus:border-blue-900"></textarea>
+                <div id="msg" class="text-center text-green-400 text-xs font-bold mt-2 h-4 opacity-0 transition-opacity">Copiato negli appunti!</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const emojiIn = document.getElementById('emojiIn');
+        const animType = document.getElementById('animType');
+        const durIn = document.getElementById('durIn');
+        const sizeIn = document.getElementById('sizeIn');
+        const previewText = document.getElementById('previewText');
+        const codeOut = document.getElementById('codeOut');
+        const copyBtn = document.getElementById('copyBtn');
+        const msg = document.getElementById('msg');
+
+        const keyframes = {
+            bounce: `@keyframes emoji-anim {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-30px); }
+}`,
+            spin: `@keyframes emoji-anim {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}`,
+            pulse: `@keyframes emoji-anim {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.3); }
+}`,
+            float: `@keyframes emoji-anim {
+  0%, 100% { transform: translate(0,0); }
+  50% { transform: translate(15px, -15px); }
+}`
+        };
+
+        function update() {
+            const emoji = emojiIn.value || '⚡';
+            const anim = animType.value;
+            const dur = durIn.value;
+            const size = sizeIn.value;
+
+            previewText.textContent = emoji;
+            previewText.style.fontSize = size + 'px';
+            
+            const styleId = 'dynamic-preview-style';
+            let styleTag = document.getElementById(styleId);
+            if (!styleTag) {
+                styleTag = document.createElement('style');
+                styleTag.id = styleId;
+                document.head.appendChild(styleTag);
+            }
+            
+            styleTag.textContent = `
+                ${keyframes[anim]}
+                #previewText {
+                    animation: emoji-anim ${dur}s infinite ease-in-out;
+                    ${anim === 'spin' ? 'animation-timing-function: linear;' : ''}
+                }
+            `;
+
+            // Codice pulito da generare
+            const generatedHTML = `<div class="emoji-box">
+  <span class="emoji-icon">${emoji}</span>
+</div>
+
+<style>
+.emoji-box {
+  display: inline-flex;
+  padding: 20px;
+}
+.emoji-icon {
+  display: inline-block;
+  font-size: ${size}px;
+  animation: emoji-anim ${dur}s infinite ease-in-out;
+  ${anim === 'spin' ? 'animation-timing-function: linear;' : ''}
+}
+${keyframes[anim]}
+</style>`;
+
+            codeOut.value = generatedHTML;
+        }
+
+        [emojiIn, animType, durIn, sizeIn].forEach(el => el.addEventListener('input', update));
+
+        copyBtn.onclick = () => {
+            // Seleziona specificamente il contenuto della textarea
+            codeOut.select();
+            codeOut.setSelectionRange(0, 99999); 
+
+            try {
+                // Esegue il comando di copia sul testo selezionato
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    msg.style.opacity = "1";
+                    setTimeout(() => msg.style.opacity = "0", 2000);
+                }
+            } catch (err) {
+                // Fallback manuale per browser restrittivi
+                console.error('Errore copia', err);
+            }
+        };
+
+        update();
+    </script>
+</body>
+</html>
+

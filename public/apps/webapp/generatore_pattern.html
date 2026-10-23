@@ -1,0 +1,588 @@
+<!doctype html>
+<html lang="it">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generatore di Pattern</title>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background-color: #f8fafc;
+      color: #1e293b;
+      box-sizing: border-box;
+    }
+    
+    .app-wrapper {
+      height: 100%;
+      width: 100%;
+      overflow: auto;
+    }
+    
+    .content {
+      min-height: 100%;
+      width: 100%;
+      padding: 2rem;
+    }
+    
+    .max-container {
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    
+    .title {
+      font-size: 3rem;
+      font-weight: bold;
+      margin-bottom: 0.75rem;
+    }
+    
+    .subtitle {
+      font-size: 1.25rem;
+    }
+    
+    .grid-main {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+    
+    @media (min-width: 1024px) {
+      .grid-main {
+        grid-template-columns: 1fr 1fr;
+      }
+      
+      .canvas-wrapper {
+        position: sticky;
+        top: 1.5rem;
+        height: fit-content;
+      }
+    }
+    
+    .panel {
+      background-color: #ffffff;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .panel-title {
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin-bottom: 1rem;
+    }
+    
+    .controls-space {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    
+    .button-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.75rem;
+    }
+    
+    .color-space {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    
+    .color-row {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .color-label {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    
+    .color-input {
+      width: 100%;
+      height: 3rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      border: 2px solid #e2e8f0;
+    }
+    
+    .control-button {
+      padding: 0.75rem 1rem;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background-color: #e2e8f0;
+      color: #1e293b;
+    }
+    
+    .control-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    .control-button:active {
+      transform: translateY(0);
+    }
+    
+    .control-button.active {
+      background-color: #6366f1;
+      color: white;
+    }
+    
+    .button-primary {
+      background-color: #6366f1;
+      color: white;
+      font-size: 1.125rem;
+    }
+    
+    .button-secondary {
+      background-color: #e2e8f0;
+      color: #1e293b;
+      font-size: 1.125rem;
+    }
+    
+    .button-full {
+      width: 100%;
+      margin-bottom: 0.75rem;
+    }
+    
+    .slider-label {
+      display: block;
+      font-size: 1.25rem;
+      font-weight: bold;
+      margin-bottom: 0.75rem;
+    }
+    
+    .value-display {
+      text-align: center;
+      margin-top: 0.5rem;
+      font-weight: 600;
+      font-size: 1.125rem;
+    }
+    
+    .pattern-canvas {
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+    }
+    
+    .control-button {
+      transition: all 0.2s ease;
+    }
+    
+    .control-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    .control-button:active {
+      transform: translateY(0);
+    }
+    
+    .slider {
+      -webkit-appearance: none;
+      appearance: none;
+      height: 8px;
+      border-radius: 4px;
+      outline: none;
+    }
+    
+    .slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .slider::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+    
+    .slider::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s ease;
+    }
+    
+    .slider::-moz-range-thumb:hover {
+      transform: scale(1.2);
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="/_sdk/element_sdk.js" type="text/javascript"></script>
+  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
+ </head>
+ <body>
+  <div class="app-wrapper">
+   <div class="content">
+    <div class="max-container"><!-- Header -->
+     <header class="header">
+      <h1 id="title" class="title">Generatore di Pattern</h1>
+      <p id="subtitle" class="subtitle">Crea design unici e geometrici</p>
+     </header><!-- Main Content -->
+     <div class="grid-main"><!-- Canvas Area -->
+      <div class="canvas-wrapper">
+       <div class="panel">
+        <canvas id="patternCanvas" class="pattern-canvas" width="600" height="600" style="width: 100%; border-radius: 0.5rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"></canvas>
+       </div>
+      </div><!-- Controls Panel -->
+      <div class="controls-space"><!-- Pattern Type -->
+       <div class="panel">
+        <h2 class="panel-title">Tipo di Pattern</h2>
+        <div class="button-grid"><button id="circles" class="control-button active">Cerchi</button> <button id="squares" class="control-button">Quadrati</button> <button id="triangles" class="control-button">Triangoli</button> <button id="hexagons" class="control-button">Esagoni</button> <button id="waves" class="control-button">Onde</button> <button id="stars" class="control-button">Stelle</button> <button id="dots" class="control-button">Puntini</button> <button id="diamonds" class="control-button">Diamanti</button> <button id="zigzag" class="control-button">Zigzag</button> <button id="crosses" class="control-button">Croci</button> <button id="overlapping" class="control-button">Sovrapposti</button> <button id="gradient" class="control-button">Gradiente</button>
+        </div>
+       </div><!-- Size Control -->
+       <div class="panel"><label for="sizeSlider" class="slider-label">Dimensione</label> <input type="range" id="sizeSlider" min="10" max="100" value="40" class="slider" style="width: 100%;">
+        <div id="sizeValue" class="value-display">
+         40
+        </div>
+       </div><!-- Density Control -->
+       <div class="panel"><label for="densitySlider" class="slider-label">Densità</label> <input type="range" id="densitySlider" min="5" max="30" value="15" class="slider" style="width: 100%;">
+        <div id="densityValue" class="value-display">
+         15
+        </div>
+       </div><!-- Rotation Control -->
+       <div class="panel"><label for="rotationSlider" class="slider-label">Rotazione</label> <input type="range" id="rotationSlider" min="0" max="360" value="0" class="slider" style="width: 100%;">
+        <div id="rotationValue" class="value-display">
+         0°
+        </div>
+       </div><!-- Opacity Control -->
+       <div class="panel"><label for="opacitySlider" class="slider-label">Opacità</label> <input type="range" id="opacitySlider" min="0" max="100" value="100" class="slider" style="width: 100%;">
+        <div id="opacityValue" class="value-display">
+         100%
+        </div>
+       </div><!-- Color Controls -->
+       <div class="panel">
+        <h2 class="panel-title">Colori</h2>
+        <div class="color-space">
+         <div class="color-row"><label for="color1" class="color-label">Colore 1</label> <input type="color" id="color1" value="#6366f1" class="color-input">
+         </div>
+         <div class="color-row"><label for="color2" class="color-label">Colore 2</label> <input type="color" id="color2" value="#ec4899" class="color-input">
+         </div>
+         <div class="color-row"><label for="color3" class="color-label">Colore 3</label> <input type="color" id="color3" value="#f59e0b" class="color-input">
+         </div>
+         <div class="color-row"><label for="bgColor" class="color-label">Sfondo</label> <input type="color" id="bgColor" value="#f8fafc" class="color-input">
+         </div>
+        </div>
+       </div><!-- Action Buttons -->
+       <div class="panel"><button id="randomize" class="control-button button-primary button-full"> 🎲 Randomizza </button> <button id="download" class="control-button button-secondary button-full" style="margin-bottom: 0;"> 📥 Scarica PNG </button>
+       </div>
+      </div>
+     </div>
+    </div>
+   </div>
+  </div>
+  <script>
+    let currentPattern = 'circles';
+    let size = 40;
+    let density = 15;
+    let rotation = 0;
+    let opacity = 100;
+    let color1 = '#6366f1';
+    let color2 = '#ec4899';
+    let color3 = '#f59e0b';
+    let bgColor = '#f8fafc';
+
+    const canvas = document.getElementById('patternCanvas');
+    const ctx = canvas.getContext('2d');
+
+    function drawPattern() {
+      ctx.fillStyle = bgColor;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      const cols = Math.floor(canvas.width / density);
+      const rows = Math.floor(canvas.height / density);
+
+      for (let i = 0; i < cols; i++) {
+        for (let j = 0; j < rows; j++) {
+          const x = i * density;
+          const y = j * density;
+          const centerX = x + density / 2;
+          const centerY = y + density / 2;
+          
+          // Scegli il colore in base alla posizione
+          let fillColor;
+          const colorIndex = (i + j) % 3;
+          if (colorIndex === 0) fillColor = color1;
+          else if (colorIndex === 1) fillColor = color2;
+          else fillColor = color3;
+          
+          // Applica opacità
+          const alpha = opacity / 100;
+          const rgb = hexToRgb(fillColor);
+          ctx.fillStyle = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha})`;
+
+          ctx.save();
+          ctx.translate(centerX, centerY);
+          ctx.rotate((rotation * Math.PI) / 180);
+          ctx.translate(-centerX, -centerY);
+
+          switch (currentPattern) {
+            case 'circles':
+              ctx.beginPath();
+              ctx.arc(centerX, centerY, size / 2, 0, Math.PI * 2);
+              ctx.fill();
+              break;
+            case 'squares':
+              ctx.fillRect(centerX - size / 2, centerY - size / 2, size, size);
+              break;
+            case 'triangles':
+              ctx.beginPath();
+              ctx.moveTo(centerX, centerY - size / 2);
+              ctx.lineTo(centerX - size / 2, centerY + size / 2);
+              ctx.lineTo(centerX + size / 2, centerY + size / 2);
+              ctx.closePath();
+              ctx.fill();
+              break;
+            case 'hexagons':
+              const hexSize = size / 2;
+              ctx.beginPath();
+              for (let k = 0; k < 6; k++) {
+                const angle = (Math.PI / 3) * k;
+                const hx = centerX + hexSize * Math.cos(angle);
+                const hy = centerY + hexSize * Math.sin(angle);
+                if (k === 0) ctx.moveTo(hx, hy);
+                else ctx.lineTo(hx, hy);
+              }
+              ctx.closePath();
+              ctx.fill();
+              break;
+            case 'waves':
+              ctx.beginPath();
+              const waveWidth = size;
+              const waveHeight = size / 3;
+              ctx.moveTo(centerX - waveWidth / 2, centerY);
+              ctx.bezierCurveTo(
+                centerX - waveWidth / 4, centerY - waveHeight,
+                centerX + waveWidth / 4, centerY + waveHeight,
+                centerX + waveWidth / 2, centerY
+              );
+              ctx.strokeStyle = ctx.fillStyle;
+              ctx.lineWidth = 3;
+              ctx.stroke();
+              break;
+            case 'stars':
+              const spikes = 5;
+              const outerRadius = size / 2;
+              const innerRadius = size / 4;
+              ctx.beginPath();
+              for (let k = 0; k < spikes * 2; k++) {
+                const radius = k % 2 === 0 ? outerRadius : innerRadius;
+                const angle = (k * Math.PI) / spikes;
+                const sx = centerX + Math.cos(angle - Math.PI / 2) * radius;
+                const sy = centerY + Math.sin(angle - Math.PI / 2) * radius;
+                if (k === 0) ctx.moveTo(sx, sy);
+                else ctx.lineTo(sx, sy);
+              }
+              ctx.closePath();
+              ctx.fill();
+              break;
+            case 'dots':
+              const dotSize = size / 4;
+              ctx.beginPath();
+              ctx.arc(centerX, centerY, dotSize, 0, Math.PI * 2);
+              ctx.fill();
+              ctx.beginPath();
+              ctx.arc(centerX - size / 3, centerY - size / 3, dotSize / 2, 0, Math.PI * 2);
+              ctx.fill();
+              ctx.beginPath();
+              ctx.arc(centerX + size / 3, centerY + size / 3, dotSize / 2, 0, Math.PI * 2);
+              ctx.fill();
+              break;
+            case 'diamonds':
+              ctx.beginPath();
+              ctx.moveTo(centerX, centerY - size / 2);
+              ctx.lineTo(centerX + size / 2, centerY);
+              ctx.lineTo(centerX, centerY + size / 2);
+              ctx.lineTo(centerX - size / 2, centerY);
+              ctx.closePath();
+              ctx.fill();
+              break;
+            case 'zigzag':
+              ctx.beginPath();
+              const zigSize = size / 3;
+              ctx.moveTo(centerX - size / 2, centerY);
+              ctx.lineTo(centerX - size / 4, centerY - zigSize);
+              ctx.lineTo(centerX, centerY);
+              ctx.lineTo(centerX + size / 4, centerY + zigSize);
+              ctx.lineTo(centerX + size / 2, centerY);
+              ctx.strokeStyle = ctx.fillStyle;
+              ctx.lineWidth = 3;
+              ctx.stroke();
+              break;
+            case 'crosses':
+              const crossSize = size / 2;
+              const crossWidth = size / 5;
+              ctx.fillRect(centerX - crossWidth / 2, centerY - crossSize, crossWidth, crossSize * 2);
+              ctx.fillRect(centerX - crossSize, centerY - crossWidth / 2, crossSize * 2, crossWidth);
+              break;
+            case 'overlapping':
+              ctx.globalAlpha = 0.6;
+              ctx.beginPath();
+              ctx.arc(centerX - size / 4, centerY, size / 3, 0, Math.PI * 2);
+              ctx.fill();
+              ctx.beginPath();
+              ctx.arc(centerX + size / 4, centerY, size / 3, 0, Math.PI * 2);
+              ctx.fill();
+              ctx.globalAlpha = 1;
+              break;
+            case 'gradient':
+              const gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, size / 2);
+              gradient.addColorStop(0, ctx.fillStyle);
+              gradient.addColorStop(1, bgColor);
+              ctx.fillStyle = gradient;
+              ctx.beginPath();
+              ctx.arc(centerX, centerY, size / 2, 0, Math.PI * 2);
+              ctx.fill();
+              break;
+          }
+
+          ctx.restore();
+        }
+      }
+    }
+
+    function hexToRgb(hex) {
+      const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+      return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+      } : { r: 0, g: 0, b: 0 };
+    }
+
+    function updatePattern(type) {
+      currentPattern = type;
+      const patternButtons = ['circles', 'squares', 'triangles', 'hexagons', 'waves', 'stars', 'dots', 'diamonds', 'zigzag', 'crosses', 'overlapping', 'gradient'];
+      patternButtons.forEach(id => {
+        const btn = document.getElementById(id);
+        if (btn) {
+          if (id === type) {
+            btn.classList.add('active');
+          } else {
+            btn.classList.remove('active');
+          }
+        }
+      });
+      drawPattern();
+    }
+
+    document.getElementById('circles').addEventListener('click', () => updatePattern('circles'));
+    document.getElementById('squares').addEventListener('click', () => updatePattern('squares'));
+    document.getElementById('triangles').addEventListener('click', () => updatePattern('triangles'));
+    document.getElementById('hexagons').addEventListener('click', () => updatePattern('hexagons'));
+    document.getElementById('waves').addEventListener('click', () => updatePattern('waves'));
+    document.getElementById('stars').addEventListener('click', () => updatePattern('stars'));
+    document.getElementById('dots').addEventListener('click', () => updatePattern('dots'));
+    document.getElementById('diamonds').addEventListener('click', () => updatePattern('diamonds'));
+    document.getElementById('zigzag').addEventListener('click', () => updatePattern('zigzag'));
+    document.getElementById('crosses').addEventListener('click', () => updatePattern('crosses'));
+    document.getElementById('overlapping').addEventListener('click', () => updatePattern('overlapping'));
+    document.getElementById('gradient').addEventListener('click', () => updatePattern('gradient'));
+
+    document.getElementById('sizeSlider').addEventListener('input', (e) => {
+      size = parseInt(e.target.value);
+      document.getElementById('sizeValue').textContent = size;
+      drawPattern();
+    });
+
+    document.getElementById('densitySlider').addEventListener('input', (e) => {
+      density = parseInt(e.target.value);
+      document.getElementById('densityValue').textContent = density;
+      drawPattern();
+    });
+
+    document.getElementById('rotationSlider').addEventListener('input', (e) => {
+      rotation = parseInt(e.target.value);
+      document.getElementById('rotationValue').textContent = rotation + '°';
+      drawPattern();
+    });
+
+    document.getElementById('opacitySlider').addEventListener('input', (e) => {
+      opacity = parseInt(e.target.value);
+      document.getElementById('opacityValue').textContent = opacity + '%';
+      drawPattern();
+    });
+
+    document.getElementById('color1').addEventListener('input', (e) => {
+      color1 = e.target.value;
+      drawPattern();
+    });
+
+    document.getElementById('color2').addEventListener('input', (e) => {
+      color2 = e.target.value;
+      drawPattern();
+    });
+
+    document.getElementById('color3').addEventListener('input', (e) => {
+      color3 = e.target.value;
+      drawPattern();
+    });
+
+    document.getElementById('bgColor').addEventListener('input', (e) => {
+      bgColor = e.target.value;
+      drawPattern();
+    });
+
+    document.getElementById('randomize').addEventListener('click', () => {
+      const patterns = ['circles', 'squares', 'triangles', 'hexagons', 'waves', 'stars', 'dots', 'diamonds', 'zigzag', 'crosses', 'overlapping', 'gradient'];
+      currentPattern = patterns[Math.floor(Math.random() * patterns.length)];
+      size = Math.floor(Math.random() * 60) + 20;
+      density = Math.floor(Math.random() * 20) + 10;
+      rotation = Math.floor(Math.random() * 361);
+      opacity = Math.floor(Math.random() * 50) + 50;
+      color1 = '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
+      color2 = '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
+      color3 = '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
+      
+      document.getElementById('sizeSlider').value = size;
+      document.getElementById('sizeValue').textContent = size;
+      document.getElementById('densitySlider').value = density;
+      document.getElementById('densityValue').textContent = density;
+      document.getElementById('rotationSlider').value = rotation;
+      document.getElementById('rotationValue').textContent = rotation + '°';
+      document.getElementById('opacitySlider').value = opacity;
+      document.getElementById('opacityValue').textContent = opacity + '%';
+      document.getElementById('color1').value = color1;
+      document.getElementById('color2').value = color2;
+      document.getElementById('color3').value = color3;
+      
+      updatePattern(currentPattern);
+    });
+
+    document.getElementById('download').addEventListener('click', () => {
+      const link = document.createElement('a');
+      link.download = 'pattern.png';
+      link.href = canvas.toDataURL();
+      link.click();
+    });
+
+    updatePattern('circles');
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9b8c5cf077700e49',t:'MTc2NzU0Njc3MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

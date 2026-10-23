@@ -1,0 +1,689 @@
+<!doctype html>
+<html lang="it" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Text Art Creator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="/_sdk/data_sdk.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&amp;display=swap" rel="stylesheet">
+  <style>
+    body {
+      box-sizing: border-box;
+    }
+    
+    * {
+      font-family: 'Courier Prime', 'Courier New', monospace;
+    }
+    
+    .ascii-art {
+      font-family: 'Courier New', 'Courier', monospace;
+      white-space: pre;
+      line-height: 1.15;
+      letter-spacing: 0;
+    }
+    
+    .glass-card {
+      background: rgba(30, 30, 40, 0.9);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .style-btn {
+      transition: all 0.2s ease;
+    }
+    
+    .style-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.3);
+    }
+    
+    .style-btn.active {
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.5);
+    }
+    
+    .saved-item {
+      transition: all 0.2s ease;
+    }
+    
+    .saved-item:hover {
+      transform: translateX(4px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    
+    .loading-spinner {
+      border: 3px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      animation: spin 0.8s linear infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+ </head>
+ <body class="h-full">
+  <div id="app-wrapper" class="h-full w-full overflow-auto" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);">
+   <div class="min-h-full w-full p-6 md:p-8"><!-- Header -->
+    <header class="text-center mb-8">
+     <h1 class="text-3xl md:text-4xl font-bold mb-3" style="color: #e94560; text-shadow: 2px 2px 8px rgba(233, 69, 96, 0.3);">+==================+<br>
+       | TEXT ART CREATOR |<br>
+       +==================+</h1>
+     <p class="text-base" style="color: #a7b2c9;">Crea ASCII Art con caratteri semplici</p>
+    </header><!-- Main Content -->
+    <div class="max-w-6xl mx-auto space-y-6"><!-- Input Section -->
+     <div class="glass-card rounded-2xl p-6 shadow-xl"><label class="block text-sm font-bold mb-3" style="color: #d1d5db;">IL TUO TESTO</label> <input type="text" id="text-input" placeholder="Il tuo testo..." maxlength="15" class="w-full px-5 py-4 rounded-xl text-lg focus:outline-none focus:ring-2 transition-all" style="background: rgba(0,0,0,0.5); color: #6366f1; border: 2px solid rgba(99, 102, 241, 0.3);">
+      <div class="mt-2 text-xs text-right" style="color: #6b7280;"><span id="char-count">0</span> / 15 caratteri
+      </div>
+     </div><!-- Style & Border Row -->
+     <div class="grid md:grid-cols-2 gap-6"><!-- ASCII Style -->
+      <div class="glass-card rounded-2xl p-6 shadow-xl"><label class="block text-sm font-bold mb-4" style="color: #d1d5db;">STILE ASCII</label>
+       <div class="grid grid-cols-2 gap-3" id="style-selector"><button class="style-btn active px-3 py-4 rounded-lg text-center text-xs" data-style="standard" style="background: rgba(99, 102, 241, 0.2); color: #a5b4fc; border: 2px solid rgba(99, 102, 241, 0.3);">
+         <div class="font-bold mb-1">
+          STANDARD
+         </div>
+         <div class="text-[10px] opacity-70">
+          ABC
+         </div></button> <button class="style-btn px-3 py-4 rounded-lg text-center text-xs" data-style="big" style="background: rgba(99, 102, 241, 0.2); color: #a5b4fc; border: 2px solid rgba(99, 102, 241, 0.3);">
+         <div class="font-bold mb-1">
+          BIG
+         </div>
+         <div class="text-[10px] opacity-70">
+          ###
+         </div></button> <button class="style-btn px-3 py-4 rounded-lg text-center text-xs" data-style="block" style="background: rgba(99, 102, 241, 0.2); color: #a5b4fc; border: 2px solid rgba(99, 102, 241, 0.3);">
+         <div class="font-bold mb-1">
+          BLOCK
+         </div>
+         <div class="text-[10px] opacity-70">
+          ###
+         </div></button> <button class="style-btn px-3 py-4 rounded-lg text-center text-xs" data-style="shadow" style="background: rgba(99, 102, 241, 0.2); color: #a5b4fc; border: 2px solid rgba(99, 102, 241, 0.3);">
+         <div class="font-bold mb-1">
+          SHADOW
+         </div>
+         <div class="text-[10px] opacity-70">
+          A.B.
+         </div></button> <button class="style-btn px-3 py-4 rounded-lg text-center text-xs" data-style="dots" style="background: rgba(99, 102, 241, 0.2); color: #a5b4fc; border: 2px solid rgba(99, 102, 241, 0.3);">
+         <div class="font-bold mb-1">
+          DOTS
+         </div>
+         <div class="text-[10px] opacity-70">
+          o o o
+         </div></button> <button class="style-btn px-3 py-4 rounded-lg text-center text-xs" data-style="slant" style="background: rgba(99, 102, 241, 0.2); color: #a5b4fc; border: 2px solid rgba(99, 102, 241, 0.3);">
+         <div class="font-bold mb-1">
+          SLANT
+         </div>
+         <div class="text-[10px] opacity-70">
+          /\/\
+         </div></button>
+       </div>
+      </div><!-- Border Style -->
+      <div class="glass-card rounded-2xl p-6 shadow-xl"><label class="block text-sm font-bold mb-4" style="color: #d1d5db;">CORNICE</label>
+       <div class="grid grid-cols-2 gap-3" id="border-selector"><button class="style-btn active px-3 py-4 rounded-lg text-center text-xs" data-border="none" style="background: rgba(233, 69, 96, 0.2); color: #fca5a5; border: 2px solid rgba(233, 69, 96, 0.3);">
+         <div class="font-bold mb-1">
+          NESSUNA
+         </div>
+         <div class="text-[10px] opacity-70">
+          ---
+         </div></button> <button class="style-btn px-3 py-4 rounded-lg text-center text-xs" data-border="single" style="background: rgba(233, 69, 96, 0.2); color: #fca5a5; border: 2px solid rgba(233, 69, 96, 0.3);">
+         <div class="font-bold mb-1">
+          SEMPLICE
+         </div>
+         <div class="text-[10px] opacity-70">
+          -|+-
+         </div></button> <button class="style-btn px-3 py-4 rounded-lg text-center text-xs" data-border="double" style="background: rgba(233, 69, 96, 0.2); color: #fca5a5; border: 2px solid rgba(233, 69, 96, 0.3);">
+         <div class="font-bold mb-1">
+          DOPPIA
+         </div>
+         <div class="text-[10px] opacity-70">
+          =|+=
+         </div></button> <button class="style-btn px-3 py-4 rounded-lg text-center text-xs" data-border="stars" style="background: rgba(233, 69, 96, 0.2); color: #fca5a5; border: 2px solid rgba(233, 69, 96, 0.3);">
+         <div class="font-bold mb-1">
+          STELLE
+         </div>
+         <div class="text-[10px] opacity-70">
+          *****
+         </div></button> <button class="style-btn px-3 py-4 rounded-lg text-center text-xs" data-border="wave" style="background: rgba(233, 69, 96, 0.2); color: #fca5a5; border: 2px solid rgba(233, 69, 96, 0.3);">
+         <div class="font-bold mb-1">
+          ONDE
+         </div>
+         <div class="text-[10px] opacity-70">
+          vvvvv
+         </div></button> <button class="style-btn px-3 py-4 rounded-lg text-center text-xs" data-border="hash" style="background: rgba(233, 69, 96, 0.2); color: #fca5a5; border: 2px solid rgba(233, 69, 96, 0.3);">
+         <div class="font-bold mb-1">
+          HASH
+         </div>
+         <div class="text-[10px] opacity-70">
+          ####
+         </div></button>
+       </div>
+      </div>
+     </div><!-- Effects -->
+     <div class="glass-card rounded-2xl p-6 shadow-xl"><label class="block text-sm font-bold mb-4" style="color: #d1d5db;">EFFETTI SPECIALI</label>
+      <div class="flex flex-wrap gap-4"><label class="flex items-center gap-2 cursor-pointer"> <input type="checkbox" id="effect-mirror" class="w-5 h-5 rounded" style="accent-color: #6366f1;"> <span class="text-sm" style="color: #d1d5db;">Specchiato</span> </label> <label class="flex items-center gap-2 cursor-pointer"> <input type="checkbox" id="effect-vertical" class="w-5 h-5 rounded" style="accent-color: #6366f1;"> <span class="text-sm" style="color: #d1d5db;">Verticale</span> </label> <label class="flex items-center gap-2 cursor-pointer"> <input type="checkbox" id="effect-alternate" class="w-5 h-5 rounded" style="accent-color: #6366f1;"> <span class="text-sm" style="color: #d1d5db;">Alternato</span> </label>
+      </div>
+     </div><!-- Preview -->
+     <div class="glass-card rounded-2xl p-6 shadow-xl">
+      <div class="flex items-center justify-between mb-4"><label class="text-sm font-bold" style="color: #d1d5db;">ANTEPRIMA</label> <button id="clear-btn" class="px-4 py-2 rounded-lg text-xs font-bold transition-all hover:opacity-80" style="background: rgba(239, 68, 68, 0.3); color: #fca5a5;"> X PULISCI </button>
+      </div>
+      <div class="rounded-xl p-6 overflow-x-auto" style="background: rgba(0,0,0,0.5);">
+       <pre id="preview-text" class="ascii-art text-sm md:text-base" style="color: #6366f1;"><span class="opacity-50">Inserisci testo per vedere l'anteprima...</span></pre>
+      </div>
+     </div><!-- Action Buttons -->
+     <div class="grid md:grid-cols-2 gap-4"><button id="copy-btn" class="py-4 px-6 rounded-xl font-bold transition-all hover:scale-[1.02] active:scale-[0.98] shadow-xl" style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); color: white;"> Copia Testo </button> <button id="save-btn" class="py-4 px-6 rounded-xl font-bold transition-all hover:scale-[1.02] active:scale-[0.98] shadow-xl flex items-center justify-center gap-2" style="background: linear-gradient(135deg, #e94560 0%, #c72e49 100%); color: white;"> <span id="save-icon">[+]</span> <span id="save-text">Salva Preferito</span> </button>
+     </div><!-- Saved Items -->
+     <div class="glass-card rounded-2xl p-6 shadow-xl">
+      <div class="flex items-center justify-between mb-4"><label class="text-sm font-bold" style="color: #d1d5db;">I TUOI PREFERITI</label> <span id="saved-count" class="px-3 py-1 rounded-full text-xs font-bold" style="background: rgba(99, 102, 241, 0.2); color: #a5b4fc;">0 / 999</span>
+      </div>
+      <div id="saved-container" class="space-y-3">
+       <p class="text-center py-8 opacity-50" style="color: #6b7280;">Nessun preferito salvato</p>
+      </div>
+     </div>
+    </div>
+   </div>
+  </div><!-- Toast -->
+  <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 px-6 py-3 rounded-xl font-bold opacity-0 transition-all duration-300 pointer-events-none shadow-xl z-50" style="background: #10b981; color: white;">
+   OK!
+  </div>
+  <script>
+    const defaultConfig = {
+      placeholder_text: 'Il tuo testo...',
+      save_button_text: 'Salva Preferito'
+    };
+    
+    let config = { ...defaultConfig };
+    
+    let currentStyle = 'standard';
+    let currentBorder = 'none';
+    let effectMirror = false;
+    let effectVertical = false;
+    let effectAlternate = false;
+    let savedItems = [];
+    let isLoading = false;
+    
+    const asciiStyles = {
+      standard: (text) => text.toUpperCase(),
+      big: (text) => createBigText(text),
+      block: (text) => createBlockText(text),
+      shadow: (text) => text.split('').map(c => c + '.').join(''),
+      dots: (text) => createDotsText(text),
+      slant: (text) => text.split('').map((c, i) => i % 2 ? c + '/' : '\\' + c).join('')
+    };
+    
+    function createBlockText(text) {
+      const chars = {
+        'A': ['#####', '#   #', '#####', '#   #', '#####'],
+        'B': ['#### ', '#   #', '#### ', '#   #', '#### '],
+        'C': ['#####', '#    ', '#    ', '#    ', '#####'],
+        'D': ['#### ', '#   #', '#   #', '#   #', '#### '],
+        'E': ['#####', '#    ', '#### ', '#    ', '#####'],
+        'F': ['#####', '#    ', '#### ', '#    ', '#    '],
+        'G': ['#####', '#    ', '# ###', '#   #', '#####'],
+        'H': ['#   #', '#   #', '#####', '#   #', '#   #'],
+        'I': ['#####', '  #  ', '  #  ', '  #  ', '#####'],
+        'J': ['#####', '   # ', '   # ', '#  # ', '#### '],
+        'K': ['#   #', '#  # ', '#### ', '#  # ', '#   #'],
+        'L': ['#    ', '#    ', '#    ', '#    ', '#####'],
+        'M': ['#   #', '## ##', '# # #', '#   #', '#   #'],
+        'N': ['#   #', '##  #', '# # #', '#  ##', '#   #'],
+        'O': ['#####', '#   #', '#   #', '#   #', '#####'],
+        'P': ['#### ', '#   #', '#### ', '#    ', '#    '],
+        'Q': ['#####', '#   #', '#   #', '# # #', '## ##'],
+        'R': ['#### ', '#   #', '#### ', '#  # ', '#   #'],
+        'S': ['#####', '#    ', '#####', '    #', '#####'],
+        'T': ['#####', '  #  ', '  #  ', '  #  ', '  #  '],
+        'U': ['#   #', '#   #', '#   #', '#   #', '#####'],
+        'V': ['#   #', '#   #', '#   #', ' # # ', '  #  '],
+        'W': ['#   #', '#   #', '# # #', '## ##', '#   #'],
+        'X': ['#   #', ' # # ', '  #  ', ' # # ', '#   #'],
+        'Y': ['#   #', ' # # ', '  #  ', '  #  ', '  #  '],
+        'Z': ['#####', '   # ', '  #  ', ' #   ', '#####'],
+        ' ': ['     ', '     ', '     ', '     ', '     '],
+        '0': ['#####', '#   #', '#   #', '#   #', '#####'],
+        '1': ['  #  ', ' ##  ', '  #  ', '  #  ', '#####'],
+        '2': ['#####', '    #', '#####', '#    ', '#####'],
+        '3': ['#####', '    #', '#####', '    #', '#####'],
+        '4': ['#   #', '#   #', '#####', '    #', '    #'],
+        '5': ['#####', '#    ', '#####', '    #', '#####'],
+        '6': ['#####', '#    ', '#####', '#   #', '#####'],
+        '7': ['#####', '    #', '   # ', '  #  ', ' #   '],
+        '8': ['#####', '#   #', '#####', '#   #', '#####'],
+        '9': ['#####', '#   #', '#####', '    #', '#####']
+      };
+      
+      const lines = ['', '', '', '', ''];
+      text.toUpperCase().split('').forEach(char => {
+        const charLines = chars[char] || chars[' '];
+        charLines.forEach((line, i) => {
+          lines[i] += line + ' ';
+        });
+      });
+      
+      return lines.join('\n');
+    }
+    
+    function createDotsText(text) {
+      const chars = {
+        'A': ['  o  ', ' o o ', 'o o o', 'o   o', 'o   o'],
+        'B': ['o o o', 'o   o', 'o o o', 'o   o', 'o o o'],
+        'C': [' o o ', 'o    ', 'o    ', 'o    ', ' o o '],
+        'D': ['o o o', 'o   o', 'o   o', 'o   o', 'o o o'],
+        'E': ['o o o', 'o    ', 'o o o', 'o    ', 'o o o'],
+        'F': ['o o o', 'o    ', 'o o o', 'o    ', 'o    '],
+        'G': [' o o ', 'o    ', 'o  oo', 'o   o', ' o o '],
+        'H': ['o   o', 'o   o', 'o o o', 'o   o', 'o   o'],
+        'I': ['o o o', '  o  ', '  o  ', '  o  ', 'o o o'],
+        'J': ['o o o', '   o ', '   o ', 'o  o ', ' o o '],
+        'K': ['o   o', 'o  o ', 'o o  ', 'o  o ', 'o   o'],
+        'L': ['o    ', 'o    ', 'o    ', 'o    ', 'o o o'],
+        'M': ['o   o', 'oo oo', 'o o o', 'o   o', 'o   o'],
+        'N': ['o   o', 'oo  o', 'o o o', 'o  oo', 'o   o'],
+        'O': [' o o ', 'o   o', 'o   o', 'o   o', ' o o '],
+        'P': ['o o o', 'o   o', 'o o o', 'o    ', 'o    '],
+        'Q': [' o o ', 'o   o', 'o   o', 'o o o', ' oo o'],
+        'R': ['o o o', 'o   o', 'o o o', 'o  o ', 'o   o'],
+        'S': [' o o ', 'o    ', ' o o ', '    o', ' o o '],
+        'T': ['o o o', '  o  ', '  o  ', '  o  ', '  o  '],
+        'U': ['o   o', 'o   o', 'o   o', 'o   o', ' o o '],
+        'V': ['o   o', 'o   o', 'o   o', ' o o ', '  o  '],
+        'W': ['o   o', 'o   o', 'o o o', 'oo oo', 'o   o'],
+        'X': ['o   o', ' o o ', '  o  ', ' o o ', 'o   o'],
+        'Y': ['o   o', ' o o ', '  o  ', '  o  ', '  o  '],
+        'Z': ['o o o', '   o ', '  o  ', ' o   ', 'o o o'],
+        ' ': ['     ', '     ', '     ', '     ', '     '],
+        '0': [' o o ', 'o   o', 'o   o', 'o   o', ' o o '],
+        '1': ['  o  ', ' oo  ', '  o  ', '  o  ', 'o o o'],
+        '2': [' o o ', 'o   o', '  o o', ' o   ', 'o o o'],
+        '3': [' o o ', 'o   o', '  o o', 'o   o', ' o o '],
+        '4': ['o   o', 'o   o', 'o o o', '    o', '    o'],
+        '5': ['o o o', 'o    ', 'o o o', '    o', 'o o o'],
+        '6': [' o o ', 'o    ', 'o o o', 'o   o', ' o o '],
+        '7': ['o o o', '    o', '   o ', '  o  ', ' o   '],
+        '8': [' o o ', 'o   o', ' o o ', 'o   o', ' o o '],
+        '9': [' o o ', 'o   o', ' o oo', '    o', ' o o ']
+      };
+      
+      const lines = ['', '', '', '', ''];
+      text.toUpperCase().split('').forEach(char => {
+        const charLines = chars[char] || chars[' '];
+        charLines.forEach((line, i) => {
+          lines[i] += line + ' ';
+        });
+      });
+      
+      return lines.join('\n');
+    }
+    
+    function createBigText(text) {
+      const chars = {
+        'A': ['  #  ', ' # # ', '#####', '#   #', '#   #'],
+        'B': ['#### ', '#   #', '#### ', '#   #', '#### '],
+        'C': [' ####', '#    ', '#    ', '#    ', ' ####'],
+        'D': ['#### ', '#   #', '#   #', '#   #', '#### '],
+        'E': ['#####', '#    ', '###  ', '#    ', '#####'],
+        'F': ['#####', '#    ', '###  ', '#    ', '#    '],
+        'G': [' ####', '#    ', '#  ##', '#   #', ' ####'],
+        'H': ['#   #', '#   #', '#####', '#   #', '#   #'],
+        'I': ['#####', '  #  ', '  #  ', '  #  ', '#####'],
+        'J': ['#####', '   # ', '   # ', '#  # ', ' ##  '],
+        'K': ['#   #', '#  # ', '###  ', '#  # ', '#   #'],
+        'L': ['#    ', '#    ', '#    ', '#    ', '#####'],
+        'M': ['#   #', '## ##', '# # #', '#   #', '#   #'],
+        'N': ['#   #', '##  #', '# # #', '#  ##', '#   #'],
+        'O': [' ### ', '#   #', '#   #', '#   #', ' ### '],
+        'P': ['#### ', '#   #', '#### ', '#    ', '#    '],
+        'Q': [' ### ', '#   #', '#   #', '#  ##', ' ####'],
+        'R': ['#### ', '#   #', '#### ', '#  # ', '#   #'],
+        'S': [' ####', '#    ', ' ### ', '    #', '#### '],
+        'T': ['#####', '  #  ', '  #  ', '  #  ', '  #  '],
+        'U': ['#   #', '#   #', '#   #', '#   #', ' ### '],
+        'V': ['#   #', '#   #', '#   #', ' # # ', '  #  '],
+        'W': ['#   #', '#   #', '# # #', '## ##', '#   #'],
+        'X': ['#   #', ' # # ', '  #  ', ' # # ', '#   #'],
+        'Y': ['#   #', ' # # ', '  #  ', '  #  ', '  #  '],
+        'Z': ['#####', '   # ', '  #  ', ' #   ', '#####'],
+        ' ': ['     ', '     ', '     ', '     ', '     '],
+        '0': [' ### ', '#   #', '#   #', '#   #', ' ### '],
+        '1': ['  #  ', ' ##  ', '  #  ', '  #  ', '#####'],
+        '2': [' ### ', '#   #', '  ## ', ' #   ', '#####'],
+        '3': [' ### ', '#   #', '  ## ', '#   #', ' ### '],
+        '4': ['#   #', '#   #', '#####', '    #', '    #'],
+        '5': ['#####', '#    ', '#### ', '    #', '#### '],
+        '6': [' ### ', '#    ', '#### ', '#   #', ' ### '],
+        '7': ['#####', '    #', '   # ', '  #  ', ' #   '],
+        '8': [' ### ', '#   #', ' ### ', '#   #', ' ### '],
+        '9': [' ### ', '#   #', ' ####', '    #', ' ### ']
+      };
+      
+      const lines = ['', '', '', '', ''];
+      text.toUpperCase().split('').forEach(char => {
+        const charLines = chars[char] || chars[' '];
+        charLines.forEach((line, i) => {
+          lines[i] += line + ' ';
+        });
+      });
+      
+      return lines.join('\n');
+    }
+    
+    function applyBorder(text, borderType) {
+      const lines = text.split('\n');
+      const maxLen = Math.max(...lines.map(l => l.length));
+      
+      const borders = {
+        none: { t: '', b: '', l: '', r: '', tl: '', tr: '', bl: '', br: '' },
+        single: { t: '-', b: '-', l: '|', r: '|', tl: '+', tr: '+', bl: '+', br: '+' },
+        double: { t: '=', b: '=', l: '|', r: '|', tl: '+', tr: '+', bl: '+', br: '+' },
+        stars: { t: '*', b: '*', l: '*', r: '*', tl: '*', tr: '*', bl: '*', br: '*' },
+        wave: { t: 'v', b: '^', l: '>', r: '<', tl: '+', tr: '+', bl: '+', br: '+' },
+        hash: { t: '#', b: '#', l: '#', r: '#', tl: '#', tr: '#', bl: '#', br: '#' }
+      };
+      
+      const b = borders[borderType];
+      if (borderType === 'none') return text;
+      
+      const top = b.tl + b.t.repeat(maxLen + 2) + b.tr;
+      const bottom = b.bl + b.b.repeat(maxLen + 2) + b.br;
+      const bordered = lines.map(line => b.l + ' ' + line.padEnd(maxLen) + ' ' + b.r);
+      
+      return [top, ...bordered, bottom].join('\n');
+    }
+    
+    function applyEffects(text) {
+      let result = text;
+      
+      if (effectMirror) {
+        result = result.split('\n').map(line => line + ' | ' + line.split('').reverse().join('')).join('\n');
+      }
+      
+      if (effectVertical) {
+        const lines = result.split('\n');
+        result = result + '\n' + lines.slice().reverse().join('\n');
+      }
+      
+      if (effectAlternate) {
+        result = result.split('\n').map((line, i) => i % 2 ? line.split('').reverse().join('') : line).join('\n');
+      }
+      
+      return result;
+    }
+    
+    function generateArt() {
+      const text = document.getElementById('text-input').value;
+      if (!text.trim()) return 'Inserisci testo per vedere l\'anteprima...';
+      
+      let art = asciiStyles[currentStyle](text);
+      art = applyBorder(art, currentBorder);
+      art = applyEffects(art);
+      
+      return art;
+    }
+    
+    function updatePreview() {
+      const art = generateArt();
+      const isPlaceholder = art === 'Inserisci testo per vedere l\'anteprima...';
+      document.getElementById('preview-text').innerHTML = isPlaceholder ? `<span class="opacity-50">${art}</span>` : art;
+      document.getElementById('char-count').textContent = document.getElementById('text-input').value.length;
+    }
+    
+    function setLoading(loading) {
+      isLoading = loading;
+      const btn = document.getElementById('save-btn');
+      const icon = document.getElementById('save-icon');
+      const text = document.getElementById('save-text');
+      
+      if (loading) {
+        btn.disabled = true;
+        btn.style.opacity = '0.6';
+        icon.innerHTML = '<div class="loading-spinner"></div>';
+        text.textContent = 'Salvataggio...';
+      } else {
+        btn.disabled = false;
+        btn.style.opacity = '1';
+        icon.textContent = '[+]';
+        text.textContent = config.save_button_text || defaultConfig.save_button_text;
+      }
+    }
+    
+    async function saveArt() {
+      const text = document.getElementById('text-input').value;
+      if (!text.trim()) {
+        showToast('Inserisci testo prima!');
+        return;
+      }
+      
+      if (savedItems.length >= 999) {
+        showToast('Limite di 999 preferiti raggiunto!');
+        return;
+      }
+      
+      const art = generateArt();
+      const newItem = {
+        id: Date.now().toString(),
+        text: text,
+        art: art,
+        style: currentStyle,
+        border: currentBorder,
+        timestamp: Date.now()
+      };
+      
+      setLoading(true);
+      const result = await window.dataSdk.create(newItem);
+      setLoading(false);
+      
+      if (result.isOk) {
+        showToast('Salvato con successo!');
+      } else {
+        showToast('Errore nel salvare');
+      }
+    }
+    
+    function renderSaved(items) {
+      savedItems = items;
+      document.getElementById('saved-count').textContent = `${items.length} / 999`;
+      
+      const container = document.getElementById('saved-container');
+      if (items.length === 0) {
+        container.innerHTML = '<p class="text-center py-8 opacity-50" style="color: #6b7280;">Nessun preferito salvato</p>';
+        return;
+      }
+      
+      container.innerHTML = items.map(item => `
+        <div class="saved-item rounded-xl p-4 shadow-md" style="background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.2);">
+          <div class="flex items-start justify-between gap-4">
+            <div class="flex-1 overflow-x-auto">
+              <pre class="ascii-art text-xs" style="color: #a5b4fc;">${escapeHtml(item.art)}</pre>
+            </div>
+            <div class="flex gap-2 flex-shrink-0">
+              <button class="copy-saved px-3 py-2 rounded-lg text-xs font-bold transition-all hover:opacity-80" style="background: rgba(99, 102, 241, 0.3); color: #a5b4fc;" data-art="${escapeHtml(item.art)}">
+                COPIA
+              </button>
+              <button class="delete-saved px-3 py-2 rounded-lg text-xs font-bold transition-all hover:opacity-80" style="background: rgba(239, 68, 68, 0.3); color: #fca5a5;" data-id="${item.__backendId}">
+                X
+              </button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+      
+      container.querySelectorAll('.copy-saved').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const art = btn.dataset.art;
+          copyToClipboard(art);
+        });
+      });
+      
+      container.querySelectorAll('.delete-saved').forEach(btn => {
+        btn.addEventListener('click', () => deleteItem(btn.dataset.id));
+      });
+    }
+    
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+    
+    async function deleteItem(backendId) {
+      const item = savedItems.find(i => i.__backendId === backendId);
+      if (!item) return;
+      
+      setLoading(true);
+      const result = await window.dataSdk.delete(item);
+      setLoading(false);
+      
+      if (result.isOk) {
+        showToast('Eliminato!');
+      } else {
+        showToast('Errore');
+      }
+    }
+    
+    function copyToClipboard(text) {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      
+      try {
+        document.execCommand('copy');
+        showToast('Copiato negli appunti!');
+      } catch (err) {
+        showToast('Errore nella copia');
+      }
+      
+      document.body.removeChild(textarea);
+    }
+    
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.style.opacity = '1';
+      toast.style.transform = 'translateX(-50%) translateY(0)';
+      
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(-50%) translateY(10px)';
+      }, 2000);
+    }
+    
+    // Event Listeners
+    document.getElementById('text-input').addEventListener('input', updatePreview);
+    
+    document.getElementById('style-selector').addEventListener('click', (e) => {
+      const btn = e.target.closest('.style-btn');
+      if (!btn) return;
+      
+      document.querySelectorAll('#style-selector .style-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentStyle = btn.dataset.style;
+      updatePreview();
+    });
+    
+    document.getElementById('border-selector').addEventListener('click', (e) => {
+      const btn = e.target.closest('.style-btn');
+      if (!btn) return;
+      
+      document.querySelectorAll('#border-selector .style-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentBorder = btn.dataset.border;
+      updatePreview();
+    });
+    
+    document.getElementById('effect-mirror').addEventListener('change', (e) => {
+      effectMirror = e.target.checked;
+      updatePreview();
+    });
+    
+    document.getElementById('effect-vertical').addEventListener('change', (e) => {
+      effectVertical = e.target.checked;
+      updatePreview();
+    });
+    
+    document.getElementById('effect-alternate').addEventListener('change', (e) => {
+      effectAlternate = e.target.checked;
+      updatePreview();
+    });
+    
+    document.getElementById('clear-btn').addEventListener('click', () => {
+      document.getElementById('text-input').value = '';
+      updatePreview();
+    });
+    
+    document.getElementById('copy-btn').addEventListener('click', () => {
+      const art = generateArt();
+      if (art === 'Inserisci testo per vedere l\'anteprima...') {
+        showToast('Inserisci testo prima!');
+        return;
+      }
+      copyToClipboard(art);
+    });
+    
+    document.getElementById('save-btn').addEventListener('click', saveArt);
+    
+    // Data SDK
+    const dataHandler = {
+      onDataChanged(data) {
+        renderSaved(data);
+      }
+    };
+    
+    // Element SDK
+    async function onConfigChange(cfg) {
+      const placeholder = cfg.placeholder_text || defaultConfig.placeholder_text;
+      const saveText = cfg.save_button_text || defaultConfig.save_button_text;
+      
+      document.getElementById('text-input').placeholder = placeholder;
+      const saveTextEl = document.getElementById('save-text');
+      if (saveTextEl && !isLoading) {
+        saveTextEl.textContent = saveText;
+      }
+    }
+    
+    function mapToCapabilities(cfg) {
+      return {
+        recolorables: [],
+        borderables: [],
+        fontEditable: undefined,
+        fontSizeable: undefined
+      };
+    }
+    
+    function mapToEditPanelValues(cfg) {
+      return new Map([
+        ['placeholder_text', cfg.placeholder_text || defaultConfig.placeholder_text],
+        ['save_button_text', cfg.save_button_text || defaultConfig.save_button_text]
+      ]);
+    }
+    
+    // Initialize
+    (async () => {
+      if (window.dataSdk) {
+        const initResult = await window.dataSdk.init(dataHandler);
+        if (!initResult.isOk) {
+          console.error('Failed to initialize data SDK');
+        }
+      }
+      
+      if (window.elementSdk) {
+        window.elementSdk.init({
+          defaultConfig,
+          onConfigChange,
+          mapToCapabilities,
+          mapToEditPanelValues
+        });
+      }
+      
+      updatePreview();
+    })();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c5b9a0b4542a972',t:'MTc2OTcxOTgyNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

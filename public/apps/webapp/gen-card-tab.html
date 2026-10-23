@@ -1,0 +1,605 @@
+<!doctype html>
+<html lang="it">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generatore HTML</title>
+  <style>
+    body {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 20px;
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100%;
+    }
+    
+    .card {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      padding: 30px;
+      color: white;
+    }
+    
+    .header h1 {
+      margin: 0 0 10px 0;
+      font-size: 28px;
+    }
+    
+    .header p {
+      margin: 0;
+      opacity: 0.7;
+      font-size: 14px;
+    }
+    
+    .tabs {
+      display: flex;
+      gap: 10px;
+      background: rgba(0,0,0,0.2);
+      padding: 10px;
+      border-radius: 10px;
+      margin-top: 20px;
+    }
+    
+    .tab-btn {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      background: transparent;
+      color: rgba(255,255,255,0.6);
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+    
+    .tab-btn.active {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+    
+    .tab-btn:hover {
+      color: white;
+    }
+    
+    .content {
+      padding: 30px;
+    }
+    
+    .tab-content {
+      display: none;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #333;
+    }
+    
+    input[type="text"],
+    textarea {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: Arial, sans-serif;
+    }
+    
+    input[type="text"]:focus,
+    textarea:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+    
+    .color-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+    
+    input[type="color"] {
+      width: 100%;
+      height: 50px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    
+    .btn {
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+    
+    .btn:active {
+      transform: translateY(0);
+    }
+    
+    .preview-container {
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      overflow: hidden;
+      background: white;
+    }
+    
+    iframe {
+      width: 100%;
+      height: 500px;
+      border: none;
+    }
+    
+    .code-container {
+      background: #1a1a2e;
+      border-radius: 8px;
+      padding: 20px;
+      max-height: 500px;
+      overflow: auto;
+    }
+    
+    pre {
+      margin: 0;
+      color: #a0aec0;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    
+    .help-section {
+      background: #f5f5f5;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    
+    .help-section h3 {
+      margin: 0 0 10px 0;
+      color: #667eea;
+    }
+    
+    .help-section p {
+      margin: 0;
+      color: #666;
+      line-height: 1.6;
+    }
+    
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #667eea;
+      color: white;
+      padding: 15px 30px;
+      border-radius: 8px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+      display: none;
+      z-index: 1000;
+    }
+    
+    .toast.show {
+      display: block;
+      animation: slideUp 0.3s ease-out;
+    }
+    
+    @keyframes slideUp {
+      from {
+        transform: translate(-50%, 100px);
+        opacity: 0;
+      }
+      to {
+        transform: translate(-50%, 0);
+        opacity: 1;
+      }
+    }
+    
+    .btn-secondary {
+      background: #667eea;
+      padding: 10px 20px;
+      display: inline-block;
+    }
+
+    .section-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #999;
+      margin-top: 25px;
+      margin-bottom: 15px;
+      font-weight: 700;
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="/_sdk/element_sdk.js" type="text/javascript"></script>
+  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
+ </head>
+ <body>
+  <div class="card">
+   <div class="header">
+    <h1>🎨 Generatore HTML con Tab</h1>
+    <p>Crea card con menu a tab funzionanti</p>
+    <div class="tabs"><button class="tab-btn active" id="tab-editor-btn">✏️ Editor</button> <button class="tab-btn" id="tab-preview-btn">👁️ Anteprima</button> <button class="tab-btn" id="tab-code-btn">📋 Codice</button> <button class="tab-btn" id="tab-help-btn">❓ Aiuto</button>
+    </div>
+   </div>
+   <div class="content"><!-- Editor Tab -->
+    <div class="tab-content active" id="tab-editor">
+     <div class="form-group"><label for="page-title">Titolo Pagina</label> <input type="text" id="page-title" value="La Mia Card">
+     </div>
+     <div class="form-group"><label for="card-title">Titolo Card</label> <input type="text" id="card-title" value="Il Mio Progetto">
+     </div>
+     <div class="form-group"><label for="card-subtitle">Sottotitolo</label> <input type="text" id="card-subtitle" value="Una card moderna con tab">
+     </div>
+     <div class="section-label">
+      📑 Tab 1 - Home
+     </div>
+     <div class="form-group"><label for="tab1-title">Intestazione Tab 1</label> <input type="text" id="tab1-title" value="Benvenuto!">
+     </div>
+     <div class="form-group"><label for="tab1-content">Contenuto Tab 1</label> <textarea id="tab1-content">Questa è la pagina principale della mia card. Qui puoi inserire le informazioni più importanti.</textarea>
+     </div>
+     <div class="section-label">
+      📑 Tab 2 - Info
+     </div>
+     <div class="form-group"><label for="tab2-title">Intestazione Tab 2</label> <input type="text" id="tab2-title" value="Informazioni">
+     </div>
+     <div class="form-group"><label for="tab2-content">Contenuto Tab 2</label> <textarea id="tab2-content">Questa sezione contiene tutte le informazioni dettagliate sul progetto.</textarea>
+     </div>
+     <div class="section-label">
+      📑 Tab 3 - Contatti
+     </div>
+     <div class="form-group"><label for="tab3-title">Intestazione Tab 3</label> <input type="text" id="tab3-title" value="Contatti">
+     </div>
+     <div class="form-group"><label for="tab3-content">Contenuto Tab 3</label> <textarea id="tab3-content">Email: info@example.com - Telefono: +39 123 456 7890</textarea>
+     </div><button class="btn" id="update-preview-btn">🔄 Aggiorna Anteprima</button>
+    </div><!-- Preview Tab -->
+    <div class="tab-content" id="tab-preview">
+     <div style="margin-bottom: 15px;"><button class="btn btn-secondary" id="refresh-preview-btn">🔄 Ricarica</button>
+     </div>
+     <div class="preview-container"><iframe id="preview-frame"></iframe>
+     </div>
+    </div><!-- Code Tab -->
+    <div class="tab-content" id="tab-code">
+     <div style="margin-bottom: 15px;"><button class="btn btn-secondary" id="copy-code-btn">📋 Copia Codice</button>
+     </div>
+     <div class="code-container">
+      <pre id="code-display"></pre>
+     </div>
+    </div><!-- Help Tab -->
+    <div class="tab-content" id="tab-help">
+     <div class="help-section">
+      <h3>📝 Editor</h3>
+      <p>Personalizza tutti i contenuti della card con tab. Ogni tab ha il proprio titolo e contenuto. Clicca "Aggiorna Anteprima" per vedere i cambiamenti.</p>
+     </div>
+     <div class="help-section">
+      <h3>👁️ Anteprima</h3>
+      <p>Visualizza la card generata con i tab funzionanti. Puoi cliccare sui tab per vedere come si comporta la navigazione.</p>
+     </div>
+     <div class="help-section">
+      <h3>📋 Codice</h3>
+      <p>Il codice HTML completo include JavaScript per la gestione dei tab. Tutto è già pronto per essere copiato e usato!</p>
+     </div>
+     <div class="help-section" style="background: #e6f2ff; border: 2px solid #667eea;">
+      <h3>💡 Suggerimento</h3>
+      <p>La card generata ha la stessa struttura di questo generatore: un header con menu a tab e contenuti che cambiano dinamicamente!</p>
+     </div>
+    </div>
+   </div>
+  </div>
+  <div class="toast" id="toast"></div>
+  <script>
+    // Get elements
+    var tabEditorBtn = document.getElementById('tab-editor-btn');
+    var tabPreviewBtn = document.getElementById('tab-preview-btn');
+    var tabCodeBtn = document.getElementById('tab-code-btn');
+    var tabHelpBtn = document.getElementById('tab-help-btn');
+    
+    var tabEditor = document.getElementById('tab-editor');
+    var tabPreview = document.getElementById('tab-preview');
+    var tabCode = document.getElementById('tab-code');
+    var tabHelp = document.getElementById('tab-help');
+    
+    var updatePreviewBtn = document.getElementById('update-preview-btn');
+    var refreshPreviewBtn = document.getElementById('refresh-preview-btn');
+    var copyCodeBtn = document.getElementById('copy-code-btn');
+    
+    var previewFrame = document.getElementById('preview-frame');
+    var codeDisplay = document.getElementById('code-display');
+    var toast = document.getElementById('toast');
+    
+    // Tab switching
+    function switchToTab(tabName) {
+      var allBtns = [tabEditorBtn, tabPreviewBtn, tabCodeBtn, tabHelpBtn];
+      for (var i = 0; i < allBtns.length; i++) {
+        allBtns[i].classList.remove('active');
+      }
+      
+      var allTabs = [tabEditor, tabPreview, tabCode, tabHelp];
+      for (var i = 0; i < allTabs.length; i++) {
+        allTabs[i].classList.remove('active');
+      }
+      
+      if (tabName === 'editor') {
+        tabEditorBtn.classList.add('active');
+        tabEditor.classList.add('active');
+      } else if (tabName === 'preview') {
+        tabPreviewBtn.classList.add('active');
+        tabPreview.classList.add('active');
+        updatePreviewFrame();
+      } else if (tabName === 'code') {
+        tabCodeBtn.classList.add('active');
+        tabCode.classList.add('active');
+        updateCodeDisplay();
+      } else if (tabName === 'help') {
+        tabHelpBtn.classList.add('active');
+        tabHelp.classList.add('active');
+      }
+    }
+    
+    // Generate HTML
+    function generateHTML() {
+      var pageTitle = document.getElementById('page-title').value;
+      var cardTitle = document.getElementById('card-title').value;
+      var cardSubtitle = document.getElementById('card-subtitle').value;
+      var tab1Title = document.getElementById('tab1-title').value;
+      var tab1Content = document.getElementById('tab1-content').value;
+      var tab2Title = document.getElementById('tab2-title').value;
+      var tab2Content = document.getElementById('tab2-content').value;
+      var tab3Title = document.getElementById('tab3-title').value;
+      var tab3Content = document.getElementById('tab3-content').value;
+      
+      var html = '<!DOCTYPE html>\n';
+      html += '<html lang="it">\n';
+      html += '<head>\n';
+      html += '  <meta charset="UTF-8">\n';
+      html += '  <meta name="viewport" content="width=device-width, initial-scale=1.0">\n';
+      html += '  <title>' + escapeHtml(pageTitle) + '</title>\n';
+      html += '  <style>\n';
+      html += '    * { margin: 0; padding: 0; box-sizing: border-box; }\n';
+      html += '    body {\n';
+      html += '      font-family: Arial, sans-serif;\n';
+      html += '      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);\n';
+      html += '      padding: 40px 20px;\n';
+      html += '      min-height: 100vh;\n';
+      html += '      display: flex;\n';
+      html += '      align-items: center;\n';
+      html += '      justify-content: center;\n';
+      html += '    }\n';
+      html += '    .card {\n';
+      html += '      max-width: 700px;\n';
+      html += '      width: 100%;\n';
+      html += '      background: white;\n';
+      html += '      border-radius: 20px;\n';
+      html += '      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);\n';
+      html += '      overflow: hidden;\n';
+      html += '    }\n';
+      html += '    .header {\n';
+      html += '      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);\n';
+      html += '      padding: 30px;\n';
+      html += '      color: white;\n';
+      html += '    }\n';
+      html += '    .header h1 {\n';
+      html += '      margin: 0 0 10px 0;\n';
+      html += '      font-size: 28px;\n';
+      html += '    }\n';
+      html += '    .header p {\n';
+      html += '      margin: 0;\n';
+      html += '      opacity: 0.7;\n';
+      html += '      font-size: 14px;\n';
+      html += '    }\n';
+      html += '    .tabs {\n';
+      html += '      display: flex;\n';
+      html += '      gap: 10px;\n';
+      html += '      background: rgba(0,0,0,0.2);\n';
+      html += '      padding: 10px;\n';
+      html += '      border-radius: 10px;\n';
+      html += '      margin-top: 20px;\n';
+      html += '    }\n';
+      html += '    .tab-btn {\n';
+      html += '      flex: 1;\n';
+      html += '      padding: 12px;\n';
+      html += '      border: none;\n';
+      html += '      border-radius: 8px;\n';
+      html += '      background: transparent;\n';
+      html += '      color: rgba(255,255,255,0.6);\n';
+      html += '      cursor: pointer;\n';
+      html += '      font-size: 14px;\n';
+      html += '      font-weight: 600;\n';
+      html += '      transition: all 0.3s;\n';
+      html += '    }\n';
+      html += '    .tab-btn.active {\n';
+      html += '      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);\n';
+      html += '      color: white;\n';
+      html += '    }\n';
+      html += '    .content {\n';
+      html += '      padding: 30px;\n';
+      html += '    }\n';
+      html += '    .tab-content {\n';
+      html += '      display: none;\n';
+      html += '      animation: fadeIn 0.3s;\n';
+      html += '    }\n';
+      html += '    .tab-content.active {\n';
+      html += '      display: block;\n';
+      html += '    }\n';
+      html += '    @keyframes fadeIn {\n';
+      html += '      from { opacity: 0; transform: translateY(10px); }\n';
+      html += '      to { opacity: 1; transform: translateY(0); }\n';
+      html += '    }\n';
+      html += '    h2 {\n';
+      html += '      color: #667eea;\n';
+      html += '      margin-bottom: 15px;\n';
+      html += '      font-size: 24px;\n';
+      html += '    }\n';
+      html += '    p {\n';
+      html += '      color: #666;\n';
+      html += '      line-height: 1.7;\n';
+      html += '      font-size: 15px;\n';
+      html += '    }\n';
+      html += '  </style>\n';
+      html += '</head>\n';
+      html += '<body>\n';
+      html += '  <div class="card">\n';
+      html += '    <div class="header">\n';
+      html += '      <h1>' + escapeHtml(cardTitle) + '</h1>\n';
+      html += '      <p>' + escapeHtml(cardSubtitle) + '</p>\n';
+      html += '      <div class="tabs">\n';
+      html += '        <button class="tab-btn active" id="tab1-btn">🏠 Home</button>\n';
+      html += '        <button class="tab-btn" id="tab2-btn">ℹ️ Info</button>\n';
+      html += '        <button class="tab-btn" id="tab3-btn">📧 Contatti</button>\n';
+      html += '      </div>\n';
+      html += '    </div>\n';
+      html += '    <div class="content">\n';
+      html += '      <div class="tab-content active" id="tab1">\n';
+      html += '        <h2>' + escapeHtml(tab1Title) + '</h2>\n';
+      html += '        <p>' + escapeHtml(tab1Content) + '</p>\n';
+      html += '      </div>\n';
+      html += '      <div class="tab-content" id="tab2">\n';
+      html += '        <h2>' + escapeHtml(tab2Title) + '</h2>\n';
+      html += '        <p>' + escapeHtml(tab2Content) + '</p>\n';
+      html += '      </div>\n';
+      html += '      <div class="tab-content" id="tab3">\n';
+      html += '        <h2>' + escapeHtml(tab3Title) + '</h2>\n';
+      html += '        <p>' + escapeHtml(tab3Content) + '</p>\n';
+      html += '      </div>\n';
+      html += '    </div>\n';
+      html += '  </div>\n';
+      html += '  <script>\n';
+      html += '    var tab1Btn = document.getElementById("tab1-btn");\n';
+      html += '    var tab2Btn = document.getElementById("tab2-btn");\n';
+      html += '    var tab3Btn = document.getElementById("tab3-btn");\n';
+      html += '    var tab1 = document.getElementById("tab1");\n';
+      html += '    var tab2 = document.getElementById("tab2");\n';
+      html += '    var tab3 = document.getElementById("tab3");\n';
+      html += '    function showTab(num) {\n';
+      html += '      var allBtns = [tab1Btn, tab2Btn, tab3Btn];\n';
+      html += '      var allTabs = [tab1, tab2, tab3];\n';
+      html += '      for (var i = 0; i < allBtns.length; i++) {\n';
+      html += '        allBtns[i].classList.remove("active");\n';
+      html += '        allTabs[i].classList.remove("active");\n';
+      html += '      }\n';
+      html += '      allBtns[num-1].classList.add("active");\n';
+      html += '      allTabs[num-1].classList.add("active");\n';
+      html += '    }\n';
+      html += '    tab1Btn.onclick = function() { showTab(1); };\n';
+      html += '    tab2Btn.onclick = function() { showTab(2); };\n';
+      html += '    tab3Btn.onclick = function() { showTab(3); };\n';
+      html += '  </' + 'script>\n';
+      html += '</body>\n';
+      html += '</html>';
+      
+      return html;
+    }
+    
+    // Escape HTML
+    function escapeHtml(text) {
+      var div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+    
+    // Update preview frame
+    function updatePreviewFrame() {
+      var html = generateHTML();
+      previewFrame.srcdoc = html;
+      showToast('Anteprima aggiornata!');
+    }
+    
+    // Update code display
+    function updateCodeDisplay() {
+      var html = generateHTML();
+      codeDisplay.textContent = html;
+    }
+    
+    // Copy code
+    function copyCode() {
+      var code = generateHTML();
+      
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(code).then(function() {
+          showToast('Codice copiato!');
+        }).catch(function() {
+          fallbackCopy(code);
+        });
+      } else {
+        fallbackCopy(code);
+      }
+    }
+    
+    // Fallback copy
+    function fallbackCopy(text) {
+      var textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.left = '-9999px';
+      document.body.appendChild(textarea);
+      textarea.select();
+      
+      try {
+        document.execCommand('copy');
+        showToast('Codice copiato!');
+      } catch (err) {
+        showToast('Errore nella copia');
+      }
+      
+      document.body.removeChild(textarea);
+    }
+    
+    // Show toast
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add('show');
+      
+      setTimeout(function() {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+    
+    // Event listeners
+    tabEditorBtn.onclick = function() { switchToTab('editor'); };
+    tabPreviewBtn.onclick = function() { switchToTab('preview'); };
+    tabCodeBtn.onclick = function() { switchToTab('code'); };
+    tabHelpBtn.onclick = function() { switchToTab('help'); };
+    
+    updatePreviewBtn.onclick = updatePreviewFrame;
+    refreshPreviewBtn.onclick = updatePreviewFrame;
+    copyCodeBtn.onclick = copyCode;
+    
+    // Initial preview
+    updatePreviewFrame();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9bbf05ad82baed27',t:'MTc2ODA3Nzk2OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

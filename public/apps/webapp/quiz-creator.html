@@ -1,0 +1,739 @@
+<!doctype html>
+<html lang="it" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generatore di Quiz</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      box-sizing: border-box;
+    }
+    
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+    
+    * {
+      font-family: 'Poppins', system-ui, -apple-system, sans-serif;
+    }
+    
+    .quiz-card {
+      transition: all 0.3s ease;
+    }
+    
+    .quiz-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(99, 102, 241, 0.15);
+    }
+    
+    .option-button {
+      transition: all 0.2s ease;
+    }
+    
+    .option-button:hover {
+      transform: scale(1.02);
+    }
+    
+    .correct-answer {
+      animation: correctPulse 0.5s ease;
+    }
+    
+    .wrong-answer {
+      animation: wrongShake 0.5s ease;
+    }
+    
+    @keyframes correctPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    
+    @keyframes wrongShake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-10px); }
+      75% { transform: translateX(10px); }
+    }
+    
+    .toast {
+      animation: slideIn 0.3s ease;
+    }
+    
+    @keyframes slideIn {
+      from {
+        transform: translateY(-100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="/_sdk/element_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full">
+  <div id="app" class="w-full h-full overflow-auto"></div>
+  <script>
+    const config = {
+      background_color: "#f8f9ff",
+      card_background: "#ffffff",
+      primary_color: "#6366f1",
+      text_color: "#1e293b",
+      success_color: "#10b981",
+      app_title: "🎯 Generatore di Quiz",
+      add_button_text: "➕ Aggiungi Domanda",
+      start_quiz_text: "🚀 Inizia il Quiz"
+    };
+
+    let quizData = [];
+    let currentView = 'manage';
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let answeredQuestions = [];
+
+    function loadData() {
+      const stored = localStorage.getItem('quizData');
+      if (stored) {
+        quizData = JSON.parse(stored);
+      }
+    }
+
+    function saveData() {
+      localStorage.setItem('quizData', JSON.stringify(quizData));
+    }
+
+    function initApp() {
+      loadData();
+      renderApp();
+    }
+
+    function renderApp() {
+      const app = document.getElementById('app');
+      
+      if (currentView === 'manage') {
+        app.innerHTML = renderManageView();
+      } else if (currentView === 'add') {
+        app.innerHTML = renderAddView();
+      } else if (currentView === 'quiz') {
+        app.innerHTML = renderQuizView();
+      } else if (currentView === 'results') {
+        app.innerHTML = renderResultsView();
+      }
+      
+      app.style.background = config.background_color;
+    }
+
+    function renderManageView() {
+      const canStartQuiz = quizData.length > 0;
+      
+      return `
+        <div class="min-h-full p-6 md:p-8">
+          <div class="max-w-4xl mx-auto">
+            <h1 id="app-title" class="text-4xl md:text-5xl font-bold mb-2 text-center" style="color: ${config.text_color}">
+              ${config.app_title}
+            </h1>
+            <p class="text-center mb-8 opacity-70" style="color: ${config.text_color}">
+              Crea e gestisci i tuoi quiz personalizzati
+            </p>
+            
+            <div class="flex flex-col sm:flex-row gap-4 mb-8">
+              <button id="add-question-btn" onclick="showAddForm()" 
+                class="flex-1 py-3 px-6 rounded-xl font-semibold text-white shadow-lg hover:shadow-xl transition-all"
+                style="background: ${config.primary_color}">
+                ${config.add_button_text}
+              </button>
+              ${canStartQuiz ? `
+                <button id="start-quiz-btn" onclick="startQuiz()" 
+                  class="flex-1 py-3 px-6 rounded-xl font-semibold text-white shadow-lg hover:shadow-xl transition-all"
+                  style="background: ${config.success_color}">
+                  ${config.start_quiz_text}
+                </button>
+              ` : ''}
+            </div>
+            
+            ${canStartQuiz ? `
+              <div class="mb-8">
+                <button onclick="exportQuizHTML()" 
+                  class="w-full py-3 px-6 rounded-xl font-semibold text-white shadow-lg hover:shadow-xl transition-all"
+                  style="background: #8b5cf6">
+                  📥 Esporta Quiz in HTML
+                </button>
+              </div>
+            ` : ''}
+            
+            ${quizData.length === 0 ? `
+              <div class="text-center py-16 quiz-card rounded-2xl" style="background: ${config.card_background}">
+                <div class="text-6xl mb-4">📝</div>
+                <h3 class="text-xl font-semibold mb-2" style="color: ${config.text_color}">
+                  Nessuna domanda ancora
+                </h3>
+                <p class="opacity-60" style="color: ${config.text_color}">
+                  Inizia aggiungendo la tua prima domanda al quiz
+                </p>
+              </div>
+            ` : `
+              <div class="space-y-4">
+                ${quizData.map((question, index) => `
+                  <div class="quiz-card p-6 rounded-2xl" style="background: ${config.card_background}">
+                    <div class="flex justify-between items-start mb-4">
+                      <div class="flex-1">
+                        <div class="text-sm font-semibold mb-2 opacity-60" style="color: ${config.text_color}">
+                          Domanda ${index + 1}
+                        </div>
+                        <h3 class="question-text text-lg font-semibold mb-4" style="color: ${config.text_color}">
+                          ${question.question}
+                        </h3>
+                      </div>
+                      <button onclick="deleteQuestion(${index})" 
+                        class="ml-4 text-red-500 hover:text-red-700 font-semibold px-3 py-1 rounded-lg hover:bg-red-50 transition-all">
+                        🗑️
+                      </button>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      <div class="p-3 rounded-lg ${question.correct_answer === 'A' ? 'bg-green-100' : 'bg-gray-100'}">
+                        <span class="font-medium" style="color: ${config.text_color}">A:</span> 
+                        <span style="color: ${config.text_color}">${question.option_a}</span>
+                      </div>
+                      <div class="p-3 rounded-lg ${question.correct_answer === 'B' ? 'bg-green-100' : 'bg-gray-100'}">
+                        <span class="font-medium" style="color: ${config.text_color}">B:</span> 
+                        <span style="color: ${config.text_color}">${question.option_b}</span>
+                      </div>
+                      <div class="p-3 rounded-lg ${question.correct_answer === 'C' ? 'bg-green-100' : 'bg-gray-100'}">
+                        <span class="font-medium" style="color: ${config.text_color}">C:</span> 
+                        <span style="color: ${config.text_color}">${question.option_c}</span>
+                      </div>
+                      <div class="p-3 rounded-lg ${question.correct_answer === 'D' ? 'bg-green-100' : 'bg-gray-100'}">
+                        <span class="font-medium" style="color: ${config.text_color}">D:</span> 
+                        <span style="color: ${config.text_color}">${question.option_d}</span>
+                      </div>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            `}
+            
+          </div>
+        </div>
+      `;
+    }
+
+    function renderAddView() {
+      return `
+        <div class="min-h-full p-6 md:p-8">
+          <div class="max-w-2xl mx-auto">
+            <button onclick="backToManage()" 
+              class="mb-6 text-sm font-semibold px-4 py-2 rounded-lg hover:bg-gray-200 transition-all"
+              style="color: ${config.text_color}">
+              ← Indietro
+            </button>
+            
+            <div class="quiz-card p-8 rounded-2xl" style="background: ${config.card_background}">
+              <h2 class="text-2xl font-bold mb-6" style="color: ${config.text_color}">
+                Aggiungi Nuova Domanda
+              </h2>
+              
+              <form id="add-question-form" onsubmit="handleAddQuestion(event)" class="space-y-4">
+                <div>
+                  <label class="block text-sm font-semibold mb-2" style="color: ${config.text_color}">
+                    Domanda
+                  </label>
+                  <textarea id="question-input" required
+                    class="w-full p-3 border-2 rounded-lg focus:outline-none focus:ring-2"
+                    style="border-color: ${config.primary_color}40; color: ${config.text_color}"
+                    rows="3" placeholder="Inserisci la tua domanda qui..."></textarea>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-sm font-semibold mb-2" style="color: ${config.text_color}">
+                      Opzione A
+                    </label>
+                    <input type="text" id="option-a" required
+                      class="w-full p-3 border-2 rounded-lg focus:outline-none focus:ring-2"
+                      style="border-color: ${config.primary_color}40; color: ${config.text_color}"
+                      placeholder="Prima opzione">
+                  </div>
+                  
+                  <div>
+                    <label class="block text-sm font-semibold mb-2" style="color: ${config.text_color}">
+                      Opzione B
+                    </label>
+                    <input type="text" id="option-b" required
+                      class="w-full p-3 border-2 rounded-lg focus:outline-none focus:ring-2"
+                      style="border-color: ${config.primary_color}40; color: ${config.text_color}"
+                      placeholder="Seconda opzione">
+                  </div>
+                  
+                  <div>
+                    <label class="block text-sm font-semibold mb-2" style="color: ${config.text_color}">
+                      Opzione C
+                    </label>
+                    <input type="text" id="option-c" required
+                      class="w-full p-3 border-2 rounded-lg focus:outline-none focus:ring-2"
+                      style="border-color: ${config.primary_color}40; color: ${config.text_color}"
+                      placeholder="Terza opzione">
+                  </div>
+                  
+                  <div>
+                    <label class="block text-sm font-semibold mb-2" style="color: ${config.text_color}">
+                      Opzione D
+                    </label>
+                    <input type="text" id="option-d" required
+                      class="w-full p-3 border-2 rounded-lg focus:outline-none focus:ring-2"
+                      style="border-color: ${config.primary_color}40; color: ${config.text_color}"
+                      placeholder="Quarta opzione">
+                  </div>
+                </div>
+                
+                <div>
+                  <label class="block text-sm font-semibold mb-2" style="color: ${config.text_color}">
+                    Risposta Corretta
+                  </label>
+                  <select id="correct-answer" required
+                    class="w-full p-3 border-2 rounded-lg focus:outline-none focus:ring-2"
+                    style="border-color: ${config.primary_color}40; color: ${config.text_color}">
+                    <option value="">Seleziona la risposta corretta</option>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                  </select>
+                </div>
+                
+                <button type="submit" id="submit-btn"
+                  class="w-full py-3 px-6 rounded-xl font-semibold text-white shadow-lg hover:shadow-xl transition-all"
+                  style="background: ${config.primary_color}">
+                  Salva Domanda
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderQuizView() {
+      if (currentQuestionIndex >= quizData.length) {
+        currentView = 'results';
+        renderApp();
+        return '';
+      }
+      
+      const question = quizData[currentQuestionIndex];
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      
+      return `
+        <div class="min-h-full p-6 md:p-8">
+          <div class="max-w-3xl mx-auto">
+            <div class="mb-8">
+              <div class="flex justify-between items-center mb-2">
+                <span class="text-sm font-semibold" style="color: ${config.text_color}">
+                  Domanda ${currentQuestionIndex + 1} di ${quizData.length}
+                </span>
+                <span class="text-sm font-semibold" style="color: ${config.text_color}">
+                  Punteggio: ${score}
+                </span>
+              </div>
+              <div class="w-full bg-gray-200 rounded-full h-3">
+                <div class="h-3 rounded-full transition-all" 
+                  style="width: ${progress}%; background: ${config.primary_color}"></div>
+              </div>
+            </div>
+            
+            <div class="quiz-card p-8 rounded-2xl mb-6" style="background: ${config.card_background}">
+              <h2 class="text-2xl font-bold mb-8" style="color: ${config.text_color}">
+                ${question.question}
+              </h2>
+              
+              <div class="space-y-4">
+                <button onclick="selectAnswer('A')" 
+                  class="option-button w-full p-4 text-left rounded-xl border-2 font-semibold transition-all hover:border-4"
+                  style="border-color: ${config.primary_color}40; color: ${config.text_color}">
+                  <span class="font-bold" style="color: ${config.primary_color}">A:</span> ${question.option_a}
+                </button>
+                
+                <button onclick="selectAnswer('B')" 
+                  class="option-button w-full p-4 text-left rounded-xl border-2 font-semibold transition-all hover:border-4"
+                  style="border-color: ${config.primary_color}40; color: ${config.text_color}">
+                  <span class="font-bold" style="color: ${config.primary_color}">B:</span> ${question.option_b}
+                </button>
+                
+                <button onclick="selectAnswer('C')" 
+                  class="option-button w-full p-4 text-left rounded-xl border-2 font-semibold transition-all hover:border-4"
+                  style="border-color: ${config.primary_color}40; color: ${config.text_color}">
+                  <span class="font-bold" style="color: ${config.primary_color}">C:</span> ${question.option_c}
+                </button>
+                
+                <button onclick="selectAnswer('D')" 
+                  class="option-button w-full p-4 text-left rounded-xl border-2 font-semibold transition-all hover:border-4"
+                  style="border-color: ${config.primary_color}40; color: ${config.text_color}">
+                  <span class="font-bold" style="color: ${config.primary_color}">D:</span> ${question.option_d}
+                </button>
+              </div>
+            </div>
+            
+            <button onclick="exitQuiz()" 
+              class="w-full py-3 px-6 rounded-xl font-semibold border-2 transition-all"
+              style="color: ${config.text_color}; border-color: ${config.text_color}40">
+              Esci dal Quiz
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderResultsView() {
+      const percentage = Math.round((score / quizData.length) * 100);
+      let emoji = '🎉';
+      let message = 'Eccellente!';
+      
+      if (percentage < 50) {
+        emoji = '📚';
+        message = 'Continua a studiare!';
+      } else if (percentage < 70) {
+        emoji = '👍';
+        message = 'Buon lavoro!';
+      } else if (percentage < 90) {
+        emoji = '🌟';
+        message = 'Ottimo risultato!';
+      }
+      
+      return `
+        <div class="min-h-full p-6 md:p-8 flex items-center justify-center">
+          <div class="max-w-2xl w-full">
+            <div class="quiz-card p-8 md:p-12 rounded-2xl text-center" style="background: ${config.card_background}">
+              <div class="text-8xl mb-6">${emoji}</div>
+              <h2 class="text-3xl md:text-4xl font-bold mb-4" style="color: ${config.text_color}">
+                ${message}
+              </h2>
+              
+              <div class="mb-8">
+                <div class="text-6xl font-bold mb-2" style="color: ${config.primary_color}">
+                  ${percentage}%
+                </div>
+                <p class="text-xl opacity-70" style="color: ${config.text_color}">
+                  ${score} su ${quizData.length} risposte corrette
+                </p>
+              </div>
+              
+              <div class="space-y-3">
+                <button onclick="restartQuiz()" 
+                  class="w-full py-3 px-6 rounded-xl font-semibold text-white shadow-lg hover:shadow-xl transition-all"
+                  style="background: ${config.primary_color}">
+                  🔄 Riprova il Quiz
+                </button>
+                
+                <button onclick="backToManage()" 
+                  class="w-full py-3 px-6 rounded-xl font-semibold border-2 transition-all"
+                  style="color: ${config.text_color}; border-color: ${config.text_color}40">
+                  📝 Torna alle Domande
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function showAddForm() {
+      currentView = 'add';
+      renderApp();
+    }
+
+    function backToManage() {
+      currentView = 'manage';
+      renderApp();
+    }
+
+    function handleAddQuestion(event) {
+      event.preventDefault();
+      
+      const questionData = {
+        id: Date.now().toString(),
+        question: document.getElementById('question-input').value,
+        option_a: document.getElementById('option-a').value,
+        option_b: document.getElementById('option-b').value,
+        option_c: document.getElementById('option-c').value,
+        option_d: document.getElementById('option-d').value,
+        correct_answer: document.getElementById('correct-answer').value,
+        created_at: new Date().toISOString()
+      };
+      
+      quizData.push(questionData);
+      saveData();
+      showToast('Domanda aggiunta con successo!', 'success');
+      currentView = 'manage';
+      renderApp();
+    }
+
+    function deleteQuestion(index) {
+      quizData.splice(index, 1);
+      saveData();
+      showToast('Domanda eliminata', 'success');
+      renderApp();
+    }
+
+    function startQuiz() {
+      currentView = 'quiz';
+      currentQuestionIndex = 0;
+      score = 0;
+      answeredQuestions = [];
+      renderApp();
+    }
+
+    function selectAnswer(answer) {
+      const question = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll('.option-button');
+      
+      buttons.forEach(btn => btn.disabled = true);
+      
+      if (answer === question.correct_answer) {
+        score++;
+        showToast('Corretto! ✅', 'success');
+      } else {
+        showToast(`Sbagliato! La risposta corretta era ${question.correct_answer}`, 'error');
+      }
+      
+      setTimeout(() => {
+        currentQuestionIndex++;
+        renderApp();
+      }, 1500);
+    }
+
+    function exitQuiz() {
+      currentView = 'manage';
+      renderApp();
+    }
+
+    function restartQuiz() {
+      startQuiz();
+    }
+
+    function exportQuizHTML() {
+      const htmlContent = `<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${config.app_title}</title>
+  <script src="https://cdn.tailwindcss.com"><\/script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+    
+    * {
+      font-family: 'Poppins', system-ui, -apple-system, sans-serif;
+    }
+    
+    body {
+      box-sizing: border-box;
+      background: ${config.background_color};
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+    }
+    
+    .option-button {
+      transition: all 0.2s ease;
+    }
+    
+    .option-button:hover {
+      transform: scale(1.02);
+    }
+  </style>
+</head>
+<body>
+  <div id="app" class="min-h-screen p-6 md:p-8"></div>
+
+  <script>
+    const quizData = ${JSON.stringify(quizData)};
+    const config = ${JSON.stringify(config)};
+    
+    let currentQuestionIndex = 0;
+    let score = 0;
+
+    function renderQuiz() {
+      if (currentQuestionIndex >= quizData.length) {
+        renderResults();
+        return;
+      }
+      
+      const question = quizData[currentQuestionIndex];
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      
+      document.getElementById('app').innerHTML = \\\`
+        <div class="max-w-3xl mx-auto">
+          <div class="mb-8">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-sm font-semibold" style="color: \\\${config.text_color}">
+                Domanda \\\${currentQuestionIndex + 1} di \\\${quizData.length}
+              </span>
+              <span class="text-sm font-semibold" style="color: \\\${config.text_color}">
+                Punteggio: \\\${score}
+              </span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-3">
+              <div class="h-3 rounded-full transition-all" 
+                style="width: \\\${progress}%; background: \\\${config.primary_color}"></div>
+            </div>
+          </div>
+          
+          <div class="p-8 rounded-2xl mb-6" style="background: \\\${config.card_background}">
+            <h2 class="text-2xl font-bold mb-8" style="color: \\\${config.text_color}">
+              \\\${question.question}
+            </h2>
+            
+            <div class="space-y-4">
+              <button onclick="selectAnswer('A')" 
+                class="option-button w-full p-4 text-left rounded-xl border-2 font-semibold transition-all hover:border-4"
+                style="border-color: \\\${config.primary_color}40; color: \\\${config.text_color}">
+                <span class="font-bold" style="color: \\\${config.primary_color}">A:</span> \\\${question.option_a}
+              </button>
+              
+              <button onclick="selectAnswer('B')" 
+                class="option-button w-full p-4 text-left rounded-xl border-2 font-semibold transition-all hover:border-4"
+                style="border-color: \\\${config.primary_color}40; color: \\\${config.text_color}">
+                <span class="font-bold" style="color: \\\${config.primary_color}">B:</span> \\\${question.option_b}
+              </button>
+              
+              <button onclick="selectAnswer('C')" 
+                class="option-button w-full p-4 text-left rounded-xl border-2 font-semibold transition-all hover:border-4"
+                style="border-color: \\\${config.primary_color}40; color: \\\${config.text_color}">
+                <span class="font-bold" style="color: \\\${config.primary_color}">C:</span> \\\${question.option_c}
+              </button>
+              
+              <button onclick="selectAnswer('D')" 
+                class="option-button w-full p-4 text-left rounded-xl border-2 font-semibold transition-all hover:border-4"
+                style="border-color: \\\${config.primary_color}40; color: \\\${config.text_color}">
+                <span class="font-bold" style="color: \\\${config.primary_color}">D:</span> \\\${question.option_d}
+              </button>
+            </div>
+          </div>
+        </div>
+      \\\`;
+    }
+
+    function selectAnswer(answer) {
+      const question = quizData[currentQuestionIndex];
+      
+      if (answer === question.correct_answer) {
+        score++;
+      }
+      
+      setTimeout(() => {
+        currentQuestionIndex++;
+        renderQuiz();
+      }, 500);
+    }
+
+    function renderResults() {
+      const percentage = Math.round((score / quizData.length) * 100);
+      let emoji = '🎉';
+      let message = 'Eccellente!';
+      
+      if (percentage < 50) {
+        emoji = '📚';
+        message = 'Continua a studiare!';
+      } else if (percentage < 70) {
+        emoji = '👍';
+        message = 'Buon lavoro!';
+      } else if (percentage < 90) {
+        emoji = '🌟';
+        message = 'Ottimo risultato!';
+      }
+      
+      document.getElementById('app').innerHTML = \\\`
+        <div class="max-w-2xl mx-auto">
+          <div class="p-8 md:p-12 rounded-2xl text-center" style="background: \\\${config.card_background}">
+            <div class="text-8xl mb-6">\\\${emoji}</div>
+            <h2 class="text-3xl md:text-4xl font-bold mb-4" style="color: \\\${config.text_color}">
+              \\\${message}
+            </h2>
+            
+            <div class="mb-8">
+              <div class="text-6xl font-bold mb-2" style="color: \\\${config.primary_color}">
+                \\\${percentage}%
+              </div>
+              <p class="text-xl opacity-70" style="color: \\\${config.text_color}">
+                \\\${score} su \\\${quizData.length} risposte corrette
+              </p>
+            </div>
+            
+            <button onclick="location.reload()" 
+              class="w-full py-3 px-6 rounded-xl font-semibold text-white shadow-lg hover:shadow-xl transition-all"
+              style="background: \\\${config.primary_color}">
+              🔄 Riprova il Quiz
+            </button>
+          </div>
+        </div>
+      \\\`;
+    }
+
+    renderQuiz();
+  <\/script>
+</body>
+</html>`;
+
+      // Mostra il codice HTML in un modal per copiarlo
+      const modal = document.createElement('div');
+      modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50';
+      modal.innerHTML = `
+        <div class="max-w-4xl w-full rounded-2xl p-6" style="background: ${config.card_background}">
+          <h3 class="text-2xl font-bold mb-4" style="color: ${config.text_color}">
+            📥 Codice HTML del Quiz
+          </h3>
+          <p class="mb-4 opacity-70" style="color: ${config.text_color}">
+            Copia questo codice e salvalo in un file .html per condividere il tuo quiz!
+          </p>
+          <textarea readonly class="w-full p-4 border-2 rounded-lg font-mono text-sm mb-4" 
+            style="height: 400px; color: ${config.text_color}; border-color: ${config.primary_color}40"
+            id="export-textarea">${htmlContent}</textarea>
+          <div class="flex gap-3">
+            <button onclick="copyExportCode()" 
+              class="flex-1 py-3 px-6 rounded-xl font-semibold text-white shadow-lg hover:shadow-xl transition-all"
+              style="background: ${config.success_color}">
+              📋 Copia Codice
+            </button>
+            <button onclick="closeExportModal()" 
+              class="flex-1 py-3 px-6 rounded-xl font-semibold border-2 transition-all"
+              style="color: ${config.text_color}; border-color: ${config.text_color}40">
+              Chiudi
+            </button>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(modal);
+      document.getElementById('export-textarea').select();
+    }
+
+    function copyExportCode() {
+      const textarea = document.getElementById('export-textarea');
+      textarea.select();
+      document.execCommand('copy');
+      showToast('Codice copiato negli appunti!', 'success');
+    }
+
+    function closeExportModal() {
+      const modal = document.querySelector('.fixed.inset-0');
+      if (modal) {
+        modal.remove();
+      }
+    }
+
+    function showToast(message, type) {
+      const toast = document.createElement('div');
+      toast.className = 'toast fixed top-6 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-xl shadow-lg font-semibold text-white z-50';
+      toast.style.background = type === 'success' ? config.success_color : '#ef4444';
+      toast.textContent = message;
+      
+      document.body.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.remove();
+      }, 3000);
+    }
+
+    initApp();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9baba102256eed4c',t:'MTc2Nzg3NDYxNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

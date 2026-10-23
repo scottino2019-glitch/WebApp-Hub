@@ -1,0 +1,480 @@
+<!doctype html>
+<html lang="it" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Creatore di Adesivi</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;800&amp;display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Astloch:wght@400;700&family=Kings&family=UnifrakturMaguntia&display=swap" rel="stylesheet">
+  <style>
+    body {
+      box-sizing: border-box;
+      font-family: 'Baloo 2', cursive;
+    }
+    
+    .sticker {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: move;
+    }
+    
+    .sticker:hover {
+      transform: translateY(-5px) rotate(2deg);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+    
+    .sticky-note {
+      background: linear-gradient(135deg, var(--note-color) 0%, var(--note-color-dark) 100%);
+      position: relative;
+      transform: rotate(-1deg);
+      box-shadow: 2px 4px 12px rgba(0,0,0,0.15), 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .sticky-note:hover {
+      transform: translateY(-5px) rotate(1deg) !important;
+    }
+    
+    .sticky-note::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 0;
+      height: 0;
+      border-style: solid;
+      border-width: 0 40px 40px 0;
+      border-color: transparent rgba(0,0,0,0.15) transparent transparent;
+      filter: blur(1px);
+    }
+    
+    .sticky-note::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 30px;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.3) 0%, transparent 100%);
+      border-radius: 12px 12px 0 0;
+    }
+    
+    .sticky-star {
+      clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+    }
+    
+    .sticky-star:hover {
+      transform: translateY(-5px) rotate(5deg) scale(1.05) !important;
+    }
+    
+    .badge-star {
+      clip-path: polygon(50% 0%, 58% 28%, 88% 28%, 65% 45%, 75% 72%, 50% 58%, 25% 72%, 35% 45%, 12% 28%, 42% 28%, 50% 0%, 58% 28%, 75% 18%, 68% 38%, 85% 50%, 68% 62%, 75% 82%, 58% 72%, 50% 100%, 42% 72%, 25% 82%, 32% 62%, 15% 50%, 32% 38%, 25% 18%, 42% 28%);
+    }
+    
+    .badge-star:hover {
+      transform: translateY(-5px) rotate(5deg) scale(1.05) !important;
+    }
+    
+    .sticker-star {
+      clip-path: polygon(50% 0%, 65% 35%, 100% 50%, 65% 65%, 50% 100%, 35% 65%, 0% 50%, 35% 35%);
+    }
+    
+    .sticker-star:hover {
+      transform: translateY(-5px) rotate(5deg) scale(1.05) !important;
+    }
+    
+    .regular-sticker {
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2), 0 0 0 3px rgba(255,255,255,0.8), 0 0 0 5px rgba(0,0,0,0.1);
+      border: 2px solid rgba(255,255,255,0.9);
+      position: relative;
+    }
+    
+    .regular-sticker::before {
+      content: '';
+      position: absolute;
+      top: 5px;
+      left: 5px;
+      right: 5px;
+      bottom: 5px;
+      border: 1px dashed rgba(255,255,255,0.5);
+      pointer-events: none;
+    }
+    
+    .regular-sticker:hover {
+      transform: translateY(-8px) rotate(-3deg) scale(1.08) !important;
+      box-shadow: 0 12px 35px rgba(0,0,0,0.3), 0 0 0 3px rgba(255,255,255,0.8), 0 0 0 5px rgba(0,0,0,0.1);
+    }
+    
+    .delete-btn {
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    
+    .delete-btn:hover {
+      transform: scale(1.15);
+      background-color: #dc2626 !important;
+    }
+    
+    .delete-btn:active {
+      transform: scale(0.95);
+    }
+    
+    .creation-btn {
+      transition: all 0.3s ease;
+    }
+    
+    .creation-btn:hover {
+      transform: scale(1.05);
+    }
+    
+    .toast {
+      animation: slideIn 0.3s ease, slideOut 0.3s ease 2.7s;
+    }
+    
+    @keyframes slideIn {
+      from {
+        transform: translateX(400px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+    
+    @keyframes slideOut {
+      from {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      to {
+        transform: translateX(400px);
+        opacity: 0;
+      }
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="/_sdk/element_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); margin: 0;">
+  <main class="h-full w-full overflow-auto">
+   <div class="min-h-full p-8"><!-- Header -->
+    <header class="text-center mb-12">
+     <h1 class="text-5xl font-bold text-white mb-2">Creatore di Adesivi ✨</h1>
+     <p class="text-xl text-purple-100">Crea le tue decorazioni uniche</p>
+    </header><!-- Creation Panel -->
+    <div class="max-w-6xl mx-auto mb-12 bg-white rounded-3xl p-8 shadow-2xl">
+     <h2 class="text-3xl font-bold text-purple-800 mb-6">🎨 Crea il tuo adesivo</h2>
+     <form id="stickerForm" class="space-y-6"><!-- Type Selection -->
+      <div><label for="type" class="block text-lg font-semibold text-gray-700 mb-2">Tipo di decorazione</label> <select id="type" required class="w-full px-4 py-3 border-2 border-purple-300 rounded-xl focus:outline-none focus:border-purple-500 text-lg"> <option value="sticky">📝 Sticky Note</option> <option value="badge">⭐ Badge</option> <option value="sticker">🎯 Adesivo</option> </select>
+      </div><!-- Text Input -->
+      <div><label for="text" class="block text-lg font-semibold text-gray-700 mb-2">Testo</label> <input type="text" id="text" required placeholder="Scrivi qualcosa..." class="w-full px-4 py-3 border-2 border-purple-300 rounded-xl focus:outline-none focus:border-purple-500 text-lg">
+      </div><!-- Shape Selection -->
+      <div><label for="shape" class="block text-lg font-semibold text-gray-700 mb-2">Forma</label> <select id="shape" class="w-full px-4 py-3 border-2 border-purple-300 rounded-xl focus:outline-none focus:border-purple-500 text-lg"> <option value="square">⬛ Quadrato</option> <option value="circle">⚫ Cerchio</option> <option value="rounded">▢ Arrotondato</option> <option value="star">⭐ Stella</option> </select>
+      </div><!-- Color Selection -->
+      <div><label class="block text-lg font-semibold text-gray-700 mb-2">Colore</label>
+       <div class="grid grid-cols-4 md:grid-cols-8 gap-4"><button type="button" class="color-btn w-14 h-14 rounded-full border-4 border-gray-800 hover:border-gray-400 transition-all" style="background: #FEF3C7;" data-color="#FEF3C7"></button> <button type="button" class="color-btn w-14 h-14 rounded-full border-4 border-transparent hover:border-gray-400 transition-all" style="background: #FECACA;" data-color="#FECACA"></button> <button type="button" class="color-btn w-14 h-14 rounded-full border-4 border-transparent hover:border-gray-400 transition-all" style="background: #BFDBFE;" data-color="#BFDBFE"></button> <button type="button" class="color-btn w-14 h-14 rounded-full border-4 border-transparent hover:border-gray-400 transition-all" style="background: #BBF7D0;" data-color="#BBF7D0"></button> <button type="button" class="color-btn w-14 h-14 rounded-full border-4 border-transparent hover:border-gray-400 transition-all" style="background: #DDD6FE;" data-color="#DDD6FE"></button> <button type="button" class="color-btn w-14 h-14 rounded-full border-4 border-transparent hover:border-gray-400 transition-all" style="background: #FBCFE8;" data-color="#FBCFE8"></button> <button type="button" class="color-btn w-14 h-14 rounded-full border-4 border-transparent hover:border-gray-400 transition-all" style="background: #FED7AA;" data-color="#FED7AA"></button> <button type="button" class="color-btn w-14 h-14 rounded-full border-4 border-transparent hover:border-gray-400 transition-all" style="background: #E0E7FF;" data-color="#E0E7FF"></button>
+       </div><input type="hidden" id="color" value="#FEF3C7" required>
+      </div><!-- Emoji Selection -->
+      <div><label class="block text-lg font-semibold text-gray-700 mb-2">Emoji (opzionale)</label>
+       <div class="grid grid-cols-5 md:grid-cols-10 gap-3"><button type="button" class="emoji-btn text-3xl p-3 bg-purple-200 hover:bg-purple-100 rounded-lg border-2 border-transparent transition-all" data-emoji="">🚫</button> <button type="button" class="emoji-btn text-3xl p-3 hover:bg-purple-100 rounded-lg border-2 border-transparent transition-all" data-emoji="⭐">⭐</button> <button type="button" class="emoji-btn text-3xl p-3 hover:bg-purple-100 rounded-lg border-2 border-transparent transition-all" data-emoji="❤️">❤️</button> <button type="button" class="emoji-btn text-3xl p-3 hover:bg-purple-100 rounded-lg border-2 border-transparent transition-all" data-emoji="🎉">🎉</button> <button type="button" class="emoji-btn text-3xl p-3 hover:bg-purple-100 rounded-lg border-2 border-transparent transition-all" data-emoji="✨">✨</button> <button type="button" class="emoji-btn text-3xl p-3 hover:bg-purple-100 rounded-lg border-2 border-transparent transition-all" data-emoji="🌟">🌟</button> <button type="button" class="emoji-btn text-3xl p-3 hover:bg-purple-100 rounded-lg border-2 border-transparent transition-all" data-emoji="💝">💝</button> <button type="button" class="emoji-btn text-3xl p-3 hover:bg-purple-100 rounded-lg border-2 border-transparent transition-all" data-emoji="🎨">🎨</button> <button type="button" class="emoji-btn text-3xl p-3 hover:bg-purple-100 rounded-lg border-2 border-transparent transition-all" data-emoji="🌈">🌈</button> <button type="button" class="emoji-btn text-3xl p-3 hover:bg-purple-100 rounded-lg border-2 border-transparent transition-all" data-emoji="🦋">🦋</button>
+<button type="button" class="emoji-btn text-3xl p-3 hover:bg-purple-100 rounded-lg border-2 border-transparent transition-all" data-emoji="📌">📌</button>
+<button type="button" class="emoji-btn text-3xl p-3 hover:bg-purple-100 rounded-lg border-2 border-transparent transition-all" data-emoji="👀">👀</button>
+<button type="button" class="emoji-btn text-3xl p-3 hover:bg-purple-100 rounded-lg border-2 border-transparent transition-all" data-emoji="🌐">🌐</button>
+<button type="button" class="emoji-btn text-3xl p-3 hover:bg-purple-100 rounded-lg border-2 border-transparent transition-all" data-emoji="🎀">🎀</button>
+       </div><input type="hidden" id="emoji" value="">
+      </div><!-- Size Selection -->
+      <div><label for="size" class="block text-lg font-semibold text-gray-700 mb-2">Dimensione</label> <select id="size" class="w-full px-4 py-3 border-2 border-purple-300 rounded-xl focus:outline-none focus:border-purple-500 text-lg"> <option value="small">🔹 Piccolo</option> <option value="medium" selected>🔸 Medio</option> <option value="large">🔶 Grande</option> <option value="xlarge">🔷 Extra Grande</option> </select>
+      </div><!-- Font Selection -->
+      <div><label for="font" class="block text-lg font-semibold text-gray-700 mb-2">Font</label> <select id="font" class="w-full px-4 py-3 border-2 border-purple-300 rounded-xl focus:outline-none focus:border-purple-500 text-lg"> <option value="Arial, sans-serif">Arial</option> <option value="'Comic Sans MS', cursive">Comic Sans</option> <option value="'Courier New', monospace">Courier</option> <option value="Georgia, serif">Georgia</option> <option value="'Trebuchet MS', sans-serif">Trebuchet</option> <option value="Verdana, sans-serif">Verdana</option> <option value="'Times New Roman', serif">Times New Roman</option> <option value="Impact, sans-serif">Impact</option> 
+<option value="UnifrakturMaguntia, cursive">UnifrakturMaguntia</option> 
+<option value="Kings, cursive">Kings</option> 
+<option value=Astloch" system-ui">Astloch</option> 
+</select>
+      </div><!-- Submit Button --> <button type="submit" id="createBtn" class="creation-btn w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xl font-bold py-4 px-8 rounded-xl shadow-lg hover:shadow-xl"> ✨ Crea Adesivo </button>
+     </form>
+    </div><!-- Stickers Gallery -->
+    <div class="max-w-6xl mx-auto">
+     <h2 class="text-3xl font-bold text-white mb-6 text-center">🖼️ I tuoi adesivi</h2>
+     <div id="stickersContainer" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"><!-- Stickers will be added here -->
+     </div>
+     <div id="emptyState" class="text-center py-20">
+      <p class="text-white text-2xl">Crea il tuo primo adesivo! 🎨</p>
+     </div>
+    </div><!-- HTML Generator Section -->
+    <div class="max-w-6xl mx-auto mt-12 bg-white rounded-3xl p-8 shadow-2xl" id="htmlSection" style="display: none;">
+     <h2 class="text-3xl font-bold text-purple-800 mb-4">💻 Codice HTML</h2>
+     <p class="text-gray-600 mb-4">Copia questo codice per usare i tuoi adesivi ovunque!</p>
+     <div class="relative"><textarea id="htmlCode" readonly class="w-full h-64 p-4 border-2 border-purple-300 rounded-xl font-mono text-sm bg-gray-50 resize-none"></textarea> <button id="copyBtn" class="absolute top-4 right-4 bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 shadow-lg"> 📋 Copia </button>
+     </div>
+    </div>
+   </div><!-- Toast Notification -->
+   <div id="toast" class="fixed top-8 right-8 bg-white px-6 py-4 rounded-xl shadow-2xl hidden">
+    <p class="text-lg font-semibold text-purple-800"></p>
+   </div>
+  </main>
+  <script>
+    let stickers = [];
+    let selectedColor = '#FEF3C7';
+    let selectedEmoji = '';
+
+    function renderStickers() {
+      const container = document.getElementById('stickersContainer');
+      const emptyState = document.getElementById('emptyState');
+      const htmlSection = document.getElementById('htmlSection');
+
+      if (stickers.length === 0) {
+        emptyState.classList.remove('hidden');
+        container.innerHTML = '';
+        htmlSection.style.display = 'none';
+        return;
+      }
+
+      emptyState.classList.add('hidden');
+      htmlSection.style.display = 'block';
+      container.innerHTML = '';
+
+      stickers.forEach((sticker, index) => {
+        const stickerEl = createStickerElement(sticker, index);
+        container.appendChild(stickerEl);
+      });
+
+      generateHTMLCode();
+    }
+
+    function createStickerElement(sticker, index) {
+      const div = document.createElement('div');
+      div.className = 'sticker relative';
+      
+      // Size mapping
+      const sizeMap = {
+        small: { width: '120px', minHeight: '120px', padding: '16px', fontSize: '14px', emoji: '2em' },
+        medium: { width: '150px', minHeight: '150px', padding: '24px', fontSize: '18px', emoji: '3em' },
+        large: { width: '200px', minHeight: '200px', padding: '32px', fontSize: '22px', emoji: '4em' },
+        xlarge: { width: '250px', minHeight: '250px', padding: '40px', fontSize: '26px', emoji: '5em' }
+      };
+      
+      const sizeStyle = sizeMap[sticker.size] || sizeMap.medium;
+      
+      let shapeClass = '';
+      let additionalStyles = '';
+      
+      // Apply type-specific base class
+      if (sticker.type === 'sticky') {
+        shapeClass = 'sticky-note';
+        additionalStyles = `--note-color: ${sticker.color}; --note-color-dark: ${adjustColor(sticker.color, -20)};`;
+        
+        // Add shape-specific styling for sticky notes
+        if (sticker.shape === 'circle') {
+          shapeClass += ' rounded-full';
+        } else if (sticker.shape === 'rounded') {
+          shapeClass += ' rounded-3xl';
+        } else if (sticker.shape === 'star') {
+          shapeClass += ' sticky-star';
+        } else {
+          shapeClass += ' rounded-xl';
+        }
+        
+      } else if (sticker.type === 'badge') {
+        // Badge has metallic gradient, inset shadow, and glossy border
+        const lighterColor = adjustColor(sticker.color, 40);
+        const darkerColor = adjustColor(sticker.color, -30);
+        additionalStyles = `background: linear-gradient(145deg, ${lighterColor} 0%, ${sticker.color} 50%, ${darkerColor} 100%) !important; box-shadow: 0 8px 25px rgba(0,0,0,0.3), inset 0 2px 6px rgba(255,255,255,0.6), inset 0 -2px 4px rgba(0,0,0,0.2); border: 4px solid rgba(255,215,0,0.6);`;
+        
+        // Add shape-specific styling for badges
+        if (sticker.shape === 'circle') {
+          shapeClass = 'rounded-full';
+        } else if (sticker.shape === 'rounded') {
+          shapeClass = 'rounded-3xl';
+        } else if (sticker.shape === 'star') {
+          shapeClass = 'badge-star';
+        } else {
+          shapeClass = 'rounded-xl';
+        }
+        
+      } else if (sticker.type === 'sticker') {
+        shapeClass = 'regular-sticker';
+        
+        // Add shape-specific styling for stickers
+        if (sticker.shape === 'circle') {
+          shapeClass += ' rounded-full';
+        } else if (sticker.shape === 'rounded') {
+          shapeClass += ' rounded-3xl';
+        } else if (sticker.shape === 'star') {
+          shapeClass += ' sticker-star';
+        } else {
+          shapeClass += ' rounded-xl';
+        }
+      }
+
+      div.innerHTML = `
+        <div class="${shapeClass} shadow-xl" style="background-color: ${sticker.color}; ${additionalStyles} width: ${sizeStyle.width}; min-height: ${sizeStyle.minHeight}; padding: ${sizeStyle.padding}; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative;">
+          ${sticker.emoji ? `<div style="font-size: ${sizeStyle.emoji}; margin-bottom: 8px; pointer-events: none;">${sticker.emoji}</div>` : ''}
+          <p class="text-center font-bold text-gray-800 break-words" style="font-size: ${sizeStyle.fontSize}; font-family: ${sticker.font}; pointer-events: none;">${sticker.text}</p>
+        </div>
+      `;
+      
+      // Create delete button separately and append it
+      const deleteBtn = document.createElement('button');
+      deleteBtn.className = 'delete-btn absolute w-12 h-12 bg-red-500 text-white rounded-full hover:bg-red-600 shadow-lg flex items-center justify-center font-bold text-xl';
+      deleteBtn.style.cssText = 'top: -8px; right: -8px; z-index: 1000; cursor: pointer;';
+      deleteBtn.textContent = '✕';
+      deleteBtn.dataset.index = index;
+
+      deleteBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        stickers.splice(index, 1);
+        renderStickers();
+        showToast('Adesivo eliminato! 🗑️');
+      });
+      
+      div.appendChild(deleteBtn);
+
+      return div;
+    }
+
+    function adjustColor(color, amount) {
+      const num = parseInt(color.replace('#', ''), 16);
+      const r = Math.max(0, Math.min(255, (num >> 16) + amount));
+      const g = Math.max(0, Math.min(255, ((num >> 8) & 0x00FF) + amount));
+      const b = Math.max(0, Math.min(255, (num & 0x0000FF) + amount));
+      return '#' + ((r << 16) | (g << 8) | b).toString(16).padStart(6, '0');
+    }
+
+    function generateHTMLCode() {
+      let html = '<!DOCTYPE html>\n<html lang="it">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1.0">\n  <title>I Miei Adesivi</title>\n  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;800&family=Astloch:wght@400;700&family=Kings&family=UnifrakturMaguntia&display=swap" rel="stylesheet"> <style>\n    body { font-family: Arial, sans-serif; padding: 20px; background: #f3f4f6; }\n    .sticker-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 20px; max-width: 1200px; margin: 0 auto; }\n    .sticker { display: flex; flex-direction: column; align-items: center; justify-content: center; transition: transform 0.3s; position: relative; }\n    .sticker:hover { transform: translateY(-5px); }\n    .emoji { margin-bottom: 8px; }\n    .text { font-weight: bold; text-align: center; color: #333; }\n    /* Sticky Note Style */\n    .sticky-note { box-shadow: 2px 4px 12px rgba(0,0,0,0.15), 0 1px 3px rgba(0,0,0,0.1); transform: rotate(-1deg); }\n    .sticky-note:hover { transform: translateY(-5px) rotate(1deg) !important; }\n    .sticky-note::before { content: ""; position: absolute; top: 0; right: 0; width: 0; height: 0; border-style: solid; border-width: 0 40px 40px 0; border-color: transparent rgba(0,0,0,0.15) transparent transparent; filter: blur(1px); }\n    .sticky-note::after { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 30px; background: linear-gradient(to bottom, rgba(255,255,255,0.3) 0%, transparent 100%); border-radius: 12px 12px 0 0; }\n    /* Badge Style */\n    .badge { box-shadow: 0 8px 25px rgba(0,0,0,0.3), inset 0 2px 6px rgba(255,255,255,0.6), inset 0 -2px 4px rgba(0,0,0,0.2); border: 4px solid rgba(255,215,0,0.6); }\n    .badge:hover { transform: translateY(-5px) rotate(5deg) scale(1.05) !important; }\n    /* Regular Sticker Style */\n    .regular-sticker { box-shadow: 0 4px 15px rgba(0,0,0,0.2), 0 0 0 3px rgba(255,255,255,0.8), 0 0 0 5px rgba(0,0,0,0.1); border: 2px solid rgba(255,255,255,0.9); }\n    .regular-sticker::before { content: ""; position: absolute; top: 5px; left: 5px; right: 5px; bottom: 5px; border: 1px dashed rgba(255,255,255,0.5); pointer-events: none; }\n    .regular-sticker:hover { transform: translateY(-8px) rotate(-3deg) scale(1.08) !important; }\n  </style>\n</head>\n<body>\n  <div class="sticker-container">\n';
+
+      stickers.forEach(sticker => {
+        const sizeMap = {
+          small: { width: '120px', minHeight: '120px', padding: '16px', fontSize: '14px', emoji: '2em' },
+          medium: { width: '150px', minHeight: '150px', padding: '24px', fontSize: '18px', emoji: '3em' },
+          large: { width: '200px', minHeight: '200px', padding: '32px', fontSize: '22px', emoji: '4em' },
+          xlarge: { width: '250px', minHeight: '250px', padding: '40px', fontSize: '26px', emoji: '5em' }
+        };
+        
+        const sizeStyle = sizeMap[sticker.size] || sizeMap.medium;
+        
+        let typeClass = '';
+        let additionalStyle = '';
+        
+        if (sticker.type === 'sticky') {
+          typeClass = 'sticky-note';
+          const darkerColor = adjustColor(sticker.color, -20);
+          additionalStyle = `background: linear-gradient(135deg, ${sticker.color} 0%, ${darkerColor} 100%);`;
+        } else if (sticker.type === 'badge') {
+          typeClass = 'badge';
+          const lighterColor = adjustColor(sticker.color, 40);
+          const darkerColor = adjustColor(sticker.color, -30);
+          additionalStyle = `background: linear-gradient(145deg, ${lighterColor} 0%, ${sticker.color} 50%, ${darkerColor} 100%);`;
+        } else {
+          typeClass = 'regular-sticker';
+          additionalStyle = `background-color: ${sticker.color};`;
+        }
+        
+        let shapeStyle = '';
+        if (sticker.shape === 'circle') {
+          shapeStyle = 'border-radius: 50%;';
+        } else if (sticker.shape === 'rounded') {
+          shapeStyle = 'border-radius: 24px;';
+        } else if (sticker.shape === 'star') {
+          shapeStyle = 'clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);';
+        } else {
+          shapeStyle = 'border-radius: 12px;';
+        }
+
+        html += `    <div class="sticker ${typeClass}" style="${additionalStyle} ${shapeStyle} width: ${sizeStyle.width}; min-height: ${sizeStyle.minHeight}; padding: ${sizeStyle.padding};">\n`;
+        if (sticker.emoji) {
+          html += `      <div class="emoji" style="font-size: ${sizeStyle.emoji};">${sticker.emoji}</div>\n`;
+        }
+        html += `      <div class="text" style="font-size: ${sizeStyle.fontSize}; font-family: ${sticker.font};">${sticker.text}</div>\n`;
+        html += `    </div>\n`;
+      });
+
+      html += '  </div>\n</body>\n</html>';
+
+      document.getElementById('htmlCode').value = html;
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.querySelector('p').textContent = message;
+      toast.classList.remove('hidden');
+      setTimeout(() => {
+        toast.classList.add('hidden');
+      }, 3000);
+    }
+
+    // Color selection
+    document.querySelectorAll('.color-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('border-gray-800'));
+        btn.classList.add('border-gray-800');
+        selectedColor = btn.dataset.color;
+        document.getElementById('color').value = selectedColor;
+      });
+    });
+
+    // Emoji selection
+    document.querySelectorAll('.emoji-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.emoji-btn').forEach(b => b.classList.remove('bg-purple-200'));
+        btn.classList.add('bg-purple-200');
+        selectedEmoji = btn.dataset.emoji;
+        document.getElementById('emoji').value = selectedEmoji;
+      });
+    });
+
+    // Copy HTML code button
+    document.getElementById('copyBtn').addEventListener('click', () => {
+      const htmlCode = document.getElementById('htmlCode');
+      htmlCode.select();
+      document.execCommand('copy');
+      
+      const copyBtn = document.getElementById('copyBtn');
+      const originalText = copyBtn.textContent;
+      copyBtn.textContent = '✅ Copiato!';
+      copyBtn.style.backgroundColor = '#10b981';
+      
+      setTimeout(() => {
+        copyBtn.textContent = originalText;
+        copyBtn.style.backgroundColor = '';
+      }, 2000);
+      
+      showToast('Codice HTML copiato! 📋');
+    });
+
+    // Form submission
+    document.getElementById('stickerForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const formData = {
+        id: Date.now().toString(),
+        type: document.getElementById('type').value,
+        text: document.getElementById('text').value,
+        color: document.getElementById('color').value,
+        shape: document.getElementById('shape').value,
+        emoji: document.getElementById('emoji').value,
+        size: document.getElementById('size').value,
+        font: document.getElementById('font').value,
+        createdAt: new Date().toISOString()
+      };
+
+      stickers.push(formData);
+      renderStickers();
+      showToast('Adesivo creato! 🎉');
+      
+      document.getElementById('stickerForm').reset();
+      document.getElementById('color').value = '#FEF3C7';
+      document.getElementById('emoji').value = '';
+      document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('border-gray-800'));
+      document.querySelector('.color-btn').classList.add('border-gray-800');
+      document.querySelectorAll('.emoji-btn').forEach(b => b.classList.remove('bg-purple-200'));
+      document.querySelector('.emoji-btn').classList.add('bg-purple-200');
+      selectedColor = '#FEF3C7';
+      selectedEmoji = '';
+    });
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9bc924ad4480eddb',t:'MTc2ODE4NDA5Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

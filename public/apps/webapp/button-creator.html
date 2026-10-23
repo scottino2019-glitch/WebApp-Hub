@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="it" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Button Creator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;family=DM+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet">
+  <style>
+    body {
+      box-sizing: border-box;
+    }
+    * {
+      font-family: 'DM Sans', sans-serif;
+    }
+    .title-font {
+      font-family: 'Space Grotesk', sans-serif;
+    }
+    .shape-pill { border-radius: 9999px; }
+    .shape-rounded { border-radius: 12px; }
+    .shape-square { border-radius: 0; }
+    .shape-leaf { border-radius: 0 20px 0 20px; }
+    
+    .btn-preview {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .btn-preview:hover {
+      transform: translateY(-2px);
+    }
+    .btn-preview:active {
+      transform: translateY(0);
+    }
+    .btn-preview.with-shadow {
+      box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+    }
+    .btn-preview.with-shadow:hover {
+      box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+    }
+    
+    /* Animations */
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    .anim-pulse:hover {
+      animation: pulse 0.8s ease-in-out infinite;
+    }
+    
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    .anim-bounce:hover {
+      animation: bounce 0.6s ease-in-out infinite;
+    }
+    
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+    .anim-shake:hover {
+      animation: shake 0.5s ease-in-out infinite;
+    }
+    
+    @keyframes glow {
+      0%, 100% { box-shadow: 0 0 5px currentColor, 0 0 10px currentColor; }
+      50% { box-shadow: 0 0 10px currentColor, 0 0 20px currentColor; }
+    }
+    .anim-glow:hover {
+      animation: glow 1s ease-in-out infinite;
+    }
+    
+    @keyframes rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .anim-rotate:hover {
+      animation: rotate 0.8s linear infinite;
+    }
+    
+    .option-btn {
+      transition: all 0.2s ease;
+    }
+    .option-btn:hover {
+      transform: scale(1.05);
+    }
+    .option-btn.active {
+      ring: 3px;
+      ring-offset: 2px;
+    }
+    
+    .icon-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px;
+    }
+    
+    .preview-area {
+      background: 
+        radial-gradient(circle at 20% 80%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(236, 72, 153, 0.1) 0%, transparent 50%),
+        linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%);
+    }
+    
+    .control-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+    }
+    
+    /* Custom range slider */
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      height: 6px;
+      border-radius: 3px;
+      background: #e2e8f0;
+      outline: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #6366f1;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    input[type="range"]::-webkit-slider-thumb:hover {
+      background: #4f46e5;
+      transform: scale(1.2);
+    }
+    input[type="range"]::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #6366f1;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+    input[type="range"]::-moz-range-thumb:hover {
+      background: #4f46e5;
+      transform: scale(1.2);
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="/_sdk/element_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full bg-slate-900 overflow-auto">
+  <div class="h-full flex flex-col lg:flex-row"><!-- Preview Area -->
+   <div class="preview-area flex-1 flex flex-col items-center justify-center p-8 min-h-[300px]">
+    <p id="preview-label" class="text-slate-400 text-sm uppercase tracking-widest mb-6">Anteprima</p>
+    <div id="button-preview" class="flex items-center justify-center"><button id="preview-btn" class="btn-preview flex items-center justify-center gap-3 px-8 py-4 text-white font-semibold text-lg shape-pill" style="background: linear-gradient(135deg, #6366f1, #8b5cf6);"> <span id="preview-icon">⭐</span> <span id="preview-text">Il Mio Bottone</span> </button>
+    </div>
+    <p id="app-title" class="title-font text-3xl font-bold text-white mt-12 mb-2">Button Creator</p>
+    <p class="text-slate-400 text-sm">Crea bottoni unici e bellissimi</p>
+   </div><!-- Controls -->
+   <div class="lg:w-[420px] bg-white lg:h-full overflow-y-auto p-6 space-y-6"><!-- Button Text -->
+    <div class="control-card rounded-2xl p-5 shadow-sm border border-slate-100"><label class="block text-sm font-semibold text-slate-700 mb-3">📝 Testo del Bottone</label> <input type="text" id="btn-text" value="Il Mio Bottone" class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-indigo-500 focus:outline-none transition-colors text-slate-700" placeholder="Inserisci il testo...">
+    </div><!-- Icons -->
+    <div class="control-card rounded-2xl p-5 shadow-sm border border-slate-100"><label class="block text-sm font-semibold text-slate-700 mb-3">✨ Icona</label>
+     <div class="icon-grid" id="icon-grid"><button class="option-btn icon-option w-10 h-10 rounded-xl bg-slate-100 hover:bg-indigo-100 flex items-center justify-center text-xl transition-all active ring-indigo-500 ring-2" data-icon="⭐">⭐</button> <button class="option-btn icon-option w-10 h-10 rounded-xl bg-slate-100 hover:bg-indigo-100 flex items-center justify-center text-xl transition-all" data-icon="🚀">🚀</button> <button class="option-btn icon-option w-10 h-10 rounded-xl bg-slate-100 hover:bg-indigo-100 flex items-center justify-center text-xl transition-all" data-icon="❤️">❤️</button> <button class="option-btn icon-option w-10 h-10 rounded-xl bg-slate-100 hover:bg-indigo-100 flex items-center justify-center text-xl transition-all" data-icon="🔥">🔥</button> <button class="option-btn icon-option w-10 h-10 rounded-xl bg-slate-100 hover:bg-indigo-100 flex items-center justify-center text-xl transition-all" data-icon="💎">💎</button> <button class="option-btn icon-option w-10 h-10 rounded-xl bg-slate-100 hover:bg-indigo-100 flex items-center justify-center text-xl transition-all" data-icon="⚡">⚡</button> <button class="option-btn icon-option w-10 h-10 rounded-xl bg-slate-100 hover:bg-indigo-100 flex items-center justify-center text-xl transition-all" data-icon="🎯">🎯</button> <button class="option-btn icon-option w-10 h-10 rounded-xl bg-slate-100 hover:bg-indigo-100 flex items-center justify-center text-xl transition-all" data-icon="🎨">🎨</button> <button class="option-btn icon-option w-10 h-10 rounded-xl bg-slate-100 hover:bg-indigo-100 flex items-center justify-center text-xl transition-all" data-icon="🌈">🌈</button> <button class="option-btn icon-option w-10 h-10 rounded-xl bg-slate-100 hover:bg-indigo-100 flex items-center justify-center text-xl transition-all" data-icon="🎵">🎵</button> <button class="option-btn icon-option w-10 h-10 rounded-xl bg-slate-100 hover:bg-indigo-100 flex items-center justify-center text-xl transition-all" data-icon="📱">📱</button> <button class="option-btn icon-option w-10 h-10 rounded-xl bg-slate-100 hover:bg-indigo-100 flex items-center justify-center text-xl transition-all" data-icon="🛒">🛒</button> <button class="option-btn icon-option w-10 h-10 rounded-xl bg-slate-100 hover:bg-indigo-100 flex items-center justify-center text-xl transition-all" data-icon="📧">📧</button> <button class="option-btn icon-option w-10 h-10 rounded-xl bg-slate-100 hover:bg-indigo-100 flex items-center justify-center text-xl transition-all" data-icon="🔔">🔔</button> <button class="option-btn icon-option w-10 h-10 rounded-xl bg-slate-100 hover:bg-indigo-100 flex items-center justify-center text-xl transition-all" data-icon="✅">✅</button> <button class="option-btn icon-option w-10 h-10 rounded-xl bg-slate-100 hover:bg-indigo-100 flex items-center justify-center text-xl transition-all" data-icon="➡️">➡️</button> <button class="option-btn icon-option w-10 h-10 rounded-xl bg-slate-100 hover:bg-indigo-100 flex items-center justify-center text-xl transition-all" data-icon="⬅️">⬅️</button> <button class="option-btn icon-option w-10 h-10 rounded-xl bg-slate-100 hover:bg-indigo-100 flex items-center justify-center text-xl transition-all" data-icon="⬆️">⬆️</button> <button class="option-btn icon-option w-10 h-10 rounded-xl bg-slate-100 hover:bg-indigo-100 flex items-center justify-center text-xl transition-all" data-icon="⬇️">⬇️</button> <button class="option-btn icon-option w-10 h-10 rounded-xl bg-slate-100 hover:bg-indigo-100 flex items-center justify-center text-xl transition-all" data-icon="🔗">🔗</button> <button class="option-btn icon-option w-10 h-10 rounded-xl bg-slate-100 hover:bg-indigo-100 flex items-center justify-center text-xl transition-all" data-icon="👍">👍</button> <button class="option-btn icon-option w-10 h-10 rounded-xl bg-slate-100 hover:bg-indigo-100 flex items-center justify-center text-xl transition-all" data-icon="💪">💪</button> <button class="option-btn icon-option w-10 h-10 rounded-xl bg-slate-100 hover:bg-indigo-100 flex items-center justify-center text-xl transition-all" data-icon="🎁">🎁</button> <button class="option-btn icon-option w-10 h-10 rounded-xl bg-slate-100 hover:bg-indigo-100 flex items-center justify-center text-xl transition-all" data-icon="🏆">🏆</button> <button class="option-btn icon-option w-10 h-10 rounded-xl bg-slate-100 hover:bg-indigo-100 flex items-center justify-center text-xl transition-all" data-icon="💰">💰</button> <button class="option-btn icon-option w-10 h-10 rounded-xl bg-slate-100 hover:bg-indigo-100 flex items-center justify-center text-xl transition-all" data-icon="🎮">🎮</button> <button class="option-btn icon-option w-10 h-10 rounded-xl bg-slate-100 hover:bg-indigo-100 flex items-center justify-center text-xl transition-all" data-icon="🌟">🌟</button> <button class="option-btn icon-option w-10 h-10 rounded-xl bg-slate-100 hover:bg-indigo-100 flex items-center justify-center text-xl transition-all" data-icon="🎉">🎉</button> <button class="option-btn icon-option w-10 h-10 rounded-xl bg-slate-100 hover:bg-indigo-100 flex items-center justify-center text-xl transition-all" data-icon="🌺">🌺</button> <button class="option-btn icon-option w-10 h-10 rounded-xl bg-slate-100 hover:bg-indigo-100 flex items-center justify-center text-xl transition-all" data-icon="☀️">☀️</button> <button class="option-btn icon-option w-10 h-10 rounded-xl bg-slate-100 hover:bg-indigo-100 flex items-center justify-center text-xl transition-all" data-icon="🌙">🌙</button> <button class="option-btn icon-option w-10 h-10 rounded-xl bg-slate-100 hover:bg-indigo-100 flex items-center justify-center text-xl transition-all" data-icon="✨">✨</button> <button class="option-btn icon-option w-10 h-10 rounded-xl bg-slate-100 hover:bg-indigo-100 flex items-center justify-center text-xl transition-all" data-icon="🔒">🔒</button> <button class="option-btn icon-option w-10 h-10 rounded-xl bg-slate-100 hover:bg-indigo-100 flex items-center justify-center text-xl transition-all" data-icon="🔓">🔓</button> <button class="option-btn icon-option w-10 h-10 rounded-xl bg-slate-100 hover:bg-indigo-100 flex items-center justify-center text-xl transition-all" data-icon="💬">💬</button> <button class="option-btn icon-option w-10 h-10 rounded-xl bg-slate-100 hover:bg-indigo-100 flex items-center justify-center text-xl transition-all" data-icon="">—</button>
+     </div>
+    </div><!-- Shapes -->
+    <div class="control-card rounded-2xl p-5 shadow-sm border border-slate-100"><label class="block text-sm font-semibold text-slate-700 mb-3">🔷 Forma</label>
+     <div class="flex gap-3 flex-wrap"><button class="option-btn shape-option px-4 py-2 rounded-full bg-indigo-500 text-white text-sm font-medium active" data-shape="pill">Pillola</button> <button class="option-btn shape-option px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-sm font-medium hover:bg-slate-200" data-shape="rounded">Arrotondato</button> <button class="option-btn shape-option px-4 py-2 rounded-none bg-slate-100 text-slate-700 text-sm font-medium hover:bg-slate-200" data-shape="square">Quadrato</button> <button class="option-btn shape-option px-4 py-2 bg-slate-100 text-slate-700 text-sm font-medium hover:bg-slate-200" style="border-radius: 0 12px 0 12px;" data-shape="leaf">Foglia</button>
+     </div>
+    </div><!-- Colors -->
+    <div class="control-card rounded-2xl p-5 shadow-sm border border-slate-100"><label class="block text-sm font-semibold text-slate-700 mb-3">🎨 Colore</label>
+     <div class="grid grid-cols-5 gap-3" id="color-grid"><button class="option-btn color-option w-12 h-12 rounded-xl shadow-md hover:scale-110 transition-transform active ring-2 ring-offset-2 ring-indigo-500" data-gradient="linear-gradient(135deg, #6366f1, #8b5cf6)" style="background: linear-gradient(135deg, #6366f1, #8b5cf6);"></button> <button class="option-btn color-option w-12 h-12 rounded-xl shadow-md hover:scale-110 transition-transform" data-gradient="linear-gradient(135deg, #ec4899, #f43f5e)" style="background: linear-gradient(135deg, #ec4899, #f43f5e);"></button> <button class="option-btn color-option w-12 h-12 rounded-xl shadow-md hover:scale-110 transition-transform" data-gradient="linear-gradient(135deg, #14b8a6, #06b6d4)" style="background: linear-gradient(135deg, #14b8a6, #06b6d4);"></button> <button class="option-btn color-option w-12 h-12 rounded-xl shadow-md hover:scale-110 transition-transform" data-gradient="linear-gradient(135deg, #f59e0b, #f97316)" style="background: linear-gradient(135deg, #f59e0b, #f97316);"></button> <button class="option-btn color-option w-12 h-12 rounded-xl shadow-md hover:scale-110 transition-transform" data-gradient="linear-gradient(135deg, #22c55e, #84cc16)" style="background: linear-gradient(135deg, #22c55e, #84cc16);"></button> <button class="option-btn color-option w-12 h-12 rounded-xl shadow-md hover:scale-110 transition-transform" data-gradient="linear-gradient(135deg, #3b82f6, #1d4ed8)" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);"></button> <button class="option-btn color-option w-12 h-12 rounded-xl shadow-md hover:scale-110 transition-transform" data-gradient="linear-gradient(135deg, #a855f7, #7c3aed)" style="background: linear-gradient(135deg, #a855f7, #7c3aed);"></button> <button class="option-btn color-option w-12 h-12 rounded-xl shadow-md hover:scale-110 transition-transform" data-gradient="linear-gradient(135deg, #1e293b, #475569)" style="background: linear-gradient(135deg, #1e293b, #475569);"></button> <button class="option-btn color-option w-12 h-12 rounded-xl shadow-md hover:scale-110 transition-transform" data-gradient="linear-gradient(135deg, #dc2626, #b91c1c)" style="background: linear-gradient(135deg, #dc2626, #b91c1c);"></button> <button class="option-btn color-option w-12 h-12 rounded-xl shadow-md hover:scale-110 transition-transform" data-gradient="linear-gradient(135deg, #fbbf24, #fcd34d)" style="background: linear-gradient(135deg, #fbbf24, #fcd34d);"></button>
+     </div>
+    </div><!-- Size Slider -->
+    <div class="control-card rounded-2xl p-5 shadow-sm border border-slate-100"><label class="block text-sm font-semibold text-slate-700 mb-3">📏 Dimensione: <span id="size-value">Medio</span></label> <input type="range" id="size-slider" min="1" max="5" value="3" class="w-full">
+     <div class="flex justify-between text-xs text-slate-500 mt-2"><span>Tiny</span> <span>Piccolo</span> <span>Medio</span> <span>Grande</span> <span>XL</span>
+     </div>
+    </div><!-- Animation -->
+    <div class="control-card rounded-2xl p-5 shadow-sm border border-slate-100"><label class="block text-sm font-semibold text-slate-700 mb-3">🎬 Animazione Hover</label>
+     <div class="flex gap-2 flex-wrap"><button class="option-btn anim-option px-3 py-2 rounded-lg bg-indigo-500 text-white text-sm font-medium active" data-anim="">Nessuna</button> <button class="option-btn anim-option px-3 py-2 rounded-lg bg-slate-100 text-slate-700 text-sm font-medium hover:bg-slate-200" data-anim="pulse">Pulse</button> <button class="option-btn anim-option px-3 py-2 rounded-lg bg-slate-100 text-slate-700 text-sm font-medium hover:bg-slate-200" data-anim="bounce">Bounce</button> <button class="option-btn anim-option px-3 py-2 rounded-lg bg-slate-100 text-slate-700 text-sm font-medium hover:bg-slate-200" data-anim="shake">Shake</button> <button class="option-btn anim-option px-3 py-2 rounded-lg bg-slate-100 text-slate-700 text-sm font-medium hover:bg-slate-200" data-anim="glow">Glow</button> <button class="option-btn anim-option px-3 py-2 rounded-lg bg-slate-100 text-slate-700 text-sm font-medium hover:bg-slate-200" data-anim="rotate">Rotate</button>
+     </div>
+    </div><!-- Border Style -->
+    <div class="control-card rounded-2xl p-5 shadow-sm border border-slate-100"><label class="block text-sm font-semibold text-slate-700 mb-3">🖌️ Stile Bordo</label>
+     <div class="flex gap-2 flex-wrap"><button class="option-btn border-style-option px-3 py-2 rounded-lg bg-indigo-500 text-white text-sm font-medium active" data-border="none">Nessuno</button> <button class="option-btn border-style-option px-3 py-2 rounded-lg bg-slate-100 text-slate-700 text-sm font-medium hover:bg-slate-200" data-border="solid">Solido</button> <button class="option-btn border-style-option px-3 py-2 rounded-lg bg-slate-100 text-slate-700 text-sm font-medium hover:bg-slate-200" data-border="dashed">Tratteggiato</button> <button class="option-btn border-style-option px-3 py-2 rounded-lg bg-slate-100 text-slate-700 text-sm font-medium hover:bg-slate-200" data-border="dotted">Punteggiato</button> <button class="option-btn border-style-option px-3 py-2 rounded-lg bg-slate-100 text-slate-700 text-sm font-medium hover:bg-slate-200" data-border="double">Doppio</button>
+     </div>
+    </div><!-- Style Options -->
+    <div class="control-card rounded-2xl p-5 shadow-sm border border-slate-100"><label class="block text-sm font-semibold text-slate-700 mb-3">💫 Stile Extra</label>
+     <div class="space-y-3"><label class="flex items-center gap-3 cursor-pointer"> <input type="checkbox" id="shadow-toggle" checked class="w-5 h-5 rounded text-indigo-500 focus:ring-indigo-500"> <span class="text-slate-600">Ombra</span> </label> <label class="flex items-center gap-3 cursor-pointer"> <input type="checkbox" id="icon-right-toggle" class="w-5 h-5 rounded text-indigo-500 focus:ring-indigo-500"> <span class="text-slate-600">Icona a destra</span> </label>
+     </div>
+    </div><!-- HTML Code Generator -->
+    <div class="control-card rounded-2xl p-5 shadow-sm border border-slate-100"><label class="block text-sm font-semibold text-slate-700 mb-3">💻 Codice HTML</label>
+     <div class="relative"><textarea id="html-output" readonly class="w-full h-32 px-4 py-3 rounded-xl border-2 border-slate-200 bg-slate-50 text-xs font-mono text-slate-700 resize-none focus:outline-none" placeholder="Il codice apparirà qui..."></textarea> <button id="copy-btn" class="absolute top-3 right-3 px-3 py-1.5 bg-indigo-500 hover:bg-indigo-600 text-white text-xs font-medium rounded-lg transition-colors"> Copia </button>
+     </div>
+     <p id="copy-message" class="text-xs text-green-600 mt-2 opacity-0 transition-opacity">✓ Codice copiato!</p>
+    </div>
+   </div>
+  </div>
+  <script>
+    // Button state
+    let buttonState = {
+      text: 'Il Mio Bottone',
+      icon: '⭐',
+      shape: 'pill',
+      gradient: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+      size: 3,
+      shadow: true,
+      borderStyle: 'none',
+      iconRight: false,
+      animation: ''
+    };
+    
+    const previewBtn = document.getElementById('preview-btn');
+    const previewIcon = document.getElementById('preview-icon');
+    const previewText = document.getElementById('preview-text');
+    const btnTextInput = document.getElementById('btn-text');
+    const sizeSlider = document.getElementById('size-slider');
+    const sizeValue = document.getElementById('size-value');
+    
+    const sizeLabels = ['Tiny', 'Piccolo', 'Medio', 'Grande', 'XL'];
+    const sizeConfigs = [
+      { px: '12px', py: '6px', text: '12px', gap: '4px' },
+      { px: '20px', py: '10px', text: '14px', gap: '8px' },
+      { px: '32px', py: '16px', text: '18px', gap: '12px' },
+      { px: '40px', py: '18px', text: '20px', gap: '14px' },
+      { px: '48px', py: '22px', text: '24px', gap: '16px' }
+    ];
+    
+    function updateButtonPreview() {
+      // Update text
+      previewText.textContent = buttonState.text;
+      
+      // Update icon
+      if (buttonState.icon) {
+        previewIcon.textContent = buttonState.icon;
+        previewIcon.style.display = 'inline';
+      } else {
+        previewIcon.style.display = 'none';
+      }
+      
+      // Update icon position
+      if (buttonState.iconRight) {
+        previewBtn.style.flexDirection = 'row-reverse';
+      } else {
+        previewBtn.style.flexDirection = 'row';
+      }
+      
+      // Update shape
+      previewBtn.className = 'btn-preview flex items-center justify-center text-white font-semibold';
+      previewBtn.classList.add(`shape-${buttonState.shape}`);
+      
+      // Update animation
+      if (buttonState.animation) {
+        previewBtn.classList.add(`anim-${buttonState.animation}`);
+      }
+      
+      // Update color
+      previewBtn.style.background = buttonState.gradient;
+      
+      // Update size
+      const s = sizeConfigs[buttonState.size - 1];
+      previewBtn.style.paddingLeft = s.px;
+      previewBtn.style.paddingRight = s.px;
+      previewBtn.style.paddingTop = s.py;
+      previewBtn.style.paddingBottom = s.py;
+      previewBtn.style.fontSize = s.text;
+      previewBtn.style.gap = s.gap;
+      
+      // Update shadow
+      if (buttonState.shadow) {
+        previewBtn.classList.add('with-shadow');
+      } else {
+        previewBtn.classList.remove('with-shadow');
+      }
+      
+      // Update border
+      if (buttonState.borderStyle !== 'none') {
+        previewBtn.style.border = `3px ${buttonState.borderStyle} white`;
+      } else {
+        previewBtn.style.border = 'none';
+      }
+      
+      // Generate HTML code
+      generateHTMLCode();
+    }
+    
+    function generateHTMLCode() {
+      const s = sizeConfigs[buttonState.size - 1];
+      
+      const shapeStyles = {
+        pill: 'border-radius: 9999px;',
+        rounded: 'border-radius: 12px;',
+        square: 'border-radius: 0;',
+        leaf: 'border-radius: 0 20px 0 20px;'
+      };
+      
+      const animStyles = {
+        '': '',
+        pulse: `
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+.btn:hover { animation: pulse 0.8s ease-in-out infinite; }`,
+        bounce: `
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+.btn:hover { animation: bounce 0.6s ease-in-out infinite; }`,
+        shake: `
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+.btn:hover { animation: shake 0.5s ease-in-out infinite; }`,
+        glow: `
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 5px currentColor, 0 0 10px currentColor; }
+  50% { box-shadow: 0 0 10px currentColor, 0 0 20px currentColor; }
+}
+.btn:hover { animation: glow 1s ease-in-out infinite; }`,
+        rotate: `
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.btn:hover { animation: rotate 0.8s linear infinite; }`
+      };
+      
+      let styles = `
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: ${s.gap};
+  padding: ${s.py} ${s.px};
+  font-size: ${s.text};
+  font-weight: 600;
+  color: white;
+  background: ${buttonState.gradient};
+  ${shapeStyles[buttonState.shape]}
+  ${buttonState.shadow ? 'box-shadow: 0 4px 14px rgba(0,0,0,0.15);' : ''}
+  ${buttonState.borderStyle !== 'none' ? `border: 3px ${buttonState.borderStyle} white;` : 'border: none;'}
+  cursor: pointer;
+  transition: all 0.3s ease;
+`.trim();
+
+      const iconHTML = buttonState.icon ? `<span>${buttonState.icon}</span>` : '';
+      const textHTML = `<span>${buttonState.text}</span>`;
+      
+      let buttonContent;
+      if (buttonState.iconRight && buttonState.icon) {
+        buttonContent = `${textHTML}\n  ${iconHTML}`;
+      } else if (buttonState.icon) {
+        buttonContent = `${iconHTML}\n  ${textHTML}`;
+      } else {
+        buttonContent = textHTML;
+      }
+      
+      const animCSS = animStyles[buttonState.animation] ? `\n<style>${animStyles[buttonState.animation]}\n</style>\n` : '';
+      const btnClass = buttonState.animation ? ' class="btn"' : '';
+      
+      const htmlCode = `${animCSS}<button${btnClass} style="${styles}">\n  ${buttonContent}\n</button>`;
+      
+      document.getElementById('html-output').value = htmlCode;
+    }
+    
+    // Text input
+    btnTextInput.addEventListener('input', (e) => {
+      buttonState.text = e.target.value || 'Il Mio Bottone';
+      updateButtonPreview();
+    });
+    
+    // Size slider
+    sizeSlider.addEventListener('input', (e) => {
+      buttonState.size = parseInt(e.target.value);
+      sizeValue.textContent = sizeLabels[buttonState.size - 1];
+      updateButtonPreview();
+    });
+    
+    // Icon selection
+    document.querySelectorAll('.icon-option').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.icon-option').forEach(b => {
+          b.classList.remove('active', 'ring-2', 'ring-indigo-500');
+        });
+        btn.classList.add('active', 'ring-2', 'ring-indigo-500');
+        buttonState.icon = btn.dataset.icon;
+        updateButtonPreview();
+      });
+    });
+    
+    // Shape selection
+    document.querySelectorAll('.shape-option').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.shape-option').forEach(b => {
+          b.classList.remove('active', 'bg-indigo-500', 'text-white');
+          b.classList.add('bg-slate-100', 'text-slate-700');
+        });
+        btn.classList.add('active', 'bg-indigo-500', 'text-white');
+        btn.classList.remove('bg-slate-100', 'text-slate-700');
+        buttonState.shape = btn.dataset.shape;
+        updateButtonPreview();
+      });
+    });
+    
+    // Color selection
+    document.querySelectorAll('.color-option').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.color-option').forEach(b => {
+          b.classList.remove('active', 'ring-2', 'ring-offset-2', 'ring-indigo-500');
+        });
+        btn.classList.add('active', 'ring-2', 'ring-offset-2', 'ring-indigo-500');
+        buttonState.gradient = btn.dataset.gradient;
+        updateButtonPreview();
+      });
+    });
+    
+    // Animation selection
+    document.querySelectorAll('.anim-option').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.anim-option').forEach(b => {
+          b.classList.remove('active', 'bg-indigo-500', 'text-white');
+          b.classList.add('bg-slate-100', 'text-slate-700');
+        });
+        btn.classList.add('active', 'bg-indigo-500', 'text-white');
+        btn.classList.remove('bg-slate-100', 'text-slate-700');
+        buttonState.animation = btn.dataset.anim;
+        updateButtonPreview();
+      });
+    });
+    
+    // Border style selection
+    document.querySelectorAll('.border-style-option').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.border-style-option').forEach(b => {
+          b.classList.remove('active', 'bg-indigo-500', 'text-white');
+          b.classList.add('bg-slate-100', 'text-slate-700');
+        });
+        btn.classList.add('active', 'bg-indigo-500', 'text-white');
+        btn.classList.remove('bg-slate-100', 'text-slate-700');
+        buttonState.borderStyle = btn.dataset.border;
+        updateButtonPreview();
+      });
+    });
+    
+    // Toggle options
+    document.getElementById('shadow-toggle').addEventListener('change', (e) => {
+      buttonState.shadow = e.target.checked;
+      updateButtonPreview();
+    });
+    
+    document.getElementById('icon-right-toggle').addEventListener('change', (e) => {
+      buttonState.iconRight = e.target.checked;
+      updateButtonPreview();
+    });
+    
+    // Copy button functionality
+    document.getElementById('copy-btn').addEventListener('click', async () => {
+      const htmlOutput = document.getElementById('html-output');
+      const copyMessage = document.getElementById('copy-message');
+      
+      try {
+        await navigator.clipboard.writeText(htmlOutput.value);
+        copyMessage.style.opacity = '1';
+        setTimeout(() => {
+          copyMessage.style.opacity = '0';
+        }, 2000);
+      } catch (err) {
+        // Fallback for older browsers
+        htmlOutput.select();
+        document.execCommand('copy');
+        copyMessage.style.opacity = '1';
+        setTimeout(() => {
+          copyMessage.style.opacity = '0';
+        }, 2000);
+      }
+    });
+    
+    // Initial render
+    updateButtonPreview();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9bbec228c5f35267',t:'MTc2ODA3NTIwNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

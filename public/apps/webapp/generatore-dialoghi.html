@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="it" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generatore Dialoghi Cinese</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      box-sizing: border-box;
+    }
+    
+    .dialogue-card {
+      transition: all 0.3s ease;
+    }
+    
+    .dialogue-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+    }
+    
+    .line-input-group {
+      background: #f9fafb;
+      border-radius: 0.75rem;
+      padding: 1rem;
+      margin-bottom: 0.75rem;
+    }
+    
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 1rem 1.5rem;
+      border-radius: 0.5rem;
+      color: white;
+      font-weight: 600;
+      z-index: 1000;
+      animation: slideIn 0.3s ease;
+    }
+    
+    @keyframes slideIn {
+      from { transform: translateX(400px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    .delete-confirmation {
+      display: inline-flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="/_sdk/element_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full w-full m-0 p-0">
+  <main class="h-full w-full overflow-auto" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+   <div class="min-h-full w-full p-6">
+    <div class="max-w-6xl mx-auto"><!-- Header -->
+     <header class="text-center mb-8">
+      <h1 class="text-white text-5xl font-bold mb-2">Generatore di Dialoghi</h1>
+      <p class="text-white text-lg opacity-90">Crea dialoghi interattivi in cinese per le tue lezioni</p>
+     </header>
+     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6"><!-- Form Section -->
+      <div class="bg-white rounded-2xl shadow-2xl p-6">
+       <h2 class="text-2xl font-bold mb-4 text-purple-900">Nuovo Dialogo</h2>
+       <form id="dialogueForm">
+        <div class="mb-4"><label for="dialogueTitle" class="block font-semibold mb-2 text-gray-700">Titolo Dialogo</label> <input type="text" id="dialogueTitle" required class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:outline-none" placeholder="Es: Al Ristorante">
+        </div>
+        <div class="mb-4"><label class="block font-semibold mb-2 text-gray-700">Righe del Dialogo</label>
+         <div id="linesContainer"><!-- Lines will be added here -->
+         </div><button type="button" id="addLineBtn" class="w-full py-2 px-4 rounded-lg font-semibold transition-all mt-2 bg-gray-200 text-gray-700 hover:bg-gray-300">+ Aggiungi Riga</button>
+        </div><button type="submit" class="w-full py-3 px-6 rounded-xl font-semibold transition-all transform hover:scale-105 bg-purple-600 text-white hover:bg-purple-700"> Salva Dialogo </button>
+       </form>
+      </div><!-- Saved Dialogues Section -->
+      <div class="bg-white rounded-2xl shadow-2xl p-6">
+       <div class="flex justify-between items-center mb-4">
+        <h2 class="text-2xl font-bold text-purple-900">Dialoghi Salvati</h2><button id="exportBtn" class="py-2 px-4 rounded-lg font-semibold transition-all transform hover:scale-105 bg-pink-500 text-white hover:bg-pink-600"> 📥 Esporta in HTML </button>
+       </div>
+       <div id="savedDialogues" class="space-y-4 max-h-[600px] overflow-y-auto"><!-- Saved dialogues will appear here -->
+       </div>
+       <div id="emptyState" class="text-center py-12 text-gray-400">
+        <div class="text-5xl">
+         💬
+        </div>
+        <p class="mt-2">Nessun dialogo salvato ancora</p>
+       </div>
+      </div>
+     </div>
+    </div>
+   </div>
+  </main>
+  <script>
+    let dialogues = [];
+    let lineCounter = 0;
+    
+    // Load dialogues from localStorage
+    function loadDialogues() {
+      const saved = localStorage.getItem('chineseDialogues');
+      if (saved) {
+        dialogues = JSON.parse(saved);
+        renderDialogues();
+      }
+    }
+    
+    // Save dialogues to localStorage
+    function saveDialogues() {
+      localStorage.setItem('chineseDialogues', JSON.stringify(dialogues));
+    }
+    
+    function showToast(message, type = 'success') {
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.style.background = type === 'success' ? '#10b981' : '#ef4444';
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
+    }
+    
+    function addLine() {
+      lineCounter++;
+      const container = document.getElementById('linesContainer');
+      const lineDiv = document.createElement('div');
+      lineDiv.className = 'line-input-group';
+      lineDiv.dataset.lineId = lineCounter;
+      lineDiv.innerHTML = `
+        <div class="flex justify-between items-center mb-2">
+          <span class="font-semibold text-gray-600">Riga ${lineCounter}</span>
+          <button type="button" class="remove-line text-red-500 font-semibold hover:text-red-700">✕</button>
+        </div>
+        <input type="text" class="line-speaker w-full px-3 py-2 border border-gray-300 rounded-lg mb-2 focus:border-purple-500 focus:outline-none" placeholder="Personaggio" required>
+        <input type="text" class="line-chinese w-full px-3 py-2 border border-gray-300 rounded-lg mb-2 focus:border-purple-500 focus:outline-none" placeholder="Cinese (汉字)" required>
+        <input type="text" class="line-pinyin w-full px-3 py-2 border border-gray-300 rounded-lg mb-2 focus:border-purple-500 focus:outline-none" placeholder="Pinyin" required>
+        <input type="text" class="line-translation w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-purple-500 focus:outline-none" placeholder="Traduzione italiana" required>
+      `;
+      container.appendChild(lineDiv);
+      
+      const removeBtn = lineDiv.querySelector('.remove-line');
+      removeBtn.onclick = function() {
+        lineDiv.remove();
+      };
+    }
+    
+    function deleteDialogue(id) {
+      dialogues = dialogues.filter(d => d.id !== id);
+      saveDialogues();
+      renderDialogues();
+      showToast('Dialogo eliminato!');
+    }
+    
+    function renderDialogues() {
+      const container = document.getElementById('savedDialogues');
+      const emptyState = document.getElementById('emptyState');
+      
+      if (dialogues.length === 0) {
+        container.innerHTML = '';
+        emptyState.style.display = 'block';
+        return;
+      }
+      
+      emptyState.style.display = 'none';
+      container.innerHTML = dialogues.map(d => {
+        const lines = JSON.parse(d.lines);
+        return `
+          <div class="dialogue-card border-2 border-purple-200 rounded-xl p-4 bg-purple-50">
+            <div class="flex justify-between items-start mb-3">
+              <h3 class="font-bold text-lg text-purple-900">${d.title}</h3>
+              <div id="deleteContainer-${d.id}">
+                <button class="delete-btn text-red-500 font-semibold px-3 py-1 rounded-lg hover:bg-red-100 transition-all" data-id="${d.id}">Elimina</button>
+              </div>
+            </div>
+            <div class="space-y-2">
+              ${lines.map(line => `
+                <div class="text-sm">
+                  <span class="font-semibold text-purple-700">${line.speaker}:</span>
+                  <span class="text-gray-700">${line.chinese}</span>
+                </div>
+              `).join('')}
+            </div>
+            <div class="text-xs mt-2 text-gray-400">${lines.length} righe</div>
+          </div>
+        `;
+      }).join('');
+      
+      // Add delete listeners with confirmation
+      document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.onclick = function() {
+          const id = this.dataset.id;
+          const container = document.getElementById(`deleteContainer-${id}`);
+          
+          // Show confirmation buttons
+          container.innerHTML = `
+            <div class="delete-confirmation">
+              <button class="confirm-delete bg-red-500 text-white px-3 py-1 rounded-lg font-semibold hover:bg-red-600 transition-all" data-id="${id}">Conferma</button>
+              <button class="cancel-delete bg-gray-300 text-gray-700 px-3 py-1 rounded-lg font-semibold hover:bg-gray-400 transition-all" data-id="${id}">Annulla</button>
+            </div>
+          `;
+          
+          // Confirm delete
+          container.querySelector('.confirm-delete').onclick = function() {
+            deleteDialogue(id);
+          };
+          
+          // Cancel delete
+          container.querySelector('.cancel-delete').onclick = function() {
+            container.innerHTML = `<button class="delete-btn text-red-500 font-semibold px-3 py-1 rounded-lg hover:bg-red-100 transition-all" data-id="${id}">Elimina</button>`;
+            container.querySelector('.delete-btn').onclick = btn.onclick;
+          };
+        };
+      });
+    }
+    
+    document.getElementById('addLineBtn').onclick = function() {
+      addLine();
+    };
+    
+    document.getElementById('dialogueForm').onsubmit = function(e) {
+      e.preventDefault();
+      
+      const title = document.getElementById('dialogueTitle').value;
+      const lineGroups = document.querySelectorAll('.line-input-group');
+      
+      if (lineGroups.length === 0) {
+        showToast('Aggiungi almeno una riga al dialogo', 'error');
+        return;
+      }
+      
+      const lines = Array.from(lineGroups).map(group => ({
+        speaker: group.querySelector('.line-speaker').value,
+        chinese: group.querySelector('.line-chinese').value,
+        pinyin: group.querySelector('.line-pinyin').value,
+        translation: group.querySelector('.line-translation').value
+      }));
+      
+      const dialogue = {
+        id: Date.now().toString(),
+        title: title,
+        lines: JSON.stringify(lines),
+        createdAt: new Date().toISOString()
+      };
+      
+      dialogues.push(dialogue);
+      saveDialogues();
+      renderDialogues();
+      
+      showToast('Dialogo salvato!');
+      document.getElementById('dialogueForm').reset();
+      document.getElementById('linesContainer').innerHTML = '';
+      lineCounter = 0;
+      addLine();
+    };
+    
+    document.getElementById('exportBtn').onclick = function() {
+      if (dialogues.length === 0) {
+        showToast('Nessun dialogo da esportare', 'error');
+        return;
+      }
+      
+      const exportData = dialogues.map(d => ({
+        title: d.title,
+        lines: JSON.parse(d.lines)
+      }));
+      
+      const htmlContent = generateHTMLExport(exportData);
+      
+      const blob = new Blob([htmlContent], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'dialoghi-cinese.html';
+      a.click();
+      URL.revokeObjectURL(url);
+      
+      showToast('HTML esportato con successo!');
+    };
+    
+    function generateHTMLExport(dialoguesData) {
+      return `<!DOCTYPE html>
+<html lang="it" style="height: 100%;">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dialoghi in Cinese</title>
+  <script src="https://cdn.tailwindcss.com"><\/script>
+  <style>
+    body { box-sizing: border-box; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .dialogue-line { animation: fadeIn 0.4s ease-out; }
+    .chinese-text { font-size: 1.5em; line-height: 1.6; }
+    .pinyin-text { color: #6b7280; font-style: italic; margin-top: 0.25rem; }
+    .translation-text { margin-top: 0.5rem; padding: 0.75rem; border-radius: 0.5rem; background: rgba(255, 255, 255, 0.5); }
+  </style>
+</head>
+<body style="height: 100%; width: 100%; margin: 0; padding: 0;">
+  <main style="height: 100%; width: 100%; overflow: auto; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+    <div style="min-height: 100%; width: 100%; display: flex; align-items: center; justify-content: center; padding: 1.5rem;">
+      <div style="width: 100%; max-width: 48rem;">
+        <header style="text-align: center; margin-bottom: 2rem;">
+          <h1 style="color: white; font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem;">Dialoghi in Cinese</h1>
+          <p style="color: white; font-size: 1.1rem; opacity: 0.9;">Pratica conversazioni quotidiane</p>
+        </header>
+        
+        <div style="background: white; border-radius: 1rem; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); padding: 2rem; margin-bottom: 1.5rem;">
+          <div id="dialogueTitle" style="text-align: center; margin-bottom: 1.5rem; font-size: 1.5rem; font-weight: 600; color: #4c1d95;"></div>
+          <div id="dialogueContainer" style="display: flex; flex-direction: column; gap: 1.5rem;"></div>
+          
+          <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+            <button id="toggleTranslationBtn" style="flex: 1; padding: 0.75rem 1.5rem; border-radius: 0.75rem; font-weight: 600; background: #8b5cf6; color: white; border: none; cursor: pointer; transition: all 0.3s;">
+              <span id="toggleBtnText">Mostra Traduzione</span>
+            </button>
+            <button id="nextDialogueBtn" style="flex: 1; padding: 0.75rem 1.5rem; border-radius: 0.75rem; font-weight: 600; background: #ec4899; color: white; border: none; cursor: pointer; transition: all 0.3s;">
+              Prossimo Dialogo
+            </button>
+          </div>
+        </div>
+        
+        <div style="text-align: center; color: white;">
+          <span id="progressText" style="font-size: 1rem; opacity: 0.9;"></span>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const dialogues = ${JSON.stringify(dialoguesData)};
+    let currentDialogueIndex = 0;
+    let showTranslation = false;
+
+    function renderDialogue() {
+      const dialogue = dialogues[currentDialogueIndex];
+      const container = document.getElementById('dialogueContainer');
+      const titleEl = document.getElementById('dialogueTitle');
+      const progressEl = document.getElementById('progressText');
+      
+      titleEl.textContent = dialogue.title;
+      container.innerHTML = dialogue.lines.map(line => \`
+        <div class="dialogue-line" style="border-left: 4px solid \${line.speaker.includes('Cliente') || line.speaker.includes('Turista') || line.speaker.includes('Passeggero') ? '#8b5cf6' : '#ec4899'}; padding-left: 1rem;">
+          <div style="font-weight: 600; color: #6b7280; font-size: 0.875rem;">\${line.speaker}</div>
+          <div class="chinese-text" style="color: #1f2937;">\${line.chinese}</div>
+          <div class="pinyin-text">\${line.pinyin}</div>
+          <div class="translation-text" style="display: \${showTranslation ? 'block' : 'none'}; color: #4b5563;">\${line.translation}</div>
+        </div>
+      \`).join('');
+      
+      progressEl.textContent = \`Dialogo \${currentDialogueIndex + 1} di \${dialogues.length}\`;
+      updateToggleButton();
+    }
+
+    function updateToggleButton() {
+      document.getElementById('toggleBtnText').textContent = showTranslation ? 'Nascondi Traduzione' : 'Mostra Traduzione';
+    }
+
+    document.getElementById('toggleTranslationBtn').onclick = function() {
+      showTranslation = !showTranslation;
+      document.querySelectorAll('.translation-text').forEach(t => {
+        t.style.display = showTranslation ? 'block' : 'none';
+      });
+      updateToggleButton();
+    };
+
+    document.getElementById('nextDialogueBtn').onclick = function() {
+      currentDialogueIndex = (currentDialogueIndex + 1) % dialogues.length;
+      showTranslation = false;
+      renderDialogue();
+    };
+
+    renderDialogue();
+  <\/script>
+</body>
+</html>`;
+    }
+    
+    // Initialize
+    loadDialogues();
+    addLine();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9b96d467b0830e49',t:'MTc2NzY1NjUyMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

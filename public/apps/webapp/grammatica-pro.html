@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="it" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Regole Grammaticali</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=Source+Sans+3:wght@400;500;600&family=Noto+Sans+JP:wght@400;700&family=Noto+Sans+SC:wght@400;700&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Source Sans 3', 'Noto Sans JP', 'Noto Sans SC', 'Noto Sans KR', sans-serif;
+            background: #f8fafc;
+        }
+        .font-heading { font-family: 'Crimson Pro', serif; }
+        
+        /* Stili per il contenuto delle regole */
+        .rule-preview h3 { font-size: 1.25rem; font-weight: 600; margin: 1.5rem 0 0.5rem; color: #1e3a5f; }
+        .rule-preview ul { list-style-type: disc; padding-left: 1.5rem; margin: 1rem 0; }
+        .rule-preview ol { list-style-type: decimal; padding-left: 1.5rem; margin: 1rem 0; }
+        .rule-preview table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; }
+        .rule-preview th, .rule-preview td { border: 1px solid #cbd5e1; padding: 0.75rem; text-align: left; }
+        .rule-preview th { background: #f1f5f9; font-weight: 600; }
+        .rule-preview strong { color: #1e3a5f; font-weight: 700; }
+        
+        .modal-bg {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(4px);
+        }
+
+        .tbar-btn {
+            padding: 0.4rem 0.75rem;
+            border-radius: 0.375rem;
+            border: 1px solid #e2e8f0;
+            background: white;
+            font-size: 0.85rem;
+            color: #475569;
+            transition: all 0.2s;
+        }
+        .tbar-btn:hover { background: #f1f5f9; color: #1e3a5f; border-color: #cbd5e1; }
+    </style>
+</head>
+<body class="h-full">
+
+    <div id="app" class="min-h-full flex flex-col">
+        <!-- Header -->
+        <header class="bg-[#1e3a5f] border-b border-slate-700 shadow-md">
+            <div class="max-w-6xl mx-auto px-6 py-4 flex flex-wrap gap-4 justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg flex items-center justify-center bg-[#d4a574]">
+                        <svg class="w-6 h-6 text-[#1e3a5f]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
+                    </div>
+                    <h1 class="font-heading text-2xl font-bold text-white tracking-tight">Grammatica Pro</h1>
+                </div>
+                
+                <div class="flex items-center gap-3">
+                    <button id="btn-export-all" onclick="exportManual()" class="hidden border border-[#d4a574] text-[#d4a574] px-4 py-2 rounded-lg font-bold hover:bg-[#d4a574] hover:text-[#1e3a5f] transition-all">
+                        Esporta Manuale (HTML)
+                    </button>
+                    <button onclick="openRuleModal()" class="bg-[#d4a574] text-[#1e3a5f] px-5 py-2 rounded-lg font-bold hover:brightness-110 transition-all shadow-lg active:scale-95">
+                        + Nuova Regola
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Griglia Regole -->
+        <main class="max-w-6xl mx-auto w-full px-6 py-10 flex-1">
+            <div id="no-rules" class="text-center py-20 hidden">
+                <div class="text-slate-300 mb-4">
+                    <svg class="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                </div>
+                <p class="text-slate-400 text-lg">Inizia scrivendo la tua prima regola grammaticale.</p>
+            </div>
+            <div id="rules-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+        </main>
+
+        <!-- Modal Editor -->
+        <div id="rule-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-bg">
+            <div class="bg-white w-full max-w-3xl rounded-2xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden">
+                <div class="px-6 py-4 border-b flex justify-between items-center bg-slate-50">
+                    <h2 id="modal-title" class="font-heading text-xl font-bold text-[#1e3a5f]">Aggiungi Regola</h2>
+                    <button onclick="closeRuleModal()" class="p-2 text-slate-400 hover:text-red-500 transition-colors">✕</button>
+                </div>
+                
+                <div class="flex-1 overflow-y-auto p-6 space-y-5">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-bold uppercase text-slate-400 ml-1">Titolo</label>
+                            <input type="text" id="title-in" placeholder="Es: Futuro Semplice" class="w-full border rounded-xl px-4 py-2.5 outline-none focus:ring-2 ring-[#d4a574]/30 border-slate-200">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-bold uppercase text-slate-400 ml-1">Categoria</label>
+                            <select id="cat-in" class="w-full border rounded-xl px-4 py-2.5 outline-none bg-white border-slate-200">
+                                <option>Giapponese</option><option>Cinese</option><option>Coreano</option>
+                                <option>Verbi</option><option>Sostantivi</option><option>Sintassi</option><option>Altro</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold uppercase text-slate-400 ml-1">Contenuto</label>
+                        <div class="flex flex-wrap gap-2 p-2 bg-slate-50 border border-slate-200 rounded-t-xl">
+                            <button onclick="wrapText('<strong>', '</strong>')" class="tbar-btn"><strong>G</strong></button>
+                            <button onclick="wrapText('<em>', '</em>')" class="tbar-btn"><em>C</em></button>
+                            <button onclick="wrapText('<h3>', '</h3>')" class="tbar-btn">H3</button>
+                            <button onclick="wrapText('<ul>\n <li>', '</li>\n</ul>')" class="tbar-btn">• Lista</button>
+                            <button onclick="wrapText('<ol>\n <li>', '</li>\n</ol>')" class="tbar-btn">1. Lista</button>
+                            <button onclick="wrapText('<table>\n <tr>\n  <th>Titolo</th>\n </tr>\n <tr>\n  <td>Cella</td>\n </tr>\n</table>', '')" class="tbar-btn">Tabella</button>
+                        </div>
+                        <textarea id="body-in" rows="8" class="w-full border border-t-0 border-slate-200 rounded-b-xl px-4 py-3 font-mono text-sm outline-none resize-none focus:bg-slate-50 transition-colors" placeholder="Scrivi qui la regola... (puoi usare i bottoni sopra)" oninput="renderPreview()"></textarea>
+                    </div>
+
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold uppercase text-slate-400 ml-1">Anteprima</label>
+                        <div id="rule-preview" class="rule-preview border border-slate-200 rounded-xl p-5 bg-white min-h-[150px] shadow-inner"></div>
+                    </div>
+                </div>
+
+                <div class="px-6 py-4 border-t bg-slate-50 flex justify-between items-center">
+                    <button id="del-btn" onclick="deleteRule()" class="text-red-500 font-bold hover:bg-red-50 px-4 py-2 rounded-lg transition-colors hidden">Elimina</button>
+                    <div class="flex gap-3 ml-auto">
+                        <button onclick="closeRuleModal()" class="px-5 py-2 text-slate-500 font-semibold hover:bg-slate-100 rounded-lg">Annulla</button>
+                        <button onclick="saveRule()" class="bg-[#1e3a5f] text-white px-8 py-2 rounded-lg font-bold hover:bg-[#254977] shadow-lg">Salva Regola</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let myRules = JSON.parse(localStorage.getItem('gramm_rules_v10') || '[]');
+        let activeId = null;
+
+        function saveRule() {
+            const t = document.getElementById('title-in').value;
+            const c = document.getElementById('cat-in').value;
+            const b = document.getElementById('body-in').value;
+            if(!t || !b) return alert("Compila tutti i campi!");
+
+            if(activeId) {
+                myRules = myRules.map(r => r.id === activeId ? {id: activeId, title: t, cat: c, body: b} : r);
+            } else {
+                myRules.push({id: Date.now(), title: t, cat: c, body: b});
+            }
+
+            localStorage.setItem('gramm_rules_v10', JSON.stringify(myRules));
+            closeRuleModal();
+            refreshGrid();
+        }
+
+        function refreshGrid() {
+            const grid = document.getElementById('rules-grid');
+            const empty = document.getElementById('no-rules');
+            const expBtn = document.getElementById('btn-export-all');
+            
+            grid.innerHTML = '';
+            
+            if (myRules.length === 0) {
+                empty.classList.remove('hidden');
+                expBtn.classList.add('hidden');
+            } else {
+                empty.classList.add('hidden');
+                expBtn.classList.remove('hidden');
+                myRules.forEach(r => {
+                    const card = document.createElement('div');
+                    card.className = "bg-white border border-slate-200 p-5 rounded-2xl shadow-sm hover:shadow-md hover:border-[#d4a574] transition-all cursor-pointer group";
+                    card.onclick = () => openRuleModal(r);
+                    card.innerHTML = `
+                        <div class="flex flex-col h-full justify-between gap-3">
+                            <div>
+                                <span class="text-[10px] font-extrabold uppercase tracking-widest text-[#d4a574]">${r.cat}</span>
+                                <h3 class="font-heading text-lg font-bold text-[#1e3a5f] mt-1 group-hover:text-[#d4a574] transition-colors">${r.title}</h3>
+                            </div>
+                            <div class="text-slate-300 self-end">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+                            </div>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+            }
+        }
+
+        function openRuleModal(r = null) {
+            activeId = r ? r.id : null;
+            document.getElementById('title-in').value = r ? r.title : '';
+            document.getElementById('cat-in').value = r ? r.cat : 'Giapponese';
+            document.getElementById('body-in').value = r ? r.body : '';
+            document.getElementById('modal-title').innerText = r ? "Modifica Regola" : "Aggiungi Regola";
+            document.getElementById('del-btn').classList.toggle('hidden', !r);
+            renderPreview();
+            document.getElementById('rule-modal').classList.replace('hidden', 'flex');
+        }
+
+        function closeRuleModal() {
+            document.getElementById('rule-modal').classList.replace('flex', 'hidden');
+        }
+
+        function renderPreview() {
+            document.getElementById('rule-preview').innerHTML = document.getElementById('body-in').value;
+        }
+
+        function wrapText(pre, post) {
+            const area = document.getElementById('body-in');
+            const start = area.selectionStart;
+            const end = area.selectionEnd;
+            const sel = area.value.substring(start, end);
+            area.value = area.value.substring(0, start) + pre + sel + post + area.value.substring(end);
+            renderPreview();
+            area.focus();
+        }
+
+        function deleteRule() {
+            if(!confirm("Vuoi davvero eliminare questa regola?")) return;
+            myRules = myRules.filter(x => x.id !== activeId);
+            localStorage.setItem('gramm_rules_v10', JSON.stringify(myRules));
+            closeRuleModal();
+            refreshGrid();
+        }
+
+        function exportManual() {
+            if(myRules.length === 0) return;
+            
+            const cats = [...new Set(myRules.map(r => r.cat))].sort();
+            let html = `<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><title>Manuale Grammaticale</title><link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@700&family=Source+Sans+3:wght@400;600&family=Noto+Sans+JP&family=Noto+Sans+SC&family=Noto+Sans+KR&display=swap" rel="stylesheet"><style>body{font-family:'Source Sans 3','Noto Sans JP','Noto Sans SC','Noto Sans KR',sans-serif;padding:50px;color:#1e3a5f;line-height:1.6;max-width:850px;margin:auto}h1.main{text-align:center;font-family:'Crimson Pro',serif;font-size:42px;border-bottom:3px solid #d4a574;padding-bottom:15px;margin-bottom:50px}h2.cat{color:#d4a574;font-family:'Crimson Pro',serif;font-size:30px;margin-top:50px;background:#f8fafc;padding:10px}article{margin-bottom:40px;border-bottom:1px solid #eee;padding-bottom:20px}h3.rule-t{font-size:24px;color:#1e3a5f;margin-bottom:10px}table{width:100%;border-collapse:collapse;margin:15px 0}th,td{border:1px solid #cbd5e1;padding:10px}th{background:#f1f5f9}strong{color:#1e3a5f}</style></head><body><h1 class="main">Il Mio Manuale di Grammatica</h1>`;
+            
+            cats.forEach(c => {
+                html += `<h2 class="cat">${c}</h2>`;
+                myRules.filter(r => r.cat === c).forEach(r => {
+                    html += `<article><h3 class="rule-t">${r.title}</h3><div class="content">${r.body}</div></article>`;
+                });
+            });
+            
+            html += `</body></html>`;
+            const blob = new Blob([html], {type: 'text/html'});
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `Manuale_Grammatica_Export.html`;
+            a.click();
+        }
+
+        refreshGrid();
+    </script>
+</body>
+</html>
+

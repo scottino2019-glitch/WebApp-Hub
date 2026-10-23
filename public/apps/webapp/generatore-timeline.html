@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="it" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generatore Timeline</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      box-sizing: border-box;
+    }
+    
+    .timeline-card {
+      transition: all 0.3s ease;
+    }
+    
+    .timeline-card:hover {
+      transform: translateX(8px);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+    }
+    
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 1rem 1.5rem;
+      border-radius: 0.5rem;
+      color: white;
+      font-weight: 600;
+      z-index: 1000;
+      animation: slideIn 0.3s ease;
+    }
+    
+    @keyframes slideIn {
+      from { transform: translateX(400px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    .timeline-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #8b5cf6;
+      border: 4px solid white;
+      box-shadow: 0 0 0 2px #8b5cf6;
+      position: absolute;
+      left: -8px;
+      top: 24px;
+    }
+
+    .timeline-line {
+      position: absolute;
+      left: 0;
+      top: 40px;
+      bottom: -16px;
+      width: 2px;
+      background: linear-gradient(to bottom, #8b5cf6, #ec4899);
+    }
+
+    .event-image {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 0.75rem;
+    }
+
+    .delete-confirmation {
+      display: inline-flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="/_sdk/element_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full w-full m-0 p-0">
+  <main class="h-full w-full overflow-auto" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);">
+   <div class="min-h-full w-full p-6">
+    <div class="max-w-7xl mx-auto"><!-- Header -->
+     <header class="text-center mb-8">
+      <h1 class="text-white text-5xl font-bold mb-2">Generatore di Timeline</h1>
+      <p class="text-white text-lg opacity-90">Crea timeline visive interattive per i tuoi progetti</p>
+     </header>
+     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6"><!-- Form Section -->
+      <div class="bg-white rounded-2xl shadow-2xl p-6">
+       <h2 class="text-2xl font-bold mb-4 text-slate-800">Nuovo Evento</h2>
+       <form id="eventForm">
+        <div class="mb-4"><label for="eventTitle" class="block font-semibold mb-2 text-gray-700">Titolo Evento</label> <input type="text" id="eventTitle" required class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:outline-none" placeholder="Es: Lancio Prodotto">
+        </div>
+        <div class="mb-4"><label for="eventDate" class="block font-semibold mb-2 text-gray-700">Data</label> <input type="text" id="eventDate" required class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:outline-none" placeholder="Es: Gennaio 2024">
+        </div>
+        <div class="mb-4"><label for="eventDescription" class="block font-semibold mb-2 text-gray-700">Descrizione</label> <textarea id="eventDescription" required rows="3" class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:outline-none" placeholder="Descrivi l'evento..."></textarea>
+        </div>
+        <div class="mb-4"><label for="eventImage" class="block font-semibold mb-2 text-gray-700">URL Immagine</label> <input type="url" id="eventImage" required class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:outline-none" placeholder="https://example.com/image.jpg">
+         <p class="text-xs text-gray-500 mt-1">Inserisci un URL pubblico di un'immagine</p>
+        </div><button type="submit" class="w-full py-3 px-6 rounded-xl font-semibold transition-all transform hover:scale-105 bg-purple-600 text-white hover:bg-purple-700"> Aggiungi Evento </button>
+       </form>
+      </div><!-- Timeline Preview Section -->
+      <div class="bg-white rounded-2xl shadow-2xl p-6">
+       <div class="flex justify-between items-center mb-4">
+        <h2 class="text-2xl font-bold text-slate-800">Anteprima Timeline</h2><button id="exportBtn" class="py-2 px-4 rounded-lg font-semibold transition-all transform hover:scale-105 bg-pink-500 text-white hover:bg-pink-600"> 📥 Esporta HTML </button>
+       </div>
+       <div id="timelinePreview" class="max-h-[600px] overflow-y-auto pl-6 relative"><!-- Timeline events will appear here -->
+       </div>
+       <div id="emptyState" class="text-center py-12 text-gray-400">
+        <div class="text-5xl">
+         ⏱️
+        </div>
+        <p class="mt-2">Nessun evento ancora</p>
+        <p class="text-sm">Aggiungi il primo evento per iniziare</p>
+       </div>
+      </div>
+     </div>
+    </div>
+   </div>
+  </main>
+  <script>
+    let events = [];
+    
+    // Load events from localStorage
+    function loadEvents() {
+      const saved = localStorage.getItem('timelineEvents');
+      if (saved) {
+        events = JSON.parse(saved);
+        renderTimeline();
+      }
+    }
+    
+    // Save events to localStorage
+    function saveEvents() {
+      localStorage.setItem('timelineEvents', JSON.stringify(events));
+    }
+    
+    function showToast(message, type = 'success') {
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.style.background = type === 'success' ? '#10b981' : '#ef4444';
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
+    }
+    
+    function deleteEvent(id) {
+      events = events.filter(e => e.id !== id);
+      saveEvents();
+      renderTimeline();
+      showToast('Evento eliminato!');
+    }
+    
+    function renderTimeline() {
+      const container = document.getElementById('timelinePreview');
+      const emptyState = document.getElementById('emptyState');
+      
+      if (events.length === 0) {
+        container.innerHTML = '';
+        emptyState.style.display = 'block';
+        return;
+      }
+      
+      emptyState.style.display = 'none';
+      
+      container.innerHTML = events.map((event, index) => `
+        <div class="timeline-card relative mb-8 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-4 border-l-4 border-purple-500" style="margin-left: 16px;">
+          ${index < events.length - 1 ? '<div class="timeline-line"></div>' : ''}
+          <div class="timeline-dot"></div>
+          
+          <div class="flex justify-between items-start mb-3">
+            <div>
+              <div class="text-sm font-semibold text-purple-600 mb-1">${event.date}</div>
+              <h3 class="font-bold text-xl text-slate-800">${event.title}</h3>
+            </div>
+            <div id="deleteContainer-${event.id}">
+              <button class="delete-btn text-red-500 font-semibold px-3 py-1 rounded-lg hover:bg-red-100 transition-all text-sm" data-id="${event.id}">Elimina</button>
+            </div>
+          </div>
+          
+          <img src="${event.image}" alt="${event.title}" class="event-image mb-3" onerror="this.src=''; this.alt='Immagine non disponibile'; this.style.display='none';">
+          
+          <p class="text-gray-700 text-sm leading-relaxed">${event.description}</p>
+        </div>
+      `).join('');
+      
+      // Add delete listeners with confirmation
+      document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.onclick = function() {
+          const id = this.dataset.id;
+          const container = document.getElementById(`deleteContainer-${id}`);
+          
+          container.innerHTML = `
+            <div class="delete-confirmation">
+              <button class="confirm-delete bg-red-500 text-white px-2 py-1 rounded-lg font-semibold hover:bg-red-600 transition-all text-xs" data-id="${id}">Conferma</button>
+              <button class="cancel-delete bg-gray-300 text-gray-700 px-2 py-1 rounded-lg font-semibold hover:bg-gray-400 transition-all text-xs" data-id="${id}">Annulla</button>
+            </div>
+          `;
+          
+          container.querySelector('.confirm-delete').onclick = function() {
+            deleteEvent(id);
+          };
+          
+          container.querySelector('.cancel-delete').onclick = function() {
+            container.innerHTML = `<button class="delete-btn text-red-500 font-semibold px-3 py-1 rounded-lg hover:bg-red-100 transition-all text-sm" data-id="${id}">Elimina</button>`;
+            container.querySelector('.delete-btn').onclick = btn.onclick;
+          };
+        };
+      });
+    }
+    
+    document.getElementById('eventForm').onsubmit = function(e) {
+      e.preventDefault();
+      
+      const event = {
+        id: Date.now().toString(),
+        title: document.getElementById('eventTitle').value,
+        date: document.getElementById('eventDate').value,
+        description: document.getElementById('eventDescription').value,
+        image: document.getElementById('eventImage').value,
+        createdAt: new Date().toISOString()
+      };
+      
+      events.push(event);
+      saveEvents();
+      renderTimeline();
+      
+      showToast('Evento aggiunto alla timeline!');
+      document.getElementById('eventForm').reset();
+    };
+    
+    document.getElementById('exportBtn').onclick = function() {
+      if (events.length === 0) {
+        showToast('Nessun evento da esportare', 'error');
+        return;
+      }
+      
+      const htmlContent = generateHTMLExport(events);
+      
+      const blob = new Blob([htmlContent], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'timeline.html';
+      a.click();
+      URL.revokeObjectURL(url);
+      
+      showToast('Timeline esportata con successo!');
+    };
+    
+    function generateHTMLExport(eventsData) {
+      return `<!DOCTYPE html>
+<html lang="it" style="height: 100%;">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Timeline Interattiva</title>
+  <script src="https://cdn.tailwindcss.com"><\/script>
+  <style>
+    body { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .timeline-item {
+      animation: fadeInUp 0.6s ease-out;
+      animation-fill-mode: both;
+    }
+    
+    .timeline-dot {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #8b5cf6;
+      border: 4px solid white;
+      box-shadow: 0 0 0 3px #8b5cf6;
+      position: absolute;
+      left: -10px;
+      top: 24px;
+      z-index: 10;
+    }
+    
+    .timeline-line {
+      position: absolute;
+      left: 0;
+      top: 44px;
+      bottom: -24px;
+      width: 3px;
+      background: linear-gradient(to bottom, #8b5cf6, #ec4899);
+    }
+    
+    .event-image {
+      width: 100%;
+      height: 240px;
+      object-fit: cover;
+      border-radius: 0.75rem;
+    }
+  </style>
+</head>
+<body style="height: 100%; width: 100%; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);">
+  <main style="height: 100%; width: 100%; overflow: auto;">
+    <div style="min-height: 100%; padding: 3rem 1.5rem;">
+      <div style="max-width: 56rem; margin: 0 auto;">
+        <header style="text-align: center; margin-bottom: 3rem;">
+          <h1 style="color: white; font-size: 3rem; font-weight: 700; margin-bottom: 0.5rem;">Timeline Interattiva</h1>
+          <p style="color: white; font-size: 1.125rem; opacity: 0.9;">Esplora gli eventi nel tempo</p>
+        </header>
+        
+        <div id="timeline" style="padding-left: 2rem; position: relative;">
+          ${eventsData.map((event, index) => `
+            <div class="timeline-item" style="position: relative; margin-bottom: 2.5rem; animation-delay: ${index * 0.15}s;">
+              ${index < eventsData.length - 1 ? '<div class="timeline-line"></div>' : ''}
+              <div class="timeline-dot"></div>
+              
+              <div style="background: linear-gradient(to bottom right, rgba(139, 92, 246, 0.1), rgba(236, 72, 153, 0.1)); backdrop-filter: blur(10px); border-radius: 1rem; padding: 1.5rem; border: 2px solid rgba(139, 92, 246, 0.3); margin-left: 1rem;">
+                <div style="font-size: 0.875rem; font-weight: 600; color: #a78bfa; margin-bottom: 0.5rem;">${event.date}</div>
+                <h3 style="font-size: 1.5rem; font-weight: 700; color: white; margin-bottom: 1rem;">${event.title}</h3>
+                
+                <img src="${event.image}" alt="${event.title}" class="event-image" style="margin-bottom: 1rem;" onerror="this.style.display='none';">
+                
+                <p style="color: rgba(255, 255, 255, 0.8); line-height: 1.6;">${event.description}</p>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+        
+        <div style="text-align: center; margin-top: 3rem; padding: 2rem; background: rgba(139, 92, 246, 0.1); border-radius: 1rem; border: 2px solid rgba(139, 92, 246, 0.3);">
+          <p style="color: white; font-size: 1.125rem; font-weight: 600;">🎉 Fine della Timeline</p>
+          <p style="color: rgba(255, 255, 255, 0.7); margin-top: 0.5rem;">${eventsData.length} eventi totali</p>
+        </div>
+      </div>
+    </div>
+  </main>
+</body>
+</html>`;
+    }
+    
+    // Initialize
+    loadEvents();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9b96da5872020e49',t:'MTc2NzY1Njc2NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
