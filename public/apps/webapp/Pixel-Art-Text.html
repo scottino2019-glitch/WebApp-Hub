@@ -1,0 +1,2252 @@
+<!doctype html>
+<html lang="it" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google" content="notranslate">
+  <title>Pixel Art Text - Generatore Testo Retro 8-Bit</title>
+  <meta name="description" content="Generatore retro di scritte pixel art 8-bit con scrittura animata, stili vintage, effetti CRT, esportazione SVG fedele a pixel e copia testo in blocchi Unicode 8-bit.">
+  <meta property="og:title" content="Pixel Art Text - Generatore Testo Retro 8-Bit">
+  <meta property="og:description" content="Trasforma il tuo testo in stile pixel art retrò 8-bit, esporta SVG vettoriale fedele o copia in blocchi pixel Unicode.">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- Google Fonts: Retro & Pixel collection -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Silkscreen:wght@400;700&family=Pixelify+Sans:wght@400;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* Reset & Base Setup */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --pixel-color: #9bbc0f;
+      --bg-color: #0f380f;
+      --shadow-color: #306230;
+      --accent: #10b981;
+    }
+
+    body {
+      font-family: 'Press Start 2P', monospace, cursive;
+      background: #090912;
+      color: #e2e8f0;
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Font Utility Classes */
+    .font-pixel { font-family: 'Press Start 2P', monospace; }
+    .font-retro { font-family: 'VT323', monospace; }
+    .font-silkscreen { font-family: 'Silkscreen', monospace; }
+    .font-pixelify { font-family: 'Pixelify Sans', sans-serif; }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0f0c1b;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 4px;
+      border: 2px solid #0f0c1b;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #10b981;
+    }
+
+    /* Background Aesthetic Pattern */
+    .pixel-grid-bg {
+      background-image: 
+        radial-gradient(circle at 50% 0%, rgba(30, 27, 75, 0.6) 0%, transparent 70%),
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 100% 100%, 24px 24px, 24px 24px;
+      background-color: #0b0817;
+    }
+
+    /* Glass Panels */
+    .retro-card {
+      background: rgba(18, 16, 32, 0.85);
+      border: 2px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5), inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(12px);
+      border-radius: 14px;
+    }
+
+    .retro-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.06);
+      padding: 12px 18px;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      color: #94a3b8;
+    }
+
+    /* Buttons */
+    .arcade-btn {
+      position: relative;
+      font-family: 'VT323', monospace;
+      font-size: 18px;
+      letter-spacing: 0.05em;
+      padding: 10px 16px;
+      border: 2px solid rgba(255, 255, 255, 0.15);
+      background: rgba(25, 22, 45, 0.9);
+      color: #f1f5f9;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      user-select: none;
+      box-shadow: 0 4px 0 rgba(0, 0, 0, 0.4);
+    }
+    .arcade-btn:hover {
+      transform: translateY(-2px);
+      border-color: #10b981;
+      color: #34d399;
+      box-shadow: 0 6px 0 rgba(0, 0, 0, 0.5), 0 0 15px rgba(16, 185, 129, 0.2);
+    }
+    .arcade-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
+    }
+    .arcade-btn.primary {
+      background: linear-gradient(180deg, #10b981 0%, #059669 100%);
+      color: #ffffff;
+      border-color: #34d399;
+      font-weight: bold;
+      text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.4);
+    }
+    .arcade-btn.primary:hover {
+      background: linear-gradient(180deg, #34d399 0%, #10b981 100%);
+      border-color: #a7f3d0;
+      color: #ffffff;
+    }
+    .arcade-btn.danger {
+      background: rgba(239, 68, 68, 0.15);
+      border-color: rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+    }
+    .arcade-btn.danger:hover {
+      background: rgba(239, 68, 68, 0.3);
+      border-color: #ef4444;
+      color: #ffffff;
+    }
+
+    /* Style Presets Grid */
+    .preset-card {
+      position: relative;
+      padding: 12px 8px;
+      border-radius: 10px;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      background: #18152e;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s ease;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+    .preset-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(255, 255, 255, 0.4);
+    }
+    .preset-card.active {
+      border-color: #10b981;
+      background: rgba(16, 185, 129, 0.12);
+      box-shadow: 0 0 16px rgba(16, 185, 129, 0.35), inset 0 0 0 1px #10b981;
+    }
+    .preset-preview-pill {
+      width: 100%;
+      height: 26px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: bold;
+      border: 1px solid rgba(0,0,0,0.3);
+    }
+
+    /* Quick Badges */
+    .quick-chip {
+      font-family: 'VT323', monospace;
+      font-size: 16px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #94a3b8;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+    .quick-chip:hover {
+      background: rgba(16, 185, 129, 0.2);
+      border-color: #10b981;
+      color: #34d399;
+      transform: scale(1.04);
+    }
+
+    /* CRT Monitor Frame & Effects */
+    .crt-monitor {
+      position: relative;
+      border: 6px solid #23203c;
+      border-radius: 18px;
+      box-shadow: 
+        0 0 0 2px #0f0c1b,
+        0 15px 35px rgba(0, 0, 0, 0.8),
+        inset 0 0 30px rgba(0, 0, 0, 0.7);
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+    
+    .crt-screen {
+      position: relative;
+      min-height: 260px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 36px 24px;
+      overflow: hidden;
+      word-break: break-word;
+      transition: background-color 0.25s ease;
+    }
+
+    /* Scanlines Overlay */
+    .scanlines-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        rgba(18, 16, 16, 0) 50%, 
+        rgba(0, 0, 0, 0.35) 50%
+      );
+      background-size: 100% 4px;
+      pointer-events: none;
+      z-index: 10;
+      opacity: 0.85;
+    }
+
+    /* CRT Vignette / Screen curvature glow */
+    .crt-vignette {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at center, transparent 65%, rgba(0, 0, 0, 0.75) 100%);
+      pointer-events: none;
+      z-index: 11;
+    }
+
+    /* CRT Flicker */
+    @keyframes crtFlicker {
+      0% { opacity: 0.98; }
+      50% { opacity: 1; }
+      52% { opacity: 0.94; }
+      54% { opacity: 1; }
+      80% { opacity: 0.97; }
+      100% { opacity: 0.99; }
+    }
+    .crt-flicker-active {
+      animation: crtFlicker 0.15s infinite;
+    }
+
+    /* Pixel Text Rendering */
+    .pixel-text-element {
+      image-rendering: pixelated;
+      image-rendering: -moz-crisp-edges;
+      image-rendering: crisp-edges;
+      text-align: center;
+      line-height: 1.6;
+      transition: color 0.2s ease, font-size 0.2s ease;
+      max-width: 100%;
+      word-wrap: break-word;
+      position: relative;
+    }
+
+    /* Text 3D Pixel Shadow */
+    .pixel-shadow-3d {
+      text-shadow: 
+        2px 2px 0 var(--shadow-color),
+        4px 4px 0 var(--shadow-color),
+        6px 6px 0 rgba(0, 0, 0, 0.5);
+    }
+
+    /* Neon Glow */
+    .pixel-neon-glow {
+      text-shadow: 
+        0 0 5px var(--pixel-color),
+        0 0 15px var(--pixel-color),
+        0 0 30px var(--shadow-color);
+    }
+
+    /* Animations & Combinations */
+    @keyframes blink {
+      0%, 49% { opacity: 1; }
+      50%, 100% { opacity: 0; }
+    }
+    .blink-cursor::after {
+      content: '▮';
+      display: inline-block;
+      animation: blink 0.9s infinite;
+      margin-left: 6px;
+      color: var(--pixel-color);
+      vertical-align: middle;
+    }
+
+    @keyframes arcadeWave {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+    .anim-wave {
+      animation: arcadeWave 1.4s ease-in-out infinite;
+      display: inline-block;
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { transform: scale(1); filter: brightness(1); }
+      50% { transform: scale(1.04); filter: brightness(1.25); }
+    }
+    .anim-pulse {
+      animation: pulseGlow 1.8s ease-in-out infinite;
+      display: inline-block;
+    }
+
+    @keyframes retroGlitch {
+      0% { transform: translate(0); }
+      20% { transform: translate(-2px, 2px); }
+      40% { transform: translate(-1px, -1px); }
+      60% { transform: translate(2px, 1px); }
+      80% { transform: translate(1px, -2px); }
+      100% { transform: translate(0); }
+    }
+    .anim-glitch {
+      animation: retroGlitch 0.4s infinite;
+      display: inline-block;
+    }
+
+    @keyframes arcadeWaveChar {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+    .wave-char {
+      display: inline-block;
+      animation: arcadeWaveChar 1.3s ease-in-out infinite;
+    }
+
+    @keyframes retroFloat {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-6px) rotate(-1deg); }
+    }
+    .anim-float {
+      animation: retroFloat 2.2s ease-in-out infinite;
+      display: inline-block;
+    }
+
+    @keyframes charPop {
+      0% { transform: scale(1.35); opacity: 0.6; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .char-pop {
+      animation: charPop 0.12s cubic-bezier(0, 0, 0.2, 1);
+      display: inline-block;
+    }
+
+    /* Toast Notification */
+    #toast-notification {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(40px);
+      background: #10b981;
+      color: #ffffff;
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-family: 'VT323', monospace;
+      font-size: 20px;
+      letter-spacing: 0.05em;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6), 0 0 20px rgba(16, 185, 129, 0.4);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border: 2px solid #6ee7b7;
+    }
+    #toast-notification.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* Modal for Code & Pixel Text Export */
+    .code-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 5, 12, 0.85);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .code-modal-backdrop.open {
+      display: flex;
+    }
+    .code-modal {
+      width: 100%;
+      max-width: 680px;
+      background: #141126;
+      border: 2px solid #332d56;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+    }
+    .code-textarea {
+      width: 100%;
+      height: 240px;
+      background: #0a0814;
+      color: #38bdf8;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      padding: 16px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      line-height: 1.4;
+      resize: none;
+      outline: none;
+      white-space: pre;
+      overflow-x: auto;
+    }
+    .modal-tab-btn {
+      font-family: 'VT323', monospace;
+      font-size: 16px;
+      padding: 6px 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #94a3b8;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .modal-tab-btn:hover {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border-color: #10b981;
+    }
+    .modal-tab-btn.active {
+      background: #10b981;
+      color: #ffffff;
+      border-color: #34d399;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body class="pixel-grid-bg">
+
+  <!-- Main Container -->
+  <div class="min-h-screen flex flex-col justify-between" style="max-width: 1200px; margin: 0 auto; padding: 24px 16px;">
+
+    <!-- Top Bar / Header -->
+    <header style="margin-bottom: 28px;">
+      <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.08);">
+        
+        <!-- App Title & Icon -->
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <div style="width: 46px; height: 46px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 0 15px rgba(16, 185, 129, 0.4); border: 2px solid #34d399;">
+            👾
+          </div>
+          <div>
+            <h1 style="font-size: clamp(18px, 4vw, 26px); color: #10b981; text-shadow: 2px 2px 0 #064e3b; letter-spacing: 0.05em; margin-bottom: 4px;">
+              PIXEL ART TEXT
+            </h1>
+            <p class="font-retro" style="color: #94a3b8; font-size: 17px; margin: 0;">
+              Generatore di testo stile retrò 8-bit &middot; SVG Vettoriale Fedele &amp; Blocchi Pixel Unicode
+            </p>
+          </div>
+        </div>
+
+        <!-- Quick Header Actions (Audio SFX Toggle & Randomizer) -->
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <button id="sfx-toggle-btn" class="arcade-btn" title="Attiva/Disattiva effetti sonori 8-bit">
+            <span id="sfx-icon">🔊</span> <span id="sfx-text">AUDIO ON</span>
+          </button>
+          <button id="random-btn" class="arcade-btn" title="Genera stile casuale">
+            <span>🎲</span> <span>CASUALE</span>
+          </button>
+        </div>
+
+      </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main style="display: flex; flex-direction: column; gap: 24px;">
+
+      <!-- Live CRT Preview Section (Top Priority) -->
+      <section class="retro-card" style="padding: 20px;">
+        <div class="retro-card-header" style="padding-top: 0; padding-left: 0; padding-right: 0; margin-bottom: 16px;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #10b981; box-shadow: 0 0 8px #10b981;"></span>
+            <span class="font-retro" style="font-size: 18px; color: #cbd5e1;">SCHERMO ANTEPRIMA RETRO</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <button id="restart-typewriter-btn" class="arcade-btn" style="padding: 4px 12px; font-size: 15px; border-color: #10b981; color: #34d399;" title="Riavvia l'animazione di digitazione">
+              ▶ RIAVVIA SCRITTURA
+            </button>
+            <button id="clear-btn" class="arcade-btn danger" style="padding: 4px 12px; font-size: 15px;" title="Cancella il testo">
+              [X] PULISCI
+            </button>
+          </div>
+        </div>
+
+        <!-- CRT Screen Box -->
+        <div class="crt-monitor">
+          <div id="scanlines-layer" class="scanlines-overlay"></div>
+          <div class="crt-vignette"></div>
+          
+          <div id="preview-screen" class="crt-screen" style="background-color: var(--bg-color);">
+            <div id="preview-text-box" class="pixel-text-element pixel-shadow-3d blink-cursor font-pixel anim-wave" style="color: var(--pixel-color); font-size: 2.2rem;">
+              PRESS START
+            </div>
+          </div>
+        </div>
+
+        <!-- Preview Info Bar -->
+        <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-top: 14px; padding: 0 4px;">
+          <div class="font-retro" style="color: #94a3b8; font-size: 16px; display: flex; gap: 16px;">
+            <span>CARATTERI: <strong id="char-counter" style="color: #34d399;">11</strong> / 120</span>
+            <span>PRESET: <strong id="current-preset-label" style="color: #f59e0b;">GAME BOY</strong></span>
+            <span>DIGITAZIONE: <strong id="typewriter-status-label" style="color: #10b981;">ATTIVA (LOOP)</strong></span>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <!-- CRT Screen FX Quick Toggles -->
+            <label class="font-retro" style="font-size: 16px; color: #cbd5e1; display: inline-flex; align-items: center; gap: 6px; cursor: pointer;">
+              <input type="checkbox" id="toggle-scanlines" checked style="accent-color: #10b981; width: 16px; height: 16px;">
+              Linee CRT
+            </label>
+            <label class="font-retro" style="font-size: 16px; color: #cbd5e1; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; margin-left: 10px;">
+              <input type="checkbox" id="toggle-flicker" style="accent-color: #10b981; width: 16px; height: 16px;">
+              Flicker CRT
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <!-- Input and Quick Words Section -->
+      <section class="retro-card" style="padding: 20px;">
+        <label for="text-input" class="font-retro" style="font-size: 18px; color: #cbd5e1; display: block; margin-bottom: 8px;">
+          SCRIVI IL TUO TESTO RETRO
+        </label>
+        
+        <div style="display: flex; gap: 10px; margin-bottom: 14px;">
+          <input 
+            type="text" 
+            id="text-input" 
+            value="PRESS START" 
+            placeholder="Scrivi qui il tuo messaggio..." 
+            maxlength="120" 
+            autocomplete="off"
+            spellcheck="false"
+            class="font-pixel"
+            style="width: 100%; padding: 14px 16px; border-radius: 10px; background: #0c0a1a; color: #10b981; border: 2px solid rgba(16, 185, 129, 0.4); font-size: 14px; outline: none; transition: border-color 0.2s;"
+          >
+        </div>
+
+        <!-- Quick Insert Chips -->
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <span class="font-retro" style="font-size: 15px; color: #64748b;">FRASI CLASSICHE ARCADE:</span>
+          <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+            <button class="quick-chip" data-phrase="INSERT COIN">INSERT COIN</button>
+            <button class="quick-chip" data-phrase="GAME OVER">GAME OVER</button>
+            <button class="quick-chip" data-phrase="HIGH SCORE">HIGH SCORE</button>
+            <button class="quick-chip" data-phrase="LEVEL UP!">LEVEL UP!</button>
+            <button class="quick-chip" data-phrase="READY PLAYER 1">READY PLAYER 1</button>
+            <button class="quick-chip" data-phrase="1-UP EXTRA">1-UP EXTRA</button>
+            <button class="quick-chip" data-phrase="YOU WIN!">YOU WIN!</button>
+            <button class="quick-chip" data-phrase="PIXEL MASTER">PIXEL MASTER</button>
+            <button class="quick-chip" data-phrase="8-BIT HERO">8-BIT HERO</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Customization Grid (Presets, Typography, Colors, Effects) -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px;">
+
+        <!-- 1. Retro Style Presets -->
+        <section class="retro-card" style="padding: 20px;">
+          <h2 class="font-retro" style="font-size: 20px; color: #cbd5e1; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between;">
+            <span>🎨 STILI RETRO CLASSICI</span>
+            <span style="font-size: 14px; color: #94a3b8;">(10 Tipi)</span>
+          </h2>
+
+          <div id="presets-container" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+            <!-- Populated dynamically via JS -->
+          </div>
+        </section>
+
+        <!-- 2. Typography & Fonts -->
+        <section class="retro-card" style="padding: 20px;">
+          <h2 class="font-retro" style="font-size: 20px; color: #cbd5e1; margin-bottom: 14px;">
+            🔤 FONT &amp; DIMENSIONE
+          </h2>
+
+          <div style="display: flex; flex-direction: column; gap: 16px;">
+            <!-- Font Selection -->
+            <div>
+              <label for="font-select" class="font-retro" style="font-size: 16px; color: #94a3b8; display: block; margin-bottom: 6px;">
+                SELEZIONA FONT PIXEL
+              </label>
+              <select id="font-select" class="font-retro" style="width: 100%; padding: 10px 14px; background: #0c0a1a; color: #f8fafc; border: 2px solid rgba(255,255,255,0.12); border-radius: 8px; font-size: 18px; outline: none; cursor: pointer;">
+                <option value="font-pixel" selected>Press Start 2P (Classico Arcade)</option>
+                <option value="font-retro">VT323 (Schermo CRT Terminale)</option>
+                <option value="font-silkscreen">Silkscreen (Pixel Pulito)</option>
+                <option value="font-pixelify">Pixelify Sans (Moderno 8-Bit)</option>
+              </select>
+            </div>
+
+            <!-- Size Slider -->
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <label for="size-slider" class="font-retro" style="font-size: 16px; color: #94a3b8;">
+                  DIMENSIONE TESTO
+                </label>
+                <span id="size-val-label" class="font-retro" style="color: #10b981; font-size: 18px;">2.2 rem</span>
+              </div>
+              <input type="range" id="size-slider" min="1.0" max="4.5" step="0.1" value="2.2" style="width: 100%; accent-color: #10b981; cursor: pointer;">
+              <div style="display: flex; justify-content: space-between; margin-top: 4px;" class="font-retro">
+                <span style="font-size: 14px; color: #64748b;">MIN (1.0)</span>
+                <span style="font-size: 14px; color: #64748b;">MEDIO (2.2)</span>
+                <span style="font-size: 14px; color: #64748b;">MAX (4.5)</span>
+              </div>
+            </div>
+
+            <!-- Letter Spacing & Transform -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+              <div>
+                <label for="spacing-select" class="font-retro" style="font-size: 15px; color: #94a3b8; display: block; margin-bottom: 4px;">
+                  SPAZIATURA
+                </label>
+                <select id="spacing-select" class="font-retro" style="width: 100%; padding: 8px 10px; background: #0c0a1a; color: #f8fafc; border: 2px solid rgba(255,255,255,0.12); border-radius: 8px; font-size: 16px; outline: none;">
+                  <option value="normal">Normale</option>
+                  <option value="0.1em" selected>Spaziata (+1px)</option>
+                  <option value="0.2em">Molto Spaziata</option>
+                  <option value="0.3em">Arcade Ultra</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="transform-select" class="font-retro" style="font-size: 15px; color: #94a3b8; display: block; margin-bottom: 4px;">
+                  MAIUSCOLO
+                </label>
+                <select id="transform-select" class="font-retro" style="width: 100%; padding: 8px 10px; background: #0c0a1a; color: #f8fafc; border: 2px solid rgba(255,255,255,0.12); border-radius: 8px; font-size: 16px; outline: none;">
+                  <option value="uppercase" selected>SOLO MAIUSCOLE</option>
+                  <option value="none">Testo Originale</option>
+                </select>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- 3. Colors Picker -->
+        <section class="retro-card" style="padding: 20px;">
+          <h2 class="font-retro" style="font-size: 20px; color: #cbd5e1; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between;">
+            <span>🎨 COLORI PERSONALIZZATI</span>
+            <button id="swap-colors-btn" class="arcade-btn" style="padding: 2px 10px; font-size: 14px;" title="Inverti colore testo e sfondo">
+              🔄 Inverti
+            </button>
+          </h2>
+
+          <div style="display: flex; flex-direction: column; gap: 14px;">
+            <div>
+              <label for="color-pixel" class="font-retro" style="font-size: 16px; color: #94a3b8; display: flex; justify-content: space-between; margin-bottom: 6px;">
+                <span>COLORE TESTO PIXEL</span>
+                <span id="pixel-hex-label" style="color: #34d399;">#9bbc0f</span>
+              </label>
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <input type="color" id="color-pixel" value="#9bbc0f" style="width: 50px; height: 38px; border: 2px solid rgba(255,255,255,0.2); border-radius: 8px; cursor: pointer; background: transparent;">
+                <input type="text" id="color-pixel-text" value="#9bbc0f" maxlength="7" class="font-retro" style="flex: 1; padding: 6px 12px; background: #0c0a1a; color: #f8fafc; border: 1px solid rgba(255,255,255,0.12); border-radius: 6px; font-size: 17px;">
+              </div>
+            </div>
+
+            <div>
+              <label for="color-bg" class="font-retro" style="font-size: 16px; color: #94a3b8; display: flex; justify-content: space-between; margin-bottom: 6px;">
+                <span>COLORE SFONDO</span>
+                <span id="bg-hex-label" style="color: #34d399;">#0f380f</span>
+              </label>
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <input type="color" id="color-bg" value="#0f380f" style="width: 50px; height: 38px; border: 2px solid rgba(255,255,255,0.2); border-radius: 8px; cursor: pointer; background: transparent;">
+                <input type="text" id="color-bg-text" value="#0f380f" maxlength="7" class="font-retro" style="flex: 1; padding: 6px 12px; background: #0c0a1a; color: #f8fafc; border: 1px solid rgba(255,255,255,0.12); border-radius: 6px; font-size: 17px;">
+              </div>
+            </div>
+
+            <div>
+              <label for="color-shadow" class="font-retro" style="font-size: 16px; color: #94a3b8; display: flex; justify-content: space-between; margin-bottom: 6px;">
+                <span>COLORE OMBRA / GLOW</span>
+                <span id="shadow-hex-label" style="color: #34d399;">#306230</span>
+              </label>
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <input type="color" id="color-shadow" value="#306230" style="width: 50px; height: 38px; border: 2px solid rgba(255,255,255,0.2); border-radius: 8px; cursor: pointer; background: transparent;">
+                <input type="text" id="color-shadow-text" value="#306230" maxlength="7" class="font-retro" style="flex: 1; padding: 6px 12px; background: #0c0a1a; color: #f8fafc; border: 1px solid rgba(255,255,255,0.12); border-radius: 6px; font-size: 17px;">
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 4. Retro Effects & Typewriter & Animations -->
+        <section class="retro-card" style="padding: 20px;">
+          <h2 class="font-retro" style="font-size: 20px; color: #cbd5e1; margin-bottom: 14px;">
+            ✨ ANIMAZIONI &amp; DIGITAZIONE
+          </h2>
+
+          <div style="display: flex; flex-direction: column; gap: 14px;">
+
+            <!-- Typewriter Dedicated Sub-Panel -->
+            <div style="background: rgba(16, 185, 129, 0.08); border: 2px solid rgba(16, 185, 129, 0.35); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 12px;">
+              <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+                <label for="typewriter-toggle" class="font-retro" style="font-size: 18px; color: #34d399; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-weight: bold;">
+                  <input type="checkbox" id="typewriter-toggle" checked style="accent-color: #10b981; width: 18px; height: 18px;">
+                  ⌨️ SCRITTURA LETTERA PER LETTERA
+                </label>
+                <button id="typewriter-replay-small-btn" class="arcade-btn" style="padding: 2px 10px; font-size: 13px;" title="Riavvia la scrittura">
+                  ▶ Riavvia
+                </button>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <div>
+                  <label for="typewriter-speed-select" class="font-retro" style="font-size: 14px; color: #94a3b8; display: block; margin-bottom: 4px;">
+                    VELOCITÀ DIGITAZIONE
+                  </label>
+                  <select id="typewriter-speed-select" class="font-retro" style="width: 100%; padding: 6px 10px; background: #0c0a1a; color: #f8fafc; border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; font-size: 15px; outline: none; cursor: pointer;">
+                    <option value="120">Lenta (120ms)</option>
+                    <option value="60" selected>Media (60ms)</option>
+                    <option value="30">Veloce (30ms)</option>
+                    <option value="15">Turbo (15ms)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label for="typewriter-mode-select" class="font-retro" style="font-size: 14px; color: #94a3b8; display: block; margin-bottom: 4px;">
+                    MODALITÀ RIPETIZIONE
+                  </label>
+                  <select id="typewriter-mode-select" class="font-retro" style="width: 100%; padding: 6px 10px; background: #0c0a1a; color: #f8fafc; border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; font-size: 15px; outline: none; cursor: pointer;">
+                    <option value="loop" selected>Ripeti in Loop</option>
+                    <option value="once">Scrivi Una Volta</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Combine with Animation -->
+            <div>
+              <label for="animation-select" class="font-retro" style="font-size: 16px; color: #94a3b8; display: block; margin-bottom: 6px;">
+                COMBINA CON ANIMAZIONE
+              </label>
+              <select id="animation-select" class="font-retro" style="width: 100%; padding: 10px 14px; background: #0c0a1a; color: #f8fafc; border: 2px solid rgba(255,255,255,0.12); border-radius: 8px; font-size: 18px; outline: none; cursor: pointer;">
+                <option value="anim-wave" selected>🌊 Onda Arcade (Wave)</option>
+                <option value="anim-pulse">💓 Battito Pulsante (Heartbeat)</option>
+                <option value="anim-glitch">⚡ Glitch 8-Bit Digitale</option>
+                <option value="anim-float">🛸 Fluttuazione Spaziale (Float)</option>
+                <option value="anim-wave-chars">🎪 Onda Singola Lettera (Per-Char)</option>
+                <option value="none">⏹️ Nessuna (Fissa)</option>
+              </select>
+            </div>
+
+            <!-- Shadow Style -->
+            <div>
+              <label for="shadow-style-select" class="font-retro" style="font-size: 16px; color: #94a3b8; display: block; margin-bottom: 6px;">
+                TIPO DI OMBRA
+              </label>
+              <select id="shadow-style-select" class="font-retro" style="width: 100%; padding: 10px 14px; background: #0c0a1a; color: #f8fafc; border: 2px solid rgba(255,255,255,0.12); border-radius: 8px; font-size: 18px; outline: none; cursor: pointer;">
+                <option value="3d" selected>Ombra Pixel 3D Scalettata</option>
+                <option value="neon">Alone Neon Glow Retro</option>
+                <option value="flat">Piatto (Nessuna Ombra)</option>
+              </select>
+            </div>
+
+            <!-- Cursor Toggle & PNG Transparence -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 2px;">
+              <label class="font-retro" style="font-size: 16px; color: #cbd5e1; display: inline-flex; align-items: center; gap: 8px; cursor: pointer;">
+                <input type="checkbox" id="cursor-toggle" checked style="accent-color: #10b981; width: 18px; height: 18px;">
+                Cursore ▮
+              </label>
+              <label class="font-retro" style="font-size: 16px; color: #cbd5e1; display: inline-flex; align-items: center; gap: 8px; cursor: pointer;">
+                <input type="checkbox" id="transparent-png-toggle" style="accent-color: #10b981; width: 18px; height: 18px;">
+                PNG Trasparente
+              </label>
+            </div>
+
+          </div>
+        </section>
+
+      </div>
+
+      <!-- Export & Actions Panel -->
+      <section class="retro-card" style="padding: 24px;">
+        <h2 class="font-retro" style="font-size: 22px; color: #cbd5e1; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+          <span>📦 ESPORTA &amp; CONDIVIDI</span>
+          <span style="font-size: 14px; color: #10b981;">(Pronto per Siti Web, Giochi, Chat, Discord e Grafica Vettoriale)</span>
+        </h2>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px;">
+          
+          <!-- Download PNG -->
+          <button id="download-png-btn" class="arcade-btn primary" style="padding: 16px; font-size: 19px;">
+            <span>💾</span> <span>SCARICA PNG</span>
+          </button>
+
+          <!-- Download SVG (Pure Vector Pixel Art - 100% Faithful) -->
+          <button id="download-svg-btn" class="arcade-btn" style="padding: 16px; font-size: 19px; border-color: #38bdf8; color: #38bdf8;" title="Esporta SVG vettoriale fedele senza sdoppiamento">
+            <span>⚡</span> <span>SCARICA SVG VETTORIALE</span>
+          </button>
+
+          <!-- Copy HTML -->
+          <button id="copy-html-btn" class="arcade-btn" style="padding: 16px; font-size: 19px;">
+            <span>📋</span> <span>COPIA HTML</span>
+          </button>
+
+          <!-- Copy CSS -->
+          <button id="copy-css-btn" class="arcade-btn" style="padding: 16px; font-size: 19px;">
+            <span>🎨</span> <span>COPIA CSS</span>
+          </button>
+
+          <!-- Copy Pixel Art Block Text (Unicode 8-Bit) -->
+          <button id="copy-ascii-btn" class="arcade-btn" style="padding: 16px; font-size: 19px; border-color: #f59e0b; color: #fbbf24;" title="Copia come testo in veri blocchi pixel 8-bit per WhatsApp, Discord, ecc.">
+            <span>👾</span> <span>COPIA TESTO PIXEL ART</span>
+          </button>
+
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer style="margin-top: 36px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.06); text-align: center;">
+      <p class="font-retro" style="color: #64748b; font-size: 17px; margin: 0;">
+        👾 PIXEL ART TEXT GENERATOR &bull; 100% puro HTML5, CSS &amp; Vanilla JavaScript (Nessun framework)
+      </p>
+    </footer>
+
+  </div>
+
+  <!-- Toast Notification Box -->
+  <div id="toast-notification">
+    <span id="toast-icon">✓</span>
+    <span id="toast-text">OPERAZIONE COMPLETATA!</span>
+  </div>
+
+  <!-- Modal for Viewing / Copying HTML/CSS Code -->
+  <div id="code-modal" class="code-modal-backdrop">
+    <div class="code-modal">
+      <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; border-bottom: 2px solid #231f3d;">
+        <span id="modal-title" class="font-retro" style="font-size: 20px; color: #10b981;">CODICE GENERATO</span>
+        <button id="modal-close-btn" class="arcade-btn danger" style="padding: 2px 10px; font-size: 14px;">[X]</button>
+      </div>
+      <div style="padding: 16px;">
+        <textarea id="modal-code-textarea" class="code-textarea" readonly></textarea>
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 14px;">
+          <button id="modal-copy-btn" class="arcade-btn primary" style="font-size: 18px;">
+            <span>📋</span> <span>COPIA NEGLI APPUNTI</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Specialized Modal for Pixel Art Text (Unicode Block Art) -->
+  <div id="pixel-text-modal" class="code-modal-backdrop">
+    <div class="code-modal" style="max-width: 720px;">
+      <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; border-bottom: 2px solid #231f3d;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 20px;">👾</span>
+          <span class="font-retro" style="font-size: 20px; color: #f59e0b;">TESTO PIXEL ART 8-BIT (ASCII / UNICODE)</span>
+        </div>
+        <button id="pixel-modal-close-btn" class="arcade-btn danger" style="padding: 2px 10px; font-size: 14px;">[X]</button>
+      </div>
+      <div style="padding: 18px;">
+        
+        <p class="font-retro" style="font-size: 16px; color: #94a3b8; margin-bottom: 12px;">
+          Questo testo è composto da veri blocchi pixel Unicode: puoi incollarlo su <strong style="color: #38bdf8;">Discord</strong>, <strong style="color: #34d399;">WhatsApp</strong>, bio di Instagram o file di testo e manterrà l'aspetto pixel art!
+        </p>
+
+        <!-- Format Selector Tabs -->
+        <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;">
+          <button class="modal-tab-btn active" data-style="solid">█ BLOCCHI 8-BIT</button>
+          <button class="modal-tab-btn" data-style="dots">● MATRICE PUNTI</button>
+          <button class="modal-tab-btn" data-style="shade">▓ PIXEL SHADING</button>
+          <button class="modal-tab-btn" data-style="ascii"># CARATTERI ASCII</button>
+          <button class="modal-tab-btn" data-style="fullwidth">🔤 FULLWIDTH RETRO</button>
+          <button class="modal-tab-btn" data-style="plain">📄 TESTO SEMPLICE</button>
+        </div>
+
+        <textarea id="pixel-modal-textarea" class="code-textarea" style="color: #facc15; font-size: 13px; height: 200px; letter-spacing: 0.05em;" readonly></textarea>
+
+        <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; margin-top: 14px;">
+          <span class="font-retro" style="font-size: 15px; color: #64748b;">
+            Suggerimento: nei client di chat usa i blocchi di codice (```) per un allineamento perfetto.
+          </span>
+          <button id="pixel-modal-copy-btn" class="arcade-btn primary" style="font-size: 18px;">
+            <span>📋</span> <span>COPIA BLOCCHI PIXEL</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Canvas hidden element used for high-res PNG rendering -->
+  <canvas id="export-canvas" style="display: none;"></canvas>
+
+  <!-- PURE VANILLA JAVASCRIPT LOGIC (NO REACT) -->
+  <script>
+    // State management
+    const state = {
+      text: 'PRESS START',
+      preset: 'gameboy',
+      pixelColor: '#9bbc0f',
+      bgColor: '#0f380f',
+      shadowColor: '#306230',
+      fontClass: 'font-pixel',
+      fontName: "'Press Start 2P', monospace",
+      fontSizeRem: 2.2,
+      letterSpacing: '0.1em',
+      textTransform: 'uppercase',
+      shadowStyle: '3d', // '3d', 'neon', 'flat'
+      animation: 'anim-wave', // combined animation
+      typewriter: true, // letter-by-letter typing animation
+      typewriterSpeed: 60, // ms per char
+      typewriterLoop: true, // loop or once
+      typewriterDelay: 1800, // pause at end before loop restart
+      showCursor: true,
+      showScanlines: true,
+      showFlicker: false,
+      transparentPng: false,
+      sfxEnabled: true
+    };
+
+    // 10 Classic Retro Presets
+    const STYLE_PRESETS = {
+      gameboy: {
+        name: 'GAME BOY',
+        icon: '🎮',
+        pixel: '#9bbc0f',
+        bg: '#0f380f',
+        shadow: '#306230'
+      },
+      nes: {
+        name: 'NES 8-BIT',
+        icon: '🕹️',
+        pixel: '#ffffff',
+        bg: '#0a0a0a',
+        shadow: '#e60012'
+      },
+      arcade: {
+        name: 'ARCADE 1984',
+        icon: '👾',
+        pixel: '#ffd700',
+        bg: '#1a0033',
+        shadow: '#ff007f'
+      },
+      cyber: {
+        name: 'CYBERPUNK',
+        icon: '🤖',
+        pixel: '#00f5ff',
+        bg: '#090a16',
+        shadow: '#ff0055'
+      },
+      synthwave: {
+        name: 'SYNTHWAVE',
+        icon: '🌆',
+        pixel: '#ff4191',
+        bg: '#190b28',
+        shadow: '#00f0ff'
+      },
+      matrix: {
+        name: 'MATRIX CRT',
+        icon: '💻',
+        pixel: '#33ff33',
+        bg: '#030f05',
+        shadow: '#117711'
+      },
+      vaporwave: {
+        name: 'VAPORWAVE',
+        icon: '🌴',
+        pixel: '#ff9de2',
+        bg: '#182038',
+        shadow: '#5eead4'
+      },
+      c64: {
+        name: 'COMMODORE 64',
+        icon: '📼',
+        pixel: '#a4e5ff',
+        bg: '#3b318c',
+        shadow: '#6859c7'
+      },
+      pico8: {
+        name: 'PICO-8',
+        icon: '🎨',
+        pixel: '#ff77a8',
+        bg: '#1d2b53',
+        shadow: '#ffccaa'
+      },
+      pocket: {
+        name: 'GB POCKET',
+        icon: '📱',
+        pixel: '#f4f4f4',
+        bg: '#2b2b2b',
+        shadow: '#666666'
+      }
+    };
+
+    const FONT_MAP = {
+      'font-pixel': "'Press Start 2P', monospace",
+      'font-retro': "'VT323', monospace",
+      'font-silkscreen': "'Silkscreen', monospace",
+      'font-pixelify': "'Pixelify Sans', sans-serif"
+    };
+
+    // Authentic 5x5 Arcade Pixel Font Matrix for Unicode Block Art
+    const PIXEL_FONT_5X5 = {
+      'A': [" ███ ", "█   █", "█████", "█   █", "█   █"],
+      'B': ["████ ", "█   █", "████ ", "█   █", "████ "],
+      'C': [" ████", "█    ", "█    ", "█    ", " ████"],
+      'D': ["████ ", "█   █", "█   █", "█   █", "████ "],
+      'E': ["█████", "█    ", "████ ", "█    ", "█████"],
+      'F': ["█████", "█    ", "████ ", "█    ", "█    "],
+      'G': [" ████", "█    ", "█  ██", "█   █", " ████"],
+      'H': ["█   █", "█   █", "█████", "█   █", "█   █"],
+      'I': ["███", " █ ", " █ ", " █ ", "███"],
+      'J': ["  ███", "    █", "    █", "█   █", " ███ "],
+      'K': ["█   █", "█  █ ", "███  ", "█  █ ", "█   █"],
+      'L': ["█    ", "█    ", "█    ", "█    ", "█████"],
+      'M': ["█   █", "██ ██", "█ █ █", "█   █", "█   █"],
+      'N': ["█   █", "██  █", "█ █ █", "█  ██", "█   █"],
+      'O': [" ███ ", "█   █", "█   █", "█   █", " ███ "],
+      'P': ["████ ", "█   █", "████ ", "█    ", "█    "],
+      'Q': [" ███ ", "█   █", "█ █ █", "█  ██", " ████"],
+      'R': ["████ ", "█   █", "████ ", "█  █ ", "█   █"],
+      'S': [" ████", "█    ", " ███ ", "    █", "████ "],
+      'T': ["█████", "  █  ", "  █  ", "  █  ", "  █  "],
+      'U': ["█   █", "█   █", "█   █", "█   █", " ███ "],
+      'V': ["█   █", "█   █", "█   █", " █ █ ", "  █  "],
+      'W': ["█   █", "█   █", "█ █ █", "██ ██", "█   █"],
+      'X': ["█   █", " █ █ ", "  █  ", " █ █ ", "█   █"],
+      'Y': ["█   █", " █ █ ", "  █  ", "  █  ", "  █  "],
+      'Z': ["█████", "   █ ", "  █  ", " █   ", "█████"],
+      '0': ["█████", "█  ██", "█ █ █", "██  █", "█████"],
+      '1': [" ██ ", "  █ ", "  █ ", "  █ ", "████"],
+      '2': ["████ ", "    █", " ███ ", "█    ", "█████"],
+      '3': ["████ ", "    █", " ███ ", "    █", "████ "],
+      '4': ["█  █ ", "█  █ ", "█████", "   █ ", "   █ "],
+      '5': ["█████", "█    ", "████ ", "    █", "████ "],
+      '6': [" ████", "█    ", "████ ", "█   █", " ████"],
+      '7': ["█████", "    █", "   █ ", "  █  ", "  █  "],
+      '8': [" ███ ", "█   █", " ███ ", "█   █", " ███ "],
+      '9': [" ████", "█   █", " ████", "    █", " ████"],
+      ' ': ["   ", "   ", "   ", "   ", "   "],
+      '!': ["█", "█", "█", " ", "█"],
+      '?': ["████ ", "    █", "  ██ ", "     ", "  █  "],
+      '.': [" ", " ", " ", " ", "█"],
+      ',': [" ", " ", " ", "█", "█"],
+      '-': ["     ", "     ", "█████", "     ", "     "],
+      '+': ["  █  ", "  █  ", "█████", "  █  ", "  █  "],
+      '=': ["     ", "█████", "     ", "█████", "     "],
+      ':': [" ", "█", " ", "█", " "],
+      ';': [" ", "█", " ", "█", "█"],
+      '/': ["    █", "   █ ", "  █  ", " █   ", "█    "],
+      '\\': ["█    ", " █   ", "  █  ", "   █ ", "    █"],
+      '<': ["   █", "  █ ", " █  ", "  █ ", "   █"],
+      '>': ["█   ", " █  ", "  █ ", " █  ", "█   "],
+      '(': ["  █", " █ ", " █ ", " █ ", "  █"],
+      ')': ["█  ", " █ ", " █ ", " █ ", "█  "],
+      '[': ["██", "█ ", "█ ", "█ ", "██"],
+      ']': ["██", " █", " █", " █", "██"],
+      '*': ["█ █ █", " ███ ", "█████", " ███ ", "█ █ █"],
+      '#': [" █ █ ", "█████", " █ █ ", "█████", " █ █ "],
+      '_': ["     ", "     ", "     ", "     ", "█████"]
+    };
+
+    // DOM Elements
+    const elements = {
+      textInput: document.getElementById('text-input'),
+      charCounter: document.getElementById('char-counter'),
+      previewScreen: document.getElementById('preview-screen'),
+      previewTextBox: document.getElementById('preview-text-box'),
+      scanlinesLayer: document.getElementById('scanlines-layer'),
+      presetsContainer: document.getElementById('presets-container'),
+      currentPresetLabel: document.getElementById('current-preset-label'),
+      typewriterStatusLabel: document.getElementById('typewriter-status-label'),
+      colorPixel: document.getElementById('color-pixel'),
+      colorPixelText: document.getElementById('color-pixel-text'),
+      colorBg: document.getElementById('color-bg'),
+      colorBgText: document.getElementById('color-bg-text'),
+      colorShadow: document.getElementById('color-shadow'),
+      colorShadowText: document.getElementById('color-shadow-text'),
+      pixelHexLabel: document.getElementById('pixel-hex-label'),
+      bgHexLabel: document.getElementById('bg-hex-label'),
+      shadowHexLabel: document.getElementById('shadow-hex-label'),
+      swapColorsBtn: document.getElementById('swap-colors-btn'),
+      fontSelect: document.getElementById('font-select'),
+      sizeSlider: document.getElementById('size-slider'),
+      sizeValLabel: document.getElementById('size-val-label'),
+      spacingSelect: document.getElementById('spacing-select'),
+      transformSelect: document.getElementById('transform-select'),
+      shadowStyleSelect: document.getElementById('shadow-style-select'),
+      animationSelect: document.getElementById('animation-select'),
+      typewriterToggle: document.getElementById('typewriter-toggle'),
+      typewriterSpeedSelect: document.getElementById('typewriter-speed-select'),
+      typewriterModeSelect: document.getElementById('typewriter-mode-select'),
+      typewriterReplaySmallBtn: document.getElementById('typewriter-replay-small-btn'),
+      restartTypewriterBtn: document.getElementById('restart-typewriter-btn'),
+      cursorToggle: document.getElementById('cursor-toggle'),
+      transparentPngToggle: document.getElementById('transparent-png-toggle'),
+      toggleScanlines: document.getElementById('toggle-scanlines'),
+      toggleFlicker: document.getElementById('toggle-flicker'),
+      clearBtn: document.getElementById('clear-btn'),
+      sfxToggleBtn: document.getElementById('sfx-toggle-btn'),
+      sfxIcon: document.getElementById('sfx-icon'),
+      sfxText: document.getElementById('sfx-text'),
+      randomBtn: document.getElementById('random-btn'),
+      downloadPngBtn: document.getElementById('download-png-btn'),
+      downloadSvgBtn: document.getElementById('download-svg-btn'),
+      copyHtmlBtn: document.getElementById('copy-html-btn'),
+      copyCssBtn: document.getElementById('copy-css-btn'),
+      copyAsciiBtn: document.getElementById('copy-ascii-btn'),
+      toast: document.getElementById('toast-notification'),
+      toastText: document.getElementById('toast-text'),
+      toastIcon: document.getElementById('toast-icon'),
+      codeModal: document.getElementById('code-modal'),
+      modalTitle: document.getElementById('modal-title'),
+      modalCodeTextarea: document.getElementById('modal-code-textarea'),
+      modalCloseBtn: document.getElementById('modal-close-btn'),
+      modalCopyBtn: document.getElementById('modal-copy-btn'),
+      pixelTextModal: document.getElementById('pixel-text-modal'),
+      pixelModalTextarea: document.getElementById('pixel-modal-textarea'),
+      pixelModalCloseBtn: document.getElementById('pixel-modal-close-btn'),
+      pixelModalCopyBtn: document.getElementById('pixel-modal-copy-btn'),
+      exportCanvas: document.getElementById('export-canvas')
+    };
+
+    // 8-bit Audio Synthesizer (Web Audio API)
+    let audioCtx = null;
+    function getAudioContext() {
+      if (!audioCtx) {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (AudioContextClass) {
+          audioCtx = new AudioContextClass();
+        }
+      }
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    function play8BitSound(type) {
+      if (!state.sfxEnabled) return;
+      try {
+        const ctx = getAudioContext();
+        if (!ctx) return;
+
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        if (type === 'type') {
+          // Retro keyboard blip
+          osc.type = 'square';
+          osc.frequency.setValueAtTime(520, now);
+          osc.frequency.exponentialRampToValueAtTime(260, now + 0.035);
+          gain.gain.setValueAtTime(0.06, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.035);
+          osc.start(now);
+          osc.stop(now + 0.035);
+        } else if (type === 'coin') {
+          // Classic 2-tone arcade coin
+          osc.type = 'square';
+          osc.frequency.setValueAtTime(987.77, now); // B5
+          osc.frequency.setValueAtTime(1318.51, now + 0.08); // E6
+          gain.gain.setValueAtTime(0.12, now);
+          gain.gain.setValueAtTime(0.12, now + 0.08);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+          osc.start(now);
+          osc.stop(now + 0.35);
+        } else if (type === 'powerup') {
+          // Arpeggio powerup
+          const osc2 = ctx.createOscillator();
+          const gain2 = ctx.createGain();
+          osc2.connect(gain2);
+          gain2.connect(ctx.destination);
+          
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(330, now);
+          osc.frequency.exponentialRampToValueAtTime(660, now + 0.1);
+          osc.frequency.exponentialRampToValueAtTime(990, now + 0.2);
+          gain.gain.setValueAtTime(0.1, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+          osc.start(now);
+          osc.stop(now + 0.3);
+        } else if (type === 'clear') {
+          // Low buzzing clear
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(220, now);
+          osc.frequency.exponentialRampToValueAtTime(110, now + 0.1);
+          gain.gain.setValueAtTime(0.08, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+          osc.start(now);
+          osc.stop(now + 0.1);
+        }
+      } catch (e) {
+        // Audio error silent fallback
+      }
+    }
+
+    // Build Preset Buttons in DOM
+    function renderPresetCards() {
+      elements.presetsContainer.innerHTML = '';
+      Object.keys(STYLE_PRESETS).forEach(key => {
+        const item = STYLE_PRESETS[key];
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `preset-card ${state.preset === key ? 'active' : ''}`;
+        btn.dataset.preset = key;
+        
+        btn.innerHTML = `
+          <div style="font-size: 20px;">${item.icon}</div>
+          <div class="font-retro" style="font-size: 16px; color: #f1f5f9; font-weight: bold;">${item.name}</div>
+          <div class="preset-preview-pill font-pixel" style="background: ${item.bg}; color: ${item.pixel};">
+            PIXEL
+          </div>
+        `;
+
+        btn.addEventListener('click', () => {
+          applyPreset(key);
+          play8BitSound('coin');
+        });
+
+        elements.presetsContainer.appendChild(btn);
+      });
+    }
+
+    // Apply a Retro Preset
+    function applyPreset(key) {
+      const preset = STYLE_PRESETS[key];
+      if (!preset) return;
+
+      state.preset = key;
+      state.pixelColor = preset.pixel;
+      state.bgColor = preset.bg;
+      state.shadowColor = preset.shadow;
+
+      // Update input fields
+      elements.colorPixel.value = preset.pixel;
+      elements.colorPixelText.value = preset.pixel;
+      elements.colorBg.value = preset.bg;
+      elements.colorBgText.value = preset.bg;
+      elements.colorShadow.value = preset.shadow;
+      elements.colorShadowText.value = preset.shadow;
+
+      elements.currentPresetLabel.textContent = preset.name;
+
+      // Update active card class
+      document.querySelectorAll('.preset-card').forEach(c => {
+        if (c.dataset.preset === key) {
+          c.classList.add('active');
+        } else {
+          c.classList.remove('active');
+        }
+      });
+
+      updatePreview();
+    }
+
+    // Typewriter Engine State & Functions
+    let typewriterTimer = null;
+    let typewriterLoopTimer = null;
+    let currentTypedLength = 0;
+
+    function stopTypewriter() {
+      if (typewriterTimer) {
+        clearTimeout(typewriterTimer);
+        typewriterTimer = null;
+      }
+      if (typewriterLoopTimer) {
+        clearTimeout(typewriterLoopTimer);
+        typewriterLoopTimer = null;
+      }
+    }
+
+    function renderEmptyPreview() {
+      stopTypewriter();
+      const box = elements.previewTextBox;
+      box.innerHTML = '<span class="opacity-50 font-retro" style="font-size: 24px; color: ' + state.pixelColor + ';">Inserisci testo...</span>';
+      box.className = 'pixel-text-element ' + state.fontClass + (state.showCursor ? ' blink-cursor' : '');
+      box.style.fontSize = '1.8rem';
+      box.style.color = state.pixelColor;
+      box.style.letterSpacing = 'normal';
+    }
+
+    function renderContentWithAnimation(textSubstring, isDone) {
+      const box = elements.previewTextBox;
+      box.style.color = state.pixelColor;
+      box.style.fontSize = `${state.fontSizeRem}rem`;
+      box.style.letterSpacing = state.letterSpacing;
+
+      // Classes on the text element
+      let classList = ['pixel-text-element', state.fontClass];
+
+      if (state.shadowStyle === '3d') {
+        classList.push('pixel-shadow-3d');
+      } else if (state.shadowStyle === 'neon') {
+        classList.push('pixel-neon-glow');
+      }
+
+      if (state.showCursor) {
+        classList.push('blink-cursor');
+      }
+
+      // Add combined animation class
+      if (state.animation !== 'none' && state.animation !== 'anim-wave-chars') {
+        classList.push(state.animation);
+      }
+
+      box.className = classList.join(' ');
+
+      // If animation is per-character wave
+      if (state.animation === 'anim-wave-chars') {
+        box.innerHTML = '';
+        for (let i = 0; i < textSubstring.length; i++) {
+          const ch = textSubstring[i];
+          const span = document.createElement('span');
+          span.className = 'wave-char';
+          span.style.animationDelay = `${(i * 0.08).toFixed(2)}s`;
+          if (ch === ' ') {
+            span.innerHTML = '&nbsp;';
+          } else {
+            span.textContent = ch;
+            if (!isDone && i === textSubstring.length - 1) {
+              span.classList.add('char-pop');
+            }
+          }
+          box.appendChild(span);
+        }
+      } else {
+        box.textContent = textSubstring;
+      }
+    }
+
+    // Main Typewriter Runner
+    function triggerTypewriter(reset = true) {
+      stopTypewriter();
+
+      const rawText = elements.textInput.value;
+      state.text = rawText;
+      const fullText = state.textTransform === 'uppercase' ? rawText.toUpperCase() : rawText;
+
+      elements.charCounter.textContent = rawText.length;
+
+      if (!fullText.trim()) {
+        renderEmptyPreview();
+        return;
+      }
+
+      // If typewriter is disabled by user, render full text immediately
+      if (!state.typewriter) {
+        renderContentWithAnimation(fullText, true);
+        return;
+      }
+
+      if (reset) {
+        currentTypedLength = 0;
+      }
+
+      function typeStep() {
+        if (currentTypedLength <= fullText.length) {
+          const currentSubstring = fullText.substring(0, currentTypedLength);
+          const isDone = currentTypedLength >= fullText.length;
+          
+          renderContentWithAnimation(currentSubstring, isDone);
+
+          // Play subtle 8-bit blip per typed letter (skip space)
+          if (currentTypedLength > 0 && currentSubstring[currentTypedLength - 1] !== ' ') {
+            play8BitSound('type');
+          }
+
+          currentTypedLength++;
+
+          if (currentTypedLength <= fullText.length) {
+            typewriterTimer = setTimeout(typeStep, state.typewriterSpeed);
+          } else {
+            // Reached end of string
+            if (state.typewriterLoop) {
+              typewriterLoopTimer = setTimeout(() => {
+                currentTypedLength = 0;
+                typeStep();
+              }, state.typewriterDelay);
+            }
+          }
+        }
+      }
+
+      typeStep();
+    }
+
+    // Update Live Preview UI
+    function updatePreview(retriggerTypewriter = true) {
+      // Hex code labels
+      elements.pixelHexLabel.textContent = state.pixelColor;
+      elements.bgHexLabel.textContent = state.bgColor;
+      elements.shadowHexLabel.textContent = state.shadowColor;
+
+      // Status label in info bar
+      if (!state.typewriter) {
+        elements.typewriterStatusLabel.textContent = 'DISATTIVA (TESTO FISSO)';
+        elements.typewriterStatusLabel.style.color = '#94a3b8';
+      } else if (state.typewriterLoop) {
+        elements.typewriterStatusLabel.textContent = 'ATTIVA (LOOP)';
+        elements.typewriterStatusLabel.style.color = '#10b981';
+      } else {
+        elements.typewriterStatusLabel.textContent = 'ATTIVA (SINGOLA)';
+        elements.typewriterStatusLabel.style.color = '#38bdf8';
+      }
+
+      // Set CSS custom variables
+      document.documentElement.style.setProperty('--pixel-color', state.pixelColor);
+      document.documentElement.style.setProperty('--bg-color', state.bgColor);
+      document.documentElement.style.setProperty('--shadow-color', state.shadowColor);
+
+      // Background color
+      elements.previewScreen.style.backgroundColor = state.bgColor;
+
+      if (retriggerTypewriter) {
+        triggerTypewriter(true);
+      }
+    }
+
+    // Toast Notification helper
+    let toastTimeout = null;
+    function showToast(text, icon = '✓') {
+      elements.toastText.textContent = text;
+      elements.toastIcon.textContent = icon;
+      elements.toast.classList.add('show');
+
+      if (toastTimeout) clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        elements.toast.classList.remove('show');
+      }, 2500);
+    }
+
+    // High Resolution PNG Exporter
+    function downloadPNG() {
+      play8BitSound('powerup');
+      const canvas = elements.exportCanvas;
+      const ctx = canvas.getContext('2d');
+      const textToRender = state.textTransform === 'uppercase' ? state.text.toUpperCase() : state.text;
+
+      if (!textToRender.trim()) {
+        showToast('Inserisci del testo prima!', '⚠️');
+        return;
+      }
+
+      // Base dimension calculations
+      const scale = 2;
+      const fontSizePx = Math.round(state.fontSizeRem * 24 * scale);
+      
+      let canvasFontFamily = 'monospace';
+      if (state.fontClass === 'font-pixel') canvasFontFamily = '"Press Start 2P", monospace';
+      else if (state.fontClass === 'font-retro') canvasFontFamily = '"VT323", monospace';
+      else if (state.fontClass === 'font-silkscreen') canvasFontFamily = '"Silkscreen", monospace';
+      else if (state.fontClass === 'font-pixelify') canvasFontFamily = '"Pixelify Sans", sans-serif';
+
+      ctx.font = `${fontSizePx}px ${canvasFontFamily}`;
+
+      // Measure text
+      const metrics = ctx.measureText(textToRender);
+      const textWidth = metrics.width;
+      const textHeight = fontSizePx;
+
+      const paddingX = Math.round(60 * scale);
+      const paddingY = Math.round(50 * scale);
+
+      canvas.width = Math.max(textWidth + paddingX * 2, 400 * scale);
+      canvas.height = Math.max(textHeight + paddingY * 2, 180 * scale);
+
+      // Disable smoothing for authentic pixel art
+      ctx.imageSmoothingEnabled = false;
+
+      // Draw Background
+      if (!state.transparentPng) {
+        ctx.fillStyle = state.bgColor;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Optional scanlines if active
+        if (state.showScanlines) {
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
+          for (let y = 0; y < canvas.height; y += 4 * scale) {
+            ctx.fillRect(0, y, canvas.width, 2 * scale);
+          }
+        }
+      } else {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+
+      ctx.font = `${fontSizePx}px ${canvasFontFamily}`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 2;
+
+      // Draw Shadow
+      if (state.shadowStyle === '3d') {
+        const shadowOffset = 3 * scale;
+        ctx.fillStyle = state.shadowColor;
+        ctx.fillText(textToRender, centerX + shadowOffset, centerY + shadowOffset);
+        ctx.fillText(textToRender, centerX + shadowOffset * 2, centerY + shadowOffset * 2);
+      } else if (state.shadowStyle === 'neon') {
+        ctx.shadowColor = state.shadowColor;
+        ctx.shadowBlur = 15 * scale;
+      }
+
+      // Draw Main Text
+      ctx.fillStyle = state.pixelColor;
+      ctx.fillText(textToRender, centerX, centerY);
+
+      // Reset shadows
+      ctx.shadowBlur = 0;
+
+      // Trigger download
+      try {
+        const dataUrl = canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        const filename = 'pixel-art-' + textToRender.slice(0, 15).toLowerCase().replace(/[^a-z0-9]/g, '_') + '.png';
+        link.download = filename;
+        link.href = dataUrl;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        showToast('PNG Scaricato con Successo!', '💾');
+      } catch (err) {
+        showToast('Errore durante il download', '❌');
+      }
+    }
+
+    // 100% FAITHFUL VECTOR PIXEL ART SVG EXPORTER (NO SDOPIAMENTI, PURE VECTOR RECTANGLES)
+    function downloadSVG() {
+      play8BitSound('powerup');
+      const textToRender = state.textTransform === 'uppercase' ? state.text.toUpperCase() : state.text;
+      if (!textToRender.trim()) {
+        showToast('Inserisci del testo prima!', '⚠️');
+        return;
+      }
+
+      // 1. Create an offscreen canvas to sample the exact font glyph pixels
+      const offCanvas = document.createElement('canvas');
+      const offCtx = offCanvas.getContext('2d', { willReadFrequently: true });
+
+      let fontName = '"Press Start 2P", monospace';
+      if (state.fontClass === 'font-retro') fontName = '"VT323", monospace';
+      else if (state.fontClass === 'font-silkscreen') fontName = '"Silkscreen", monospace';
+      else if (state.fontClass === 'font-pixelify') fontName = '"Pixelify Sans", sans-serif';
+
+      // Base font size
+      const fontSize = 24;
+      offCtx.font = `${fontSize}px ${fontName}`;
+      const textMetrics = offCtx.measureText(textToRender);
+      const textW = Math.ceil(textMetrics.width);
+      const textH = Math.ceil(fontSize * 1.6);
+
+      const pad = 12;
+      offCanvas.width = textW + pad * 2;
+      offCanvas.height = textH + pad * 2;
+
+      offCtx.imageSmoothingEnabled = false;
+      offCtx.font = `${fontSize}px ${fontName}`;
+      offCtx.textBaseline = 'middle';
+      offCtx.textAlign = 'center';
+      offCtx.fillStyle = '#ffffff';
+      offCtx.fillText(textToRender, offCanvas.width / 2, offCanvas.height / 2);
+
+      const imgData = offCtx.getImageData(0, 0, offCanvas.width, offCanvas.height);
+      const data = imgData.data;
+      const w = offCanvas.width;
+      const h = offCanvas.height;
+
+      // Find precise bounding box of font pixels
+      let minX = w, maxX = 0, minY = h, maxY = 0;
+      let hasPixels = false;
+
+      for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++) {
+          const alpha = data[(y * w + x) * 4 + 3];
+          if (alpha > 80) {
+            hasPixels = true;
+            if (x < minX) minX = x;
+            if (x > maxX) maxX = x;
+            if (y < minY) minY = y;
+            if (y > maxY) maxY = y;
+          }
+        }
+      }
+
+      if (!hasPixels) {
+        showToast('Nessun pixel trovato!', '⚠️');
+        return;
+      }
+
+      const gridPad = 4;
+      const trimmedW = (maxX - minX + 1) + gridPad * 2;
+      const trimmedH = (maxY - minY + 1) + gridPad * 2;
+      const offsetX = minX - gridPad;
+      const offsetY = minY - gridPad;
+
+      // Scale factor per pixel: 8 vector units per pixel gives super crisp HD vectors
+      const pixelScale = 8;
+      const shadowDist = (state.shadowStyle === '3d') ? 2 : 0;
+      const svgWidth = (trimmedW + shadowDist) * pixelScale;
+      const svgHeight = (trimmedH + shadowDist) * pixelScale;
+
+      // Helper function to merge consecutive horizontal pixels into optimal SVG <rect> tags
+      function generateMergedRects(dx = 0, dy = 0) {
+        let rects = '';
+        for (let y = 0; y < trimmedH; y++) {
+          const srcY = y + offsetY;
+          if (srcY < 0 || srcY >= h) continue;
+
+          let runStart = -1;
+          for (let x = 0; x < trimmedW; x++) {
+            const srcX = x + offsetX;
+            const inBounds = srcX >= 0 && srcX < w;
+            const alpha = inBounds ? data[(srcY * w + srcX) * 4 + 3] : 0;
+            const isFilled = alpha > 80;
+
+            if (isFilled) {
+              if (runStart === -1) runStart = x;
+            } else {
+              if (runStart !== -1) {
+                const rx = (runStart + dx) * pixelScale;
+                const ry = (y + dy) * pixelScale;
+                const rw = (x - runStart) * pixelScale;
+                const rh = pixelScale;
+                rects += `<rect x="${rx}" y="${ry}" width="${rw}" height="${rh}"/>`;
+                runStart = -1;
+              }
+            }
+          }
+          if (runStart !== -1) {
+            const rx = (runStart + dx) * pixelScale;
+            const ry = (y + dy) * pixelScale;
+            const rw = (trimmedW - runStart) * pixelScale;
+            const rh = pixelScale;
+            rects += `<rect x="${rx}" y="${ry}" width="${rw}" height="${rh}"/>`;
+          }
+        }
+        return rects;
+      }
+
+      let svgContent = `<svg xmlns="http://www.w3.org/2000/svg" width="${svgWidth}" height="${svgHeight}" viewBox="0 0 ${svgWidth} ${svgHeight}" shape-rendering="crispEdges">\n`;
+
+      // Background rect
+      if (!state.transparentPng) {
+        svgContent += `  <rect width="100%" height="100%" fill="${state.bgColor}"/>\n`;
+      }
+
+      // Stepped 3D pixel shadow (drawn underneath text, never doubled)
+      if (state.shadowStyle === '3d') {
+        const shadowStep1 = generateMergedRects(1, 1);
+        const shadowStep2 = generateMergedRects(2, 2);
+        svgContent += `  <g fill="${state.shadowColor}">\n    ${shadowStep1}${shadowStep2}\n  </g>\n`;
+      } else if (state.shadowStyle === 'neon') {
+        const shadowNeon = generateMergedRects(1, 1);
+        svgContent += `  <g fill="${state.shadowColor}" opacity="0.6">\n    ${shadowNeon}\n  </g>\n`;
+      }
+
+      // Main Text Pixels
+      const mainRects = generateMergedRects(0, 0);
+      svgContent += `  <g fill="${state.pixelColor}">\n    ${mainRects}\n  </g>\n`;
+      svgContent += `</svg>`;
+
+      // Download SVG File
+      const blob = new Blob([svgContent], { type: 'image/svg+xml;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.download = 'pixel-art-' + textToRender.slice(0, 15).toLowerCase().replace(/[^a-z0-9]/g, '_') + '.svg';
+      link.href = url;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      showToast('SVG Pixel Art Fedele Scaricato!', '⚡');
+    }
+
+    // HTML Generator with Typewriter & Combined Animations
+    function generateStandaloneHTML() {
+      const textToRender = state.textTransform === 'uppercase' ? state.text.toUpperCase() : state.text;
+      const cleanFontName = (FONT_MAP[state.fontClass] || 'monospace').split(',')[0].replace(/['"]/g, '');
+      
+      const shadowCss = state.shadowStyle === '3d' ? `
+      text-shadow: 
+        3px 3px 0 ${state.shadowColor},
+        6px 6px 0 rgba(0,0,0,0.4);` : (state.shadowStyle === 'neon' ? `
+      text-shadow: 
+        0 0 8px ${state.pixelColor},
+        0 0 20px ${state.shadowColor};` : '');
+
+      let animCss = '';
+      let animClass = '';
+      if (state.animation === 'anim-wave') {
+        animClass = 'anim-wave';
+        animCss = `
+    @keyframes arcadeWave {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+    .anim-wave {
+      display: inline-block;
+      animation: arcadeWave 1.4s ease-in-out infinite;
+    }`;
+      } else if (state.animation === 'anim-pulse') {
+        animClass = 'anim-pulse';
+        animCss = `
+    @keyframes pulseGlow {
+      0%, 100% { transform: scale(1); filter: brightness(1); }
+      50% { transform: scale(1.04); filter: brightness(1.25); }
+    }
+    .anim-pulse {
+      display: inline-block;
+      animation: pulseGlow 1.8s ease-in-out infinite;
+    }`;
+      } else if (state.animation === 'anim-glitch') {
+        animClass = 'anim-glitch';
+        animCss = `
+    @keyframes retroGlitch {
+      0% { transform: translate(0); }
+      20% { transform: translate(-2px, 2px); }
+      40% { transform: translate(-1px, -1px); }
+      60% { transform: translate(2px, 1px); }
+      80% { transform: translate(1px, -2px); }
+      100% { transform: translate(0); }
+    }
+    .anim-glitch {
+      display: inline-block;
+      animation: retroGlitch 0.4s infinite;
+    }`;
+      } else if (state.animation === 'anim-float') {
+        animClass = 'anim-float';
+        animCss = `
+    @keyframes retroFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+    .anim-float {
+      display: inline-block;
+      animation: retroFloat 2.2s ease-in-out infinite;
+    }`;
+      }
+
+      const typewriterScript = state.typewriter ? `
+  <script>
+    const fullText = ${JSON.stringify(textToRender)};
+    const speed = ${state.typewriterSpeed};
+    const isLoop = ${state.typewriterLoop};
+    const el = document.getElementById('pixel-text');
+    let idx = 0;
+
+    function type() {
+      if (idx <= fullText.length) {
+        el.textContent = fullText.substring(0, idx);
+        idx++;
+        if (idx <= fullText.length) {
+          setTimeout(type, speed);
+        } else if (isLoop) {
+          setTimeout(() => { idx = 0; type(); }, 1800);
+        }
+      }
+    }
+    type();
+  <\/script>` : '';
+
+      const initialText = state.typewriter ? '' : textToRender;
+
+      return `<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${textToRender} - Pixel Art</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=${encodeURIComponent(cleanFontName)}&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: ${state.bgColor};
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 30px;
+      background-image: 
+        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+    .pixel-heading {
+      font-family: '${cleanFontName}', monospace;
+      color: ${state.pixelColor};
+      font-size: ${state.fontSizeRem}rem;
+      letter-spacing: ${state.letterSpacing};
+      text-align: center;
+      image-rendering: pixelated;
+      image-rendering: -moz-crisp-edges;
+      image-rendering: crisp-edges;${shadowCss}
+      line-height: 1.6;
+    }
+    @keyframes blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+    .blink-cursor::after {
+      content: '▮';
+      display: inline-block;
+      animation: blink 0.9s infinite;
+      margin-left: 6px;
+      color: ${state.pixelColor};
+    }${animCss}
+  </style>
+</head>
+<body>
+  <h1 id="pixel-text" class="pixel-heading ${animClass} ${state.showCursor ? 'blink-cursor' : ''}">${initialText}</h1>${typewriterScript}
+</body>
+</html>`;
+    }
+
+    // CSS Generator
+    function generateCSS() {
+      const cleanFontName = (FONT_MAP[state.fontClass] || 'monospace').split(',')[0].replace(/['"]/g, '');
+      const shadowCss = state.shadowStyle === '3d' ? `  text-shadow: 3px 3px 0 ${state.shadowColor}, 6px 6px 0 rgba(0, 0, 0, 0.4);` : (state.shadowStyle === 'neon' ? `  text-shadow: 0 0 8px ${state.pixelColor}, 0 0 20px ${state.shadowColor};` : '  text-shadow: none;');
+
+      return `/* Pixel Art Typography & Typewriter Style */
+@import url('https://fonts.googleapis.com/css2?family=${encodeURIComponent(cleanFontName)}&display=swap');
+
+.pixel-art-text {
+  font-family: '${cleanFontName}', monospace;
+  color: ${state.pixelColor};
+  background-color: ${state.bgColor};
+  font-size: ${state.fontSizeRem}rem;
+  letter-spacing: ${state.letterSpacing};
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+  line-height: 1.6;
+${shadowCss}
+}
+
+/* Cursore 8-bit */
+@keyframes blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+.blink-cursor::after {
+  content: '▮';
+  display: inline-block;
+  animation: blink 0.9s infinite;
+  margin-left: 6px;
+  color: ${state.pixelColor};
+}
+
+/* Animazione Onda Arcade */
+@keyframes arcadeWave { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+.anim-wave { display: inline-block; animation: arcadeWave 1.4s ease-in-out infinite; }
+
+/* Animazione Battito Pulsante */
+@keyframes pulseGlow { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.04); } }
+.anim-pulse { display: inline-block; animation: pulseGlow 1.8s ease-in-out infinite; }
+
+/* Animazione Glitch */
+@keyframes retroGlitch { 0% { transform: translate(0); } 20% { transform: translate(-2px, 2px); } 60% { transform: translate(2px, 1px); } 100% { transform: translate(0); } }
+.anim-glitch { display: inline-block; animation: retroGlitch 0.4s infinite; }
+`;
+    }
+
+    // UNICODE 8-BIT PIXEL BLOCK ART TEXT GENERATOR
+    let currentPixelStyle = 'solid';
+
+    function generatePixelBlockText(str, style = 'solid') {
+      if (!str.trim()) return '';
+      
+      if (style === 'plain') {
+        return state.textTransform === 'uppercase' ? str.toUpperCase() : str;
+      }
+      
+      if (style === 'fullwidth') {
+        const upper = (state.textTransform === 'uppercase' ? str.toUpperCase() : str);
+        return upper.split('').map(c => {
+          const code = c.charCodeAt(0);
+          if (code >= 33 && code <= 126) {
+            return String.fromCharCode(code + 65248);
+          } else if (code === 32) {
+            return '　';
+          }
+          return c;
+        }).join(' ');
+      }
+
+      const upper = str.toUpperCase();
+      const rows = ['', '', '', '', ''];
+      
+      let onChar = '█';
+      let offChar = ' ';
+
+      if (style === 'dots') {
+        onChar = '●';
+        offChar = '○';
+      } else if (style === 'shade') {
+        onChar = '▓';
+        offChar = '░';
+      } else if (style === 'ascii') {
+        onChar = '#';
+        offChar = '.';
+      }
+
+      for (let i = 0; i < upper.length; i++) {
+        const char = upper[i];
+        const glyph = PIXEL_FONT_5X5[char] || PIXEL_FONT_5X5['?'];
+        for (let r = 0; r < 5; r++) {
+          const line = glyph[r] || '     ';
+          let converted = '';
+          for (let c = 0; c < line.length; c++) {
+            converted += (line[c] === '█') ? onChar : offChar;
+          }
+          rows[r] += converted + '  '; // 2 spaces between glyphs
+        }
+      }
+
+      return rows.join('\n');
+    }
+
+    // Copy to Clipboard with reliable fallback
+    async function copyToClipboard(text, successMsg) {
+      play8BitSound('powerup');
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(text);
+          showToast(successMsg, '📋');
+          return true;
+        }
+      } catch (err) {
+        // Fallback below
+      }
+
+      // Fallback using textarea
+      const el = document.createElement('textarea');
+      el.value = text;
+      el.style.position = 'fixed';
+      el.style.left = '-9999px';
+      document.body.appendChild(el);
+      el.select();
+      try {
+        document.execCommand('copy');
+        showToast(successMsg, '📋');
+      } catch (e) {
+        showToast('Impossibile copiare!', '❌');
+      }
+      document.body.removeChild(el);
+    }
+
+    // Open Code View Modal
+    function openModal(title, code) {
+      elements.modalTitle.textContent = title;
+      elements.modalCodeTextarea.value = code;
+      elements.codeModal.classList.add('open');
+      elements.modalCodeTextarea.select();
+    }
+
+    function closeModal() {
+      elements.codeModal.classList.remove('open');
+      elements.pixelTextModal.classList.remove('open');
+    }
+
+    function openPixelTextModal() {
+      const textToRender = state.textTransform === 'uppercase' ? state.text.toUpperCase() : state.text;
+      if (!textToRender.trim()) {
+        showToast('Inserisci del testo prima!', '⚠️');
+        return;
+      }
+
+      const blockText = generatePixelBlockText(textToRender, currentPixelStyle);
+      elements.pixelModalTextarea.value = blockText;
+      elements.pixelTextModal.classList.add('open');
+      elements.pixelModalTextarea.select();
+
+      // Automatically copy the 8-bit block text to clipboard on click as well!
+      copyToClipboard(blockText, 'Testo in Blocchi Pixel Art Copiato!');
+    }
+
+    // Event Listeners Setup
+    function initEventListeners() {
+      // Input typing: restart typewriter dynamically
+      elements.textInput.addEventListener('input', () => {
+        triggerTypewriter(true);
+      });
+
+      // Quick Chips
+      document.querySelectorAll('.quick-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+          elements.textInput.value = chip.dataset.phrase;
+          play8BitSound('coin');
+          triggerTypewriter(true);
+          elements.textInput.focus();
+        });
+      });
+
+      // Clear Button
+      elements.clearBtn.addEventListener('click', () => {
+        elements.textInput.value = '';
+        play8BitSound('clear');
+        triggerTypewriter(true);
+        elements.textInput.focus();
+        showToast('Testo ripulito', '🧹');
+      });
+
+      // Typewriter Replay Buttons
+      elements.restartTypewriterBtn.addEventListener('click', () => {
+        play8BitSound('powerup');
+        triggerTypewriter(true);
+        showToast('Riavvio digitazione!', '⌨️');
+      });
+
+      elements.typewriterReplaySmallBtn.addEventListener('click', () => {
+        play8BitSound('powerup');
+        triggerTypewriter(true);
+        showToast('Riavvio digitazione!', '⌨️');
+      });
+
+      // Typewriter Controls
+      elements.typewriterToggle.addEventListener('change', (e) => {
+        state.typewriter = e.target.checked;
+        play8BitSound('coin');
+        updatePreview(true);
+      });
+
+      elements.typewriterSpeedSelect.addEventListener('change', (e) => {
+        state.typewriterSpeed = parseInt(e.target.value, 10);
+        play8BitSound('coin');
+        triggerTypewriter(true);
+      });
+
+      elements.typewriterModeSelect.addEventListener('change', (e) => {
+        state.typewriterLoop = (e.target.value === 'loop');
+        play8BitSound('coin');
+        triggerTypewriter(true);
+      });
+
+      // Combined Animation Select
+      elements.animationSelect.addEventListener('change', (e) => {
+        state.animation = e.target.value;
+        play8BitSound('coin');
+        renderContentWithAnimation(
+          (state.textTransform === 'uppercase' ? state.text.toUpperCase() : state.text).substring(0, currentTypedLength),
+          currentTypedLength >= state.text.length
+        );
+      });
+
+      // Color pickers & text inputs
+      elements.colorPixel.addEventListener('input', (e) => {
+        state.pixelColor = e.target.value;
+        elements.colorPixelText.value = e.target.value;
+        updatePreview(false);
+      });
+      elements.colorPixelText.addEventListener('input', (e) => {
+        if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) {
+          state.pixelColor = e.target.value;
+          elements.colorPixel.value = e.target.value;
+          updatePreview(false);
+        }
+      });
+
+      elements.colorBg.addEventListener('input', (e) => {
+        state.bgColor = e.target.value;
+        elements.colorBgText.value = e.target.value;
+        updatePreview(false);
+      });
+      elements.colorBgText.addEventListener('input', (e) => {
+        if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) {
+          state.bgColor = e.target.value;
+          elements.colorBg.value = e.target.value;
+          updatePreview(false);
+        }
+      });
+
+      elements.colorShadow.addEventListener('input', (e) => {
+        state.shadowColor = e.target.value;
+        elements.colorShadowText.value = e.target.value;
+        updatePreview(false);
+      });
+      elements.colorShadowText.addEventListener('input', (e) => {
+        if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) {
+          state.shadowColor = e.target.value;
+          elements.colorShadow.value = e.target.value;
+          updatePreview(false);
+        }
+      });
+
+      // Swap Colors
+      elements.swapColorsBtn.addEventListener('click', () => {
+        play8BitSound('coin');
+        const temp = state.pixelColor;
+        state.pixelColor = state.bgColor;
+        state.bgColor = temp;
+        elements.colorPixel.value = state.pixelColor;
+        elements.colorPixelText.value = state.pixelColor;
+        elements.colorBg.value = state.bgColor;
+        elements.colorBgText.value = state.bgColor;
+        updatePreview(false);
+      });
+
+      // Font Select
+      elements.fontSelect.addEventListener('change', (e) => {
+        play8BitSound('coin');
+        state.fontClass = e.target.value;
+        state.fontName = FONT_MAP[state.fontClass];
+        updatePreview(false);
+      });
+
+      // Size Slider
+      elements.sizeSlider.addEventListener('input', (e) => {
+        state.fontSizeRem = parseFloat(e.target.value);
+        elements.sizeValLabel.textContent = `${state.fontSizeRem.toFixed(1)} rem`;
+        updatePreview(false);
+      });
+
+      // Spacing & Transform
+      elements.spacingSelect.addEventListener('change', (e) => {
+        state.letterSpacing = e.target.value;
+        updatePreview(false);
+      });
+      elements.transformSelect.addEventListener('change', (e) => {
+        state.textTransform = e.target.value;
+        triggerTypewriter(true);
+      });
+
+      // Shadow Style
+      elements.shadowStyleSelect.addEventListener('change', (e) => {
+        state.shadowStyle = e.target.value;
+        updatePreview(false);
+      });
+
+      // Toggles
+      elements.cursorToggle.addEventListener('change', (e) => {
+        state.showCursor = e.target.checked;
+        updatePreview(false);
+      });
+      elements.transparentPngToggle.addEventListener('change', (e) => {
+        state.transparentPng = e.target.checked;
+      });
+      elements.toggleScanlines.addEventListener('change', (e) => {
+        state.showScanlines = e.target.checked;
+        elements.scanlinesLayer.style.display = state.showScanlines ? 'block' : 'none';
+      });
+      elements.toggleFlicker.addEventListener('change', (e) => {
+        state.showFlicker = e.target.checked;
+        if (state.showFlicker) {
+          elements.previewScreen.classList.add('crt-flicker-active');
+        } else {
+          elements.previewScreen.classList.remove('crt-flicker-active');
+        }
+      });
+
+      // Audio SFX Toggle
+      elements.sfxToggleBtn.addEventListener('click', () => {
+        state.sfxEnabled = !state.sfxEnabled;
+        elements.sfxIcon.textContent = state.sfxEnabled ? '🔊' : '🔇';
+        elements.sfxText.textContent = state.sfxEnabled ? 'AUDIO ON' : 'AUDIO OFF';
+        if (state.sfxEnabled) play8BitSound('coin');
+        showToast(state.sfxEnabled ? 'Effetti sonori abilitati' : 'Audio disattivato', state.sfxEnabled ? '🔊' : '🔇');
+      });
+
+      // Random Style Button
+      elements.randomBtn.addEventListener('click', () => {
+        const keys = Object.keys(STYLE_PRESETS);
+        const randomKey = keys[Math.floor(Math.random() * keys.length)];
+        applyPreset(randomKey);
+        play8BitSound('powerup');
+        showToast(`Stile Casuale: ${STYLE_PRESETS[randomKey].name}`, '🎲');
+      });
+
+      // Export Actions
+      elements.downloadPngBtn.addEventListener('click', downloadPNG);
+      elements.downloadSvgBtn.addEventListener('click', downloadSVG);
+
+      elements.copyHtmlBtn.addEventListener('click', () => {
+        const html = generateStandaloneHTML();
+        copyToClipboard(html, 'Codice HTML copiato!');
+      });
+
+      elements.copyCssBtn.addEventListener('click', () => {
+        const css = generateCSS();
+        copyToClipboard(css, 'Regole CSS copiate!');
+      });
+
+      // Dedicated Pixel Art Text Exporter Button
+      elements.copyAsciiBtn.addEventListener('click', () => {
+        openPixelTextModal();
+      });
+
+      // Modal Controls
+      elements.modalCloseBtn.addEventListener('click', closeModal);
+      elements.pixelModalCloseBtn.addEventListener('click', closeModal);
+      
+      elements.codeModal.addEventListener('click', (e) => {
+        if (e.target === elements.codeModal) closeModal();
+      });
+      elements.pixelTextModal.addEventListener('click', (e) => {
+        if (e.target === elements.pixelTextModal) closeModal();
+      });
+
+      elements.modalCopyBtn.addEventListener('click', () => {
+        copyToClipboard(elements.modalCodeTextarea.value, 'Copiato negli appunti!');
+        closeModal();
+      });
+
+      elements.pixelModalCopyBtn.addEventListener('click', () => {
+        copyToClipboard(elements.pixelModalTextarea.value, 'Testo Pixel Art Copiato!');
+        closeModal();
+      });
+
+      // Pixel text format tab buttons
+      document.querySelectorAll('.modal-tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.modal-tab-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          currentPixelStyle = btn.dataset.style;
+          play8BitSound('coin');
+          const textToRender = state.textTransform === 'uppercase' ? state.text.toUpperCase() : state.text;
+          elements.pixelModalTextarea.value = generatePixelBlockText(textToRender, currentPixelStyle);
+        });
+      });
+    }
+
+    // Initialize application on DOM load
+    window.addEventListener('DOMContentLoaded', () => {
+      renderPresetCards();
+      initEventListeners();
+      applyPreset('gameboy');
+    });
+  </script>
+</body>
+</html>
