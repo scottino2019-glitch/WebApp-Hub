@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documento senza titolo</title>
+    <style>
+        #palestra {
+    font-family: sans-serif;
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background: #f4f4f4;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.editor-container {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.colonna { flex: 1; }
+
+textarea {
+    width: 100%;
+    height: 150px;
+    font-family: monospace;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box; /* Evita che la textarea esca dai bordi */
+}
+
+#btn-lancia {
+    background: #27ae60;
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+#output-box {
+    background: white;
+    border: 2px solid #3498db;
+    min-height: 100px;
+    padding: 15px;
+    margin-top: 10px;
+    border-radius: 5px;
+}
+
+    </style>
+</head>
+<body>
+    <div id="palestra">
+    <h2>🚀 Il mio Playground HTML + JS</h2>
+<label for="menu-esercizi">Scegli una sfida:</label>
+<select id="menu-esercizi">
+    <option value="libero">Modalità Libera</option>
+    <option value="saluto">1. Saluto h1</option>
+    <option value="colore">2. Bottone Rosso</option>
+<option value="saluto_dinamico">3. Il Saluto Dinamico</option>
+        <option value="raddoppia">4. Il Raddoppiatore</option>
+        <option value="lista">5. Crea un Elemento</option>
+<option value="sottrazione">6. Crea due variabili</option>
+<option value="confronto">7. Usa if</option>
+<option value="pari_dispari">8. Scopri il numero</option>
+<option value="ciclo_base">9. Ciclo for</option>
+<option value="messaggio_composto">10. Unire nomi</option>
+</select>
+
+<div id="istruzioni-sfida" style="margin: 10px 0; font-weight: bold; color: #2c3e50;">
+    Scegli un esercizio dal menu per iniziare!
+</div>
+
+<br>
+    
+    <div class="editor-container">
+        <div class="colonna">
+            <label>💻 Scrivi HTML qui:</label>
+            <textarea id="area-html" placeholder="Es: <button id='mioBtn'>Clicca!</button>"></textarea>
+        </div>
+        <div class="colonna">
+            <label>📜 Scrivi JS qui:</label>
+            <textarea id="area-js" placeholder="Es: document.getElementById('mioBtn').onclick = ..."></textarea>
+        </div>
+    </div>
+
+    <button id="btn-lancia">Lancia il Codice! 🚀</button>
+    
+    <div id="anteprima">
+        <h4>Anteprima Visiva:</h4>
+        <div id="output-box"></div>
+        <p><strong>Log:</strong> <span id="log-testo">-</span></p>
+    </div>
+</div>
+<button id="btn-soluzione" style="background-color: #ff9800; color: white;">Mostra Soluzione</button>
+
+<div id="area-soluzione" style="margin-top: 10px; font-family: monospace; color: #555; font-style: italic;">
+    </div>
+<script>
+// 1. DATABASE SFIDE (Sistemato con tutte le proprietà per ogni sfida)
+const sfide = {
+    libero: { consegna: "Sperimenta liberamente!", soluzione: "Non c'è soluzione per la modalità libera." },
+    saluto: {
+        consegna: "Crea un h1 con id 'titolo' in HTML e usa JS per scriverci 'Ciao!'",
+        soluzione: "HTML: <h1 id='titolo'></h1>\nJS: document.getElementById('titolo').innerText = 'Ciao!';"
+    },
+    colore: {
+        consegna: "Crea un bottone in HTML e cambia il suo sfondo in rosso con JS.",
+        soluzione: "HTML: <button id='btn'>Colore</button>\nJS: document.getElementById('btn').style.background = 'red';"
+    },
+    saluto_dinamico: {
+        consegna: "Assegna alla variabile 'risultato' il testo 'Ciao Mondo!'.",
+        soluzione: "risultato = 'Ciao Mondo!';"
+    },
+    raddoppia: {
+        consegna: "Crea una variabile 'n' uguale a 5, poi assegna a 'risultato' il valore di n * 2.",
+        soluzione: "let n = 5; risultato = n * 2;"
+    },
+    lista: {
+        consegna: "Crea un nuovo elemento 'p' con scritto 'Esercizio Fatto' e aggiungilo all'output-box.",
+        soluzione: "let p = document.createElement('p'); p.innerText = 'Esercizio Fatto'; document.getElementById('output-box').appendChild(p); risultato = 'Fatto!';"
+    },
+    sottrazione: {
+        consegna: "Crea due variabili (a = 20 e b = 8) e assegna a 'risultato' la loro differenza.",
+        soluzione: "let a = 20; let b = 8; risultato = a - b;"
+    },
+    confronto: {
+        consegna: "Se 'eta' (18) è >= 18, scrivi in 'risultato' il testo 'Maggiorenne'.",
+        soluzione: "let eta = 18; if(eta >= 18) { risultato = 'Maggiorenne'; }"
+    },
+    pari_dispari: {
+        consegna: "Se 10 è pari (n % 2 === 0), scrivi 'Pari' in 'risultato'.",
+        soluzione: "let n = 10; if(n % 2 === 0) { risultato = 'Pari'; }"
+    },
+    ciclo_base: {
+        consegna: "Somma i numeri da 1 a 3 con un ciclo for e metti il totale in 'risultato'.",
+        soluzione: "let somma = 0; for(let i=1; i<=3; i++) { somma += i; } risultato = somma;"
+    },
+    messaggio_composto: {
+        consegna: "Unisci 'Luca' e 'Rossi' in 'risultato' con uno spazio.",
+        soluzione: "let nome = 'Luca'; let cognome = 'Rossi'; risultato = nome + ' ' + cognome;"
+    }
+};
+
+// 2. RIFERIMENTI AGLI ELEMENTI (Ho aggiunto 'menu' e 'istruzioni' che mancavano!)
+const areaHtml = document.getElementById("area-html");
+const areaJs = document.getElementById("area-js");
+const btnLancia = document.getElementById("btn-lancia");
+const outputBox = document.getElementById("output-box");
+const logTesto = document.getElementById("log-testo");
+const menu = document.getElementById("menu-esercizi"); // MANCAVA!
+const istruzioni = document.getElementById("istruzioni-sfida"); // MANCAVA!
+const btnSoluzione = document.getElementById("btn-soluzione");
+const areaSoluzione = document.getElementById("area-soluzione");
+
+// 3. LOGICA ESECUZIONE
+btnLancia.addEventListener("click", () => {
+    try {
+        outputBox.innerHTML = areaHtml.value;
+        let risultato = "Eseguito!";
+        eval(areaJs.value);
+        logTesto.innerText = risultato;
+    } catch (errore) {
+        logTesto.innerText = "Errore: " + errore.message;
+    }
+});
+
+// 4. LOGICA MENU (Corretta la variabile 'istruzioni')
+menu.addEventListener("change", () => {
+    const scelta = menu.value;
+    istruzioni.innerText = "Consegna: " + sfide[scelta].consegna;
+    areaSoluzione.innerText = ""; // Pulisce la soluzione quando cambi esercizio
+});
+
+// 5. LOGICA SOLUZIONE
+btnSoluzione.addEventListener("click", () => {
+    const scelta = menu.value;
+    areaSoluzione.innerText = "💡 Soluzione: " + sfide[scelta].soluzione;
+});
+
+</script>
+</body>
+</html>
