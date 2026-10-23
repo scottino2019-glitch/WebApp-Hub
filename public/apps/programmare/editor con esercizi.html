@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editor HTML con Esercizi</title>
+    <style>
+        body {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            margin: 0 0 15px 0;
+            color: #333;
+            font-size: 28px;
+        }
+
+        .exercise-selector {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .exercise-selector label {
+            font-weight: 600;
+            color: #555;
+        }
+
+        select {
+            padding: 10px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            background: white;
+            font-size: 16px;
+            cursor: pointer;
+            min-width: 250px;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .load-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        .load-btn:hover {
+            background: #5a6fd8;
+        }
+
+        .editor-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            height: 600px;
+        }
+
+        .editor-panel, .preview-panel {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .panel-header {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e1e5e9;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .code-editor {
+            width: 100%;
+            height: calc(100% - 60px);
+            border: none;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            resize: none;
+            background: #fafafa;
+        }
+
+        .code-editor:focus {
+            outline: none;
+            background: white;
+        }
+
+        .preview-frame {
+            width: 100%;
+            height: calc(100% - 60px);
+            border: none;
+            background: white;
+        }
+
+        .exercise-info {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .exercise-title {
+            color: #667eea;
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .exercise-description {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .exercise-objectives {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .exercise-objectives h4 {
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+
+        .exercise-objectives ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .exercise-objectives li {
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        @media (max-width: 768px) {
+            .editor-container {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+            
+            .editor-panel, .preview-panel {
+                height: 400px;
+            }
+            
+            .exercise-selector {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            select {
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Editor HTML con Esercizi Integrati</h1>
+            <div class="exercise-selector">
+                <label for="exerciseSelect">Scegli un esercizio:</label>
+                <select id="exerciseSelect">
+                    <option value="">-- Seleziona un esercizio --</option>
+                    <option value="basic-structure">Struttura HTML Base</option>
+                    <option value="headings-paragraphs">Titoli e Paragrafi</option>
+                    <option value="lists">Liste Ordinate e Non Ordinate</option>
+                    <option value="links-images">Link e Immagini</option>
+                    <option value="tables">Tabelle HTML</option>
+                    <option value="forms">Form di Contatto</option>
+                    <option value="css-styling">Styling con CSS</option>
+                    <option value="responsive-design">Design Responsivo</option>
+                </select>
+                <button class="load-btn" onclick="loadExercise()">Carica Esercizio</button>
+            </div>
+        </div>
+
+        <div class="editor-container">
+            <div class="editor-panel">
+                <div class="panel-header">📝 Editor HTML</div>
+                <textarea class="code-editor" id="htmlEditor" placeholder="Scrivi il tuo codice HTML qui..."></textarea>
+            </div>
+            <div class="preview-panel">
+                <div class="panel-header">👁️ Anteprima</div>
+                <iframe class="preview-frame" id="previewFrame"></iframe>
+            </div>
+        </div>
+
+        <div class="exercise-info" id="exerciseInfo">
+            <div class="exercise-title">Benvenuto nell'Editor HTML!</div>
+            <div class="exercise-description">
+                Seleziona un esercizio dal menu a tendina sopra per iniziare a praticare HTML. 
+                Ogni esercizio include istruzioni dettagliate e obiettivi specifici da raggiungere.
+            </div>
+            <div class="exercise-objectives">
+                <h4>Come utilizzare l'editor:</h4>
+                <ul>
+                    <li>Scegli un esercizio dal menu a tendina</li>
+                    <li>Clicca "Carica Esercizio" per vedere le istruzioni</li>
+                    <li>Scrivi il codice HTML nell'editor a sinistra</li>
+                    <li>Vedi il risultato in tempo reale nell'anteprima a destra</li>
+                    <li>Completa gli obiettivi dell'esercizio</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const exercises = {
+            'basic-structure': {
+                title: '🏗️ Struttura HTML Base',
+                description: 'Impara a creare la struttura fondamentale di una pagina HTML con tutti gli elementi essenziali.',
+                objectives: [
+                    'Creare la dichiarazione DOCTYPE',
+                    'Aggiungere gli elementi html, head e body',
+                    'Inserire un titolo nella sezione head',
+                    'Aggiungere contenuto nel body'
+                ],
+                startingCode: `<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Mia Prima Pagina</title>
+</head>
+<body>
+    <!-- Aggiungi qui il contenuto della pagina -->
+    
+</body>
+</html>`
+            },
+            'headings-paragraphs': {
+                title: '📰 Titoli e Paragrafi',
+                description: 'Pratica l\'uso dei diversi livelli di titoli (h1-h6) e dei paragrafi per strutturare il contenuto.',
+                objectives: [
+                    'Utilizzare almeno 3 livelli di titoli diversi',
+                    'Creare paragrafi con testo significativo',
+                    'Usare elementi di formattazione come <strong> e <em>',
+                    'Aggiungere interruzioni di riga dove necessario'
+                ],
+                startingCode: `<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Titoli e Paragrafi</title>
+</head>
+<body>
+    <!-- Crea una struttura con titoli e paragrafi -->
+    
+</body>
+</html>`
+            },
+            'lists': {
+                title: '📋 Liste Ordinate e Non Ordinate',
+                description: 'Impara a creare liste ordinate (numerate) e non ordinate (con punti elenco) per organizzare le informazioni.',
+                objectives: [
+                    'Creare una lista non ordinata con almeno 4 elementi',
+                    'Creare una lista ordinata con almeno 3 elementi',
+                    'Provare a creare una lista annidata',
+                    'Aggiungere titoli appropriati per ogni lista'
+                ],
+                startingCode: `<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Liste HTML</title>
+</head>
+<body>
+    <h1>Le Mie Liste</h1>
+    
+    <!-- Crea qui le tue liste -->
+    
+</body>
+</html>`
+            },
+            'links-images': {
+                title: '🔗 Link e Immagini',
+                description: 'Scopri come aggiungere collegamenti ipertestuali e immagini alle tue pagine web.',
+                objectives: [
+                    'Creare link esterni che si aprono in una nuova scheda',
+                    'Creare link interni alla stessa pagina',
+                    'Aggiungere immagini con testo alternativo',
+                    'Combinare immagini e link'
+                ],
+                startingCode: `<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Link e Immagini</title>
+</head>
+<body>
+    <h1>Link e Immagini</h1>
+    
+    <!-- Aggiungi qui i tuoi link e immagini -->
+    
+</body>
+</html>`
+            },
+            'tables': {
+                title: '📊 Tabelle HTML',
+                description: 'Impara a creare tabelle per presentare dati in modo organizzato e strutturato.',
+                objectives: [
+                    'Creare una tabella con intestazioni (th)',
+                    'Aggiungere almeno 3 righe di dati',
+                    'Utilizzare gli elementi thead, tbody',
+                    'Aggiungere bordi e spaziatura con CSS inline'
+                ],
+                startingCode: `<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Tabelle HTML</title>
+    <style>
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <h1>La Mia Tabella</h1>
+    
+    <!-- Crea qui la tua tabella -->
+    
+</body>
+</html>`
+            },
+            'forms': {
+                title: '📝 Form di Contatto',
+                description: 'Crea form interattivi con diversi tipi di input per raccogliere informazioni dagli utenti.',
+                objectives: [
+                    'Creare un form con action e method',
+                    'Aggiungere campi per nome, email e messaggio',
+                    'Utilizzare diversi tipi di input (text, email, textarea)',
+                    'Aggiungere un pulsante di invio'
+                ],
+                startingCode: `<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Form di Contatto</title>
+    <style>
+        form { max-width: 500px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input, textarea { width: 100%; padding: 8px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; }
+        button { background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>Contattaci</h1>
+    
+    <!-- Crea qui il tuo form -->
+    
+</body>
+</html>`
+            },
+            'css-styling': {
+                title: '🎨 Styling con CSS',
+                description: 'Impara ad applicare stili CSS per rendere le tue pagine web più attraenti e professionali.',
+                objectives: [
+                    'Utilizzare CSS interno nel tag <style>',
+                    'Applicare colori di sfondo e testo',
+                    'Modificare font e dimensioni del testo',
+                    'Aggiungere padding, margin e bordi'
+                ],
+                startingCode: `<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Styling con CSS</title>
+    <style>
+        /* Aggiungi qui i tuoi stili CSS */
+        
+    </style>
+</head>
+<body>
+    <h1>Benvenuto nel Mondo del CSS</h1>
+    <p>Questo è un paragrafo che puoi stilizzare.</p>
+    <div class="box">Questa è una scatola da decorare</div>
+    <button>Clicca qui</button>
+</body>
+</html>`
+            },
+            'responsive-design': {
+                title: '📱 Design Responsivo',
+                description: 'Scopri come creare pagine web che si adattano a diversi dispositivi e dimensioni dello schermo.',
+                objectives: [
+                    'Utilizzare il meta viewport',
+                    'Creare layout flessibili con CSS',
+                    'Utilizzare media queries per diversi dispositivi',
+                    'Testare la responsività'
+                ],
+                startingCode: `<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Design Responsivo</title>
+    <style>
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .card { background: #f9f9f9; padding: 20px; border-radius: 8px; }
+        
+        /* Aggiungi qui le tue media queries */
+        @media (max-width: 768px) {
+            
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Design Responsivo</h1>
+        <div class="grid">
+            <div class="card">Card 1</div>
+            <div class="card">Card 2</div>
+            <div class="card">Card 3</div>
+        </div>
+    </div>
+</body>
+</html>`
+            }
+        };
+
+        const htmlEditor = document.getElementById('htmlEditor');
+        const previewFrame = document.getElementById('previewFrame');
+        const exerciseInfo = document.getElementById('exerciseInfo');
+
+        // Aggiorna l'anteprima in tempo reale
+        htmlEditor.addEventListener('input', updatePreview);
+
+        function updatePreview() {
+            const htmlContent = htmlEditor.value;
+            const previewDoc = previewFrame.contentDocument || previewFrame.contentWindow.document;
+            previewDoc.open();
+            previewDoc.write(htmlContent);
+            previewDoc.close();
+        }
+
+        function loadExercise() {
+            const selectedExercise = document.getElementById('exerciseSelect').value;
+            
+            if (!selectedExercise) {
+                alert('Seleziona un esercizio dal menu a tendina!');
+                return;
+            }
+
+            const exercise = exercises[selectedExercise];
+            
+            // Aggiorna le informazioni dell'esercizio
+            exerciseInfo.innerHTML = `
+                <div class="exercise-title">${exercise.title}</div>
+                <div class="exercise-description">${exercise.description}</div>
+                <div class="exercise-objectives">
+                    <h4>Obiettivi dell'esercizio:</h4>
+                    <ul>
+                        ${exercise.objectives.map(obj => `<li>${obj}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+
+            // Carica il codice di partenza nell'editor
+            htmlEditor.value = exercise.startingCode;
+            updatePreview();
+        }
+
+        // Inizializza con contenuto vuoto
+        updatePreview();
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98ae4578955e83b4',t:'MTc1OTg0OTI2MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

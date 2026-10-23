@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="it" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editor Tailwind CSS con Esercizi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        .code-editor {
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .exercise-complete {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+    </style>
+</head>
+<body class="h-full bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div class="h-full flex flex-col">
+        <!-- Header -->
+        <header class="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
+            <div class="flex items-center justify-between">
+                <h1 class="text-2xl font-bold text-gray-900">🎨 Editor Tailwind CSS</h1>
+                <div class="flex items-center space-x-4">
+                    <span class="text-sm text-gray-600">Esercizio <span id="currentExercise">1</span> di <span id="totalExercises">5</span></span>
+                    <div class="flex space-x-2">
+                        <button id="prevBtn" class="px-3 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition-colors">← Precedente</button>
+                        <button id="nextBtn" class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">Successivo →</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="flex-1 flex">
+            <!-- Sidebar con esercizi -->
+            <div class="w-80 bg-white border-r border-gray-200 flex flex-col">
+                <div class="p-6 border-b border-gray-200">
+                    <h2 class="text-lg font-semibold text-gray-900 mb-3">📚 Esercizio Corrente</h2>
+                    <div id="exerciseTitle" class="text-xl font-bold text-blue-600 mb-2"></div>
+                    <div id="exerciseDescription" class="text-gray-700 text-sm leading-relaxed"></div>
+                    <div class="p-6 border-b border-gray-200">
+                    <h3 class="font-semibold text-gray-900 mb-2">🎯 Obiettivo:</h3>
+                    <div id="exerciseGoal" class="text-sm text-gray-700 bg-yellow-50 p-3 rounded-lg"></div>
+                </div>
+                    
+                </div>
+                <div class="p-6 flex-1">
+                    <h3 class="font-semibold text-gray-900 mb-3">📋 Lista Esercizi:</h3>
+                    <div id="exerciseList" class="space-y-2"></div>
+                </div>
+                
+
+                
+                
+                <div class="p-6 border-b border-gray-200">
+                    <h3 class="font-semibold text-gray-900 mb-2">💡 Suggerimenti:</h3>
+                    <div id="exerciseHints" class="text-sm text-gray-600 space-y-2"></div>
+                </div>
+
+                
+            </div>
+
+            <!-- Editor e Preview -->
+            <div class="flex-1 flex flex-col">
+                <!-- Toolbar -->
+                <div class="bg-gray-50 border-b border-gray-200 px-6 py-3 flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <button id="resetBtn" class="px-3 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 transition-colors">🔄 Reset</button>
+                        <button id="checkBtn" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors font-medium">✓ Verifica Soluzione</button>
+                    </div>
+                    <div id="statusMessage" class="text-sm font-medium"></div>
+                </div>
+
+                <div class="flex-1 flex">
+                    <!-- Editor -->
+                    <div class="w-1/2 flex flex-col border-r border-gray-200">
+                        <div class="bg-gray-800 text-white px-4 py-2 text-sm font-medium">HTML + Tailwind CSS</div>
+                        <textarea 
+                            id="codeEditor" 
+                            class="flex-1 p-4 bg-gray-900 text-green-400 code-editor resize-none border-0 outline-none"
+                            placeholder="Scrivi il tuo codice HTML con classi Tailwind qui..."
+                        ></textarea>
+                    </div>
+
+                    <!-- Preview -->
+                    <div class="w-1/2 flex flex-col">
+                        <div class="bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700">Anteprima Live</div>
+                        <div class="flex-1 bg-white overflow-auto p-4">
+                            <div id="previewContainer"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const exercises = [
+            {
+                title: "Centrare un Elemento",
+                description: "Impara a centrare elementi usando Flexbox con Tailwind CSS.",
+                goal: "Crea un div con sfondo blu che contenga il testo 'Ciao Mondo!' centrato sia orizzontalmente che verticalmente.",
+                hints: [
+                    "Usa 'flex' per attivare flexbox",
+                    "Usa 'items-center' per centrare verticalmente",
+                    "Usa 'justify-center' per centrare orizzontalmente",
+                    "Usa 'bg-blue-500' per lo sfondo blu"
+                ],
+                starter: '<div class="">\n  Ciao Mondo!\n</div>',
+                solution: '<div class="flex items-center justify-center h-64 bg-blue-500 text-white">\n  Ciao Mondo!\n</div>',
+                check: (code) => {
+                    return code.includes('flex') && 
+                           code.includes('items-center') && 
+                           code.includes('justify-center') &&
+                           code.includes('bg-blue');
+                }
+            },
+            {
+                title: "Card Responsive",
+                description: "Crea una card elegante con ombra, bordi arrotondati e padding.",
+                goal: "Costruisci una card con sfondo bianco, ombra, bordi arrotondati, padding e un titolo + descrizione.",
+                hints: [
+                    "Usa 'bg-white' per lo sfondo",
+                    "Usa 'shadow-lg' per l'ombra",
+                    "Usa 'rounded-lg' per i bordi",
+                    "Usa 'p-6' per il padding interno"
+                ],
+                starter: '<div class="">\n  <h2>Titolo Card</h2>\n  <p>Questa è la descrizione della card.</p>\n</div>',
+                solution: '<div class="bg-white shadow-lg rounded-lg p-6 max-w-md mx-auto">\n  <h2 class="text-xl font-bold mb-2">Titolo Card</h2>\n  <p class="text-gray-600">Questa è la descrizione della card.</p>\n</div>',
+                check: (code) => {
+                    return code.includes('bg-white') && 
+                           code.includes('shadow') && 
+                           code.includes('rounded') &&
+                           code.includes('p-');
+                }
+            },
+            {
+                title: "Bottoni Colorati",
+                description: "Crea bottoni con diversi colori e effetti hover.",
+                goal: "Crea tre bottoni: uno blu, uno verde e uno rosso, tutti con effetti hover.",
+                hints: [
+                    "Usa 'bg-blue-500 hover:bg-blue-600' per il bottone blu",
+                    "Usa 'bg-green-500 hover:bg-green-600' per il bottone verde",
+                    "Usa 'bg-red-500 hover:bg-red-600' per il bottone rosso",
+                    "Aggiungi 'px-4 py-2 rounded text-white' per lo stile base"
+                ],
+                starter: '<button class="">Blu</button>\n<button class="">Verde</button>\n<button class="">Rosso</button>',
+                solution: '<div class="space-x-4">\n  <button class="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded text-white transition-colors">Blu</button>\n  <button class="bg-green-500 hover:bg-green-600 px-4 py-2 rounded text-white transition-colors">Verde</button>\n  <button class="bg-red-500 hover:bg-red-600 px-4 py-2 rounded text-white transition-colors">Rosso</button>\n</div>',
+                check: (code) => {
+                    return code.includes('bg-blue-500') && 
+                           code.includes('bg-green-500') && 
+                           code.includes('bg-red-500') &&
+                           code.includes('hover:');
+                }
+            },
+            {
+                title: "Layout a Griglia",
+                description: "Crea un layout a griglia responsive con 3 colonne su desktop e 1 su mobile.",
+                goal: "Usa CSS Grid per creare un layout con 3 elementi che si adattano da 1 colonna (mobile) a 3 colonne (desktop).",
+                hints: [
+                    "Usa 'grid' per attivare CSS Grid",
+                    "Usa 'grid-cols-1 md:grid-cols-3' per responsive",
+                    "Usa 'gap-4' per lo spazio tra elementi",
+                    "Aggiungi 'bg-gray-200 p-4 rounded' agli elementi"
+                ],
+                starter: '<div class="">\n  <div class="">Elemento 1</div>\n  <div class="">Elemento 2</div>\n  <div class="">Elemento 3</div>\n</div>',
+                solution: '<div class="grid grid-cols-1 md:grid-cols-3 gap-4 p-4">\n  <div class="bg-gray-200 p-4 rounded text-center">Elemento 1</div>\n  <div class="bg-gray-200 p-4 rounded text-center">Elemento 2</div>\n  <div class="bg-gray-200 p-4 rounded text-center">Elemento 3</div>\n</div>',
+                check: (code) => {
+                    return code.includes('grid') && 
+                           code.includes('grid-cols') && 
+                           code.includes('md:grid-cols') &&
+                           code.includes('gap');
+                }
+            },
+{
+    title: "Layout a Schede Responsive",
+    description: "Crea un layout con 4 schede che si dispongono in una colonna su mobile e in 2 colonne su desktop.",
+    goal: "Usa CSS Grid per creare un layout con 4 elementi che si adattano da 1 colonna (mobile) a 2 colonne (desktop).",
+    hints: [
+        "Usa 'grid' per attivare CSS Grid",
+        "Usa 'grid-cols-1 md:grid-cols-2' per responsive",
+        "Usa 'gap-4' per lo spazio tra le schede",
+        "Aggiungi 'bg-white p-4 rounded shadow' agli elementi"
+    ],
+    starter: '<div class="">\n  <div class="">Scheda 1</div>\n  <div class="">Scheda 2</div>\n  <div class="">Scheda 3</div>\n  <div class="">Scheda 4</div>\n</div>',
+    solution: '<div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">\n  <div class="bg-white p-4 rounded shadow text-center">Scheda 1</div>\n  <div class="bg-white p-4 rounded shadow text-center">Scheda 2</div>\n  <div class="bg-white p-4 rounded shadow text-center">Scheda 3</div>\n  <div class="bg-white p-4 rounded shadow text-center">Scheda 4</div>\n</div>',
+    check: (code) => {
+        return code.includes('grid') && 
+               code.includes('grid-cols-1') && 
+               code.includes('md:grid-cols-2') && 
+               code.includes('gap-4');
+    }
+},
+
+            {
+                title: "Form Stilizzato",
+                description: "Crea un form elegante con input, label e bottone di invio.",
+                goal: "Costruisci un form con input per nome ed email, label appropriate e un bottone di invio stilizzato.",
+                hints: [
+                    "Usa 'block' per le label",
+                    "Usa 'border border-gray-300 rounded px-3 py-2' per gli input",
+                    "Usa 'focus:outline-none focus:ring-2 focus:ring-blue-500' per il focus",
+                    "Usa 'w-full' per larghezza completa"
+                ],
+                starter: '<form class="">\n  <label>Nome:</label>\n  <input type="text">\n  <label>Email:</label>\n  <input type="email">\n  <button type="submit">Invia</button>\n</form>',
+                solution: '<form class="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md space-y-4">\n  <div>\n    <label class="block text-sm font-medium text-gray-700 mb-1">Nome:</label>\n    <input type="text" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">\n  </div>\n  <div>\n    <label class="block text-sm font-medium text-gray-700 mb-1">Email:</label>\n    <input type="email" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">\n  </div>\n  <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition-colors">Invia</button>\n</form>',
+                check: (code) => {
+                    return code.includes('border') && 
+                           code.includes('rounded') && 
+                           code.includes('focus:') &&
+                           code.includes('w-full');
+                }
+            },
+          {
+
+    title: "Card con Effetto Hover",
+
+    description: "Crea una card che cambia leggermente di colore quando ci passi sopra con il mouse.",
+
+    goal: "Usa le classi Tailwind per aggiungere un effetto di hover alla card.",
+
+    hints: [
+
+        "Usa 'hover:bg-gray-300' per l'effetto hover",
+
+        "Aggiungi padding e bordo per lo stile della card",
+
+        "Usa 'rounded' per angoli arrotondati",
+
+        "Aggiungi 'transition' per animazioni morbide"
+
+    ],
+
+    starter: '<div class="">\n  <div class="">Contenuto della card</div>\n</div>',
+
+    solution: '<div class="bg-white p-6 rounded border border-gray-300 hover:bg-gray-100 transition duration-300 cursor-pointer">\n  <h2 class="text-xl font-semibold mb-2">Titolo Card</h2>\n  <p class="text-gray-700">Descrizione della card con effetto hover.</p>\n</div>',
+
+    check: (code) => {
+
+        return code.includes('hover:bg-gray-100') &&
+
+               code.includes('transition') &&
+
+               code.includes('duration-300');
+
+    }
+
+},
+          {
+
+    title: "Griglia di Immagini",
+
+    description: "Crea una galleria di 6 immagini disposte in una griglia con 3 colonne su desktop e 2 colonne su mobile.",
+
+    goal: "Usa CSS Grid con responsività per disporre le immagini.",
+
+    hints: [
+
+        "Usa 'grid' e 'grid-cols-2 md:grid-cols-3'",
+
+        "Usa 'gap-4' tra le immagini",
+
+        "Aggiungi 'rounded' alle immagini per gli angoli arrotondati",
+
+        "Usa placeholder o immagini a tua scelta"
+
+    ],
+
+    starter: '<div class="">\n  <!-- Inserisci le immagini qui -->\n</div>',
+
+    solution: '<div class="grid grid-cols-2 md:grid-cols-3 gap-4 p-4">\n  <img src="https://via.placeholder.com/150" class="rounded" alt="Immagine 1">\n  <img src="https://via.placeholder.com/150" class="rounded" alt="Immagine 2">\n  <img src="https://via.placeholder.com/150" class="rounded" alt="Immagine 3">\n  <img src="https://via.placeholder.com/150" class="rounded" alt="Immagine 4">\n  <img src="https://via.placeholder.com/150" class="rounded" alt="Immagine 5">\n  <img src="https://via.placeholder.com/150" class="rounded" alt="Immagine 6">\n</div>',
+
+    check: (code) => {
+
+        return code.includes('grid') && 
+
+               code.includes('grid-cols-2') && 
+
+               code.includes('md:grid-cols-3') && 
+
+               code.includes('gap-4');
+
+    }
+
+},
+          {
+
+    title: "Layout Header, Main e Footer",
+
+    description: "Crea un layout verticale con header, contenuto e footer, con il footer in fondo alla pagina.",
+
+    goal: "Usa 'flex', 'flex-col' e 'min-h-screen' per mantenere il footer in fondo.",
+
+    hints: [
+
+        "Usa 'flex' e 'flex-col' sulla container principale",
+
+        "Usa 'flex-1' sull'area principale",
+
+        "Aggiungi colori di sfondo per distinguere le sezioni",
+
+        "Utilizza 'min-h-screen' per altezza minima"
+
+    ],
+
+    starter: '<div class="">\n  <header class="">Header</header>\n  <main class="">Contenuto</main>\n  <footer class="">Footer</footer>\n</div>',
+
+    solution: '<div class="flex flex-col min-h-screen bg-gray-100">\n  <header class="bg-blue-500 p-4 text-white">Header</header>\n  <main class="flex-1 p-4">Contenuto principale</main>\n  <footer class="bg-gray-800 p-4 text-white">Footer</footer>\n</div>',
+
+    check: (code) => {
+
+        return code.includes('flex') &&
+
+               code.includes('flex-col') &&
+
+               code.includes('min-h-screen') &&
+
+               code.includes('flex-1');
+
+    }
+
+},
+         {
+    title: "Layout a Due Righe",
+    description: "Crea un layout con 6 elementi disposti in 2 righe e 3 colonne su desktop, e in 1 riga su mobile.",
+    goal: "Usa Flexbox con wrapping per disporre 6 elementi in 2 righe su desktop e in una riga su mobile.",
+    hints: [
+        "Usa 'flex' e 'flex-wrap' per avvolgere gli elementi",
+        "Usa 'w-1/3' per larghezza di ogni elemento",
+        "Usa 'gap-4' per lo spazio tra gli elementi",
+        "Aggiungi 'bg-yellow-100 p-4 rounded' agli elementi"
+    ],
+    starter: '<div class="">\n  <div class="">Elemento 1</div>\n  <div class="">Elemento 2</div>\n  <div class="">Elemento 3</div>\n  <div class="">Elemento 4</div>\n  <div class="">Elemento 5</div>\n  <div class="">Elemento 6</div>\n</div>',
+    solution: '<div class="flex flex-wrap gap-4 p-4">\n  <div class="w-1/3 bg-yellow-100 p-4 rounded text-center">Elemento 1</div>\n  <div class="w-1/3 bg-yellow-100 p-4 rounded text-center">Elemento 2</div>\n  <div class="w-1/3 bg-yellow-100 p-4 rounded text-center">Elemento 3</div>\n  <div class="w-1/3 bg-yellow-100 p-4 rounded text-center">Elemento 4</div>\n  <div class="w-1/3 bg-yellow-100 p-4 rounded text-center">Elemento 5</div>\n  <div class="w-1/3 bg-yellow-100 p-4 rounded text-center">Elemento 6</div>\n</div>',
+    check: (code) => {
+        return code.includes('flex') && 
+               code.includes('flex-wrap') && 
+               code.includes('w-1/3') && 
+               code.includes('gap-4');
+    }
+},
+          {
+
+    title: "Sidebar Sticky",
+
+    description: "Crea una sidebar laterale che rimane visibile mentre scorri la pagina.",
+
+    goal: "Usa 'sticky' e 'top-0' per fissare la sidebar.",
+
+    hints: [
+
+        "Usa 'sticky' e 'top-0' sulla sidebar",
+
+        "Imposta una larghezza fissa come 'w-64'",
+
+        "Aggiungi 'h-screen' per altezza piena",
+
+        "Aggiungi un contenuto scrollabile nella pagina principale"
+
+    ],
+
+    starter: '<div class="">\n  <div class="">Sidebar</div>\n  <div class="">Contenuto principale</div>\n</div>',
+
+    solution: '<div class="flex">\n  <div class="sticky top-0 w-64 h-screen bg-gray-800 p-4 text-white">\n    <h3 class="mb-4 font-semibold">Menu</h3>\n    <ul>\n      <li class="mb-2"><a href="#" class="hover:underline">Link 1</a></li>\n      <li class="mb-2"><a href="#" class="hover:underline">Link 2</a></li>\n      <li class="mb-2"><a href="#" class="hover:underline">Link 3</a></li>\n    </ul>\n  </div>\n  <div class="p-8 flex-1">\n    <p>Contenuto lungo per scorrere la pagina...</p>\n    <!-- aggiungi altro contenuto per testare lo scroll --></div>\n</div>',
+
+    check: (code) => {
+
+        return code.includes('sticky') && 
+
+               code.includes('top-0') && 
+
+               code.includes('w-64') && 
+
+               code.includes('h-screen');
+
+    }
+
+},
+          {
+
+    title: "Navbar Sticky",
+
+    description: "Crea una barra di navigazione che rimane fissa in cima alla pagina mentre scorri.",
+
+    goal: "Usa 'sticky' e 'top-0' per mantenere la navbar in cima durante lo scroll.",
+
+    hints: [
+
+        "Usa 'sticky' e 'top-0' sulla navbar",
+
+        "Aggiungi 'z-50' per sovrapposizione",
+
+        "Aggiungi colori di sfondo come 'bg-indigo-600' e padding",
+
+        "Inserisci alcuni link di esempio"
+
+    ],
+
+    starter: '<div class="">\n  <div class="">Navbar</div>\n  <div class="">Contenuto sotto</div>\n</div>',
+
+    solution: '<div class="sticky top-0 z-50 bg-indigo-600 p-4 text-white flex justify-around">\n  <a href="#" class="hover:underline">Home</a>\n  <a href="#" class="hover:underline">About</a>\n  <a href="#" class="hover:underline">Contact</a>\n</div>\n<div class="p-8">\n  <p>Contenuto lungo per testare lo scroll...</p>\n  <!-- Aggiungi altro contenuto per scrollare --></div>',
+
+    check: (code) => {
+
+        return code.includes('sticky') &&
+
+               code.includes('top-0') &&
+
+               code.includes('z-50');
+
+    }
+
+},
+          {
+
+    title: "Modal con Popup",
+
+    description: "Crea un bottone che apre un modal con un messaggio e un pulsante di chiusura.",
+
+    goal: "Usa Tailwind per mostrare/nascondere il modal con classi di visibilità e transizioni.",
+
+    hints: [
+
+        "Usa 'fixed inset-0' e 'bg-black bg-opacity-50' per il overlay",
+
+        "Usa 'hidden' e 'flex' per mostrare/nascondere il modal",
+
+        "Utilizza JavaScript per toggleare le classi",
+
+        "Aggiungi un pulsante per chiudere il modal"
+
+    ],
+
+    starter: `<button id="openModal" class="bg-blue-500 text-white px-4 py-2 rounded">Apri Modal</button>
+
+<div id="modal" class="hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
+
+  <div class="bg-white p-6 rounded shadow-lg max-w-sm w-full">
+
+    <h2 class="text-xl mb-4">Messaggio importante</h2>
+
+    <p class="mb-4">Questo è un esempio di modal.</p>
+
+    <button id="closeModal" class="bg-red-500 text-white px-4 py-2 rounded">Chiudi</button>
+
+  </div>
+
+</div>`,
+
+    solution: `<button id="openModal" class="bg-blue-500 text-white px-4 py-2 rounded">Apri Modal</button>
+
+<div id="modal" class="hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
+
+  <div class="bg-white p-6 rounded shadow-lg max-w-sm w-full">
+
+    <h2 class="text-xl mb-4">Messaggio importante</h2>
+
+    <p class="mb-4">Questo è un esempio di modal.</p>
+
+    <button id="closeModal" class="bg-red-500 text-white px-4 py-2 rounded">Chiudi</button>
+
+  </div>
+
+</div>
+
+<script>
+
+  document.getElementById('openModal').addEventListener('click', () => {
+
+    document.getElementById('modal').classList.remove('hidden');
+
+    document.getElementById('modal').classList.add('flex');
+
+  });
+
+  document.getElementById('closeModal').addEventListener('click', () => {
+
+    document.getElementById('modal').classList.remove('flex');
+
+    document.getElementById('modal').classList.add('hidden');
+
+  });
+
+/script`,
+
+    check: (code) => {
+
+        return code.includes('hidden') &&
+
+               code.includes('flex') &&
+
+               code.includes('modal');
+
+    }
+
+},
+          {
+
+    title: "Card con Popup",
+
+    description: "Crea una card con un bottone che mostra un popup con più dettagli quando cliccato.",
+
+    goal: "Usa Tailwind e JavaScript per mostrare/nascondere il popup dentro la card.",
+
+    hints: [
+
+        "Crea un div nascosto per il popup (`hidden` e `absolute` o `fixed`)",
+
+        "Usa JavaScript per toggleare la visibilità",
+
+        "Aggiungi stile alla card e al popup",
+
+        "Puoi usare 'relative' sulla card e 'absolute' sul popup"
+
+    ],
+
+    starter: `<div class="relative bg-white p-4 rounded shadow max-w-sm mx-auto">
+
+  <h3 class="text-xl mb-2">Titolo Card</h3>
+
+  <p class="mb-4">Contenuto breve...</p>
+
+  <button id="showPopup" class="bg-green-500 text-white px-4 py-2 rounded">Mostra Dettagli</button>
+
+  <div id="popup" class="hidden absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+
+    <div class="bg-white p-6 rounded shadow-lg max-w-sm w-full relative">
+
+      <h4 class="text-lg mb-4">Dettagli aggiuntivi</h4>
+
+      <p class="mb-4">Ecco più dettagli che appaiono quando clicchi il bottone.</p>
+
+      <button id="closePopup" class="bg-red-500 text-white px-4 py-2 rounded">Chiudi</button>
+
+    </div>
+
+  </div>
+
+</div>`,
+
+    solution: `<div class="relative bg-white p-4 rounded shadow max-w-sm mx-auto">
+
+  <h3 class="text-xl mb-2">Titolo Card</h3>
+
+  <p class="mb-4">Contenuto breve...</p>
+
+  <button id="showPopup" class="bg-green-500 text-white px-4 py-2 rounded">Mostra Dettagli</button>
+
+  <div id="popup" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+
+    <div class="bg-white p-6 rounded shadow-lg max-w-sm w-full relative">
+
+      <h4 class="text-lg mb-4">Dettagli aggiuntivi</h4>
+
+      <p class="mb-4">Ecco più dettagli che appaiono quando clicchi il bottone.</p>
+
+      <button id="closePopup" class="bg-red-500 text-white px-4 py-2 rounded">Chiudi</button>
+
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+
+  document.getElementById('showPopup').addEventListener('click', () => {
+
+    document.getElementById('popup').classList.remove('hidden');
+
+    document.getElementById('popup').classList.add('flex');
+
+  });
+
+  document.getElementById('closePopup').addEventListener('click', () => {
+
+    document.getElementById('popup').classList.remove('flex');
+
+    document.getElementById('popup').classList.add('hidden');
+
+  });
+
+/script`,
+
+    check: (code) => {
+
+        return code.includes('hidden') &&
+
+               code.includes('flex') &&
+
+               code.includes('popup') &&
+
+               code.includes('Mostra Dettagli');
+
+    }
+
+},
+          
+  {
+    title: "Hero Section con Animazione",
+    description: "Crea una sezione Hero che entra con un effetto di fade-in e slide verso destra al caricamento.",
+    goal: "Usa Tailwind CSS con classi di transizione e animazione per creare un effetto di entrata fluido.",
+    hints: [
+        "Usa 'opacity-0' e 'translate-x-10' come stato iniziale",
+        "Usa 'transition-all', 'duration-1000', 'ease-out' per l'animazione",
+        "Usa JavaScript per rimuovere le classi iniziali e attivare l'animazione",
+        "Puoi usare 'setTimeout' per ritardare l'animazione"
+    ],
+    starter: `<section id="hero" class="opacity-0 translate-x-10 transition-all duration-1000 ease-out bg-blue-500 p-8 text-white max-w-2xl mx-auto rounded shadow-lg">
+  <h1 class="text-4xl mb-4">Benvenuto nella nostra pagina!</h1>
+  <p class="text-lg">Questa sezione entra con un effetto di slide e fade.</p>
+</section>`,
+    solution: `<section id="hero" class="opacity-0 translate-x-10 transition-all duration-1000 ease-out bg-blue-500 p-8 text-white max-w-2xl mx-auto rounded shadow-lg">
+  <h1 class="text-4xl mb-4">Benvenuto nella nostra pagina!</h1>
+  <p class="text-lg">Questa sezione entra con un effetto di slide e fade.</p>
+</section>
+<script>
+  window.onload = () => {
+    const hero = document.getElementById('hero');
+    setTimeout(() => {
+      hero.classList.remove('opacity-0', 'translate-x-10');
+    }, 100); // ritarda di 100ms per effetto di entrata
+  };
+/script`,
+    check: (code) => {
+        return code.includes('opacity-0') &&
+               code.includes('translate-x-10') &&
+               code.includes('transition-all') &&
+               code.includes('duration-1000') &&
+               code.includes('ease-out') &&
+               code.includes('window.onload');
+    }
+},
+
+   {       
+    title: "Navbar con Effetto Hover Animato",
+    description: "Crea una navbar con link che si ingrandiscono leggermente e cambiano colore al hover con transizione fluida.",
+    goal: "Usa Tailwind CSS con classi di hover e transition per effetti smooth.",
+    hints: [
+        "Usa 'transform', 'hover:scale-105', 'transition-transform' per l'effetto di ingrandimento",
+        "Aggiungi 'hover:bg-gray-200' o simili per il cambio di colore",
+        "Usa 'duration-300' per transizioni fluide",
+        "Puoi aggiungere anche 'cursor-pointer' per indicare interattività"
+    ],
+    starter: `<nav class="bg-white p-4 flex space-x-4">
+  <a href="#" class="text-gray-700 hover:bg-gray-200 hover:scale-105 transition-transform duration-300 px-3 py-2 rounded cursor-pointer">Home</a>
+  <a href="#" class="text-gray-700 hover:bg-gray-200 hover:scale-105 transition-transform duration-300 px-3 py-2 rounded cursor-pointer">About</a>
+  <a href="#" class="text-gray-700 hover:bg-gray-200 hover:scale-105 transition-transform duration-300 px-3 py-2 rounded cursor-pointer">Services</a>
+</nav>`,
+    solution: `<nav class="bg-white p-4 flex space-x-4">
+  <a href="#" class="text-gray-700 hover:bg-gray-200 hover:scale-105 transition-transform duration-300 px-3 py-2 rounded cursor-pointer">Home</a>
+  <a href="#" class="text-gray-700 hover:bg-gray-200 hover:scale-105 transition-transform duration-300 px-3 py-2 rounded cursor-pointer">About</a>
+  <a href="#" class="text-gray-700 hover:bg-gray-200 hover:scale-105 transition-transform duration-300 px-3 py-2 rounded cursor-pointer">Services</a>
+</nav>`,
+    check: (code) => {
+        return code.includes('hover:scale-105') &&
+               code.includes('transition-transform') &&
+               code.includes('duration-300') &&
+               code.includes('hover:bg-gray-200');
+    }
+},
+    {      
+    title: "Card con Popup Animato",
+    description: "Crea una card con un bottone che mostra un popup con effetto di fade-in e scale quando cliccato.",
+    goal: "Usa Tailwind CSS con classi di transizione e JavaScript per animare la comparsa del popup.",
+    hints: [
+        "Usa 'opacity-0', 'scale-95' come stato iniziale",
+        "Usa 'transition-all', 'duration-500', 'ease-out' per l'animazione",
+        "Usa JavaScript per togliere le classi iniziali e mostrare il popup",
+        "Puoi usare 'fixed inset-0' per il overlay e 'absolute' o 'fixed' per il popup"
+    ],
+    starter: `<div class="relative bg-white p-4 rounded shadow max-w-sm mx-auto">
+  <h3 class="text-xl mb-2">Titolo Card</h3>
+  <p class="mb-4">Contenuto breve...</p>
+  <button id="showPopup" class="bg-green-500 text-white px-4 py-2 rounded">Mostra Popup</button>
+  <div id="popup" class="hidden opacity-0 scale-95 transition-all duration-500 ease-out fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white p-6 rounded shadow-lg max-w-sm w-full transform">
+      <h4 class="text-lg mb-4">Dettagli</h4>
+      <p class="mb-4">Questo popup appare con effetto di fade e scale.</p>
+      <button id="closePopup" class="bg-red-500 text-white px-4 py-2 rounded">Chiudi</button>
+    </div>
+  </div>
+</div>`,
+    solution: `<div class="relative bg-white p-4 rounded shadow max-w-sm mx-auto">
+  <h3 class="text-xl mb-2">Titolo Card</h3>
+  <p class="mb-4">Contenuto breve...</p>
+  <button id="showPopup" class="bg-green-500 text-white px-4 py-2 rounded">Mostra Popup</button>
+  <div id="popup" class="hidden opacity-0 scale-95 transition-all duration-500 ease-out fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white p-6 rounded shadow-lg max-w-sm w-full transform">
+      <h4 class="text-lg mb-4">Dettagli</h4>
+      <p class="mb-4">Questo popup appare con effetto di fade e scale.</p>
+      <button id="closePopup" class="bg-red-500 text-white px-4 py-2 rounded">Chiudi</button>
+    </div>
+  </div>
+</div>
+<script>
+  document.getElementById('showPopup').addEventListener('click', () => {
+    const popup = document.getElementById('popup');
+    popup.classList.remove('hidden');
+    setTimeout(() => {
+      popup.classList.remove('opacity-0', 'scale-95');
+    }, 50);
+  });
+  document.getElementById('closePopup').addEventListener('click', () => {
+    const popup = document.getElementById('popup');
+    popup.classList.add('opacity-0', 'scale-95');
+    setTimeout(() => {
+      popup.classList.add('hidden');
+    }, 500);
+  });
+/script`,
+    check: (code) => {
+        return code.includes('opacity-0') &&
+               code.includes('scale-95') &&
+               code.includes('transition-all') &&
+               code.includes('duration-500') &&
+               code.includes('ease-out') &&
+               code.includes('showPopup') &&
+               code.includes('closePopup');
+    }
+},
+
+{ 
+    title: "Bottone con Colore Variabile",
+    description: "Crea un bottone che cambia colore di sfondo quando ci passi sopra con il mouse.",
+    goal: "Usa Tailwind CSS con classi di hover per modificare il colore di sfondo.",
+    hints: [
+        "Usa 'bg-blue-500' come colore di default",
+        "Usa 'hover:bg-green-500' per il colore al hover",
+        "Aggiungi 'transition-colors duration-300' per transizione fluida",
+        "Usa 'text-white' per il testo"
+    ],
+    starter: '<button class="bg-blue-500 text-white px-4 py-2 rounded">Cliccami</button>',
+    solution: '<button class="bg-blue-500 hover:bg-green-500 transition-colors duration-300 text-white px-4 py-2 rounded">Cliccami</button>',
+    check: (code) => {
+        return code.includes('hover:bg-green-500') &&
+               code.includes('transition-colors') &&
+               code.includes('duration-300') &&
+               code.includes('bg-blue-500');
+    }
+},
+          {
+            
+    title: "Sezione con Diversi Colori di Background",
+    description: "Crea tre blocchi affiancati, ognuno con un colore di sfondo diverso: rosso, giallo e verde.",
+    goal: "Usa Tailwind CSS con classi di background color per differenziare i blocchi.",
+    hints: [
+        "Usa 'bg-red-400', 'bg-yellow-400', 'bg-green-400' per i colori",
+        "Aggiungi padding e margini per distanziarli",
+        "Usa 'flex' e 'space-x-4' per disporli in fila",
+        "Aggiungi 'rounded' per gli angoli arrotondati"
+    ],
+    starter: '<div class="">\n  <div class="">Blocco 1</div>\n  <div class="">Blocco 2</div>\n  <div class="">Blocco 3</div>\n</div>',
+    solution: '<div class="flex space-x-4 p-4">\n  <div class="bg-red-400 p-4 rounded text-white">Blocco 1</div>\n  <div class="bg-yellow-400 p-4 rounded">Blocco 2</div>\n  <div class="bg-green-400 p-4 rounded text-white">Blocco 3</div>\n</div>',
+    check: (code) => {
+        return code.includes('bg-red-400') &&
+               code.includes('bg-yellow-400') &&
+               code.includes('bg-green-400');
+    }
+},
+   {       
+    title: "Tema Dark/Light con Colori",
+    description: "Crea un box che cambia colore di sfondo a seconda del tema (light/dark).",
+    goal: "Usa Tailwind CSS con classi 'dark' per gestire i colori in modalità scura e chiara.",
+    hints: [
+        "Usa 'bg-white' per il tema chiaro",
+        "Usa 'dark:bg-gray-800' per il tema scuro",
+        "Aggiungi testo con 'text-black' e 'dark:text-white'",
+        "Puoi usare 'class' dinamiche o 'dark:' come prefisso"
+    ],
+    starter: '<div class="bg-white dark:bg-gray-800 p-4 rounded shadow">\n  <p class="text-black dark:text-white">Contenuto</p>\n</div>',
+    solution: '<div class="bg-white dark:bg-gray-800 p-4 rounded shadow">\n  <p class="text-black dark:text-white">Contenuto</p>\n</div>',
+    check: (code) => {
+        return code.includes('dark:bg-gray-800') &&
+               code.includes('dark:text-white') &&
+               code.includes('dark:');
+    }
+},
+          {
+            
+    title: "Badge Colorato",
+    description: "Crea un badge che mostra uno stato con colore diverso in base al tipo (successo, avviso, errore).",
+    goal: "Usa classi Tailwind per impostare colori diversi per ogni badge.",
+    hints: [
+        "Usa 'bg-green-100 text-green-800' per successo",
+        "Usa 'bg-yellow-100 text-yellow-800' per avviso",
+        "Usa 'bg-red-100 text-red-800' per errore",
+        "Aggiungi 'px-3 py-1 rounded-full text-sm font-semibold' per stile badge"
+    ],
+    starter: '<div class="">\n  <span class="">Stato</span>\n</div>',
+    solution: '<div class="flex space-x-2">\n  <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold">Successo</span>\n  <span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-semibold">Avviso</span>\n  <span class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-semibold">Errore</span>\n</div>',
+    check: (code) => {
+        return code.includes('bg-green-100') &&
+               code.includes('bg-yellow-100') &&
+               code.includes('bg-red-100') &&
+               code.includes('rounded-full');
+    }
+},
+          {
+            
+    title: "Card con Bottoni Diversi",
+    description: "Crea una card con due bottoni: uno per confermare e uno per cancellare, con stili diversi.",
+    goal: "Usa Tailwind CSS per differenziare i bottoni con colori e hover diversi.",
+    hints: [
+        "Usa 'bg-blue-500' per il bottone di conferma",
+        "Usa 'bg-gray-300' e 'hover:bg-gray-400' per il bottone di cancellazione",
+        "Aggiungi 'text-white' e 'px-4 py-2 rounded' per entrambi",
+        "Puoi usare 'mr-2' per distanziare i bottoni"
+    ],
+    starter: '<div class="">\n  <h3 class="">Titolo Card</h3>\n  <p class="">Contenuto...</p>\n  <div class="">\n    <!-- bottoni qui -->\n  </div>\n</div>',
+    solution: '<div class="max-w-sm bg-white p-4 rounded shadow mx-auto">\n  <h3 class="text-xl mb-2">Titolo Card</h3>\n  <p class="mb-4">Contenuto...</p>\n  <div class="flex">\n    <button class="bg-blue-500 text-white px-4 py-2 rounded mr-2 hover:bg-blue-600">Conferma</button>\n    <button class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400">Annulla</button>\n  </div>\n</div>',
+    check: (code) => {
+        return code.includes('bg-blue-500') &&
+               code.includes('hover:bg-blue-600') &&
+               code.includes('bg-gray-300') &&
+               code.includes('hover:bg-gray-400') &&
+               code.includes('mr-2');
+    }
+},
+          {
+            
+    title: "Badge con Stili Diversi",
+    description: "Crea tre badge con stili diversi: uno con outline, uno con fill e uno con gradient.",
+    goal: "Usa Tailwind CSS per creare badge con stili varianti.",
+    hints: [
+        "Per badge outline, usa 'border', 'border-gray-500', 'bg-transparent'",
+        "Per badge filled, usa 'bg-purple-500' e 'text-white'",
+        "Per badge gradient, usa 'bg-gradient-to-r from-pink-500 to-yellow-500' e 'text-white'"
+    ],
+    starter: '<div class="">\n  <!-- badge outline -->\n  <span class="">Badge1</span>\n  <!-- badge filled -->\n  <span class="">Badge2</span>\n  <!-- badge gradient -->\n  <span class="">Badge3</span>\n</div>',
+    solution: '<div class="flex space-x-2">\n  <span class="border border-gray-500 bg-transparent px-3 py-1 rounded-full text-sm font-semibold">Badge1</span>\n  <span class="bg-purple-500 text-white px-3 py-1 rounded-full text-sm font-semibold">Badge2</span>\n  <span class="bg-gradient-to-r from-pink-500 to-yellow-500 text-white px-3 py-1 rounded-full text-sm font-semibold">Badge3</span>\n</div>',
+    check: (code) => {
+        return code.includes('border') &&
+               code.includes('bg-transparent') &&
+               code.includes('bg-purple-500') &&
+               code.includes('bg-gradient-to-r') &&
+               code.includes('from-pink-500') &&
+               code.includes('to-yellow-500');
+    }
+}
+    ];
+
+        let currentExerciseIndex = 0;
+
+        const elements = {
+            exerciseTitle: document.getElementById('exerciseTitle'),
+            exerciseDescription: document.getElementById('exerciseDescription'),
+            exerciseGoal: document.getElementById('exerciseGoal'),
+            exerciseHints: document.getElementById('exerciseHints'),
+            exerciseList: document.getElementById('exerciseList'),
+            codeEditor: document.getElementById('codeEditor'),
+            previewContainer: document.getElementById('previewContainer'),
+            currentExercise: document.getElementById('currentExercise'),
+            totalExercises: document.getElementById('totalExercises'),
+            statusMessage: document.getElementById('statusMessage'),
+            prevBtn: document.getElementById('prevBtn'),
+            nextBtn: document.getElementById('nextBtn'),
+            resetBtn: document.getElementById('resetBtn'),
+            checkBtn: document.getElementById('checkBtn')
+        };
+
+        function loadExercise(index) {
+            const exercise = exercises[index];
+            
+            elements.exerciseTitle.textContent = exercise.title;
+            elements.exerciseDescription.textContent = exercise.description;
+            elements.exerciseGoal.textContent = exercise.goal;
+            
+            elements.exerciseHints.innerHTML = exercise.hints
+                .map(hint => `<div class="flex items-start space-x-2"><span class="text-yellow-500">💡</span><span>${hint}</span></div>`)
+                .join('');
+            
+            elements.codeEditor.value = exercise.starter;
+            elements.currentExercise.textContent = index + 1;
+            elements.totalExercises.textContent = exercises.length;
+            
+            elements.prevBtn.disabled = index === 0;
+            elements.nextBtn.disabled = index === exercises.length - 1;
+            
+            elements.prevBtn.className = index === 0 
+                ? 'px-3 py-1 bg-gray-100 text-gray-400 rounded cursor-not-allowed'
+                : 'px-3 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition-colors';
+            
+            updatePreview();
+            clearStatus();
+        }
+
+        function loadExerciseList() {
+            elements.exerciseList.innerHTML = exercises
+                .map((exercise, index) => 
+                    `<div class="flex items-center space-x-2 p-2 rounded cursor-pointer hover:bg-gray-100 ${index === currentExerciseIndex ? 'bg-blue-50 border-l-4 border-blue-500' : ''}" onclick="selectExercise(${index})">
+                        <span class="text-sm font-medium ${index === currentExerciseIndex ? 'text-blue-600' : 'text-gray-600'}">${index + 1}.</span>
+                        <span class="text-sm ${index === currentExerciseIndex ? 'text-blue-900 font-medium' : 'text-gray-700'}">${exercise.title}</span>
+                    </div>`
+                ).join('');
+        }
+
+        function selectExercise(index) {
+            currentExerciseIndex = index;
+            loadExercise(index);
+            loadExerciseList();
+        }
+
+        function updatePreview() {
+            const code = elements.codeEditor.value;
+            const previewContainer = document.getElementById('previewContainer');
+            previewContainer.innerHTML = code;
+        }
+
+        function checkSolution() {
+            const code = elements.codeEditor.value;
+            const exercise = exercises[currentExerciseIndex];
+            
+            if (exercise.check(code)) {
+                showStatus('✅ Perfetto! Hai completato l\'esercizio correttamente!', 'success');
+                
+                // Animazione di successo
+                elements.statusMessage.classList.add('exercise-complete');
+                setTimeout(() => {
+                    elements.statusMessage.classList.remove('exercise-complete');
+                }, 2000);
+                
+            } else {
+                showStatus('❌ Non ancora corretto. Controlla i suggerimenti e riprova!', 'error');
+            }
+        }
+
+        function showStatus(message, type) {
+            elements.statusMessage.textContent = message;
+            elements.statusMessage.className = `text-sm font-medium ${
+                type === 'success' ? 'text-green-600' : 'text-red-600'
+            }`;
+        }
+
+        function clearStatus() {
+            elements.statusMessage.textContent = '';
+            elements.statusMessage.className = 'text-sm font-medium';
+        }
+
+        function resetExercise() {
+            const exercise = exercises[currentExerciseIndex];
+            elements.codeEditor.value = exercise.starter;
+            updatePreview();
+            clearStatus();
+        }
+
+        // Event Listeners
+        elements.codeEditor.addEventListener('input', updatePreview);
+        elements.prevBtn.addEventListener('click', () => {
+            if (currentExerciseIndex > 0) {
+                selectExercise(currentExerciseIndex - 1);
+            }
+        });
+        elements.nextBtn.addEventListener('click', () => {
+            if (currentExerciseIndex < exercises.length - 1) {
+                selectExercise(currentExerciseIndex + 1);
+            }
+        });
+        elements.resetBtn.addEventListener('click', resetExercise);
+        elements.checkBtn.addEventListener('click', checkSolution);
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey || e.metaKey) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    checkSolution();
+                } else if (e.key === 'r') {
+                    e.preventDefault();
+                    resetExercise();
+                }
+            }
+        });
+
+        // Initialize
+        loadExercise(0);
+        loadExerciseList();
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98b6687f444ef671',t:'MTc1OTkzNDU4Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

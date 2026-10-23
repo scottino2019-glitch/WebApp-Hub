@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generatore Esercizi Web</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .code-block {
+            font-family: 'Courier New', monospace;
+            background: #1e293b;
+            color: #e2e8f0;
+            border-radius: 8px;
+            padding: 16px;
+            overflow-x: auto;
+        }
+        .syntax-html { color: #f87171; }
+        .syntax-css { color: #60a5fa; }
+        .syntax-js { color: #fbbf24; }
+        .difficulty-easy { border-left: 4px solid #10b981; }
+        .difficulty-medium { border-left: 4px solid #f59e0b; }
+        .difficulty-hard { border-left: 4px solid #ef4444; }
+.container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .controls {
+            background: #34495e;
+            padding: 15px 20px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .file-input {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .file-input label {
+            color: white;
+            font-weight: 500;
+        }
+
+        .file-input input {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            min-width: 200px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #229954;
+            transform: translateY(-2px);
+        }
+
+        .btn-warning {
+            background: #f39c12;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #e67e22;
+            transform: translateY(-2px);
+        }
+
+      
+        .editor-container {
+            display: flex;
+            height: 600px;
+        }
+
+        .editor-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-header {
+            background: #ecf0f1;
+            padding: 12px 20px;
+            font-weight: 600;
+            color: #2c3e50;
+            border-bottom: 1px solid #bdc3c7;
+        }
+
+        .editor {
+            flex: 1;
+            border: none;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            resize: none;
+            outline: none;
+            background: #fafafa;
+        }
+
+        .preview {
+            flex: 1;
+            padding: 20px;
+            background: white;
+            overflow-y: auto;
+            border-left: 1px solid #bdc3c7;
+        }
+
+        .status {
+            background: #95a5a6;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .editor-container {
+                flex-direction: column;
+                height: auto;
+            }
+            
+            .editor {
+                min-height: 300px;
+            }
+            
+            .preview {
+                min-height: 300px;
+                border-left: none;
+                border-top: 1px solid #bdc3c7;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .file-input {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .file-input input {
+                min-width: auto;
+            }
+
+           
+        }    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-800 mb-2">🎯 Generatore Esercizi Web</h1>
+            <p class="text-gray-600">Genera esercizi automatici per HTML, CSS e JavaScript</p>
+        </div>
+
+        <!-- Controls -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <div class="grid md:grid-cols-4 gap-4 mb-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Linguaggio</label>
+                    <select id="language" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="html">HTML</option>
+                        <option value="css">CSS</option>
+                        <option value="javascript">JavaScript</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Difficoltà</label>
+                    <select id="difficulty" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="easy">Facile</option>
+                        <option value="medium">Medio</option>
+                        <option value="hard">Difficile</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Categoria</label>
+                    <select id="category" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="basic">Base</option>
+                        <option value="layout">Layout</option>
+                        <option value="interactive">Interattivo</option>
+                        <option value="advanced">Avanzato</option>
+                    </select>
+                </div>
+                <div class="flex items-end">
+                    <button id="generateBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 transform hover:scale-105">
+                        🎲 Genera Esercizio
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exercise Display -->
+        <div id="exerciseContainer" class="bg-white rounded-xl shadow-lg p-6 mb-8 hidden">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center space-x-3">
+                    <span id="exerciseLanguage" class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium"></span>
+                    <span id="exerciseDifficulty" class="px-3 py-1 rounded-full text-sm font-medium"></span>
+                </div>
+                <button id="newExerciseBtn" class="text-blue-600 hover:text-blue-800 font-medium">
+                    🔄 Nuovo Esercizio
+                </button>
+            </div>
+            
+            <h2 id="exerciseTitle" class="text-2xl font-bold text-gray-800 mb-4"></h2>
+            <p id="exerciseDescription" class="text-gray-600 mb-6 leading-relaxed"></p>
+            
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-3">📝 Requisiti:</h3>
+                    <ul id="exerciseRequirements" class="space-y-2"></ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-3">💡 Suggerimenti:</h3>
+                    <ul id="exerciseHints" class="space-y-2"></ul>
+                </div>
+            </div>
+
+            <div class="mt-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-3">🚀 Codice di partenza:</h3>
+                <div id="startingCode" class="code-block"></div>
+            </div>
+
+            <div class="mt-6 p-4 bg-gray-50 rounded-lg">
+                <h3 class="text-lg font-semibold text-gray-800 mb-2">🎯 Obiettivo:</h3>
+                <p id="exerciseGoal" class="text-gray-700"></p>
+            </div>
+        </div>
+<!-- Editor -->
+        <div class="container">
+        <div class="header">
+            <h1>📝 Editor HTML</h1>
+            <p>Scrivi il tuo esercizio e salvalo come file</p>
+        </div>
+        
+        <div class="controls">
+            <div class="file-input">
+                <label for="filename">Nome file:</label>
+                <input type="text" id="filename" placeholder="mio-file.html" value="documento.html">
+            </div>
+            
+            <button class="btn btn-success" onclick="saveFile()">
+                💾 Salva File
+            </button>
+            
+            <button class="btn btn-warning" onclick="clearEditor()">
+                🗑️ Pulisci
+            </button>
+            </div>
+            <div class="editor-container">
+            <div class="editor-panel">
+                <div class="panel-header">Editor HTML</div>
+                <textarea class="editor" id="htmlEditor" placeholder="Scrivi qui il tuo codice HTML..."></textarea>
+            </div>
+            
+            <div class="editor-panel">
+                <div class="panel-header">Anteprima</div>
+                <div class="preview" id="preview">
+                    <p style="color: #7f8c8d; text-align: center; margin-top: 50px;">
+                        L'anteprima apparirà qui mentre scrivi...
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="status" id="status">
+            Pronto per iniziare - Scrivi il tuo HTML nell'editor
+        </div>
+    </div>
+        
+        <!-- Statistics -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">📊 Statistiche Sessione</h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="text-center p-4 bg-blue-50 rounded-lg">
+                    <div class="text-2xl font-bold text-blue-600" id="totalExercises">0</div>
+                    <div class="text-sm text-gray-600">Esercizi Generati</div>
+                </div>
+                <div class="text-center p-4 bg-green-50 rounded-lg">
+                    <div class="text-2xl font-bold text-green-600" id="htmlCount">0</div>
+                    <div class="text-sm text-gray-600">HTML</div>
+                </div>
+                <div class="text-center p-4 bg-yellow-50 rounded-lg">
+                    <div class="text-2xl font-bold text-yellow-600" id="cssCount">0</div>
+                    <div class="text-sm text-gray-600">CSS</div>
+                </div>
+                <div class="text-center p-4 bg-purple-50 rounded-lg">
+                    <div class="text-2xl font-bold text-purple-600" id="jsCount">0</div>
+                    <div class="text-sm text-gray-600">JavaScript</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+  const editor = document.getElementById('htmlEditor');
+        const preview = document.getElementById('preview');
+        const status = document.getElementById('status');
+        const filename = document.getElementById('filename');
+
+        // Aggiorna l'anteprima in tempo reale
+        editor.addEventListener('input', function() {
+            const htmlContent = editor.value;
+            
+            if (htmlContent.trim() === '') {
+                preview.innerHTML = '<p style="color: #7f8c8d; text-align: center; margin-top: 50px;">L\'anteprima apparirà qui mentre scrivi...</p>';
+                status.textContent = 'Editor vuoto';
+            } else {
+                try {
+                    preview.innerHTML = htmlContent;
+                    status.textContent = `Caratteri: ${htmlContent.length} | Righe: ${htmlContent.split('\n').length}`;
+                } catch (error) {
+                    preview.innerHTML = '<p style="color: #e74c3c;">Errore nel rendering HTML</p>';
+                    status.textContent = 'Errore nel codice HTML';
+                }
+            }
+        });
+
+        // Funzione per salvare il file
+        function saveFile() {
+            const content = editor.value;
+            let fileName = filename.value.trim();
+            
+            if (!fileName) {
+                alert('Inserisci un nome per il file!');
+                filename.focus();
+                return;
+            }
+            
+            if (!fileName.endsWith('.html')) {
+                fileName = fileName + '.html';
+                filename.value = fileName;
+            }
+            
+            if (content.trim() === '') {
+                if (!confirm('Il file è vuoto. Vuoi salvarlo comunque?')) {
+                    return;
+                }
+            }
+            
+            try {
+                // Crea il blob e scarica il file
+                const blob = new Blob([content], { type: 'text/html;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = fileName;
+                a.style.display = 'none';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                status.textContent = `File "${fileName}" salvato con successo!`;
+                status.style.background = '#27ae60';
+                
+                // Reset del messaggio dopo 3 secondi
+                setTimeout(() => {
+                    status.style.background = '#95a5a6';
+                    const content = editor.value;
+                    if (content.trim() !== '') {
+                        status.textContent = `Caratteri: ${content.length} | Righe: ${content.split('\n').length}`;
+                    } else {
+                        status.textContent = 'Pronto per iniziare - Scrivi il tuo HTML nell\'editor';
+                    }
+                }, 3000);
+            } catch (error) {
+                alert('Errore durante il salvataggio del file');
+                console.error('Errore salvataggio:', error);
+            }
+        }
+
+        // Funzione per pulire l'editor
+        function clearEditor() {
+            if (editor.value.trim() !== '' && !confirm('Sei sicuro di voler cancellare tutto il contenuto?')) {
+                return;
+            }
+            
+            editor.value = '';
+            preview.innerHTML = '<p style="color: #7f8c8d; text-align: center; margin-top: 50px;">L\'anteprima apparirà qui mentre scrivi...</p>';
+            status.textContent = 'Editor pulito - Pronto per iniziare';
+            status.style.background = '#f39c12';
+            
+            setTimeout(() => {
+                status.style.background = '#95a5a6';
+            }, 2000);
+            
+            editor.focus();
+        }
+ // Scorciatoie da tastiera
+        editor.addEventListener('keydown', function(e) {
+            // Ctrl+S per salvare
+            if (e.ctrlKey && e.key === 's') {
+                e.preventDefault();
+                saveFile();
+            }
+            
+            // Tab per indentazione
+            if (e.key === 'Tab') {
+                e.preventDefault();
+                const start = this.selectionStart;
+                const end = this.selectionEnd;
+                this.value = this.value.substring(0, start) + '    ' + this.value.substring(end);
+                this.selectionStart = this.selectionEnd = start + 4;
+            }
+        });
+
+        // Focus sull'editor all'avvio
+        window.addEventListener('load', function() {
+            editor.focus();
+        });        
+        // Exercise database
+          // Exercise database
+        const exercises = {
+            html: {
+                easy: {
+                    basic: [
+                        {
+                            title: "Crea la tua prima pagina web",
+                            description: "Crea una pagina HTML semplice con informazioni personali.",
+                            requirements: ["Usa i tag h1, h2, p", "Aggiungi una lista non ordinata", "Includi almeno un link"],
+                            hints: ["Ricorda la struttura base HTML", "Usa tag semantici", "Non dimenticare gli attributi alt per le immagini"],
+                            startingCode: `<!DOCTYPE html>\n<html>\n<head>\n    <title>La mia pagina</title>\n</head>\n<body>\n    <!-- Il tuo codice qui -->\n</body>\n</html>`,
+                            goal: "Creare una pagina web personale con titolo, paragrafi e una lista di hobby"
+                        }
+                        ],
+                    tabella: [
+                        {
+                            title: "Tabella dei contatti",
+                            description: "Crea una tabella HTML per organizzare informazioni di contatto.",
+                            requirements: ["Usa i tag table, tr, td, th", "Aggiungi intestazioni colonna", "Includi almeno 3 righe di dati"],
+                            hints: ["Usa thead e tbody", "Aggiungi attributi per accessibilità", "Considera l'uso di caption"],
+                            startingCode: `<table>\n    <!-- Crea qui la tua tabella -->\n</table>`,
+                            goal: "Organizzare dati di contatto in una tabella ben strutturata"
+                        }
+                    ],
+                    layout: [
+                        {
+                            title: "Layout con div e sezioni",
+                            description: "Crea un layout base usando div e tag semantici HTML5.",
+                            requirements: ["Usa header, main, footer", "Crea una sidebar", "Aggiungi navigation"],
+                            hints: ["Usa tag semantici HTML5", "Pensa alla struttura logica", "Aggiungi classi per lo styling"],
+                            startingCode: `<!DOCTYPE html>\n<html>\n<head>\n    <title>Layout Base</title>\n</head>\n<body>\n    <!-- Struttura il layout qui -->\n</body>\n</html>`,
+                            goal: "Creare una struttura di pagina web semantica e ben organizzata"
+                        }
+                    ],
+                    header: [
+                       {
+  title: "Crea un'intestazione semplice",
+  description: "Scrivi una pagina con un titolo e un paragrafo introduttivo.",
+  requirements: [
+    "Usa i tag h1 e p",
+    "Aggiungi un link a un sito esterno",
+    "Struttura semplice e chiara"
+  ],
+  hints: [
+    "Ricorda la struttura base HTML",
+    "Usa attributi href corretti",
+    "Includi un testo descrittivo nel link"
+  ],
+  startingCode: `<!DOCTYPE html>\n<html>\n<head>\n  <title>Pagina semplice</title>\n</head>\n<body>\n  <!-- Il tuo codice qui -->\n</body>\n</html>`,
+  goal: "Creare una pagina HTML con titolo, paragrafo e link"
+}                    
+                    ],
+                    immagini: [
+{
+  title: "Inserisci un'immagine semplice",
+  description: "Aggiungi un'immagine alla pagina con un testo alternativo.",
+  requirements: [
+    "Usa il tag img",
+    "Imposta l'attributo src con un'immagine di esempio",
+    "Aggiungi un attributo alt descrittivo"
+  ],
+  hints: [
+    "Scegli un'immagine accessibile",
+    "Mantieni le proporzioni corrette",
+    "Puoi usare immagini da internet"
+  ],
+  startingCode: `<!-- Inserisci qui l'immagine -->`,
+  goal: "Mostrare un'immagine con testo alternativo"
+}
+                     
+                    ]
+                   
+                },
+                medium: {
+                    interactive: [
+                        {
+                            title: "Form di registrazione",
+                            description: "Crea un form completo per la registrazione utenti.",
+                            requirements: ["Input per nome, email, password", "Checkbox per termini", "Bottone submit", "Validazione HTML5"],
+                            hints: ["Usa attributi required", "Aggiungi pattern per validazione", "Usa fieldset per raggruppare"],
+                            startingCode: `<form>\n    <!-- Crea il form qui -->\n</form>`,
+                            goal: "Sviluppare un form funzionale con validazione lato client"
+                        }
+                        
+                    ],
+                    Immagini: [
+                    {
+          title: "Galleria immagini responsive",
+  description: "Crea una galleria di immagini che si adatta a diverse dimensioni dello schermo.",
+  requirements: [
+    "Usa tag figure e figcaption",
+    "Imposta immagini responsive con max-width: 100%",
+    "Aggiungi hover effects"
+  ],
+  hints: [
+    "Usa media queries per il layout",
+    "Sperimenta con flexbox o grid",
+    "Mantieni le immagini ottimizzate"
+  ],
+  startingCode: `<section class="gallery">\n  <!-- Inserisci le immagini qui -->\n</section>`,
+  goal: "Realizzare una galleria di immagini adattabile e visivamente attraente"
+}      
+                    ],
+                                  lista: [
+{
+  title: "Lista di cose da fare",
+  description: "Crea una lista non ordinata con alcune attività quotidiane.",
+  requirements: [
+    "Usa il tag ul e li",
+    "Aggiungi almeno 5 elementi",
+    "Includi un titolo sopra la lista"
+  ],
+  hints: [
+    "Usa il tag h2 per il titolo",
+    "Organizza gli elementi in modo logico",
+    "Puoi usare anche i tag semanticamente appropriati"
+  ],
+  startingCode: `<!-- Inserisci qui il titolo -->\n<h2>Le mie attività</h2>\n<!-- Inserisci qui la lista -->\n`,
+  goal: "Realizzare una lista di attività con titolo"
+}           
+                                      ],
+                    form: [
+                        {
+  title: "Form di cont semplice",
+  description: "Crea un form con nome, email e un messaggio.",
+  requirements: [
+    "Usa tag form, input, textarea",
+    "Imposta gli attributi name e placeholder",
+    "Aggiungi un bottone di invio"
+  ],
+  hints: [
+    "Usa type=email per l'email",
+    "Usa required per i campi obbligatori",
+    "Puoi usare anche fieldset e legend"
+  ],
+  startingCode: `<form>\n  <!-- Campi qui -->\n</form>`,
+  goal: "Realizzare un semplice form di contatto"
+},
+
+                    ], 
+                    layout: [
+{
+  title: "Pagina con layout a due colonne",
+  description: "Organizza il contenuto in due colonne affiancate.",
+  requirements: [
+    "Usa div o section per le colonne",
+    "Imposta la larghezza con CSS (ad esempio flex o grid)",
+    "Aggiungi contenuti testuali o immagini in ciascuna colonna"
+  ],
+  hints: [
+    "Usa display: flex o CSS Grid",
+    "Mantieni il layout responsive",
+    "Usa classi per le colonne"
+  ],
+  startingCode: `<div class="container">\n  <div class="left-column"></div>\n  <div class="right-column"></div>\n</div>`,
+  goal: "Organizzare contenuti in due colonne affiancate"
+}                        
+                    ]
+        
+                    
+                
+                },
+                
+                hard: {
+                    advanced: [
+                        {
+                            title: "Pagina web accessibile",
+                            description: "Crea una pagina web completamente accessibile seguendo le linee guida WCAG.",
+                            requirements: ["Usa ARIA labels", "Struttura semantica completa", "Alt text descrittivi", "Focus management"],
+                            hints: ["Testa con screen reader", "Usa heading hierarchy", "Aggiungi skip links"],
+                            startingCode: `<!DOCTYPE html>\n<html lang="it">\n<head>\n    <meta charset="UTF-8">\n    <title>Pagina Accessibile</title>\n</head>\n<body>\n    <!-- Codice accessibile qui -->\n</body>\n</html>`,
+                            goal: "Creare una pagina web completamente accessibile a tutti gli utenti"
+                        }
+                    ],
+                    
+                    paginaweb: [
+                        {
+  title: "Sezione con più contenuti",
+  description: "Crea una pagina con più sezioni, ognuna con un titolo e un paragrafo.",
+  requirements: [
+    "Usa tag section, h2 e p",
+    "Organizza il contenuto in modo chiaro",
+    "Aggiungi almeno 3 sezioni"
+  ],
+  hints: [
+    "Usa i tag semantici di HTML5",
+    "Mantieni la struttura logica",
+    "Puoi usare anche dei div per layout"
+  ],
+  startingCode: `<!-- Inizio sezione 1 -->\n<--! Inizio sezione 2 -->\n<!-- Inizio sezione 3 -->`,
+  goal: "Organizzare contenuti multipli in sezioni distinte"
+}
+                    ]
+                }
+            },
+            css: {
+                easy: {
+                    basic: [
+                        {
+                            title: "Stilizza il tuo primo elemento",
+                            description: "Applica stili base a elementi HTML usando CSS.",
+                            requirements: ["Cambia colori di testo e sfondo", "Modifica font e dimensioni", "Aggiungi padding e margin"],
+                            hints: ["Usa selettori di tipo", "Prova diverse unità di misura", "Sperimenta con i colori"],
+                            startingCode: `/* Il tuo CSS qui */\nh1 {\n    /* Stilizza il titolo */\n}\n\np {\n    /* Stilizza i paragrafi */\n}`,
+                            goal: "Applicare stili base per migliorare l'aspetto del testo"
+                        }
+                    ],
+                    layout: [
+                        {
+                            title: "Layout con Flexbox",
+                            description: "Crea un layout responsive usando Flexbox.",
+                            requirements: ["Usa display: flex", "Centra elementi", "Crea una navbar orizzontale"],
+                            hints: ["Sperimenta con justify-content", "Usa align-items", "Prova flex-direction"],
+                            startingCode: `.container {\n    display: flex;\n    /* Aggiungi proprietà flexbox */\n}`,
+                            goal: "Creare layout flessibili e responsive con Flexbox"
+                        }
+                    ],
+                    background: [
+                       {
+  title: "Colora il testo e lo sfondo",
+  description: "Applica colori di base agli elementi HTML.",
+  requirements: [
+    "Imposta colore del testo",
+    "Imposta colore di sfondo",
+    "Usa unità di misura semplici come px o %"
+  ],
+  hints: [
+    "Usa i selettori di tipo",
+    "Prova con colori di base come red, blue, green",
+    "Utilizza padding e margin per distanziare gli elementi"
+  ],
+  startingCode: `h1 {\n  /* Colore del titolo */\n}\np {\n  /* Colore del paragrafo */\n}`,
+  goal: "Applicare stili di base per migliorare l'aspetto del testo"
+}                    
+                    ],
+
+                    webstyle: [
+{
+  title: "Imposta uno stile di base per il corpo",
+  description: "Dai uno stile di base al corpo della pagina.",
+  requirements: [
+    "Imposta il colore di sfondo",
+    "Imposta il font family",
+    "Imposta la dimensione del testo"
+  ],
+  hints: [
+    "Usa body { ... }",
+    "Usa font-family: Arial, sans-serif",
+    "Usa proprietà come font-size, background-color"
+  ],
+  startingCode: `body {\n  /* Stile di base */\n}`,
+  goal: "Applicare uno stile semplice e coerente alla pagina"
+}                        
+                    ]
+                    
+                },
+                medium: {
+                    interactive: [
+                        {
+                            title: "Animazioni CSS",
+                            description: "Crea animazioni fluide usando CSS transitions e keyframes.",
+                            requirements: ["Hover effects", "Keyframe animation", "Transform properties"],
+                            hints: ["Usa transition per smooth effects", "Sperimenta con transform", "Prova different timing functions"],
+                            startingCode: `.animated-element {\n    transition: all 0.3s ease;\n    /* Aggiungi animazioni */\n}\n\n@keyframes slideIn {\n    /* Definisci keyframes */\n}`,
+                            goal: "Aggiungere interattività visiva con animazioni CSS"
+                        }
+                    ],
+                    card: [
+{
+  title: "Stile per Card di presentazione",
+  description: "Crea uno stile per delle card con ombreggiature e hover.",
+  requirements: [
+    "Usa box-shadow per ombreggiature",
+    "Applica transizioni per hover",
+    "Imposta padding e border-radius"
+  ],
+  hints: [
+    "Usa classi specifiche",
+    "Sperimenta con transition e transform",
+    "Mantieni uno stile coerente"
+  ],
+  startingCode: `.card {\n  /* Stile base */\n}`,
+  goal: "Dare stile e profondità alle card di presentazione"
+}
+                    
+                    ],
+                    pulsanti: [
+{
+  title: "Stile per pulsanti",
+  description: "Crea uno stile personalizzato per i pulsanti.",
+  requirements: [
+    "Imposta colore di sfondo e testo",
+    "Aggiungi padding e border-radius",
+    "Crea un effetto hover"
+  ],
+  hints: [
+    "Usa classi per i pulsanti",
+    "Usa pseudo-class :hover",
+    "Sperimenta con i colori e le transizioni"
+  ],
+  startingCode: `.button {\n  /* Stile base */\n}\n\n.button:hover {\n  /* Effetto hover */\n}`,
+  goal: "Personalizzare l'aspetto dei pulsanti con stile"
+}                        
+                    ]
+                },
+                hard: {
+                    advanced: [
+                        {
+                            title: "Grid Layout complesso",
+                            description: "Crea un layout complesso usando CSS Grid con aree nominate.",
+                            requirements: ["Grid template areas", "Responsive breakpoints", "Grid gap e alignment"],
+                            hints: ["Usa grid-template-areas", "Combina con media queries", "Sperimenta con grid-auto-flow"],
+                            startingCode: `.grid-container {\n    display: grid;\n    grid-template-areas:\n        "header header"\n        "sidebar main"\n        "footer footer";\n    /* Completa il grid layout */\n}`,
+                            goal: "Padroneggiare CSS Grid per layout complessi e responsive"
+                        }
+                    ],
+                    grid: [
+                        {
+  title: "Layout con CSS Grid",
+  description: "Progetta una pagina con un layout complesso usando CSS Grid.",
+  requirements: [
+    "Definisci aree nominate con grid-template-areas",
+    "Posiziona header, sidebar, main e footer",
+    "Rendi il layout responsivo con media queries"
+  ],
+  hints: [
+    "Usa grid-template-areas e grid-area",
+    "Utilizza media queries per adattare il layout",
+    "Usa grid-gap per spaziature"
+  ],
+  startingCode: `.grid-container {\n  display: grid;\n  grid-template-areas:\n    "header header"\n    "sidebar main"\n    "footer footer";\n  /* Altre proprietà */\n}`,
+  goal: "Creare layout complesso e adattabile con CSS Grid"
+}                    ],
+                    animazioni: [
+                        {
+  title: "Animazioni CSS avanzate",
+  description: "Crea animazioni fluide usando CSS transitions e keyframes.",
+  requirements: [
+    "Effetti hover",
+    "Animazioni con keyframes",
+    "Transformazioni come scale o rotate"
+  ],
+  hints: [
+    "Usa transition: all o proprietà specifiche",
+    "Definisci i keyframes per le animazioni",
+    "Sperimenta con timing-function"
+  ],
+  startingCode: `.animated {\n  transition: all 0.3s ease;\n}\n\n@keyframes bounce {\n  0%, 100% { transform: translateY(0); }\n  50% { transform: translateY(-20px); }\n}`,
+  goal: "Aggiungere effetti di animazione interattivi e piacevoli"
+}
+                    ]
+                }
+            },
+            javascript: {
+                easy: {
+                    basic: [
+                        {
+                            title: "Primo script interattivo",
+                            description: "Crea uno script che risponde ai click dell'utente.",
+                            requirements: ["Event listener per click", "Modifica contenuto DOM", "Usa console.log"],
+                            hints: ["Usa getElementById", "Prova addEventListener", "Controlla la console del browser"],
+                            startingCode: `// Il tuo JavaScript qui\nconst button = document.getElementById('myButton');\n\n// Aggiungi event listener`,
+                            goal: "Creare la prima interazione utente con JavaScript"
+                        }
+                    ],
+                    alert: [
+{
+  title: "Mostra un messaggio al click",
+  description: "Quando l'utente clicca un bottone, mostra un messaggio di alert.",
+  requirements: [
+    "Usa un button HTML",
+    "Aggiungi un event listener per il click",
+    "Mostra un messaggio con alert"
+  ],
+  hints: [
+    "Usa document.createElement o il metodo getElementById",
+    "Usa addEventListener('click', ...)",
+    "L'alert è semplice e immediato"
+  ],
+  startingCode: `const button = document.getElementById('myButton');\n\n// Aggiungi l'evento per click`,
+  goal: "Creare un'interazione di base con il clic del bottone"
+}
+                    
+                    
+                    ],
+                    interactive: [
+                        {
+                            title: "Calcolatrice semplice",
+                            description: "Crea una calcolatrice per operazioni base.",
+                            requirements: ["Funzioni per +, -, *, /", "Input utente", "Display risultato"],
+                            hints: ["Usa prompt() per input", "Gestisci la divisione per zero", "Valida l'input utente"],
+                            startingCode: `function add(a, b) {\n    return a + b;\n}\n\n// Aggiungi altre funzioni\n\n// Logica principale`,
+                            goal: "Sviluppare logica matematica e gestione input utente"
+                        }
+                    ],
+                    click: [
+{
+  title: "Cambia il testo al click",
+  description: "Quando clicchi un bottone, cambia il testo di un paragrafo.",
+  requirements: [
+    "Usa getElementById o querySelector",
+    "Aggiungi un evento click",
+    "Modifica il contenuto del paragrafo"
+  ],
+  hints: [
+    "Usa innerText o textContent",
+    "Usa addEventListener('click', ...)",
+    "Puoi usare anche funzioni anonime"
+  ],
+  startingCode: `const btn = document.getElementById('changeTextBtn');\nconst p = document.getElementById('myParagraph');\n\n// Aggiungi evento`,
+  goal: "Semplice interazione di cambio testo"
+}                        
+                    ]
+                },
+                medium: {
+                    todo: [
+                        {
+                            title: "Todo List dinamica",
+                            description: "Crea un'applicazione todo list con aggiunta e rimozione elementi.",
+                            requirements: ["Aggiungi nuovi task", "Rimuovi task completati", "Salva in localStorage"],
+                            hints: ["Usa array per memorizzare task", "Implementa funzioni CRUD", "Gestisci eventi del DOM"],
+                            startingCode: `let todos = [];\n\nfunction addTodo(text) {\n    // Implementa aggiunta\n}\n\nfunction removeTodo(index) {\n    // Implementa rimozione\n}`,
+                            goal: "Creare un'app funzionale con persistenza dati"
+                        }
+                    ],
+                    filtri: [
+{
+             title: "Filtro dinamico di liste",
+  description: "Crea un filtro che mostra solo gli elementi corrispondenti alla ricerca.",
+  requirements: [
+    "Input di testo per la ricerca",
+    "Filtra gli elementi della lista in tempo reale",
+    "Mostra messaggi se nessun risultato"
+  ],
+  hints: [
+    "Usa addEventListener per input",
+    "Utilizza la proprietà display",
+    "Gestisci case insensitivi"
+  ],
+  startingCode: `const input = document.getElementById('searchInput');\nconst listItems = document.querySelectorAll('.item');`,
+  goal: "Implementare un filtro di lista interattivo e reattivo"
+}
+                    
+                    ],
+                    calcolatrice: [
+    {
+  title: "Calcolatrice semplice",
+  description: "Realizza una calcolatrice con due input e un bottone.",
+  requirements: [
+    "Usa input di tipo number",
+    "Calcola e mostra il risultato in un div",
+    "Gestisci divisione per zero"
+  ],
+  hints: [
+    "Usa getElementById per gli input",
+    "Scrivi funzioni per +, -, *, /",
+    "Mostra i risultati nel DOM"
+  ],
+  startingCode: `// Ottieni gli elementi\nconst num1 = document.getElementById('num1');\nconst num2 = document.getElementById('num2');\nconst resultDiv = document.getElementById('result');\n\n// Scrivi funzioni di calcolo`,
+  goal: "Sviluppare una calcolatrice funzionante e semplice"
+}                    
+                    
+                    ], 
+
+                    elementi: [
+{
+  title: "Mostra e nascondi elementi",
+  description: "Mostra o nascondi un elemento cliccando un bottone.",
+  requirements: [
+    "Usa display: none e display: block",
+    "Aggiungi due bottoni: mostra e nascondi",
+    "Gestisci gli eventi correttamente"
+  ],
+  hints: [
+    "Usa style.display",
+    "Puoi usare anche toggle",
+    "Gestisci gli stati"
+  ],
+  startingCode: `const toggleBtn = document.getElementById('toggleBtn');\nconst box = document.getElementById('box');\n\n// Aggiungi evento`,
+  goal: "Controllo visibilità di un elemento"
+}                        
+                    ]
+                },
+                hard: {
+                    advanced: [
+                        {
+                            title: "API e Async/Await",
+                            description: "Crea un'app che consuma API esterne usando async/await.",
+                            requirements: ["Fetch API data", "Gestisci errori", "Loading states", "Display dinamico"],
+                            hints: ["Usa try/catch", "Gestisci stati di loading", "Valida response API"],
+                            startingCode: `async function fetchData(url) {\n    try {\n        // Implementa fetch\n    } catch (error) {\n        // Gestisci errori\n    }\n}`,
+                            goal: "Padroneggiare programmazione asincrona e integrazione API"
+                        }
+                    ],
+                   carosello: [
+{
+  title: "Carosello di immagini",
+  description: "Crea un carosello con immagini che si alternano automaticamente.",
+  requirements: [
+    "Mostra un'immagine alla volta",
+    "Cambia immagine ogni 3 secondi",
+    "Aggiungi bottoni per navigare avanti e indietro"
+  ],
+  hints: [
+    "Usa setInterval per il cambio automatico",
+    "Gestisci gli indici delle immagini",
+    "Aggiorna l'immagine con src dinamico"
+  ],
+  startingCode: `let currentIndex = 0;\nconst images = [/* array di URL */];\n\n// Funzione per cambiare immagine`,
+  goal: "Realizzare un carosello automatico e manuale"
+}                       
+                   ],
+                    localstorage: [
+{
+  title: "Todo List con salvataggio su LocalStorage",
+  description: "Crea una lista di cose da fare che si salva nel browser.",
+  requirements: [
+    "Aggiungi task con input e bottone",
+    "Rimuovi task completati",
+    "Salva e carica i task da localStorage"
+  ],
+  hints: [
+    "Usa array per gestire i task",
+    "Utilizza localStorage.setItem e getItem",
+    "Aggiorna la lista dinamicamente"
+  ],
+  startingCode: `let todos = JSON.parse(localStorage.getItem('todos')) || [];\n\n// Funzione per aggiungere task\nfunction addTodo() {\n  // ...\n}\n\n// Funzione per rimuovere task\nfunction removeTodo(index) {\n  // ...\n}\n\n// Salva i dati su localStorage`,
+  goal: "Implementare una lista di task dinamica e persistente"
+}                        
+                    ]
+                }
+            }
+        };
+
+       
+        // Statistics
+        let stats = {
+            total: 0,
+            html: 0,
+            css: 0,
+            javascript: 0
+        };
+
+        // DOM elements
+        const generateBtn = document.getElementById('generateBtn');
+        const newExerciseBtn = document.getElementById('newExerciseBtn');
+        const exerciseContainer = document.getElementById('exerciseContainer');
+        const languageSelect = document.getElementById('language');
+        const difficultySelect = document.getElementById('difficulty');
+        const categorySelect = document.getElementById('category');
+
+        // Generate exercise function
+        function generateExercise() {
+            const language = languageSelect.value;
+            const difficulty = difficultySelect.value;
+            const category = categorySelect.value;
+
+            const exercisePool = exercises[language]?.[difficulty]?.[category];
+            if (!exercisePool || exercisePool.length === 0) {
+                alert('Nessun esercizio disponibile per questa combinazione!');
+                return;
+            }
+
+            const randomExercise = exercisePool[Math.floor(Math.random() * exercisePool.length)];
+            displayExercise(randomExercise, language, difficulty);
+            updateStats(language);
+        }
+
+        // Display exercise function
+        function displayExercise(exercise, language, difficulty) {
+            document.getElementById('exerciseLanguage').textContent = language.toUpperCase();
+            
+            const difficultyElement = document.getElementById('exerciseDifficulty');
+            difficultyElement.textContent = difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
+            difficultyElement.className = `px-3 py-1 rounded-full text-sm font-medium difficulty-${difficulty}`;
+            
+            if (difficulty === 'easy') {
+                difficultyElement.classList.add('bg-green-100', 'text-green-800');
+            } else if (difficulty === 'medium') {
+                difficultyElement.classList.add('bg-yellow-100', 'text-yellow-800');
+            } else {
+                difficultyElement.classList.add('bg-red-100', 'text-red-800');
+            }
+
+            document.getElementById('exerciseTitle').textContent = exercise.title;
+            document.getElementById('exerciseDescription').textContent = exercise.description;
+            document.getElementById('exerciseGoal').textContent = exercise.goal;
+
+            // Requirements
+            const requirementsList = document.getElementById('exerciseRequirements');
+            requirementsList.innerHTML = '';
+            exercise.requirements.forEach(req => {
+                const li = document.createElement('li');
+                li.className = 'flex items-start space-x-2';
+                li.innerHTML = `<span class="text-green-500 mt-1">✓</span><span class="text-gray-700">${req}</span>`;
+                requirementsList.appendChild(li);
+            });
+
+            // Hints
+            const hintsList = document.getElementById('exerciseHints');
+            hintsList.innerHTML = '';
+            exercise.hints.forEach(hint => {
+                const li = document.createElement('li');
+                li.className = 'flex items-start space-x-2';
+                li.innerHTML = `<span class="text-blue-500 mt-1">💡</span><span class="text-gray-700">${hint}</span>`;
+                hintsList.appendChild(li);
+            });
+
+            // Starting code
+            const codeElement = document.getElementById('startingCode');
+            codeElement.textContent = exercise.startingCode;
+            codeElement.className = `code-block syntax-${language}`;
+
+            exerciseContainer.classList.remove('hidden');
+            exerciseContainer.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Update statistics
+        function updateStats(language) {
+            stats.total++;
+            stats[language]++;
+            
+            document.getElementById('totalExercises').textContent = stats.total;
+            document.getElementById('htmlCount').textContent = stats.html;
+            document.getElementById('cssCount').textContent = stats.css;
+            document.getElementById('jsCount').textContent = stats.javascript;
+        }
+
+        // Event listeners
+        generateBtn.addEventListener('click', generateExercise);
+        newExerciseBtn.addEventListener('click', generateExercise);
+
+        // Update categories based on language and difficulty
+        function updateCategories() {
+            const language = languageSelect.value;
+            const difficulty = difficultySelect.value;
+            const categorySelect = document.getElementById('category');
+            
+            categorySelect.innerHTML = '';
+            
+            const availableCategories = Object.keys(exercises[language]?.[difficulty] || {});
+            availableCategories.forEach(category => {
+                const option = document.createElement('option');
+                option.value = category;
+                option.textContent = category.charAt(0).toUpperCase() + category.slice(1);
+                categorySelect.appendChild(option);
+            });
+        }
+
+        languageSelect.addEventListener('change', updateCategories);
+        difficultySelect.addEventListener('change', updateCategories);
+
+        // Initialize
+        updateCategories();
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97eb1ee902d5708b',t:'MTc1NzgwMjk1OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
