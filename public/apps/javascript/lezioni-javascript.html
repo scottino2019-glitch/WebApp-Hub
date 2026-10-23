@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="it" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Impara JavaScript - Corso Interattivo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        .code-editor {
+            font-family: 'Courier New', monospace;
+            background: #1e293b;
+            color: #e2e8f0;
+            border-radius: 8px;
+            padding: 16px;
+            min-height: 150px;
+            resize: vertical;
+            border: none;
+            outline: none;
+        }
+        .console-output {
+            background: #000;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            padding: 12px;
+            border-radius: 6px;
+            min-height: 120px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+        .lesson-active {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: white;
+            font-weight: bold;
+        }
+        .lesson-completed {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+    </style>
+</head>
+<body class="h-full bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div class="h-full flex flex-col">
+        <!-- Header -->
+        <header class="bg-white shadow-lg border-b-2 border-indigo-200">
+            <div class="max-w-7xl mx-auto px-6 py-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-10 h-10 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+                            <span class="text-white font-bold text-lg">JS</span>
+                        </div>
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">Corso JavaScript Interattivo</h1>
+                            <p class="text-sm text-gray-600">Impara programmando dal vivo</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
+                            Lezione <span id="currentNum">1</span> di <span id="totalNum">8</span>
+                        </div>
+                        <div class="w-40 bg-gray-200 rounded-full h-3 shadow-inner">
+                            <div id="progressBar" class="bg-gradient-to-r from-blue-500 to-indigo-600 h-3 rounded-full transition-all duration-500" style="width: 12.5%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="flex-1 flex overflow-hidden">
+            <!-- Sidebar Menu -->
+            <aside class="w-80 bg-white shadow-xl border-r-2 border-indigo-100 overflow-y-auto">
+                <div class="p-6">
+                    <h2 class="font-bold text-lg text-gray-900 mb-6 flex items-center">
+                        <span class="mr-2">📚</span>
+                        Lezioni del Corso
+                    </h2>
+                    <div id="lessonList" class="space-y-3">
+                        <!-- Le lezioni verranno inserite qui -->
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Contenuto Principale -->
+            <main class="flex-1 flex flex-col overflow-hidden">
+                <!-- Area Lezione -->
+                <div class="flex-1 overflow-y-auto">
+                    <div class="p-8">
+                        <div class="max-w-6xl mx-auto">
+                            <!-- Titolo Lezione -->
+                            <div class="mb-8">
+                                <h2 id="lessonTitle" class="text-3xl font-bold text-gray-900 mb-3">Caricamento...</h2>
+                                <p id="lessonDesc" class="text-lg text-gray-600">Preparazione della lezione in corso...</p>
+                            </div>
+
+                            <!-- Teoria -->
+                            <div class="mb-8">
+                                <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+                                    <div class="bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-4">
+                                        <div class="flex items-center justify-between">
+                                            <h3 class="text-xl font-bold text-white flex items-center">
+                                                <span class="mr-2">📖</span>
+                                                Teoria
+                                            </h3>
+                                            <button id="toggleTheory" class="text-blue-100 hover:text-white transition-colors text-sm bg-blue-600 px-3 py-1 rounded-lg">
+                                                Nascondi
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div id="theoryContent" class="p-6 prose prose-lg max-w-none">
+                                        <p>Caricamento contenuto teorico...</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Editor e Output -->
+                            <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
+                                <!-- Editor -->
+                                <div class="space-y-4">
+                                    <div class="flex items-center justify-between">
+                                        <h3 class="text-xl font-bold text-gray-900 flex items-center">
+                                            <span class="mr-2">💻</span>
+                                            Editor JavaScript
+                                        </h3>
+                                        <div class="flex space-x-2">
+                                            <button id="resetBtn" class="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors text-sm">
+                                                🔄 Reset
+                                            </button>
+                                            <button id="runBtn" class="px-6 py-2 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-lg transition-all duration-200 font-medium shadow-lg">
+                                                ▶ Esegui
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <textarea id="editor" class="code-editor w-full" placeholder="Scrivi il tuo codice JavaScript qui..."></textarea>
+                                </div>
+
+                                <!-- Output -->
+                                <div class="space-y-4">
+                                    <!-- Console -->
+                                    <div>
+                                        <div class="flex items-center justify-between mb-2">
+                                            <h3 class="text-xl font-bold text-gray-900 flex items-center">
+                                                <span class="mr-2">🖥️</span>
+                                                Console
+                                            </h3>
+                                            <button id="clearBtn" class="px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded text-sm transition-colors">
+                                                Pulisci
+                                            </button>
+                                        </div>
+                                        <div id="console" class="console-output">
+                                            <div class="text-gray-400">Console pronta - I risultati appariranno qui...</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Preview HTML -->
+                                    <div>
+                                        <h3 class="text-xl font-bold text-gray-900 mb-2 flex items-center">
+                                            <span class="mr-2">👁️</span>
+                                            Anteprima
+                                        </h3>
+                                        <div id="preview" class="min-h-32 border-2 border-dashed border-gray-300 rounded-lg p-4 bg-gray-50">
+                                            <div class="text-gray-400 text-center">L'output HTML apparirà qui...</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Obiettivi e Suggerimenti -->
+                            <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="bg-gradient-to-br from-yellow-50 to-orange-50 p-6 rounded-xl border border-yellow-200">
+                                    <h4 class="font-bold text-yellow-900 mb-3 flex items-center text-lg">
+                                        <span class="mr-2">🎯</span>
+                                        Obiettivo
+                                    </h4>
+                                    <p id="objective" class="text-yellow-800">Caricamento obiettivo...</p>
+                                </div>
+                                <div class="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-xl border border-blue-200">
+                                    <h4 class="font-bold text-blue-900 mb-3 flex items-center text-lg">
+                                        <span class="mr-2">💡</span>
+                                        Suggerimento
+                                    </h4>
+                                    <p id="hint" class="text-blue-800">Caricamento suggerimento...</p>
+                                </div>
+                            </div>
+
+                            <!-- Feedback -->
+                            <div id="feedback" class="mt-6 hidden"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Controlli Navigazione -->
+                <div class="bg-white border-t-2 border-gray-200 p-6 shadow-lg">
+                    <div class="max-w-6xl mx-auto flex justify-between items-center">
+                        <button id="prevBtn" class="px-6 py-3 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium">
+                            ← Precedente
+                        </button>
+                        <div id="completionMsg" class="hidden text-green-600 font-bold text-lg flex items-center">
+                            <span class="mr-2">🎉</span>
+                            Lezione Completata!
+                        </div>
+                        <button id="nextBtn" class="px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-medium shadow-lg">
+                            Successiva →
+                        </button>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // APPROCCIO SEMPLICE E DIRETTO
+        console.log('🚀 Avvio applicazione JavaScript Learning...');
+
+        // Dati delle lezioni (semplificati)
+        const LESSONS = [
+            {
+                id: 1,
+                title: "Variabili e Tipi di Dati",
+                description: "Impara a dichiarare variabili e utilizzare i diversi tipi di dati",
+                theory: `
+                    <h3 class="text-xl font-bold mb-4 text-blue-600">🔤 Variabili in JavaScript</h3>
+                    <p class="mb-4">Le variabili sono contenitori per memorizzare dati. In JavaScript puoi dichiararle in tre modi:</p>
+                    
+                    <div class="bg-blue-50 p-4 rounded-lg mb-4">
+                        <h4 class="font-semibold mb-2">Tipi di Dichiarazione:</h4>
+                        <ul class="space-y-2">
+                            <li><code class="bg-blue-100 px-2 py-1 rounded">let</code> - Variabile modificabile</li>
+                            <li><code class="bg-purple-100 px-2 py-1 rounded">const</code> - Costante (non modificabile)</li>
+                            <li><code class="bg-red-100 px-2 py-1 rounded">var</code> - Vecchio modo (da evitare)</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="bg-green-50 p-4 rounded-lg mb-4">
+                        <h4 class="font-semibold mb-2">Tipi di Dati:</h4>
+                        <ul class="space-y-1 text-sm">
+                            <li><strong>String:</strong> <code>"Ciao mondo"</code></li>
+                            <li><strong>Number:</strong> <code>42</code>, <code>3.14</code></li>
+                            <li><strong>Boolean:</strong> <code>true</code>, <code>false</code></li>
+                            <li><strong>Undefined:</strong> <code>undefined</code></li>
+                            <li><strong>Null:</strong> <code>null</code></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="bg-yellow-50 p-4 rounded-lg">
+                        <h4 class="font-semibold mb-2">Esempio:</h4>
+                        <pre class="bg-gray-800 text-green-400 p-3 rounded text-sm"><code>let nome = "Mario";
+const età = 25;
+let isStudente = true;
+console.log(nome, età, isStudente);</code></pre>
+                    </div>
+                `,
+                objective: "Dichiara tre variabili: nome (string), età (number) e isStudente (boolean), poi stampale nella console",
+                hint: "Usa let per nome ed età, const per isStudente, e console.log() per stamparle",
+                startingCode: `// Dichiara le tue variabili qui
+let nome = "";
+let età = 0;
+let isStudente = false;
+
+// Stampa le variabili nella console
+console.log("Il mio nome è:", nome);`,
+                solution: `let nome = "Mario";
+let età = 25;
+const isStudente = true;
+
+console.log("Nome:", nome);
+console.log("Età:", età);
+console.log("È studente:", isStudente);`,
+                check: (code) => code.includes('let') && code.includes('console.log') && (code.includes('"') || code.includes("'"))
+            },
+            {
+                id: 2,
+                title: "Funzioni",
+                description: "Crea e utilizza funzioni per organizzare il codice",
+                theory: `
+                    <h3 class="text-xl font-bold mb-4 text-blue-600">⚡ Funzioni JavaScript</h3>
+                    <p class="mb-4">Le funzioni sono blocchi di codice riutilizzabili che eseguono compiti specifici.</p>
+                    
+                    <div class="bg-blue-50 p-4 rounded-lg mb-4">
+                        <h4 class="font-semibold mb-2">Sintassi Base:</h4>
+                        <pre class="bg-gray-800 text-green-400 p-3 rounded text-sm"><code>function nomeFunzione(parametro1, parametro2) {
+    // codice da eseguire
+    return risultato;
+}</code></pre>
+                    </div>
+                    
+                    <div class="bg-green-50 p-4 rounded-lg mb-4">
+                        <h4 class="font-semibold mb-2">Arrow Functions (ES6):</h4>
+                        <pre class="bg-gray-800 text-green-400 p-3 rounded text-sm"><code>const saluta = (nome) => {
+    return "Ciao " + nome;
+};
+
+// Versione corta
+const saluta = nome => "Ciao " + nome;</code></pre>
+                    </div>
+                    
+                    <div class="bg-yellow-50 p-4 rounded-lg">
+                        <h4 class="font-semibold mb-2">Esempio Completo:</h4>
+                        <pre class="bg-gray-800 text-green-400 p-3 rounded text-sm"><code>function calcolaArea(larghezza, altezza) {
+    return larghezza * altezza;
+}
+
+let area = calcolaArea(5, 3);
+console.log("Area:", area);</code></pre>
+                    </div>
+                `,
+                objective: "Crea una funzione che calcola l'area di un rettangolo e testala con diversi valori",
+                hint: "function calcolaArea(larghezza, altezza) { return larghezza * altezza; }",
+                startingCode: `// Crea una funzione per calcolare l'area
+function calcolaArea(larghezza, altezza) {
+    // Il tuo codice qui
+}
+
+// Testa la funzione
+console.log("Area 5x3:", calcolaArea(5, 3));`,
+                solution: `function calcolaArea(larghezza, altezza) {
+    return larghezza * altezza;
+}
+
+console.log("Area 5x3:", calcolaArea(5, 3));
+console.log("Area 10x7:", calcolaArea(10, 7));
+console.log("Area 2.5x4:", calcolaArea(2.5, 4));`,
+                check: (code) => code.includes('function') && code.includes('return') && code.includes('console.log')
+            },
+            {
+                id: 3,
+                title: "Array",
+                description: "Lavora con gli array e i loro metodi potenti",
+                theory: `
+                    <h3 class="text-xl font-bold mb-4 text-blue-600">📋 Array JavaScript</h3>
+                    <p class="mb-4">Gli array sono liste ordinate di elementi che possono contenere qualsiasi tipo di dato.</p>
+                    
+                    <div class="bg-blue-50 p-4 rounded-lg mb-4">
+                        <h4 class="font-semibold mb-2">Creazione e Accesso:</h4>
+                        <pre class="bg-gray-800 text-green-400 p-3 rounded text-sm"><code>let frutti = ["mela", "banana", "arancia"];
+console.log(frutti[0]); // "mela"
+console.log(frutti.length); // 3</code></pre>
+                    </div>
+                    
+                    <div class="bg-green-50 p-4 rounded-lg mb-4">
+                        <h4 class="font-semibold mb-2">Metodi Utili:</h4>
+                        <ul class="space-y-1 text-sm">
+                            <li><code>push()</code> - aggiunge alla fine</li>
+                            <li><code>pop()</code> - rimuove dall'ultimo</li>
+                            <li><code>map()</code> - trasforma ogni elemento</li>
+                            <li><code>filter()</code> - filtra elementi</li>
+                            <li><code>forEach()</code> - esegue per ogni elemento</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="bg-yellow-50 p-4 rounded-lg">
+                        <h4 class="font-semibold mb-2">Esempio:</h4>
+                        <pre class="bg-gray-800 text-green-400 p-3 rounded text-sm"><code>let numeri = [1, 2, 3, 4, 5];
+let doppi = numeri.map(n => n * 2);
+let pari = numeri.filter(n => n % 2 === 0);
+console.log(doppi, pari);</code></pre>
+                    </div>
+                `,
+                objective: "Crea un array di numeri, filtra quelli maggiori di 5 e raddoppiali",
+                hint: "Usa filter() per filtrare e map() per raddoppiare",
+                startingCode: `// Crea un array di numeri
+let numeri = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+// Filtra numeri > 5
+
+// Raddoppia i risultati
+
+// Stampa i risultati`,
+                solution: `let numeri = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+let maggioriDi5 = numeri.filter(n => n > 5);
+console.log("Numeri > 5:", maggioriDi5);
+
+let raddoppiati = maggioriDi5.map(n => n * 2);
+console.log("Raddoppiati:", raddoppiati);
+
+// Tutto in una riga
+let risultato = numeri.filter(n => n > 5).map(n => n * 2);
+console.log("Risultato finale:", risultato);`,
+                check: (code) => code.includes('filter') && code.includes('map')
+            },
+            {
+                id: 4,
+                title: "Oggetti",
+                description: "Crea e manipola oggetti JavaScript",
+                theory: `
+                    <h3 class="text-xl font-bold mb-4 text-blue-600">🏗️ Oggetti JavaScript</h3>
+                    <p class="mb-4">Gli oggetti sono collezioni di proprietà (coppie chiave-valore).</p>
+                    
+                    <div class="bg-blue-50 p-4 rounded-lg mb-4">
+                        <h4 class="font-semibold mb-2">Sintassi:</h4>
+                        <pre class="bg-gray-800 text-green-400 p-3 rounded text-sm"><code>let persona = {
+    nome: "Mario",
+    età: 30,
+    città: "Roma"
+};</code></pre>
+                    </div>
+                    
+                    <div class="bg-green-50 p-4 rounded-lg mb-4">
+                        <h4 class="font-semibold mb-2">Accesso e Modifica:</h4>
+                        <pre class="bg-gray-800 text-green-400 p-3 rounded text-sm"><code>console.log(persona.nome); // "Mario"
+persona.età = 31; // modifica
+persona["nuovaProp"] = "valore"; // aggiunge</code></pre>
+                    </div>
+                    
+                    <div class="bg-yellow-50 p-4 rounded-lg">
+                        <h4 class="font-semibold mb-2">Metodi:</h4>
+                        <pre class="bg-gray-800 text-green-400 p-3 rounded text-sm"><code>let auto = {
+    marca: "Toyota",
+    accendi() {
+        return "Motore acceso!";
+    }
+};</code></pre>
+                    </div>
+                `,
+                objective: "Crea un oggetto 'auto' con proprietà e un metodo",
+                hint: "Includi marca, modello, anno e un metodo descrizione()",
+                startingCode: `// Crea un oggetto auto
+let auto = {
+    marca: "",
+    modello: "",
+    anno: 0,
+    
+    descrizione() {
+        // Il tuo codice qui
+    }
+};
+
+// Testa l'oggetto
+console.log(auto.descrizione());`,
+                solution: `let auto = {
+    marca: "Toyota",
+    modello: "Corolla",
+    anno: 2020,
+    
+    descrizione() {
+        return \`\${this.marca} \${this.modello} del \${this.anno}\`;
+    },
+    
+    calcolaEtà() {
+        return new Date().getFullYear() - this.anno;
+    }
+};
+
+console.log(auto.descrizione());
+console.log("Età auto:", auto.calcolaEtà(), "anni");`,
+                check: (code) => code.includes('{') && code.includes('this') && code.includes('function') || code.includes('()')
+            },
+            {
+                id: 5,
+                title: "Condizioni e Cicli",
+                description: "Controlla il flusso del programma",
+                theory: `
+                    <h3 class="text-xl font-bold mb-4 text-blue-600">🔀 Controllo del Flusso</h3>
+                    <p class="mb-4">Le strutture di controllo permettono di eseguire codice condizionalmente o ripetutamente.</p>
+                    
+                    <div class="bg-blue-50 p-4 rounded-lg mb-4">
+                        <h4 class="font-semibold mb-2">Condizioni (if/else):</h4>
+                        <pre class="bg-gray-800 text-green-400 p-3 rounded text-sm"><code>if (età >= 18) {
+    console.log("Maggiorenne");
+} else {
+    console.log("Minorenne");
+}</code></pre>
+                    </div>
+                    
+                    <div class="bg-green-50 p-4 rounded-lg mb-4">
+                        <h4 class="font-semibold mb-2">Ciclo For:</h4>
+                        <pre class="bg-gray-800 text-green-400 p-3 rounded text-sm"><code>for (let i = 0; i < 5; i++) {
+    console.log(i);
+}</code></pre>
+                    </div>
+                    
+                    <div class="bg-yellow-50 p-4 rounded-lg">
+                        <h4 class="font-semibold mb-2">Ciclo While:</h4>
+                        <pre class="bg-gray-800 text-green-400 p-3 rounded text-sm"><code>let i = 0;
+while (i < 5) {
+    console.log(i);
+    i++;
+}</code></pre>
+                    </div>
+                `,
+                objective: "Crea un FizzBuzz: stampa numeri da 1 a 15, sostituendo multipli di 3 con 'Fizz' e di 5 con 'Buzz'",
+                hint: "Usa un ciclo for e if/else con l'operatore modulo (%)",
+                startingCode: `// FizzBuzz da 1 a 15
+for (let i = 1; i <= 15; i++) {
+    // Il tuo codice qui
+    
+}`,
+                solution: `for (let i = 1; i <= 15; i++) {
+    if (i % 3 === 0 && i % 5 === 0) {
+        console.log("FizzBuzz");
+    } else if (i % 3 === 0) {
+        console.log("Fizz");
+    } else if (i % 5 === 0) {
+        console.log("Buzz");
+    } else {
+        console.log(i);
+    }
+}`,
+                check: (code) => code.includes('for') && code.includes('if') && code.includes('%')
+            },
+            {
+                id: 6,
+                title: "DOM Manipulation",
+                description: "Interagisci con gli elementi HTML",
+                theory: `
+                    <h3 class="text-xl font-bold mb-4 text-blue-600">🌐 Document Object Model</h3>
+                    <p class="mb-4">Il DOM rappresenta la struttura HTML che JavaScript può manipolare.</p>
+                    
+                    <div class="bg-blue-50 p-4 rounded-lg mb-4">
+                        <h4 class="font-semibold mb-2">Selezione Elementi:</h4>
+                        <pre class="bg-gray-800 text-green-400 p-3 rounded text-sm"><code>document.getElementById("id")
+document.querySelector(".classe")
+document.querySelectorAll("div")</code></pre>
+                    </div>
+                    
+                    <div class="bg-green-50 p-4 rounded-lg mb-4">
+                        <h4 class="font-semibold mb-2">Modifica Contenuto:</h4>
+                        <pre class="bg-gray-800 text-green-400 p-3 rounded text-sm"><code>element.textContent = "Nuovo testo";
+element.innerHTML = "<b>HTML</b>";
+element.style.color = "red";</code></pre>
+                    </div>
+                    
+                    <div class="bg-yellow-50 p-4 rounded-lg">
+                        <h4 class="font-semibold mb-2">Eventi:</h4>
+                        <pre class="bg-gray-800 text-green-400 p-3 rounded text-sm"><code>button.addEventListener("click", function() {
+    console.log("Cliccato!");
+});</code></pre>
+                    </div>
+                `,
+                objective: "Crea un bottone che cambia il colore di un paragrafo quando cliccato",
+                hint: "Usa document.createElement, addEventListener e style.color",
+                startingCode: `// Crea elementi
+let paragrafo = document.createElement("p");
+paragrafo.textContent = "Clicca il bottone per cambiare colore!";
+
+let bottone = document.createElement("button");
+bottone.textContent = "Cambia Colore";
+
+// Aggiungi al preview
+document.getElementById("preview").appendChild(paragrafo);
+document.getElementById("preview").appendChild(bottone);
+
+// Aggiungi evento click
+`,
+                solution: `let paragrafo = document.createElement("p");
+paragrafo.textContent = "Clicca il bottone per cambiare colore!";
+paragrafo.style.fontSize = "18px";
+paragrafo.style.padding = "10px";
+
+let bottone = document.createElement("button");
+bottone.textContent = "Cambia Colore";
+bottone.style.padding = "8px 16px";
+bottone.style.margin = "10px";
+
+document.getElementById("preview").appendChild(paragrafo);
+document.getElementById("preview").appendChild(bottone);
+
+let colori = ["red", "blue", "green", "purple", "orange"];
+let indice = 0;
+
+bottone.addEventListener("click", function() {
+    paragrafo.style.color = colori[indice];
+    indice = (indice + 1) % colori.length;
+    console.log("Colore cambiato!");
+});`,
+                check: (code) => code.includes('addEventListener') && code.includes('style.') && code.includes('createElement')
+            },
+            {
+                id: 7,
+                title: "Async/Await",
+                description: "Gestisci operazioni asincrone",
+                theory: `
+                    <h3 class="text-xl font-bold mb-4 text-blue-600">⏰ Programmazione Asincrona</h3>
+                    <p class="mb-4">JavaScript può gestire operazioni che richiedono tempo senza bloccare il programma.</p>
+                    
+                    <div class="bg-blue-50 p-4 rounded-lg mb-4">
+                        <h4 class="font-semibold mb-2">Promises:</h4>
+                        <pre class="bg-gray-800 text-green-400 p-3 rounded text-sm"><code>let promessa = new Promise((resolve, reject) => {
+    setTimeout(() => resolve("Fatto!"), 2000);
+});</code></pre>
+                    </div>
+                    
+                    <div class="bg-green-50 p-4 rounded-lg mb-4">
+                        <h4 class="font-semibold mb-2">Async/Await:</h4>
+                        <pre class="bg-gray-800 text-green-400 p-3 rounded text-sm"><code>async function esegui() {
+    try {
+        let risultato = await promessa;
+        console.log(risultato);
+    } catch (error) {
+        console.error(error);
+    }
+}</code></pre>
+                    </div>
+                    
+                    <div class="bg-yellow-50 p-4 rounded-lg">
+                        <h4 class="font-semibold mb-2">Simulazione API:</h4>
+                        <pre class="bg-gray-800 text-green-400 p-3 rounded text-sm"><code>function simulaAPI() {
+    return new Promise(resolve => {
+        setTimeout(() => resolve("Dati caricati"), 1000);
+    });
+}</code></pre>
+                    </div>
+                `,
+                objective: "Crea una funzione async che simula il caricamento di dati utente",
+                hint: "Usa setTimeout dentro una Promise e async/await",
+                startingCode: `// Simula chiamata API
+function simulaAPI(userId) {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            // Il tuo codice qui
+        }, 2000);
+    });
+}
+
+// Funzione async
+async function caricaUtente(id) {
+    // Il tuo codice qui
+}
+
+// Test
+caricaUtente(123);`,
+                solution: `function simulaAPI(userId) {
+    return new Promise((resolve, reject) => {
+        console.log(\`Caricamento dati per utente \${userId}...\`);
+        
+        setTimeout(() => {
+            if (userId > 0) {
+                resolve({
+                    id: userId,
+                    nome: "Mario Rossi",
+                    email: "mario@email.com"
+                });
+            } else {
+                reject(new Error("ID non valido"));
+            }
+        }, 2000);
+    });
+}
+
+async function caricaUtente(id) {
+    try {
+        console.log("Inizio caricamento...");
+        let utente = await simulaAPI(id);
+        console.log("Dati ricevuti:", utente);
+        return utente;
+    } catch (error) {
+        console.error("Errore:", error.message);
+    }
+}
+
+caricaUtente(123);`,
+                check: (code) => code.includes('async') && code.includes('await') && code.includes('Promise')
+            },
+            {
+                id: 8,
+                title: "Classi",
+                description: "Programmazione orientata agli oggetti",
+                theory: `
+                    <h3 class="text-xl font-bold mb-4 text-blue-600">🏛️ Classi JavaScript</h3>
+                    <p class="mb-4">Le classi forniscono una sintassi pulita per creare oggetti e implementare l'ereditarietà.</p>
+                    
+                    <div class="bg-blue-50 p-4 rounded-lg mb-4">
+                        <h4 class="font-semibold mb-2">Sintassi Base:</h4>
+                        <pre class="bg-gray-800 text-green-400 p-3 rounded text-sm"><code>class Persona {
+    constructor(nome, età) {
+        this.nome = nome;
+        this.età = età;
+    }
+    
+    saluta() {
+        return \`Ciao, sono \${this.nome}\`;
+    }
+}</code></pre>
+                    </div>
+                    
+                    <div class="bg-green-50 p-4 rounded-lg mb-4">
+                        <h4 class="font-semibold mb-2">Ereditarietà:</h4>
+                        <pre class="bg-gray-800 text-green-400 p-3 rounded text-sm"><code>class Studente extends Persona {
+    constructor(nome, età, corso) {
+        super(nome, età);
+        this.corso = corso;
+    }
+}</code></pre>
+                    </div>
+                    
+                    <div class="bg-yellow-50 p-4 rounded-lg">
+                        <h4 class="font-semibold mb-2">Uso:</h4>
+                        <pre class="bg-gray-800 text-green-400 p-3 rounded text-sm"><code>let mario = new Persona("Mario", 30);
+console.log(mario.saluta());</code></pre>
+                    </div>
+                `,
+                objective: "Crea una classe Veicolo e una sottoclasse Auto",
+                hint: "Usa constructor, super(), e metodi pubblici",
+                startingCode: `// Classe base Veicolo
+class Veicolo {
+    constructor(marca, modello) {
+        // Il tuo codice qui
+    }
+    
+    descrizione() {
+        // Il tuo codice qui
+    }
+}
+
+// Sottoclasse Auto
+class Auto extends Veicolo {
+    constructor(marca, modello, porte) {
+        // Il tuo codice qui
+    }
+}
+
+// Test
+let miaAuto = new Auto("Toyota", "Corolla", 4);
+console.log(miaAuto.descrizione());`,
+                solution: `class Veicolo {
+    constructor(marca, modello, anno) {
+        this.marca = marca;
+        this.modello = modello;
+        this.anno = anno;
+    }
+    
+    descrizione() {
+        return \`\${this.marca} \${this.modello} del \${this.anno}\`;
+    }
+    
+    calcolaEtà() {
+        return new Date().getFullYear() - this.anno;
+    }
+}
+
+class Auto extends Veicolo {
+    constructor(marca, modello, anno, porte) {
+        super(marca, modello, anno);
+        this.porte = porte;
+    }
+    
+    descrizione() {
+        return \`\${super.descrizione()} con \${this.porte} porte\`;
+    }
+}
+
+let miaAuto = new Auto("Toyota", "Corolla", 2020, 4);
+console.log(miaAuto.descrizione());
+console.log("Età:", miaAuto.calcolaEtà(), "anni");`,
+                check: (code) => code.includes('class') && code.includes('extends') && code.includes('super')
+            }
+        ];
+
+        // Stato globale
+        let currentLesson = 0;
+        let completedLessons = new Set();
+        let consoleOutput = [];
+
+        // Elementi DOM
+        const elements = {
+            lessonList: document.getElementById('lessonList'),
+            lessonTitle: document.getElementById('lessonTitle'),
+            lessonDesc: document.getElementById('lessonDesc'),
+            theoryContent: document.getElementById('theoryContent'),
+            objective: document.getElementById('objective'),
+            hint: document.getElementById('hint'),
+            editor: document.getElementById('editor'),
+            console: document.getElementById('console'),
+            preview: document.getElementById('preview'),
+            feedback: document.getElementById('feedback'),
+            currentNum: document.getElementById('currentNum'),
+            totalNum: document.getElementById('totalNum'),
+            progressBar: document.getElementById('progressBar'),
+            completionMsg: document.getElementById('completionMsg'),
+            runBtn: document.getElementById('runBtn'),
+            resetBtn: document.getElementById('resetBtn'),
+            clearBtn: document.getElementById('clearBtn'),
+            prevBtn: document.getElementById('prevBtn'),
+            nextBtn: document.getElementById('nextBtn'),
+            toggleTheory: document.getElementById('toggleTheory')
+        };
+
+        // Console personalizzata
+        const originalLog = console.log;
+        const originalError = console.error;
+
+        console.log = function(...args) {
+            consoleOutput.push({type: 'log', content: args.join(' ')});
+            updateConsole();
+            originalLog.apply(console, args);
+        };
+
+        console.error = function(...args) {
+            consoleOutput.push({type: 'error', content: args.join(' ')});
+            updateConsole();
+            originalError.apply(console, args);
+        };
+
+        function updateConsole() {
+            if (consoleOutput.length === 0) {
+                elements.console.innerHTML = '<div class="text-gray-400">Console pronta - I risultati appariranno qui...</div>';
+                return;
+            }
+            
+            elements.console.innerHTML = consoleOutput.map(entry => {
+                const color = entry.type === 'error' ? 'text-red-400' : 'text-green-400';
+                return `<div class="${color}">${entry.content}</div>`;
+            }).join('');
+            
+            elements.console.scrollTop = elements.console.scrollHeight;
+        }
+
+        function clearConsole() {
+            consoleOutput = [];
+            updateConsole();
+        }
+
+        // Genera menu lezioni
+        function createLessonMenu() {
+            console.log('📚 Creazione menu lezioni...');
+            
+            elements.totalNum.textContent = LESSONS.length;
+            
+            const menuHTML = LESSONS.map((lesson, index) => {
+                const isActive = index === currentLesson;
+                const isCompleted = completedLessons.has(lesson.id);
+                
+                let buttonClass = 'w-full text-left p-4 rounded-xl transition-all duration-200 border-2 ';
+                
+                if (isActive) {
+                    buttonClass += 'lesson-active border-yellow-400 shadow-lg transform scale-105';
+                } else if (isCompleted) {
+                    buttonClass += 'lesson-completed border-green-400';
+                } else {
+                    buttonClass += 'bg-white hover:bg-gray-50 border-gray-200 hover:border-blue-300';
+                }
+                
+                return `
+                    <button class="${buttonClass}" onclick="selectLesson(${index})">
+                        <div class="flex items-center justify-between">
+                            <div class="flex-1">
+                                <div class="font-bold text-lg mb-1">
+                                    ${lesson.id}. ${lesson.title}
+                                </div>
+                                <div class="text-sm opacity-80">
+                                    ${lesson.description}
+                                </div>
+                            </div>
+                            <div class="ml-4 text-2xl">
+                                ${isCompleted ? '✅' : isActive ? '👉' : '⭕'}
+                            </div>
+                        </div>
+                    </button>
+                `;
+            }).join('');
+            
+            elements.lessonList.innerHTML = menuHTML;
+            console.log('✅ Menu creato con successo!');
+        }
+
+        // Seleziona lezione
+        function selectLesson(index) {
+            console.log(`🎯 Selezione lezione ${index + 1}`);
+            currentLesson = index;
+            loadCurrentLesson();
+        }
+
+        // Carica lezione corrente
+        function loadCurrentLesson() {
+            const lesson = LESSONS[currentLesson];
+            console.log(`📖 Caricamento: ${lesson.title}`);
+            
+            // Aggiorna contenuto
+            elements.lessonTitle.textContent = lesson.title;
+            elements.lessonDesc.textContent = lesson.description;
+            elements.theoryContent.innerHTML = lesson.theory;
+            elements.objective.textContent = lesson.objective;
+            elements.hint.textContent = lesson.hint;
+            elements.editor.value = lesson.startingCode;
+            
+            // Aggiorna UI
+            elements.currentNum.textContent = currentLesson + 1;
+            elements.progressBar.style.width = `${((currentLesson + 1) / LESSONS.length) * 100}%`;
+            
+            // Aggiorna pulsanti
+            elements.prevBtn.disabled = currentLesson === 0;
+            elements.nextBtn.disabled = currentLesson === LESSONS.length - 1;
+            
+            // Reset stato
+            clearConsole();
+            elements.preview.innerHTML = '<div class="text-gray-400 text-center">L\'output HTML apparirà qui...</div>';
+            elements.feedback.classList.add('hidden');
+            elements.completionMsg.classList.add('hidden');
+            
+            // Aggiorna menu
+            createLessonMenu();
+            
+            console.log('✅ Lezione caricata!');
+        }
+
+        // Esegui codice
+        function runCode() {
+            const code = elements.editor.value;
+            const lesson = LESSONS[currentLesson];
+            
+            console.log('▶️ Esecuzione codice...');
+            
+            // Reset
+            clearConsole();
+            elements.preview.innerHTML = '';
+            
+            try {
+                // Esegui codice
+                eval(code);
+                
+                // Controlla soluzione
+                if (lesson.check(code)) {
+                    showFeedback('🎉 Perfetto! Lezione completata!', 'success');
+                    completedLessons.add(lesson.id);
+                    elements.completionMsg.classList.remove('hidden');
+                    createLessonMenu();
+                    console.log('✅ Lezione completata!');
+                } else {
+                    elements.feedback.classList.add('hidden');
+                    elements.completionMsg.classList.add('hidden');
+                }
+            } catch (error) {
+                console.error('Errore:', error.message);
+                showFeedback(`❌ Errore: ${error.message}`, 'error');
+            }
+        }
+
+        // Mostra feedback
+        function showFeedback(message, type) {
+            elements.feedback.textContent = message;
+            elements.feedback.className = `mt-6 p-4 rounded-xl font-bold text-lg ${
+                type === 'success' 
+                    ? 'bg-green-100 text-green-800 border-2 border-green-300' 
+                    : 'bg-red-100 text-red-800 border-2 border-red-300'
+            }`;
+            elements.feedback.classList.remove('hidden');
+        }
+
+        // Reset codice
+        function resetCode() {
+            const lesson = LESSONS[currentLesson];
+            elements.editor.value = lesson.startingCode;
+            clearConsole();
+            elements.preview.innerHTML = '<div class="text-gray-400 text-center">L\'output HTML apparirà qui...</div>';
+            elements.feedback.classList.add('hidden');
+            elements.completionMsg.classList.add('hidden');
+            console.log('🔄 Codice resettato');
+        }
+
+        // Navigazione
+        function goToPrev() {
+            if (currentLesson > 0) {
+                selectLesson(currentLesson - 1);
+            }
+        }
+
+        function goToNext() {
+            if (currentLesson < LESSONS.length - 1) {
+                selectLesson(currentLesson + 1);
+            }
+        }
+
+        // Toggle teoria
+        function toggleTheory() {
+            const theorySection = elements.theoryContent.parentElement;
+            if (theorySection.style.display === 'none') {
+                theorySection.style.display = 'block';
+                elements.toggleTheory.textContent = 'Nascondi';
+            } else {
+                theorySection.style.display = 'none';
+                elements.toggleTheory.textContent = 'Mostra';
+            }
+        }
+
+        // Event listeners
+        elements.runBtn.addEventListener('click', runCode);
+        elements.resetBtn.addEventListener('click', resetCode);
+        elements.clearBtn.addEventListener('click', clearConsole);
+        elements.prevBtn.addEventListener('click', goToPrev);
+        elements.nextBtn.addEventListener('click', goToNext);
+        elements.toggleTheory.addEventListener('click', toggleTheory);
+
+        // Tasti rapidi
+        document.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                e.preventDefault();
+                runCode();
+            }
+        });
+
+        // Rendi funzioni globali
+        window.selectLesson = selectLesson;
+
+        // AVVIO SEMPLICE
+        function startApp() {
+            console.log('🚀 Avvio applicazione...');
+            
+            // Verifica elementi
+            const missing = Object.entries(elements).filter(([key, el]) => !el);
+            if (missing.length > 0) {
+                console.error('❌ Elementi mancanti:', missing.map(([key]) => key));
+                return;
+            }
+            
+            console.log('✅ Tutti gli elementi trovati');
+            
+            // Inizializza
+            createLessonMenu();
+            loadCurrentLesson();
+            
+            console.log('🎉 Applicazione avviata con successo!');
+        }
+
+        // Avvio quando il DOM è pronto
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', startApp);
+        } else {
+            startApp();
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98c950a1220abb1a',t:'MTc2MDEzMjgzMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
