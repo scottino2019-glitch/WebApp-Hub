@@ -1,239 +1,1907 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Emoji & Text Animator Pro</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts per font artistici -->
-    <link href="https://fonts.googleapis.com/css2?family=Bungee+Spice&family=Creepster&family=Lobster&family=Pacifico&family=Press+Start+2P&family=Righteous&display=swap" rel="stylesheet">
-    <style>
-        body { background-color: #0f172a; color: white; font-family: 'Inter', sans-serif; }
-        #canvasContainer {
-            background: #1e293b;
-            border-radius: 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            overflow: hidden;
-            border: 4px solid #334155;
-        }
-        input[type=range] { cursor: pointer; }
-        .control-label { @apply block text-[10px] font-bold uppercase text-slate-400 mb-1 tracking-wider; }
-        .custom-input { @apply w-full bg-slate-900 border border-slate-700 rounded-lg py-2 px-3 text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Emoji & Text Animator Pro</title>
+  <meta name="description" content="Studio interattivo per creare, personalizzare ed esportare animazioni 3D e 2D di emoji e testi con effetti dinamici e registrazione video." />
+  <meta property="og:title" content="Emoji & Text Animator Pro" />
+  <meta property="og:description" content="Studio interattivo per creare, personalizzare ed esportare animazioni 3D e 2D di emoji e testi con effetti dinamici e registrazione video." />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>" />
+
+  <!-- Google Fonts per font artistici e UI moderna -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bungee+Spice&family=Creepster&family=Lobster&family=Outfit:wght@400;500;600;700;800;900&family=Pacifico&family=Press+Start+2P&family=Righteous&family=Monoton&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS per styling rapido e coerente -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Three.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+
+  <style>
+    :root {
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      background-color: #0b0f19;
+      color: #f1f5f9;
+      font-family: 'Outfit', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Custom Input & Select styling (No broken @apply) */
+    .field-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: #94a3b8;
+      margin-bottom: 6px;
+    }
+    .field-val-badge {
+      font-size: 11px;
+      font-weight: 600;
+      color: #818cf8;
+      background: rgba(99, 102, 241, 0.12);
+      padding: 1px 7px;
+      border-radius: 6px;
+      border: 1px solid rgba(99, 102, 241, 0.25);
+    }
+    .ui-input {
+      width: 100%;
+      background-color: #111827;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 9px 12px;
+      color: #f8fafc;
+      font-size: 14px;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+    .ui-input:focus {
+      border-color: #6366f1;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+    }
+    .ui-select {
+      width: 100%;
+      background-color: #111827;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 9px 36px 9px 12px;
+      color: #f8fafc;
+      font-size: 14px;
+      outline: none;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      background-size: 16px;
+    }
+    .ui-select option {
+      background-color: #111827;
+      color: #f8fafc;
+      padding: 8px;
+    }
+    .ui-select:focus {
+      border-color: #6366f1;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+    }
+    .color-picker-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #111827;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 6px 10px;
+      cursor: pointer;
+    }
+    .color-picker-box input[type="color"] {
+      -webkit-appearance: none;
+      border: none;
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      cursor: pointer;
+      background: none;
+    }
+    .color-picker-box input[type="color"]::-webkit-color-swatch-wrapper {
+      padding: 0;
+    }
+    .color-picker-box input[type="color"]::-webkit-color-swatch {
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 6px;
+    }
+    .color-hex-label {
+      font-size: 12px;
+      font-mono: monospace;
+      color: #cbd5e1;
+      font-family: monospace;
+      font-weight: 600;
+    }
+
+    /* Custom range sliders */
+    input[type=range] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 4px;
+      background: #1e293b;
+      outline: none;
+      cursor: pointer;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #6366f1;
+      box-shadow: 0 0 8px rgba(99, 102, 241, 0.6);
+      border: 2px solid #ffffff;
+      cursor: pointer;
+      transition: transform 0.1s ease;
+    }
+    input[type=range]::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+    }
+
+    /* Tab navigation buttons */
+    .tab-btn {
+      padding: 8px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 8px;
+      color: #94a3b8;
+      background: transparent;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+    .tab-btn:hover {
+      color: #f8fafc;
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .tab-btn.active {
+      color: #ffffff;
+      background: #6366f1;
+      box-shadow: 0 2px 10px rgba(99, 102, 241, 0.35);
+    }
+
+    /* Quick Emoji Pill */
+    .emoji-pill {
+      font-size: 20px;
+      line-height: 1;
+      padding: 6px 10px;
+      background: #111827;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+    .emoji-pill:hover {
+      background: #1e293b;
+      border-color: #6366f1;
+      transform: translateY(-2px) scale(1.1);
+    }
+
+    /* Canvas viewport wrapper */
+    #viewportContainer {
+      position: relative;
+      background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+      border-radius: 1.25rem;
+      overflow: hidden;
+      border: 2px solid #334155;
+      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.6);
+      aspect-ratio: 1 / 1;
+      max-width: 460px;
+      width: 100%;
+    }
+
+    /* Mode Pill Switcher */
+    .mode-pill {
+      cursor: pointer;
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      transition: all 0.2s ease;
+    }
+    .mode-pill.active {
+      background: #6366f1;
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4);
+    }
+    .mode-pill:not(.active) {
+      color: #94a3b8;
+    }
+    .mode-pill:not(.active):hover {
+      color: #e2e8f0;
+    }
+
+    /* Custom scrollbar for control panel */
+    .custom-scroll::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 3px;
+    }
+  </style>
 </head>
-<body class="min-h-screen flex flex-col items-center py-10 px-4">
+<body class="py-6 px-3 sm:px-6 md:px-8">
 
-    <div class="w-full max-w-2xl bg-slate-800 p-6 md:p-8 rounded-3xl shadow-2xl border border-slate-700">
-        <h1 class="text-3xl font-black text-center mb-6 text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400 tracking-tight italic">
-            EMOJI & TEXT ANIMATOR
+  <!-- Header Top Bar -->
+  <header class="max-w-6xl mx-auto mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-4">
+    <div class="flex items-center gap-3">
+      <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center text-2xl shadow-lg shadow-indigo-500/25">
+        🚀
+      </div>
+      <div>
+        <h1 class="text-xl sm:text-2xl font-black tracking-tight text-white flex items-center gap-2">
+          EMOJI & TEXT <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">ANIMATOR PRO</span>
+          <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/40">3D Studio</span>
         </h1>
-
-        <!-- Area Preview -->
-        <div class="flex flex-col items-center mb-8">
-            <div id="canvasContainer">
-                <canvas id="mainCanvas" width="400" height="400" class="max-w-full h-auto"></canvas>
-            </div>
-            <p id="statusMsg" class="mt-4 text-sm text-indigo-300 font-bold h-5 animate-pulse"></p>
-        </div>
-
-        <!-- Pannello Controlli -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            
-            <!-- Colonna 1: Contenuto e Stile -->
-            <div class="space-y-4">
-                <div class="flex gap-2">
-                    <div class="flex-[1]">
-                        <label class="control-label">Emoji</label>
-                        <input type="text" id="emojiInput" value="🚀" class="custom-input text-2xl text-center">
-                    </div>
-                    <div class="flex-[3]">
-                        <label class="control-label">Testo</label>
-                        <input type="text" id="textInput" placeholder="Scrivi qui..." value="SPAZIALE!" class="custom-input">
-                    </div>
-                </div>
-
-                <div>
-                    <label class="control-label">Font Artistico</label>
-                    <select id="fontFamily" class="custom-input">
-                        <option value="Arial">Standard (Sans)</option>
-                        <option value="'Bungee Spice'">Bungee Spice (Color)</option>
-                        <option value="'Pacifico'">Pacifico (Corsivo)</option>
-                        <option value="'Press Start 2P'">8-Bit Style</option>
-                        <option value="'Righteous'">Moderno</option>
-                        <option value="'Lobster'">Elegante</option>
-                        <option value="'Creepster'">Horror</option>
-                    </select>
-                </div>
-
-                <div class="flex gap-2">
-                    <div class="flex-1">
-                        <label class="control-label">Sfondo</label>
-                        <input type="color" id="bgColor" value="#ffffff" class="w-full h-10 bg-slate-900 border border-slate-700 rounded-lg p-1 cursor-pointer">
-                    </div>
-                    <div class="flex-1">
-                        <label class="control-label">Colore Testo</label>
-                        <input type="color" id="textColor" value="#4f46e5" class="w-full h-10 bg-slate-900 border border-slate-700 rounded-lg p-1 cursor-pointer">
-                    </div>
-                </div>
-            </div>
-
-            <!-- Colonna 2: Animazione e Dimensioni -->
-            <div class="space-y-4">
-                <div>
-                    <label class="control-label">Tipo Animazione</label>
-                    <select id="animType" class="custom-input">
-                        <option value="bounce">Rimbalzo</option>
-                        <option value="spin">Rotazione</option>
-                        <option value="pulse">Pulsazione</option>
-                        <option value="float">Fluttuazione</option>
-                        <option value="shake">Vibrazione</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label class="control-label">Velocità Animazione</label>
-                    <input type="range" id="speed" min="0.5" max="8" step="0.5" value="3" class="w-full accent-indigo-500">
-                </div>
-
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="control-label">Size Emoji</label>
-                        <input type="range" id="emojiSize" min="20" max="250" step="5" value="120" class="w-full accent-indigo-500">
-                    </div>
-                    <div>
-                        <label class="control-label">Size Testo</label>
-                        <input type="range" id="textSize" min="10" max="100" step="2" value="40" class="w-full accent-indigo-500">
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <button id="downloadBtn" class="w-full mt-8 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-black py-4 rounded-xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-3">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-            </svg>
-            ESPORTA VIDEO (WEBM)
-        </button>
+        <p class="text-xs text-slate-400">Crea animazioni spettacolari in 3D & 2D ed esporta video HD o snapshot</p>
+      </div>
     </div>
 
-    <script>
-        const canvas = document.getElementById('mainCanvas');
-        const ctx = canvas.getContext('2d');
+    <!-- Quick Presets Dropdown / Button group -->
+    <div class="flex items-center gap-2">
+      <label class="text-xs font-semibold text-slate-400 hidden sm:inline">Preset Rapidi:</label>
+      <div class="flex flex-wrap gap-1.5" id="presetsBar">
+        <button onclick="applyPreset('spaziale')" class="px-2.5 py-1 text-xs font-bold rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-all hover:scale-105 active:scale-95">🚀 Spaziale</button>
+        <button onclick="applyPreset('cyberpunk')" class="px-2.5 py-1 text-xs font-bold rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-all hover:scale-105 active:scale-95">👾 Cyberpunk</button>
+        <button onclick="applyPreset('vipgold')" class="px-2.5 py-1 text-xs font-bold rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-all hover:scale-105 active:scale-95">👑 VIP Gold</button>
+        <button onclick="applyPreset('party')" class="px-2.5 py-1 text-xs font-bold rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-all hover:scale-105 active:scale-95">🎉 Disco</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+    
+    <!-- LEFT COLUMN: Canvas Viewport & Quick Playback / Export Bar (5 cols) -->
+    <div class="lg:col-span-5 flex flex-col items-center">
+      
+      <!-- Viewport Header: Mode Switch & Status -->
+      <div class="w-full max-w-[460px] flex items-center justify-between mb-3 px-1">
+        <!-- 3D vs 2D Selector -->
+        <div class="flex items-center bg-slate-900 border border-slate-800 p-1 rounded-lg">
+          <button id="mode3dBtn" class="mode-pill active" onclick="switchEngineMode('3d')">
+            🧊 3D Three.js
+          </button>
+          <button id="mode2dBtn" class="mode-pill" onclick="switchEngineMode('2d')">
+            🎨 2D Canvas
+          </button>
+        </div>
+
+        <!-- Controls: Play/Pause & Reset Cam -->
+        <div class="flex items-center gap-1.5">
+          <button id="togglePlayBtn" title="Play / Pausa animazione" onclick="togglePlayPause()" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 transition-all">
+            <svg id="playIcon" class="w-4 h-4 hidden" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4l12 6-12 6z"/></svg>
+            <svg id="pauseIcon" class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+          </button>
+          <button id="resetCamBtn" title="Ripristina Camera 3D" onclick="reset3DCamera()" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 transition-all text-xs font-semibold flex items-center gap-1">
+            🔄 Cam
+          </button>
+        </div>
+      </div>
+
+      <!-- Viewport Card with Canvas -->
+      <div id="viewportContainer" class="relative group">
+        <!-- 3D Three.js WebGL Container -->
+        <div id="threeContainer" class="w-full h-full absolute inset-0 cursor-grab active:cursor-grabbing"></div>
+
+        <!-- 2D Canvas (hidden when in 3D mode) -->
+        <canvas id="mainCanvas" width="600" height="600" class="w-full h-full absolute inset-0 hidden"></canvas>
+
+        <!-- Viewport Hint Overlay -->
+        <div id="orbitHint" class="absolute bottom-3 left-3 bg-slate-900/80 border border-slate-700/60 rounded-md px-2 py-1 text-[11px] text-slate-400 pointer-events-none transition-opacity duration-300 backdrop-blur-xs flex items-center gap-1.5">
+          <span>🖱️ Trascina per ruotare in 3D • Scroll per zoom</span>
+        </div>
+      </div>
+
+      <!-- Live Status / Recording Alert Banner -->
+      <div id="statusContainer" class="w-full max-w-[460px] mt-3 min-h-[32px] flex items-center justify-center">
+        <div id="statusMsg" class="hidden text-xs font-semibold px-3 py-1.5 rounded-lg bg-indigo-950/80 border border-indigo-500/40 text-indigo-200 flex items-center gap-2">
+          <span id="statusIcon">⚡</span>
+          <span id="statusText">Pronto</span>
+        </div>
+      </div>
+
+      <!-- Quick Action Buttons Below Canvas -->
+      <div class="w-full max-w-[460px] grid grid-cols-2 gap-3 mt-2">
+        <button id="snapshotBtn" onclick="takeSnapshot()" class="py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-bold transition-all flex items-center justify-center gap-2 active:scale-95 shadow-sm">
+          📸 Snapshot PNG
+        </button>
+        <button id="downloadBtn" onclick="startRecording()" class="py-2.5 px-3 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-xs font-extrabold transition-all flex items-center justify-center gap-2 active:scale-95 shadow-lg shadow-indigo-600/25">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+          </svg>
+          <span id="downloadBtnLabel">ESPORTA VIDEO (WEBM)</span>
+        </button>
+      </div>
+
+      <!-- Recording Progress Bar (visible during recording) -->
+      <div id="recordingProgressBox" class="w-full max-w-[460px] mt-2 hidden bg-slate-900 border border-indigo-500/40 rounded-xl p-3">
+        <div class="flex justify-between items-center text-xs font-semibold text-indigo-300 mb-1.5">
+          <span>Registrazione video in corso...</span>
+          <span id="recProgressPct">0%</span>
+        </div>
+        <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+          <div id="recProgressBar" class="h-full bg-gradient-to-r from-indigo-500 to-pink-500 w-0 transition-all duration-100"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT COLUMN: Tabbed Controls Deck (7 cols) -->
+    <div class="lg:col-span-7 bg-slate-900/90 border border-slate-800 rounded-3xl p-5 sm:p-6 shadow-2xl backdrop-blur-sm">
+      
+      <!-- Tab Navigation Header -->
+      <div class="flex border-b border-slate-800 pb-3 mb-6 gap-2 overflow-x-auto custom-scroll">
+        <button class="tab-btn active" onclick="switchTab('contentTab', this)">
+          <span>✏️</span> Contenuto & Testo
+        </button>
+        <button class="tab-btn" onclick="switchTab('styleTab', this)">
+          <span>🎨</span> Colori & Stile
+        </button>
+        <button class="tab-btn" onclick="switchTab('animTab', this)">
+          <span>⚡</span> Animazione & 3D
+        </button>
+        <button class="tab-btn" onclick="switchTab('exportTab', this)">
+          <span>💾</span> Opzioni Video
+        </button>
+      </div>
+
+      <!-- TAB 1: Contenuto & Testo -->
+      <div id="contentTab" class="space-y-5">
         
-        // Elementi UI
-        const emojiInput = document.getElementById('emojiInput');
-        const textInput = document.getElementById('textInput');
-        const bgColorInput = document.getElementById('bgColor');
-        const textColorInput = document.getElementById('textColor');
-        const fontFamilyInput = document.getElementById('fontFamily');
-        const animType = document.getElementById('animType');
-        const speedInput = document.getElementById('speed');
-        const emojiSizeInput = document.getElementById('emojiSize');
-        const textSizeInput = document.getElementById('textSize');
-        const downloadBtn = document.getElementById('downloadBtn');
-        const statusMsg = document.getElementById('statusMsg');
+        <!-- Emoji & Text Inputs -->
+        <div class="grid grid-cols-1 sm:grid-cols-12 gap-4">
+          <div class="sm:col-span-4">
+            <label class="field-label" for="emojiInput">
+              <span>Icona Emoji</span>
+            </label>
+            <input type="text" id="emojiInput" value="🚀" class="ui-input text-center text-3xl font-bold h-12" maxlength="4" />
+          </div>
+          <div class="sm:col-span-8">
+            <label class="field-label" for="textInput">
+              <span>Testo Animato</span>
+            </label>
+            <input type="text" id="textInput" value="SPAZIALE!" placeholder="Scrivi il tuo messaggio..." class="ui-input h-12 text-base font-semibold" />
+          </div>
+        </div>
 
-        let isRecording = false;
+        <!-- Quick Emojis Bar -->
+        <div>
+          <label class="field-label">
+            <span>Scegli Emoji Rapida</span>
+          </label>
+          <div class="flex flex-wrap gap-2 pt-1">
+            <button type="button" class="emoji-pill" onclick="setEmoji('🚀')">🚀</button>
+            <button type="button" class="emoji-pill" onclick="setEmoji('🔥')">🔥</button>
+            <button type="button" class="emoji-pill" onclick="setEmoji('✨')">✨</button>
+            <button type="button" class="emoji-pill" onclick="setEmoji('💎')">💎</button>
+            <button type="button" class="emoji-pill" onclick="setEmoji('🦄')">🦄</button>
+            <button type="button" class="emoji-pill" onclick="setEmoji('⚡')">⚡</button>
+            <button type="button" class="emoji-pill" onclick="setEmoji('👑')">👑</button>
+            <button type="button" class="emoji-pill" onclick="setEmoji('👾')">👾</button>
+            <button type="button" class="emoji-pill" onclick="setEmoji('🍕')">🍕</button>
+            <button type="button" class="emoji-pill" onclick="setEmoji('🎉')">🎉</button>
+            <button type="button" class="emoji-pill" onclick="setEmoji('🏆')">🏆</button>
+            <button type="button" class="emoji-pill" onclick="setEmoji('❤️')">❤️</button>
+            <button type="button" class="emoji-pill" onclick="setEmoji('🌈')">🌈</button>
+            <button type="button" class="emoji-pill" onclick="setEmoji('🤖')">🤖</button>
+            <button type="button" class="emoji-pill" onclick="setEmoji('💥')">💥</button>
+          </div>
+        </div>
 
-        function renderFrame(time) {
-            const speed = parseFloat(speedInput.value);
-            const eSize = parseInt(emojiSizeInput.value);
-            const tSize = parseInt(textSizeInput.value);
-            const emoji = emojiInput.value || "";
-            const text = textInput.value || "";
-            const type = animType.value;
-            const font = fontFamilyInput.value;
+        <!-- Font Artistico Selection -->
+        <div>
+          <label class="field-label" for="fontFamily">
+            <span>Carattere Tipografico (Font)</span>
+          </label>
+          <select id="fontFamily" class="ui-select font-semibold">
+            <option value="'Outfit', sans-serif">Outfit (Moderno & Pulito)</option>
+            <option value="'Bungee Spice'">Bungee Spice (3D Color)</option>
+            <option value="'Pacifico'">Pacifico (Corsivo Elegante)</option>
+            <option value="'Press Start 2P'">Press Start 2P (Retro 8-Bit)</option>
+            <option value="'Righteous'">Righteous (Futuristico)</option>
+            <option value="'Lobster'">Lobster (Classico Chic)</option>
+            <option value="'Creepster'">Creepster (Horror / Grunge)</option>
+            <option value="'Monoton'">Monoton (Disco Stripes)</option>
+          </select>
+        </div>
 
-            // Sfondo
-            ctx.fillStyle = bgColorInput.value;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        <!-- Dimensioni Slider Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+          <div>
+            <label class="field-label" for="emojiSize">
+              <span>Dimensione Emoji</span>
+              <span id="emojiSizeVal" class="field-val-badge">120px</span>
+            </label>
+            <input type="range" id="emojiSize" min="30" max="220" step="5" value="120" />
+          </div>
+          <div>
+            <label class="field-label" for="textSize">
+              <span>Dimensione Testo</span>
+              <span id="textSizeVal" class="field-val-badge">42px</span>
+            </label>
+            <input type="range" id="textSize" min="14" max="100" step="2" value="42" />
+          </div>
+        </div>
 
-            ctx.save();
-            ctx.translate(canvas.width / 2, canvas.height / 2);
+      </div>
 
-            const t = time / (1000 / speed);
-            
-            // Logica Animazioni
-            if (type === 'bounce') {
-                ctx.translate(0, Math.abs(Math.sin(t)) * -80);
-            } else if (type === 'spin') {
-                ctx.rotate(t);
-            } else if (type === 'pulse') {
-                const s = 1 + Math.sin(t) * 0.15;
-                ctx.scale(s, s);
-            } else if (type === 'float') {
-                ctx.translate(Math.sin(t) * 30, Math.cos(t * 0.7) * 30);
-            } else if (type === 'shake') {
-                ctx.translate(Math.random() * 4 - 2, Math.random() * 4 - 2);
-                ctx.rotate(Math.sin(t * 5) * 0.05);
-            }
+      <!-- TAB 2: Colori & Stile -->
+      <div id="styleTab" class="space-y-5 hidden">
+        
+        <!-- Palette Presets -->
+        <div>
+          <label class="field-label">
+            <span>Palette Rapide Suggerite</span>
+          </label>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-1">
+            <button onclick="setPalette('#0f172a', '#38bdf8', '#0284c7')" class="p-2 rounded-xl bg-slate-800 border border-slate-700 hover:border-sky-400 text-left transition-all flex items-center gap-2">
+              <span class="w-4 h-4 rounded-full bg-sky-400 border border-white/20"></span>
+              <span class="text-xs font-bold text-slate-300">Blu Cosmico</span>
+            </button>
+            <button onclick="setPalette('#18181b', '#ec4899', '#f43f5e')" class="p-2 rounded-xl bg-slate-800 border border-slate-700 hover:border-pink-400 text-left transition-all flex items-center gap-2">
+              <span class="w-4 h-4 rounded-full bg-pink-500 border border-white/20"></span>
+              <span class="text-xs font-bold text-slate-300">Neon Pink</span>
+            </button>
+            <button onclick="setPalette('#0a0a0a', '#fbbf24', '#f59e0b')" class="p-2 rounded-xl bg-slate-800 border border-slate-700 hover:border-amber-400 text-left transition-all flex items-center gap-2">
+              <span class="w-4 h-4 rounded-full bg-amber-400 border border-white/20"></span>
+              <span class="text-xs font-bold text-slate-300">Oro Imperiale</span>
+            </button>
+            <button onclick="setPalette('#064e3b', '#34d399', '#10b981')" class="p-2 rounded-xl bg-slate-800 border border-slate-700 hover:border-emerald-400 text-left transition-all flex items-center gap-2">
+              <span class="w-4 h-4 rounded-full bg-emerald-400 border border-white/20"></span>
+              <span class="text-xs font-bold text-slate-300">Smeraldo</span>
+            </button>
+            <button onclick="setPalette('#1e1b4b', '#c084fc', '#818cf8')" class="p-2 rounded-xl bg-slate-800 border border-slate-700 hover:border-indigo-400 text-left transition-all flex items-center gap-2">
+              <span class="w-4 h-4 rounded-full bg-purple-400 border border-white/20"></span>
+              <span class="text-xs font-bold text-slate-300">Cyber Viola</span>
+            </button>
+            <button onclick="setPalette('#ffffff', '#1e293b', '#4f46e5')" class="p-2 rounded-xl bg-slate-800 border border-slate-700 hover:border-indigo-400 text-left transition-all flex items-center gap-2">
+              <span class="w-4 h-4 rounded-full bg-white border border-slate-400"></span>
+              <span class="text-xs font-bold text-slate-300">Luminoso Pure</span>
+            </button>
+          </div>
+        </div>
 
-            // Disegno Emoji
-            ctx.font = `${eSize}px Arial`;
-            ctx.textAlign = "center";
-            ctx.textBaseline = "middle";
-            ctx.fillText(emoji, 0, -20); // Spostata leggermente su per far spazio al testo
+        <!-- Custom Color Inputs -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label class="field-label" for="bgColor">
+              <span>Sfondo Scena</span>
+            </label>
+            <div class="color-picker-box">
+              <input type="color" id="bgColor" value="#0f172a" />
+              <span id="bgColorHex" class="color-hex-label">#0f172a</span>
+            </div>
+          </div>
+          <div>
+            <label class="field-label" for="textColor">
+              <span>Colore Testo</span>
+            </label>
+            <div class="color-picker-box">
+              <input type="color" id="textColor" value="#818cf8" />
+              <span id="textColorHex" class="color-hex-label">#818cf8</span>
+            </div>
+          </div>
+          <div>
+            <label class="field-label" for="accentColor">
+              <span>Accento / Bordo</span>
+            </label>
+            <div class="color-picker-box">
+              <input type="color" id="accentColor" value="#4f46e5" />
+              <span id="accentColorHex" class="color-hex-label">#4f46e5</span>
+            </div>
+          </div>
+        </div>
 
-            // Disegno Testo
-            if (text) {
-                ctx.font = `${tSize}px ${font}`;
-                ctx.fillStyle = textColorInput.value;
-                ctx.fillText(text, 0, (eSize/2) + 10);
-            }
+        <!-- Effetti Grafici Testo -->
+        <div class="pt-2">
+          <label class="field-label">
+            <span>Stile & Effetti Testo</span>
+          </label>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <button id="fxNone" onclick="setTextEffect('none')" class="p-2 text-xs font-bold rounded-lg border border-indigo-500 bg-indigo-500/20 text-white transition-all text-center">Normale</button>
+            <button id="fxGlow" onclick="setTextEffect('glow')" class="p-2 text-xs font-bold rounded-lg border border-slate-700 bg-slate-800 text-slate-300 hover:border-slate-600 transition-all text-center">Glow Neon</button>
+            <button id="fxOutline" onclick="setTextEffect('outline')" class="p-2 text-xs font-bold rounded-lg border border-slate-700 bg-slate-800 text-slate-300 hover:border-slate-600 transition-all text-center">Contorno</button>
+            <button id="fxShadow" onclick="setTextEffect('shadow')" class="p-2 text-xs font-bold rounded-lg border border-slate-700 bg-slate-800 text-slate-300 hover:border-slate-600 transition-all text-center">Ombra 3D</button>
+          </div>
+        </div>
 
-            ctx.restore();
+        <!-- Studio Material 3D Finish -->
+        <div>
+          <label class="field-label" for="materialFinish">
+            <span>Finitura Materiale 3D</span>
+          </label>
+          <select id="materialFinish" class="ui-select font-semibold">
+            <option value="glossy">Glossy Studio (Lucido PBR con Riflessi)</option>
+            <option value="metallic">Metallo Cromato / Oro (High Metalness)</option>
+            <option value="neon">Cyber Neon (Auto-illuminante)</option>
+            <option value="matte">Matte Soft (Satinato Opaco)</option>
+            <option value="glass">Vetro Sintetico (Traslucido)</option>
+          </select>
+        </div>
+
+      </div>
+
+      <!-- TAB 3: Animazione & 3D -->
+      <div id="animTab" class="space-y-5 hidden">
+        
+        <!-- Tipo Animazione -->
+        <div>
+          <label class="field-label" for="animType">
+            <span>Comportamento Movimento</span>
+          </label>
+          <select id="animType" class="ui-select text-base font-semibold">
+            <option value="showcase" selected>✨ Vetrina 360° & Fluttuazione (Consigliato)</option>
+            <option value="float">☁️ Fluttuazione Zen (Hover Soave)</option>
+            <option value="turntable">🔄 Rotazione 360° Pura (Turntable Lento)</option>
+            <option value="breathe">🫀 Respiro Calmo (Gentle Breathe)</option>
+            <option value="pendulum">⚖️ Dondolio Dolce (Pendulum)</option>
+            <option value="soft_wave">🌊 Onda Armonica Morbida (Soft Wave)</option>
+            <option value="static">⏸️ Fermo / Solo Camera (Static)</option>
+          </select>
+        </div>
+
+        <!-- Velocità e Intensità -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="field-label" for="speed">
+              <span>Velocità Animazione</span>
+              <span id="speedVal" class="field-val-badge">1.0x</span>
+            </label>
+            <input type="range" id="speed" min="0.2" max="3" step="0.1" value="1" />
+          </div>
+          <div>
+            <label class="field-label" for="depth3D">
+              <span>Spessore / Rilievo 3D</span>
+              <span id="depth3DVal" class="field-val-badge">Medio</span>
+            </label>
+            <input type="range" id="depth3D" min="1" max="5" step="1" value="3" />
+          </div>
+        </div>
+
+        <!-- Studio Lighting Presets -->
+        <div>
+          <label class="field-label" for="lightingPreset">
+            <span>Illuminazione Studio 3D</span>
+          </label>
+          <select id="lightingPreset" class="ui-select font-semibold">
+            <option value="warm">Studio Caldo (Key Light Dorata + Fill Fredda)</option>
+            <option value="cyber">Cyberpunk Glow (Luce Viola + Accento Ciano)</option>
+            <option value="bright">Studio Fotografico Neutro (Luce Pura)</option>
+            <option value="dramatic">Cinema Drammatico (Alto Contrasto)</option>
+          </select>
+        </div>
+
+        <!-- Particelle 3D & Pedana -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+          <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-800/80 border border-slate-700/80 cursor-pointer hover:bg-slate-800 transition-all">
+            <input type="checkbox" id="showStage" checked class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 bg-slate-900 border-slate-600" />
+            <div>
+              <span class="block text-xs font-bold text-slate-200">Pedana Studio 3D</span>
+              <span class="block text-[11px] text-slate-400">Piattaforma con anello luminoso</span>
+            </div>
+          </label>
+          <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-800/80 border border-slate-700/80 cursor-pointer hover:bg-slate-800 transition-all">
+            <input type="checkbox" id="showParticles" checked class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 bg-slate-900 border-slate-600" />
+            <div>
+              <span class="block text-xs font-bold text-slate-200">Particelle Sparkle 3D</span>
+              <span class="block text-[11px] text-slate-400">Polvere stellare fluttuante</span>
+            </div>
+          </label>
+        </div>
+
+      </div>
+
+      <!-- TAB 4: Opzioni Video ed Esportazione -->
+      <div id="exportTab" class="space-y-5 hidden">
+        
+        <div>
+          <h3 class="text-sm font-bold text-slate-200 mb-1">Impostazioni Registrazione Video</h3>
+          <p class="text-xs text-slate-400">Il video viene registrato direttamente dal canvas senza perdite ad alto framerate (60 FPS).</p>
+        </div>
+
+        <!-- Durata Video -->
+        <div>
+          <label class="field-label" for="recordDuration">
+            <span>Durata Registrazione</span>
+          </label>
+          <select id="recordDuration" class="ui-select font-semibold">
+            <option value="3">3 Secondi (Ideale per sticker WhatsApp / Telegram)</option>
+            <option value="5" selected>5 Secondi (Loop perfetto per social & reel)</option>
+            <option value="8">8 Secondi (Presentazione estesa)</option>
+            <option value="10">10 Secondi (Animazione completa)</option>
+          </select>
+        </div>
+
+        <!-- Risoluzione / FPS info -->
+        <div class="p-4 rounded-xl bg-slate-800/80 border border-slate-700 space-y-2 text-xs">
+          <div class="flex justify-between text-slate-300">
+            <span class="font-medium text-slate-400">Formato video:</span>
+            <span class="font-bold text-indigo-300">WebM (VP9 / H.264)</span>
+          </div>
+          <div class="flex justify-between text-slate-300">
+            <span class="font-medium text-slate-400">Framerate:</span>
+            <span class="font-bold text-indigo-300">60 FPS Lossless</span>
+          </div>
+          <div class="flex justify-between text-slate-300">
+            <span class="font-medium text-slate-400">Risoluzione:</span>
+            <span class="font-bold text-indigo-300">Square 1:1 (HD 600x600 px)</span>
+          </div>
+        </div>
+
+        <div class="pt-2 flex flex-col sm:flex-row gap-3">
+          <button onclick="startRecording()" class="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-black text-sm shadow-lg shadow-indigo-600/30 transition-all flex items-center justify-center gap-2 active:scale-95">
+            📹 AVVIA REGISTRAZIONE VIDEO
+          </button>
+          <button onclick="takeSnapshot()" class="py-3 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-bold text-sm transition-all flex items-center justify-center gap-2 active:scale-95">
+            📸 SALVA FOTO (PNG)
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- JAVASCRIPT APPLICATION LOGIC -->
+  <script>
+    // State & Configuration
+    let engineMode = '3d'; // '3d' or '2d'
+    let isPlaying = true;
+    let isRecording = false;
+    let textEffect = 'none'; // 'none', 'glow', 'outline', 'shadow'
+    let mediaRecorder = null;
+    let recordedChunks = [];
+    let recTimer = null;
+    let recStartTime = 0;
+
+    // DOM Elements Cache
+    const viewportContainer = document.getElementById('viewportContainer');
+    const threeContainer = document.getElementById('threeContainer');
+    const mainCanvas = document.getElementById('mainCanvas');
+    const ctx2d = mainCanvas.getContext('2d');
+
+    const emojiInput = document.getElementById('emojiInput');
+    const textInput = document.getElementById('textInput');
+    const fontFamilySelect = document.getElementById('fontFamily');
+    const emojiSizeInput = document.getElementById('emojiSize');
+    const textSizeInput = document.getElementById('textSize');
+    const emojiSizeVal = document.getElementById('emojiSizeVal');
+    const textSizeVal = document.getElementById('textSizeVal');
+
+    const bgColorInput = document.getElementById('bgColor');
+    const textColorInput = document.getElementById('textColor');
+    const accentColorInput = document.getElementById('accentColor');
+    const bgColorHex = document.getElementById('bgColorHex');
+    const textColorHex = document.getElementById('textColorHex');
+    const accentColorHex = document.getElementById('accentColorHex');
+
+    const animTypeSelect = document.getElementById('animType');
+    const speedInput = document.getElementById('speed');
+    const speedVal = document.getElementById('speedVal');
+    const depth3DInput = document.getElementById('depth3D');
+    const depth3DVal = document.getElementById('depth3DVal');
+    const materialFinishSelect = document.getElementById('materialFinish');
+    const lightingPresetSelect = document.getElementById('lightingPreset');
+    const showStageCheckbox = document.getElementById('showStage');
+    const showParticlesCheckbox = document.getElementById('showParticles');
+
+    const mode3dBtn = document.getElementById('mode3dBtn');
+    const mode2dBtn = document.getElementById('mode2dBtn');
+    const togglePlayBtn = document.getElementById('togglePlayBtn');
+    const playIcon = document.getElementById('playIcon');
+    const pauseIcon = document.getElementById('pauseIcon');
+    const orbitHint = document.getElementById('orbitHint');
+
+    const downloadBtn = document.getElementById('downloadBtn');
+    const downloadBtnLabel = document.getElementById('downloadBtnLabel');
+    const statusMsg = document.getElementById('statusMsg');
+    const statusText = document.getElementById('statusText');
+    const statusIcon = document.getElementById('statusIcon');
+    const recordingProgressBox = document.getElementById('recordingProgressBox');
+    const recProgressBar = document.getElementById('recProgressBar');
+    const recProgressPct = document.getElementById('recProgressPct');
+    const recordDurationSelect = document.getElementById('recordDuration');
+
+    // UI Range Badges sync
+    function updateBadges() {
+      emojiSizeVal.textContent = `${emojiSizeInput.value}px`;
+      textSizeVal.textContent = `${textSizeInput.value}px`;
+      speedVal.textContent = `${parseFloat(speedInput.value).toFixed(1)}x`;
+      const depths = ['Molto Sottile', 'Sottile', 'Medio', 'Robusto', 'Massiccio'];
+      depth3DVal.textContent = depths[parseInt(depth3DInput.value) - 1] || 'Medio';
+      bgColorHex.textContent = bgColorInput.value;
+      textColorHex.textContent = textColorInput.value;
+      accentColorHex.textContent = accentColorInput.value;
+    }
+
+    emojiSizeInput.addEventListener('input', () => { updateBadges(); mark3DDirty(); });
+    textSizeInput.addEventListener('input', () => { updateBadges(); mark3DDirty(); });
+    speedInput.addEventListener('input', updateBadges);
+    depth3DInput.addEventListener('input', () => { updateBadges(); update3DGeometry(); });
+    
+    bgColorInput.addEventListener('input', () => {
+      updateBadges();
+      updateSceneColors();
+    });
+    textColorInput.addEventListener('input', () => {
+      updateBadges();
+      mark3DDirty();
+    });
+    accentColorInput.addEventListener('input', () => {
+      updateBadges();
+      updateSceneColors();
+      mark3DDirty();
+    });
+
+    emojiInput.addEventListener('input', mark3DDirty);
+    textInput.addEventListener('input', mark3DDirty);
+    fontFamilySelect.addEventListener('change', mark3DDirty);
+    materialFinishSelect.addEventListener('change', update3DMaterials);
+    lightingPresetSelect.addEventListener('change', update3DLighting);
+    showStageCheckbox.addEventListener('change', () => {
+      if (stageGroup) stageGroup.visible = showStageCheckbox.checked;
+    });
+    showParticlesCheckbox.addEventListener('change', () => {
+      if (particleSystem) particleSystem.visible = showParticlesCheckbox.checked;
+    });
+
+    // Preset helper
+    function setEmoji(char) {
+      emojiInput.value = char;
+      mark3DDirty();
+      showToast(`Emoji impostata: ${char}`);
+    }
+
+    function setPalette(bg, text, accent) {
+      bgColorInput.value = bg;
+      textColorInput.value = text;
+      accentColorInput.value = accent;
+      updateBadges();
+      updateSceneColors();
+      mark3DDirty();
+      showToast('Palette colori applicata!');
+    }
+
+    function setTextEffect(effect) {
+      textEffect = effect;
+      ['fxNone', 'fxGlow', 'fxOutline', 'fxShadow'].forEach(id => {
+        const btn = document.getElementById(id);
+        if (id === 'fx' + effect.charAt(0).toUpperCase() + effect.slice(1)) {
+          btn.className = 'p-2 text-xs font-bold rounded-lg border border-indigo-500 bg-indigo-500/20 text-white transition-all text-center';
+        } else {
+          btn.className = 'p-2 text-xs font-bold rounded-lg border border-slate-700 bg-slate-800 text-slate-300 hover:border-slate-600 transition-all text-center';
+        }
+      });
+      mark3DDirty();
+    }
+
+    function applyPreset(name) {
+      if (name === 'spaziale') {
+        emojiInput.value = '🚀';
+        textInput.value = 'SPAZIALE!';
+        fontFamilySelect.value = "'Righteous'";
+        setPalette('#0f172a', '#38bdf8', '#6366f1');
+        animTypeSelect.value = 'showcase';
+        speedInput.value = '1.0';
+        materialFinishSelect.value = 'metallic';
+        lightingPresetSelect.value = 'cyber';
+        setTextEffect('glow');
+      } else if (name === 'cyberpunk') {
+        emojiInput.value = '👾';
+        textInput.value = 'RETRO WAVE';
+        fontFamilySelect.value = "'Press Start 2P'";
+        setPalette('#0a0a14', '#f43f5e', '#a855f7');
+        animTypeSelect.value = 'float';
+        speedInput.value = '0.9';
+        materialFinishSelect.value = 'neon';
+        lightingPresetSelect.value = 'cyber';
+        setTextEffect('glow');
+      } else if (name === 'vipgold') {
+        emojiInput.value = '👑';
+        textInput.value = 'ROYAL VIP';
+        fontFamilySelect.value = "'Lobster'";
+        setPalette('#09090b', '#fbbf24', '#d97706');
+        animTypeSelect.value = 'turntable';
+        speedInput.value = '0.8';
+        materialFinishSelect.value = 'metallic';
+        lightingPresetSelect.value = 'warm';
+        setTextEffect('shadow');
+      } else if (name === 'party') {
+        emojiInput.value = '🎉';
+        textInput.value = 'DISCO PARTY';
+        fontFamilySelect.value = "'Monoton'";
+        setPalette('#111827', '#ec4899', '#3b82f6');
+        animTypeSelect.value = 'breathe';
+        speedInput.value = '1.0';
+        materialFinishSelect.value = 'glossy';
+        lightingPresetSelect.value = 'dramatic';
+        setTextEffect('outline');
+      }
+      updateBadges();
+      showToast(`Preset "${name.toUpperCase()}" caricato!`);
+    }
+
+    // Tabs Switcher
+    function switchTab(tabId, el) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      el.classList.add('active');
+      ['contentTab', 'styleTab', 'animTab', 'exportTab'].forEach(id => {
+        document.getElementById(id).classList.add('hidden');
+      });
+      document.getElementById(tabId).classList.remove('hidden');
+    }
+
+    // Engine Switcher (3D vs 2D)
+    function switchEngineMode(mode) {
+      engineMode = mode;
+      if (mode === '3d') {
+        mode3dBtn.classList.add('active');
+        mode2dBtn.classList.remove('active');
+        threeContainer.classList.remove('hidden');
+        mainCanvas.classList.add('hidden');
+        orbitHint.classList.remove('hidden');
+        onWindowResize();
+      } else {
+        mode2dBtn.classList.add('active');
+        mode3dBtn.classList.remove('active');
+        threeContainer.classList.add('hidden');
+        mainCanvas.classList.remove('hidden');
+        orbitHint.classList.add('hidden');
+      }
+      showToast(mode === '3d' ? 'Passato alla modalità 3D Studio' : 'Passato alla modalità 2D Canvas');
+    }
+
+    function togglePlayPause() {
+      isPlaying = !isPlaying;
+      if (isPlaying) {
+        playIcon.classList.add('hidden');
+        pauseIcon.classList.remove('hidden');
+        showToast('Animazione avviata');
+      } else {
+        playIcon.classList.remove('hidden');
+        pauseIcon.classList.add('hidden');
+        showToast('Animazione in pausa');
+      }
+    }
+
+    function showToast(msg) {
+      statusText.textContent = msg;
+      statusMsg.classList.remove('hidden');
+      clearTimeout(window._toastTimeout);
+      window._toastTimeout = setTimeout(() => {
+        if (!isRecording) statusMsg.classList.add('hidden');
+      }, 2500);
+    }
+
+    /* ==========================================================
+       THREE.JS 3D STUDIO ENGINE SETUP (Three.js Skill Compliant)
+       ========================================================== */
+    let renderer, scene, camera, controls;
+    let subjectGroup, medallionMesh, bezelRingMesh, faceplateMesh, textPlaqueMesh, textMeshInstance;
+    let stageGroup, contactShadowPlane, particleSystem;
+    let keyLight, fillLight, rimLight;
+    let emojiTextureCanvas, emojiTextureCtx, emojiCanvasTexture;
+    let textTextureCanvas, textTextureCtx, textCanvasTexture;
+    let clock = new THREE.Clock();
+
+    // Standalone Damped OrbitControls implementation
+    class OrbitControls {
+      constructor(cam, domElement) {
+        this.camera = cam;
+        this.domElement = domElement || document.body;
+        this.target = new THREE.Vector3(0, 0.2, 0);
+        this.minDistance = 2.0;
+        this.maxDistance = 10.0;
+        this.minPolarAngle = 0.08;
+        this.maxPolarAngle = Math.PI / 2 + 0.05;
+        this.enableDamping = true;
+        this.dampingFactor = 0.08;
+
+        this.radius = 5.3;
+        this.theta = 0;
+        this.phi = Math.PI / 2 - 0.2;
+        this.targetRadius = this.radius;
+        this.targetTheta = this.theta;
+        this.targetPhi = this.phi;
+
+        this.syncFromCamera();
+
+        this.isDragging = false;
+        this.prevX = 0;
+        this.prevY = 0;
+        this.pointers = new Map();
+        this.prevPinchDist = 0;
+
+        this.onPointerDown = this.onPointerDown.bind(this);
+        this.onPointerMove = this.onPointerMove.bind(this);
+        this.onPointerUp = this.onPointerUp.bind(this);
+        this.onWheel = this.onWheel.bind(this);
+
+        this.domElement.addEventListener('pointerdown', this.onPointerDown);
+        window.addEventListener('pointermove', this.onPointerMove);
+        window.addEventListener('pointerup', this.onPointerUp);
+        window.addEventListener('pointercancel', this.onPointerUp);
+        this.domElement.addEventListener('wheel', this.onWheel, { passive: false });
+      }
+
+      syncFromCamera() {
+        const offset = new THREE.Vector3().subVectors(this.camera.position, this.target);
+        this.radius = offset.length() || 5.2;
+        this.targetRadius = this.radius;
+        this.theta = Math.atan2(offset.x, offset.z);
+        this.targetTheta = this.theta;
+        this.phi = Math.acos(Math.max(-1, Math.min(1, offset.y / this.radius)));
+        this.targetPhi = this.phi;
+      }
+
+      onPointerDown(e) {
+        this.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+        if (this.pointers.size === 1) {
+          this.isDragging = true;
+          this.prevX = e.clientX;
+          this.prevY = e.clientY;
+          if (this.domElement.setPointerCapture) {
+            try { this.domElement.setPointerCapture(e.pointerId); } catch (_) {}
+          }
+        } else if (this.pointers.size === 2) {
+          const pts = Array.from(this.pointers.values());
+          this.prevPinchDist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+        }
+      }
+
+      onPointerMove(e) {
+        if (!this.pointers.has(e.pointerId)) return;
+        this.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+        if (this.pointers.size === 1 && this.isDragging) {
+          const dx = e.clientX - this.prevX;
+          const dy = e.clientY - this.prevY;
+          this.prevX = e.clientX;
+          this.prevY = e.clientY;
+
+          const speed = 0.006;
+          this.targetTheta -= dx * speed;
+          this.targetPhi -= dy * speed;
+          this.targetPhi = Math.max(this.minPolarAngle, Math.min(this.maxPolarAngle, this.targetPhi));
+        } else if (this.pointers.size === 2) {
+          const pts = Array.from(this.pointers.values());
+          const dist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+          if (this.prevPinchDist > 0) {
+            const pinchDelta = dist - this.prevPinchDist;
+            this.targetRadius -= pinchDelta * 0.015;
+            this.targetRadius = Math.max(this.minDistance, Math.min(this.maxDistance, this.targetRadius));
+          }
+          this.prevPinchDist = dist;
+        }
+      }
+
+      onPointerUp(e) {
+        this.pointers.delete(e.pointerId);
+        if (this.pointers.size === 0) {
+          this.isDragging = false;
+          this.prevPinchDist = 0;
+          if (this.domElement.releasePointerCapture) {
+            try { this.domElement.releasePointerCapture(e.pointerId); } catch (_) {}
+          }
+        } else if (this.pointers.size === 1) {
+          const rem = Array.from(this.pointers.values())[0];
+          this.prevX = rem.x;
+          this.prevY = rem.y;
+        }
+      }
+
+      onWheel(e) {
+        e.preventDefault();
+        const factor = 0.0018;
+        this.targetRadius += e.deltaY * factor * (this.targetRadius * 0.4);
+        this.targetRadius = Math.max(this.minDistance, Math.min(this.maxDistance, this.targetRadius));
+      }
+
+      update() {
+        if (this.enableDamping) {
+          this.theta += (this.targetTheta - this.theta) * this.dampingFactor * 2;
+          this.phi += (this.targetPhi - this.phi) * this.dampingFactor * 2;
+          this.radius += (this.targetRadius - this.radius) * this.dampingFactor * 2;
+        } else {
+          this.theta = this.targetTheta;
+          this.phi = this.targetPhi;
+          this.radius = this.targetRadius;
         }
 
-        function loop(time) {
-            renderFrame(time);
-            requestAnimationFrame(loop);
+        this.phi = Math.max(this.minPolarAngle, Math.min(this.maxPolarAngle, this.phi));
+        this.radius = Math.max(this.minDistance, Math.min(this.maxDistance, this.radius));
+
+        const sinPhiRadius = Math.sin(this.phi) * this.radius;
+        this.camera.position.x = this.target.x + sinPhiRadius * Math.sin(this.theta);
+        this.camera.position.y = this.target.y + Math.cos(this.phi) * this.radius;
+        this.camera.position.z = this.target.z + sinPhiRadius * Math.cos(this.theta);
+        this.camera.lookAt(this.target);
+      }
+    }
+
+    if (typeof THREE !== 'undefined') {
+      THREE.OrbitControls = OrbitControls;
+    }
+    window.OrbitControls = OrbitControls;
+
+    // Software WebGL Detection Guard (per Three.js skill)
+    const isSoftwareGl = (() => {
+      const gl = document.createElement('canvas').getContext('webgl2');
+      if (!gl) return true;
+      const ext = gl.getExtension('WEBGL_debug_renderer_info');
+      const param = ext ? ext.UNMASKED_RENDERER_WEBGL : gl.RENDERER;
+      const gpu = String(gl.getParameter(param));
+      gl.getExtension('WEBGL_lose_context')?.loseContext();
+      return /SwiftShader|llvmpipe|softpipe|Software|Basic Render/i.test(gpu);
+    })();
+
+    function init3DStudio() {
+      const width = viewportContainer.clientWidth || 460;
+      const height = viewportContainer.clientHeight || 460;
+
+      // Renderer setup
+      renderer = new THREE.WebGLRenderer({
+        antialias: !isSoftwareGl,
+        powerPreference: 'high-performance',
+        preserveDrawingBuffer: true, // For canvas capture
+        alpha: false
+      });
+      renderer.setSize(width, height);
+      renderer.setPixelRatio(isSoftwareGl ? 1 : Math.min(window.devicePixelRatio, 2));
+      renderer.outputColorSpace = THREE.SRGBColorSpace;
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.15;
+      renderer.shadowMap.enabled = !isSoftwareGl;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+      threeContainer.appendChild(renderer.domElement);
+
+      // Scene & Camera
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color(bgColorInput.value);
+      scene.fog = new THREE.FogExp2(bgColorInput.value, 0.045);
+
+      camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 100);
+      camera.position.set(0, 1.2, 5.2);
+
+      // Damped OrbitControls (per Three.js skill)
+      controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.05;
+      controls.maxPolarAngle = Math.PI / 2 + 0.05; // Don't flip below floor
+      controls.minDistance = 2.5;
+      controls.maxDistance = 9;
+      controls.target.set(0, 0.2, 0);
+
+      // Procedural Studio Environment Reflection
+      setupProceduralEnvironment();
+
+      // Studio 3-Point Lighting Rig
+      setupStudioLighting();
+
+      // Step 1: Pre-initialize Dynamic Canvas Textures FIRST before creating 3D materials!
+      setupDynamicCanvases();
+      renderDynamicTextures();
+
+      // Step 2: Procedural Composite 3D Subject (uses emojiCanvasTexture & textCanvasTexture)
+      setupCompositeSubject();
+
+      // Stage Pedestal & Contact Shadow Grounding
+      setupStageAndGround();
+
+      // Atmospheric 3D Floating Particles
+      setupAtmosphericParticles();
+
+      // Resize listener
+      window.addEventListener('resize', onWindowResize);
+
+      update3DMaterials();
+      update3DLighting();
+    }
+
+    // Procedural Studio Reflection Map (Zero external file dependencies)
+    function setupProceduralEnvironment() {
+      const envCanvas = document.createElement('canvas');
+      envCanvas.width = 256;
+      envCanvas.height = 128;
+      const envCtx = envCanvas.getContext('2d');
+      const grad = envCtx.createLinearGradient(0, 0, 0, 128);
+      grad.addColorStop(0, '#334155');
+      grad.addColorStop(0.5, '#1e293b');
+      grad.addColorStop(1, '#0f172a');
+      envCtx.fillStyle = grad;
+      envCtx.fillRect(0, 0, 256, 128);
+
+      // Studio softbox highlights
+      envCtx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+      envCtx.fillRect(40, 20, 60, 40);
+      envCtx.fillRect(160, 30, 40, 50);
+
+      const envTex = new THREE.CanvasTexture(envCanvas);
+      envTex.mapping = THREE.EquirectangularReflectionMapping;
+      envTex.colorSpace = THREE.SRGBColorSpace;
+      scene.environment = envTex;
+    }
+
+    // 3-Point Studio Lighting Rig
+    function setupStudioLighting() {
+      // Key Light: Warm directional light casting soft shadows
+      keyLight = new THREE.DirectionalLight(0xfff6e6, 2.8);
+      keyLight.position.set(3, 4.5, 4);
+      keyLight.castShadow = !isSoftwareGl;
+      keyLight.shadow.mapSize.width = 1024;
+      keyLight.shadow.mapSize.height = 1024;
+      keyLight.shadow.camera.near = 0.5;
+      keyLight.shadow.camera.far = 12;
+      keyLight.shadow.camera.left = -2.5;
+      keyLight.shadow.camera.right = 2.5;
+      keyLight.shadow.camera.top = 2.5;
+      keyLight.shadow.camera.bottom = -2.5;
+      keyLight.shadow.bias = -0.0005;
+      keyLight.shadow.normalBias = 0.02;
+      scene.add(keyLight);
+
+      // Fill Light: Cool Hemisphere light for rich color contrast
+      fillLight = new THREE.HemisphereLight(0x93c5fd, 0x1e293b, 1.2);
+      scene.add(fillLight);
+
+      // Rim Light: High intensity back-light for sharp silhouette edge
+      rimLight = new THREE.DirectionalLight(0xa78bfa, 2.2);
+      rimLight.position.set(-3.5, 2.5, -3);
+      scene.add(rimLight);
+    }
+
+    // Procedural Dynamic Textures for Emoji and Text
+    function setupDynamicCanvases() {
+      if (emojiCanvasTexture && textCanvasTexture) return;
+
+      // Emoji Texture Canvas (512x512)
+      emojiTextureCanvas = document.createElement('canvas');
+      emojiTextureCanvas.width = 512;
+      emojiTextureCanvas.height = 512;
+      emojiTextureCtx = emojiTextureCanvas.getContext('2d');
+      emojiCanvasTexture = new THREE.CanvasTexture(emojiTextureCanvas);
+      emojiCanvasTexture.colorSpace = THREE.SRGBColorSpace;
+      if (renderer) emojiCanvasTexture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+
+      // Text Texture Canvas (1024x256)
+      textTextureCanvas = document.createElement('canvas');
+      textTextureCanvas.width = 1024;
+      textTextureCanvas.height = 256;
+      textTextureCtx = textTextureCanvas.getContext('2d');
+      textCanvasTexture = new THREE.CanvasTexture(textTextureCanvas);
+      textCanvasTexture.colorSpace = THREE.SRGBColorSpace;
+      if (renderer) textCanvasTexture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+    }
+
+    let backFaceplateMesh = null;
+
+    function renderDynamicTextures() {
+      if (!emojiTextureCtx || !textTextureCtx) {
+        setupDynamicCanvases();
+      }
+
+      const emoji = (emojiInput.value || '🚀').trim();
+      const text = (textInput.value || '').trim();
+      const font = fontFamilySelect.value;
+      const textColor = textColorInput.value;
+      const accentColor = accentColorInput.value;
+      const eSize = parseInt(emojiSizeInput.value) * 1.8;
+      const tSize = parseInt(textSizeInput.value) * 1.6;
+
+      // 1. Emoji Texture rendering (512x512)
+      emojiTextureCtx.clearRect(0, 0, 512, 512);
+      
+      // Faceplate disc backdrop
+      const radGrad = emojiTextureCtx.createRadialGradient(256, 256, 30, 256, 256, 240);
+      radGrad.addColorStop(0, 'rgba(255, 255, 255, 0.15)');
+      radGrad.addColorStop(0.65, 'rgba(15, 23, 42, 0.7)');
+      radGrad.addColorStop(1, 'rgba(15, 23, 42, 0.95)');
+      emojiTextureCtx.fillStyle = radGrad;
+      emojiTextureCtx.beginPath();
+      emojiTextureCtx.arc(256, 256, 240, 0, Math.PI * 2);
+      emojiTextureCtx.fill();
+
+      // Faceplate border ring
+      emojiTextureCtx.lineWidth = 12;
+      emojiTextureCtx.strokeStyle = accentColor;
+      emojiTextureCtx.stroke();
+
+      // Draw Emoji glyph centered
+      emojiTextureCtx.font = `${Math.min(eSize, 340)}px "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif`;
+      emojiTextureCtx.textAlign = 'center';
+      emojiTextureCtx.textBaseline = 'middle';
+      emojiTextureCtx.fillText(emoji, 256, 256);
+
+      if (emojiCanvasTexture) {
+        emojiCanvasTexture.needsUpdate = true;
+      }
+      if (faceplateMesh && faceplateMesh.material) {
+        faceplateMesh.material.map = emojiCanvasTexture;
+        faceplateMesh.material.needsUpdate = true;
+      }
+      if (backFaceplateMesh && backFaceplateMesh.material) {
+        backFaceplateMesh.material.map = emojiCanvasTexture;
+        backFaceplateMesh.material.needsUpdate = true;
+      }
+
+      // 2. Text Texture rendering (1024x256)
+      textTextureCtx.clearRect(0, 0, 1024, 256);
+
+      if (text) {
+        // High contrast rounded plaque background
+        textTextureCtx.fillStyle = 'rgba(15, 23, 42, 0.92)';
+        textTextureCtx.beginPath();
+        if (typeof textTextureCtx.roundRect === 'function') {
+          textTextureCtx.roundRect(24, 20, 976, 216, 36);
+        } else {
+          textTextureCtx.rect(24, 20, 976, 216);
+        }
+        textTextureCtx.fill();
+
+        textTextureCtx.lineWidth = 8;
+        textTextureCtx.strokeStyle = accentColor;
+        textTextureCtx.stroke();
+
+        textTextureCtx.textAlign = 'center';
+        textTextureCtx.textBaseline = 'middle';
+        textTextureCtx.font = `bold ${Math.min(tSize, 120)}px ${font}, sans-serif`;
+
+        if (textEffect === 'glow') {
+          textTextureCtx.shadowColor = accentColor;
+          textTextureCtx.shadowBlur = 30;
+          textTextureCtx.fillStyle = textColor;
+          textTextureCtx.fillText(text, 512, 128);
+          textTextureCtx.shadowBlur = 0;
+        } else if (textEffect === 'outline') {
+          textTextureCtx.lineWidth = 12;
+          textTextureCtx.strokeStyle = accentColor;
+          textTextureCtx.strokeText(text, 512, 128);
+          textTextureCtx.fillStyle = textColor;
+          textTextureCtx.fillText(text, 512, 128);
+        } else if (textEffect === 'shadow') {
+          textTextureCtx.fillStyle = 'rgba(0,0,0,0.85)';
+          textTextureCtx.fillText(text, 516, 134);
+          textTextureCtx.fillStyle = textColor;
+          textTextureCtx.fillText(text, 512, 128);
+        } else {
+          textTextureCtx.fillStyle = textColor;
+          textTextureCtx.fillText(text, 512, 128);
+        }
+      }
+
+      if (textCanvasTexture) {
+        textCanvasTexture.needsUpdate = true;
+      }
+      if (textMeshInstance && textMeshInstance.material) {
+        textMeshInstance.material.map = textCanvasTexture;
+        textMeshInstance.material.needsUpdate = true;
+      }
+    }
+
+    // Composite 3-12 Part Procedural Model (per Three.js skill)
+    function setupCompositeSubject() {
+      subjectGroup = new THREE.Group();
+      subjectGroup.position.set(0, 0.45, 0);
+
+      // Part 1: Main Core Cylinder Body (Medallion)
+      const coreGeo = new THREE.CylinderGeometry(1.0, 1.0, 0.16, 48);
+      coreGeo.rotateX(Math.PI / 2);
+      const coreMat = new THREE.MeshStandardMaterial({
+        color: 0x1e293b,
+        metalness: 0.85,
+        roughness: 0.25
+      });
+      medallionMesh = new THREE.Mesh(coreGeo, coreMat);
+      medallionMesh.castShadow = !isSoftwareGl;
+      medallionMesh.receiveShadow = !isSoftwareGl;
+      subjectGroup.add(medallionMesh);
+
+      // Part 2: Outer Bezel Chamfer Ring (Torus)
+      const bezelGeo = new THREE.TorusGeometry(1.02, 0.07, 16, 64);
+      const bezelMat = new THREE.MeshStandardMaterial({
+        color: new THREE.Color(accentColorInput.value),
+        metalness: 0.95,
+        roughness: 0.15
+      });
+      bezelRingMesh = new THREE.Mesh(bezelGeo, bezelMat);
+      bezelRingMesh.castShadow = !isSoftwareGl;
+      subjectGroup.add(bezelRingMesh);
+
+      // Part 3: Front Emoji Faceplate with Canvas Texture (PlaneGeometry with 1:1 UV mapping)
+      const faceGeo = new THREE.PlaneGeometry(1.78, 1.78);
+      const faceMat = new THREE.MeshBasicMaterial({
+        map: emojiCanvasTexture,
+        transparent: true,
+        depthWrite: false,
+        side: THREE.DoubleSide
+      });
+      faceplateMesh = new THREE.Mesh(faceGeo, faceMat);
+      faceplateMesh.position.z = 0.088;
+      subjectGroup.add(faceplateMesh);
+
+      // Part 4: Back Emoji Faceplate (mirrored so emoji is visible on both sides when rotating 3D)
+      const backFaceGeo = new THREE.PlaneGeometry(1.78, 1.78);
+      backFaceGeo.rotateY(Math.PI);
+      const backFaceMat = new THREE.MeshBasicMaterial({
+        map: emojiCanvasTexture,
+        transparent: true,
+        depthWrite: false,
+        side: THREE.DoubleSide
+      });
+      backFaceplateMesh = new THREE.Mesh(backFaceGeo, backFaceMat);
+      backFaceplateMesh.position.z = -0.088;
+      subjectGroup.add(backFaceplateMesh);
+
+      // Part 5: Floating Curved 3D Text Banner / Plaque
+      const plaqueWidth = 2.8;
+      const plaqueHeight = 0.7;
+      const plaqueGeo = new THREE.PlaneGeometry(plaqueWidth, plaqueHeight);
+      const plaqueMat = new THREE.MeshBasicMaterial({
+        map: textCanvasTexture,
+        transparent: true,
+        depthWrite: false,
+        side: THREE.DoubleSide
+      });
+      textMeshInstance = new THREE.Mesh(plaqueGeo, plaqueMat);
+      textMeshInstance.position.set(0, -1.2, 0.12);
+      subjectGroup.add(textMeshInstance);
+
+      // Back Text Banner
+      const plaqueBackTextGeo = new THREE.PlaneGeometry(plaqueWidth, plaqueHeight);
+      plaqueBackTextGeo.rotateY(Math.PI);
+      const textMeshBack = new THREE.Mesh(plaqueBackTextGeo, plaqueMat);
+      textMeshBack.position.set(0, -1.2, -0.12);
+      subjectGroup.add(textMeshBack);
+
+      // Part 6: Plaque Metallic Bevel Trim Backing (between front & back text)
+      const plaqueBackGeo = new THREE.BoxGeometry(plaqueWidth * 0.96, 0.52, 0.05);
+      const plaqueBackMat = new THREE.MeshStandardMaterial({
+        color: 0x111827,
+        metalness: 0.9,
+        roughness: 0.2
+      });
+      textPlaqueMesh = new THREE.Mesh(plaqueBackGeo, plaqueBackMat);
+      textPlaqueMesh.position.set(0, -1.2, 0);
+      subjectGroup.add(textPlaqueMesh);
+
+      scene.add(subjectGroup);
+    }
+
+    // Pedestal Stage & Contact Shadow Grounding (per Three.js skill)
+    function setupStageAndGround() {
+      stageGroup = new THREE.Group();
+      stageGroup.position.set(0, -1.65, 0);
+
+      // Multi-tier Stage:
+      // Tier 1: Main Platform
+      const stageGeo1 = new THREE.CylinderGeometry(1.9, 2.1, 0.18, 48);
+      const stageMat1 = new THREE.MeshStandardMaterial({
+        color: 0x0f172a,
+        metalness: 0.7,
+        roughness: 0.35
+      });
+      const stageMesh1 = new THREE.Mesh(stageGeo1, stageMat1);
+      stageMesh1.receiveShadow = !isSoftwareGl;
+      stageGroup.add(stageMesh1);
+
+      // Tier 2: Glowing Accent Ring
+      const ringGeo = new THREE.TorusGeometry(1.92, 0.04, 16, 48);
+      ringGeo.rotateX(Math.PI / 2);
+      const ringMat = new THREE.MeshStandardMaterial({
+        color: new THREE.Color(accentColorInput.value),
+        emissive: new THREE.Color(accentColorInput.value),
+        emissiveIntensity: 0.6,
+        roughness: 0.2
+      });
+      const stageRing = new THREE.Mesh(ringGeo, ringMat);
+      stageRing.position.y = 0.08;
+      stageGroup.add(stageRing);
+
+      scene.add(stageGroup);
+
+      // Contact Shadow Ground Plane (Zero-404 procedural radial alpha)
+      const shadowCanvas = document.createElement('canvas');
+      shadowCanvas.width = 128;
+      shadowCanvas.height = 128;
+      const sctx = shadowCanvas.getContext('2d');
+      const sgrad = sctx.createRadialGradient(64, 64, 10, 64, 64, 60);
+      sgrad.addColorStop(0, 'rgba(0, 0, 0, 0.85)');
+      sgrad.addColorStop(0.5, 'rgba(0, 0, 0, 0.4)');
+      sgrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      sctx.fillStyle = sgrad;
+      sctx.fillRect(0, 0, 128, 128);
+
+      const shadowTex = new THREE.CanvasTexture(shadowCanvas);
+      const shadowGeo = new THREE.PlaneGeometry(5, 5);
+      shadowGeo.rotateX(-Math.PI / 2);
+      const shadowMat = new THREE.MeshBasicMaterial({
+        map: shadowTex,
+        transparent: true,
+        depthWrite: false,
+        opacity: 0.55
+      });
+      contactShadowPlane = new THREE.Mesh(shadowGeo, shadowMat);
+      contactShadowPlane.position.y = -1.74;
+      scene.add(contactShadowPlane);
+    }
+
+    // Atmospheric 3D Floating Particles
+    function setupAtmosphericParticles() {
+      const count = 120;
+      const particleGeo = new THREE.BufferGeometry();
+      const posArray = new Float32Array(count * 3);
+      for (let i = 0; i < count * 3; i += 3) {
+        posArray[i] = (Math.random() - 0.5) * 8;
+        posArray[i + 1] = (Math.random() - 0.5) * 6;
+        posArray[i + 2] = (Math.random() - 0.5) * 6;
+      }
+      particleGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+
+      // Procedural star point texture
+      const pCanvas = document.createElement('canvas');
+      pCanvas.width = 32;
+      pCanvas.height = 32;
+      const pctx = pCanvas.getContext('2d');
+      const pgrad = pctx.createRadialGradient(16, 16, 2, 16, 16, 16);
+      pgrad.addColorStop(0, 'rgba(255,255,255,1)');
+      pgrad.addColorStop(0.4, 'rgba(165,180,252,0.8)');
+      pgrad.addColorStop(1, 'rgba(0,0,0,0)');
+      pctx.fillStyle = pgrad;
+      pctx.fillRect(0, 0, 32, 32);
+
+      const pTex = new THREE.CanvasTexture(pCanvas);
+      const particleMat = new THREE.PointsMaterial({
+        size: 0.14,
+        map: pTex,
+        transparent: true,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+        opacity: 0.7
+      });
+
+      particleSystem = new THREE.Points(particleGeo, particleMat);
+      scene.add(particleSystem);
+    }
+
+    function update3DMaterials() {
+      if (!medallionMesh) return;
+      const finish = materialFinishSelect.value;
+      const accent = new THREE.Color(accentColorInput.value);
+
+      if (finish === 'metallic') {
+        medallionMesh.material.metalness = 0.95;
+        medallionMesh.material.roughness = 0.12;
+        bezelRingMesh.material.metalness = 0.98;
+        bezelRingMesh.material.roughness = 0.08;
+        bezelRingMesh.material.color = accent;
+      } else if (finish === 'neon') {
+        medallionMesh.material.metalness = 0.3;
+        medallionMesh.material.roughness = 0.2;
+        bezelRingMesh.material.color = accent;
+        bezelRingMesh.material.emissive = accent;
+        bezelRingMesh.material.emissiveIntensity = 0.8;
+      } else if (finish === 'matte') {
+        medallionMesh.material.metalness = 0.05;
+        medallionMesh.material.roughness = 0.75;
+        bezelRingMesh.material.metalness = 0.1;
+        bezelRingMesh.material.roughness = 0.6;
+        bezelRingMesh.material.color = accent;
+      } else if (finish === 'glass') {
+        medallionMesh.material.metalness = 0.1;
+        medallionMesh.material.roughness = 0.1;
+        bezelRingMesh.material.metalness = 0.8;
+        bezelRingMesh.material.roughness = 0.15;
+      } else { // 'glossy' default
+        medallionMesh.material.metalness = 0.75;
+        medallionMesh.material.roughness = 0.2;
+        bezelRingMesh.material.metalness = 0.9;
+        bezelRingMesh.material.roughness = 0.15;
+        bezelRingMesh.material.color = accent;
+      }
+    }
+
+    function update3DLighting() {
+      if (!keyLight) return;
+      const preset = lightingPresetSelect.value;
+      if (preset === 'cyber') {
+        keyLight.color.set(0xa855f7);
+        keyLight.intensity = 2.4;
+        fillLight.color.set(0x06b6d4);
+        fillLight.groundColor.set(0x3b0764);
+        rimLight.color.set(0xec4899);
+      } else if (preset === 'bright') {
+        keyLight.color.set(0xffffff);
+        keyLight.intensity = 3.0;
+        fillLight.color.set(0xe0e7ff);
+        fillLight.groundColor.set(0x334155);
+        rimLight.color.set(0xffffff);
+      } else if (preset === 'dramatic') {
+        keyLight.color.set(0xffedd5);
+        keyLight.intensity = 3.8;
+        fillLight.color.set(0x0f172a);
+        fillLight.groundColor.set(0x000000);
+        rimLight.color.set(0x6366f1);
+      } else { // 'warm' default
+        keyLight.color.set(0xfff6e6);
+        keyLight.intensity = 2.8;
+        fillLight.color.set(0x93c5fd);
+        fillLight.groundColor.set(0x1e293b);
+        rimLight.color.set(0xa78bfa);
+      }
+    }
+
+    function updateSceneColors() {
+      const bg = new THREE.Color(bgColorInput.value);
+      if (scene) {
+        scene.background = bg;
+        scene.fog.color = bg;
+      }
+      if (bezelRingMesh) {
+        bezelRingMesh.material.color = new THREE.Color(accentColorInput.value);
+      }
+    }
+
+    function update3DGeometry() {
+      if (!medallionMesh) return;
+      const depthVal = parseInt(depth3DInput.value);
+      medallionMesh.scale.z = depthVal * 0.45;
+      const halfThickness = (0.16 * medallionMesh.scale.z) / 2;
+      if (faceplateMesh) faceplateMesh.position.z = halfThickness + 0.008;
+      if (backFaceplateMesh) backFaceplateMesh.position.z = -(halfThickness + 0.008);
+    }
+
+    function reset3DCamera() {
+      if (!camera || !controls) return;
+      camera.position.set(0, 1.2, 5.2);
+      controls.target.set(0, 0.2, 0);
+      if (controls.syncFromCamera) controls.syncFromCamera();
+      controls.update();
+      showToast('Camera ripristinata');
+    }
+
+    function mark3DDirty() {
+      renderDynamicTextures();
+    }
+
+    function onWindowResize() {
+      if (!renderer || !camera) return;
+      const width = viewportContainer.clientWidth || 460;
+      const height = viewportContainer.clientHeight || 460;
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+      renderer.setSize(width, height);
+    }
+
+    /* ==========================================================
+       ANIMATION LOOP: 3D & 2D ENGINE
+       ========================================================== */
+    let animTime = 0;
+
+    function animate(timestamp) {
+      requestAnimationFrame(animate);
+
+      const delta = clock.getDelta();
+      const speed = parseFloat(speedInput.value);
+
+      if (isPlaying) {
+        // Calm, elegant base tempo (multiplied by speed)
+        animTime += delta * speed * 0.85;
+      }
+
+      // 1. UPDATE 3D SCENE
+      if (engineMode === '3d' && subjectGroup) {
+        controls.update();
+
+        const type = animTypeSelect.value;
+        const t = animTime;
+
+        // Reset base transforms
+        subjectGroup.position.set(0, 0.45, 0);
+        subjectGroup.rotation.set(0, 0, 0);
+        subjectGroup.scale.set(1, 1, 1);
+
+        if (type === 'showcase') {
+          // Vetrina 360° & Fluttuazione: Cinematic slow turntable with serene breathing hover
+          subjectGroup.rotation.y = t * 0.5;
+          const hoverY = Math.sin(t * 0.9) * 0.12;
+          subjectGroup.position.y = 0.45 + hoverY;
+          subjectGroup.rotation.z = Math.sin(t * 0.6) * 0.04;
+          subjectGroup.rotation.x = Math.cos(t * 0.4) * 0.03;
+          if (contactShadowPlane) {
+            contactShadowPlane.material.opacity = 0.55 - hoverY * 0.2;
+          }
+        } else if (type === 'float') {
+          // Fluttuazione Zen: Gentle, tranquil floating without aggressive turns
+          const hoverY = Math.sin(t * 0.8) * 0.16;
+          subjectGroup.position.y = 0.45 + hoverY;
+          subjectGroup.position.x = Math.cos(t * 0.5) * 0.08;
+          subjectGroup.rotation.y = Math.sin(t * 0.4) * 0.18;
+          subjectGroup.rotation.z = Math.cos(t * 0.5) * 0.03;
+          if (contactShadowPlane) {
+            contactShadowPlane.material.opacity = 0.55 - hoverY * 0.25;
+          }
+        } else if (type === 'turntable') {
+          // Rotazione 360° Pura: Continuous smooth horizontal turntable showcase
+          subjectGroup.rotation.y = t * 0.6;
+          subjectGroup.position.y = 0.45;
+        } else if (type === 'breathe') {
+          // Respiro Calmo: Soft organic expansion and gentle breathing hover
+          const s = 1 + Math.sin(t * 0.9) * 0.05;
+          subjectGroup.scale.set(s, s, s);
+          subjectGroup.position.y = 0.45 + Math.sin(t * 0.9) * 0.08;
+          subjectGroup.rotation.y = Math.sin(t * 0.3) * 0.1;
+        } else if (type === 'pendulum') {
+          // Dondolio Dolce: Gentle harmonic pendulum sway
+          subjectGroup.rotation.z = Math.sin(t * 0.9) * 0.1;
+          subjectGroup.position.x = Math.sin(t * 0.9) * 0.12;
+          subjectGroup.position.y = 0.45 - Math.abs(Math.sin(t * 0.9)) * 0.03;
+        } else if (type === 'soft_wave') {
+          // Onda Armonica Morbida: Smooth undulating harmonic wave (no bouncing impact)
+          const wave = Math.sin(t * 1.0) * 0.15;
+          subjectGroup.position.y = 0.45 + wave;
+          subjectGroup.rotation.x = Math.cos(t * 1.0) * 0.05;
+        } else if (type === 'static') {
+          // Static: Stationary for calm camera inspection
+          subjectGroup.position.set(0, 0.45, 0);
+          subjectGroup.rotation.set(0, 0, 0);
+          subjectGroup.scale.set(1, 1, 1);
         }
 
-        // Avvio Loop
-        requestAnimationFrame(loop);
+        // Ambient particles slow, relaxing drift
+        if (particleSystem) {
+          particleSystem.rotation.y = animTime * 0.02;
+        }
 
-        // Registrazione Video
-        downloadBtn.onclick = () => {
-            if (isRecording) return;
-            
-            isRecording = true;
-            const stream = canvas.captureStream(60);
-            const recorder = new MediaRecorder(stream, {
-                mimeType: 'video/webm;codecs=vp9'
-            });
-            const chunks = [];
+        renderer.render(scene, camera);
+      }
 
-            recorder.ondataavailable = e => {
-                if (e.data.size > 0) chunks.push(e.data);
-            };
+      // 2. UPDATE 2D CANVAS
+      if (engineMode === '2d') {
+        render2DCanvas(animTime);
+      }
+    }
 
-            recorder.onstop = () => {
-                const blob = new Blob(chunks, { type: 'video/webm' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `animazione_${Date.now()}.webm`;
-                a.click();
-                
-                statusMsg.textContent = "✅ Download completato!";
-                setTimeout(() => statusMsg.textContent = "", 3000);
-                downloadBtn.disabled = false;
-                downloadBtn.classList.remove('opacity-50');
-                isRecording = false;
-            };
+    /* ==========================================================
+       2D CANVAS RENDERER (Clean High-DPI Fallback)
+       ========================================================== */
+    function render2DCanvas(t) {
+      const width = mainCanvas.width;
+      const height = mainCanvas.height;
+      const emoji = emojiInput.value || '';
+      const text = textInput.value || '';
+      const font = fontFamilySelect.value;
+      const eSize = parseInt(emojiSizeInput.value) * 1.3;
+      const tSize = parseInt(textSizeInput.value) * 1.2;
+      const type = animTypeSelect.value;
 
-            statusMsg.textContent = "🔴 Registrazione in corso (5s)...";
-            downloadBtn.disabled = true;
-            downloadBtn.classList.add('opacity-50');
+      // Background
+      ctx2d.fillStyle = bgColorInput.value;
+      ctx2d.fillRect(0, 0, width, height);
 
-            recorder.start();
-            // Registriamo un loop di 5 secondi per sicurezza
-            setTimeout(() => recorder.stop(), 5000);
-        };
-    </script>
+      // Subtle radial stage highlight
+      const rad = ctx2d.createRadialGradient(width/2, height/2, 50, width/2, height/2, width * 0.6);
+      rad.addColorStop(0, 'rgba(255, 255, 255, 0.08)');
+      rad.addColorStop(1, 'rgba(0, 0, 0, 0.3)');
+      ctx2d.fillStyle = rad;
+      ctx2d.fillRect(0, 0, width, height);
+
+      ctx2d.save();
+      ctx2d.translate(width / 2, height / 2 - 25);
+
+      // Apply 2D Animation transformations (smooth & pleasant)
+      if (type === 'showcase' || type === 'turntable') {
+        ctx2d.translate(Math.sin(t * 0.8) * 18, Math.cos(t * 0.6) * 10);
+        ctx2d.rotate(Math.sin(t * 0.5) * 0.06);
+      } else if (type === 'float') {
+        ctx2d.translate(Math.cos(t * 0.5) * 12, Math.sin(t * 0.8) * 16);
+      } else if (type === 'breathe') {
+        const s = 1 + Math.sin(t * 0.9) * 0.06;
+        ctx2d.scale(s, s);
+      } else if (type === 'pendulum') {
+        ctx2d.translate(Math.sin(t * 0.9) * 20, 0);
+        ctx2d.rotate(Math.sin(t * 0.9) * 0.06);
+      } else if (type === 'soft_wave') {
+        ctx2d.translate(0, Math.sin(t * 1.0) * 16);
+      }
+
+      // Draw Emoji
+      ctx2d.font = `${eSize}px Arial, "Apple Color Emoji", sans-serif`;
+      ctx2d.textAlign = 'center';
+      ctx2d.textBaseline = 'middle';
+      ctx2d.fillText(emoji, 0, -20);
+
+      // Draw Text
+      if (text) {
+        ctx2d.font = `bold ${tSize}px ${font}`;
+        const textY = eSize / 2 + 30;
+
+        if (textEffect === 'glow') {
+          ctx2d.shadowColor = accentColorInput.value;
+          ctx2d.shadowBlur = 25;
+          ctx2d.fillStyle = textColorInput.value;
+          ctx2d.fillText(text, 0, textY);
+          ctx2d.shadowBlur = 0;
+        } else if (textEffect === 'outline') {
+          ctx2d.lineWidth = 8;
+          ctx2d.strokeStyle = accentColorInput.value;
+          ctx2d.strokeText(text, 0, textY);
+          ctx2d.fillStyle = textColorInput.value;
+          ctx2d.fillText(text, 0, textY);
+        } else if (textEffect === 'shadow') {
+          ctx2d.fillStyle = 'rgba(0,0,0,0.7)';
+          ctx2d.fillText(text, 4, textY + 4);
+          ctx2d.fillStyle = textColorInput.value;
+          ctx2d.fillText(text, 0, textY);
+        } else {
+          ctx2d.fillStyle = textColorInput.value;
+          ctx2d.fillText(text, 0, textY);
+        }
+      }
+
+      ctx2d.restore();
+    }
+
+    /* ==========================================================
+       MEDIA RECORDER & EXPORT (WebM & PNG)
+       ========================================================== */
+    function getActiveCanvas() {
+      return engineMode === '3d' ? renderer.domElement : mainCanvas;
+    }
+
+    function startRecording() {
+      if (isRecording) return;
+      isRecording = true;
+
+      const durationSec = parseInt(recordDurationSelect.value) || 5;
+      const targetCanvas = getActiveCanvas();
+
+      // Verify stream capture
+      const stream = targetCanvas.captureStream(60);
+      recordedChunks = [];
+
+      // Detect supported mimeType
+      let mimeType = 'video/webm;codecs=vp9';
+      if (!MediaRecorder.isTypeSupported(mimeType)) {
+        mimeType = 'video/webm;codecs=vp8';
+      }
+      if (!MediaRecorder.isTypeSupported(mimeType)) {
+        mimeType = 'video/webm';
+      }
+
+      try {
+        mediaRecorder = new MediaRecorder(stream, {
+          mimeType: mimeType,
+          videoBitsPerSecond: 6000000 // 6 Mbps high quality
+        });
+      } catch (err) {
+        console.error('MediaRecorder init error:', err);
+        mediaRecorder = new MediaRecorder(stream);
+      }
+
+      mediaRecorder.ondataavailable = e => {
+        if (e.data && e.data.size > 0) {
+          recordedChunks.push(e.data);
+        }
+      };
+
+      mediaRecorder.onstop = () => {
+        clearInterval(recTimer);
+        recordingProgressBox.classList.add('hidden');
+        downloadBtn.disabled = false;
+        downloadBtn.classList.remove('opacity-50');
+        downloadBtnLabel.textContent = 'ESPORTA VIDEO (WEBM)';
+
+        const blob = new Blob(recordedChunks, { type: 'video/webm' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+        a.href = url;
+        a.download = `animazione_emoji_${stamp}.webm`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+
+        statusMsg.classList.remove('hidden');
+        statusIcon.textContent = '✅';
+        statusText.textContent = 'Download completato con successo!';
+        setTimeout(() => {
+          statusMsg.classList.add('hidden');
+          statusIcon.textContent = '⚡';
+        }, 4000);
+        isRecording = false;
+      };
+
+      // UI updates during recording
+      downloadBtn.disabled = true;
+      downloadBtn.classList.add('opacity-50');
+      downloadBtnLabel.textContent = 'REGISTRAZIONE IN CORSO...';
+      recordingProgressBox.classList.remove('hidden');
+
+      recStartTime = Date.now();
+      const totalMs = durationSec * 1000;
+
+      recTimer = setInterval(() => {
+        const elapsed = Date.now() - recStartTime;
+        const pct = Math.min(100, Math.round((elapsed / totalMs) * 100));
+        recProgressBar.style.width = `${pct}%`;
+        recProgressPct.textContent = `${pct}% (${(elapsed / 1000).toFixed(1)}s / ${durationSec}s)`;
+
+        if (elapsed >= totalMs) {
+          clearInterval(recTimer);
+          if (mediaRecorder.state !== 'inactive') {
+            mediaRecorder.stop();
+          }
+        }
+      }, 100);
+
+      mediaRecorder.start(200); // chunk slice every 200ms
+    }
+
+    function takeSnapshot() {
+      const targetCanvas = getActiveCanvas();
+      
+      // Force immediate render before taking dataURL
+      if (engineMode === '3d') {
+        renderer.render(scene, camera);
+      } else {
+        render2DCanvas(animTime);
+      }
+
+      const dataUrl = targetCanvas.toDataURL('image/png');
+      const a = document.createElement('a');
+      const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+      a.href = dataUrl;
+      a.download = `snapshot_emoji_${stamp}.png`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+
+      showToast('📸 Snapshot PNG salvata con successo!');
+    }
+
+    // Startup Initialization
+    window.addEventListener('DOMContentLoaded', () => {
+      updateBadges();
+      init3DStudio();
+      if (document.fonts) {
+        document.fonts.ready.then(() => {
+          renderDynamicTextures();
+        });
+      }
+      requestAnimationFrame(animate);
+    });
+  </script>
 </body>
 </html>
-
