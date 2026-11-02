@@ -1,0 +1,2094 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Pastel Sticky Notebook</title>
+    <meta name="description" content="Un quaderno ad anelli con sticky notes personalizzabili in stile pastel kawaii, con note sagomate, caratteri calligrafici, colori pastello e gestione nativa in un unico file HTML." />
+    <meta property="og:title" content="Pastel Sticky Notebook" />
+    <meta property="og:description" content="Sticky notes personalizzabili in stile pastel kawaii in un unico file HTML nativo." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- Google Fonts: Handwritten, Playful, and Calligraphic Pastel Styles -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Caveat:wght@400..700&family=Cherry+Bomb+One&family=Comic+Neue:ital,wght@0,400;0,700;1,400&family=Comfortaa:wght@400;600;700&family=Gaegu:wght@400;700&family=Indie+Flower&family=Itim&family=Kalam:wght@400;700&family=Mali:wght@400;600;700&family=Pacifico&family=Patrick+Hand&family=Quicksand:wght@400;600;700&family=Shadows+Into+Light&display=swap" rel="stylesheet">
+
+    <style>
+      :root {
+        --desk-bg: #f5ece1;
+        --page-pink: #f25097;
+        --page-lilac: #c6b5ea;
+        --ring-yellow: #f8c325;
+        --ring-gold: #d99a0a;
+        --elastic-yellow: #eeb311;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: 'Quicksand', sans-serif;
+        background-color: var(--desk-bg);
+        background-image: 
+          radial-gradient(#e4d6c7 1.5px, transparent 1.5px),
+          radial-gradient(#ebdcd0 1.5px, transparent 1.5px);
+        background-size: 24px 24px;
+        background-position: 0 0, 12px 12px;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        color: #374151;
+        overflow-x: hidden;
+      }
+
+      /* Header */
+      header {
+        background: #ffffff;
+        border-bottom: 2px solid #eddcd0;
+        padding: 8px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        flex-wrap: wrap;
+        z-index: 100;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+      }
+
+      .logo-group {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .logo-icon {
+        width: 30px;
+        height: 30px;
+        background: #fde047;
+        border: 2px solid #ca8a04;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        box-shadow: 1px 2px 0 #ca8a04;
+      }
+
+      .app-title {
+        font-family: 'Mali', cursive;
+        font-size: 18px;
+        font-weight: 700;
+        color: #be185d;
+        letter-spacing: -0.5px;
+      }
+
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+
+      .btn {
+        appearance: none;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        font-family: 'Quicksand', sans-serif;
+        font-weight: 600;
+        font-size: 12px;
+        padding: 6px 12px;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        transition: all 0.15s ease;
+        user-select: none;
+      }
+      .btn:hover { transform: translateY(-1px); }
+      .btn:active { transform: translateY(1px); }
+
+      .btn-primary {
+        background: #db2777;
+        color: #ffffff;
+        box-shadow: 0 2px 0 #9d174d;
+      }
+      .btn-primary:hover { background: #e11d48; }
+
+      .btn-secondary {
+        background: #fdf2f8;
+        color: #9d174d;
+        border: 1px solid #fbcfe8;
+        box-shadow: 0 1px 0 #f472b6;
+      }
+      .btn-secondary:hover { background: #fce7f3; }
+
+      .btn-icon {
+        padding: 6px 9px;
+        background: #f3f4f6;
+        color: #4b5563;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+      }
+
+      /* View Tabs: 2 Pagine / Pag. 1 / Pag. 2 */
+      .page-switch-tabs {
+        display: flex;
+        align-items: center;
+        background: #f3f4f6;
+        padding: 2px;
+        border-radius: 8px;
+        border: 1px solid #e5e7eb;
+      }
+
+      .tab-btn {
+        appearance: none;
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-family: 'Quicksand', sans-serif;
+        font-size: 12px;
+        font-weight: 600;
+        padding: 4px 10px;
+        border-radius: 6px;
+        color: #6b7280;
+        transition: all 0.15s ease;
+      }
+
+      .tab-btn.active {
+        background: #ffffff;
+        color: #be185d;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        font-weight: 700;
+      }
+
+      /* Permanent Customization Toolbar */
+      #note-toolbar-panel {
+        background: #ffffff;
+        border-bottom: 2px solid #fbcfe8;
+        padding: 8px 16px;
+        min-height: 48px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        font-size: 13px;
+        z-index: 90;
+        box-shadow: 0 3px 8px rgba(0,0,0,0.03);
+      }
+
+      .toolbar-status-hint {
+        color: #9ca3af;
+        font-size: 12px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .toolbar-active-controls {
+        display: none;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        width: 100%;
+      }
+
+      .toolbar-active-controls.visible {
+        display: flex;
+      }
+
+      .tb-group {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      .tb-label {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 700;
+        color: #9ca3af;
+        user-select: none;
+      }
+
+      .tb-select {
+        font-family: inherit;
+        font-size: 12px;
+        padding: 4px 6px;
+        border-radius: 6px;
+        border: 1px solid #d1d5db;
+        background: #f9fafb;
+        color: #1f2937;
+        cursor: pointer;
+        outline: none;
+      }
+
+      .color-dot {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border: 2px solid #ffffff;
+        box-shadow: 0 0 0 1px #d1d5db;
+        cursor: pointer;
+        transition: transform 0.15s ease;
+      }
+      .color-dot:hover { transform: scale(1.15); }
+      .color-dot.active {
+        box-shadow: 0 0 0 2px #be185d;
+        transform: scale(1.1);
+      }
+
+      .tb-btn-small {
+        padding: 3px 8px;
+        font-size: 11px;
+        border-radius: 6px;
+        background: #f3f4f6;
+        border: 1px solid #e5e7eb;
+        cursor: pointer;
+        user-select: none;
+      }
+      .tb-btn-small.active {
+        background: #fce7f3;
+        border-color: #f472b6;
+        color: #db2777;
+        font-weight: 700;
+      }
+
+      /* Workspace Canvas */
+      main {
+        flex: 1;
+        padding: 16px 8px 60px;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        position: relative;
+        overflow-x: auto;
+      }
+
+      .notebook-wrapper {
+        position: relative;
+        width: 100%;
+        max-width: 920px;
+        display: flex;
+        justify-content: center;
+        filter: drop-shadow(0 16px 26px rgba(50, 20, 35, 0.18));
+      }
+
+      .notebook-cover-base {
+        position: relative;
+        width: 100%;
+        background: #5d93dc;
+        background-image: 
+          radial-gradient(#ffffff 2px, transparent 2px),
+          radial-gradient(#fde047 3px, transparent 3px),
+          radial-gradient(#f472b6 2px, transparent 2px);
+        background-size: 44px 44px, 58px 58px, 50px 50px;
+        background-position: 0 0, 22px 22px, 12px 30px;
+        padding: 14px 18px 14px 14px;
+        border-radius: 18px;
+        box-shadow: inset 0 2px 5px rgba(255, 255, 255, 0.5), inset 0 -4px 7px rgba(0, 0, 0, 0.35);
+      }
+
+      .elastic-band {
+        position: absolute;
+        right: -8px;
+        top: 40%;
+        width: 16px;
+        height: 70px;
+        background: var(--elastic-yellow);
+        border-radius: 0 8px 8px 0;
+        box-shadow: 2px 3px 6px rgba(0,0,0,0.25);
+        z-index: 60;
+        pointer-events: none;
+      }
+
+      .notebook-spread {
+        display: flex;
+        background: #fdfbf7;
+        border-radius: 10px;
+        position: relative;
+        min-height: 640px;
+      }
+
+      /* Notebook Pages */
+      .notebook-page {
+        flex: 1;
+        min-height: 640px;
+        position: relative;
+        padding: 16px 14px;
+      }
+
+      .page-left {
+        background: var(--page-pink);
+        background-image: 
+          linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px),
+          linear-gradient(rgba(0,0,0,0.03) 1px, transparent 1px);
+        background-size: 20px 20px;
+        border-radius: 10px 0 0 10px;
+        box-shadow: inset -10px 0 14px -6px rgba(0,0,0,0.2);
+      }
+
+      .page-right {
+        background: var(--page-lilac);
+        background-image: 
+          linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px),
+          linear-gradient(rgba(0,0,0,0.02) 1px, transparent 1px);
+        background-size: 20px 20px;
+        border-radius: 0 10px 10px 0;
+        box-shadow: inset 10px 0 14px -6px rgba(0,0,0,0.15);
+      }
+
+      .note-washi-tape {
+        position: absolute;
+        top: 14px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(255, 255, 255, 0.94);
+        color: #e11d48;
+        font-family: 'Arial Black', 'Mali', sans-serif;
+        font-weight: 900;
+        font-size: 20px;
+        letter-spacing: 5px;
+        padding: 4px 30px;
+        border-radius: 2px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        pointer-events: none;
+        z-index: 5;
+        border-left: 2px dashed rgba(225, 29, 72, 0.2);
+        border-right: 2px dashed rgba(225, 29, 72, 0.2);
+      }
+
+      /* Center Spiral Binding */
+      .spiral-binding {
+        width: 36px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-evenly;
+        align-items: center;
+        z-index: 50;
+        pointer-events: none;
+      }
+
+      .spiral-wire {
+        position: relative;
+        width: 44px;
+        height: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .hole-punch-left, .hole-punch-right {
+        width: 8px;
+        height: 8px;
+        background: #281721;
+        border-radius: 50%;
+        box-shadow: inset 1px 1px 2px rgba(0,0,0,0.8);
+      }
+
+      .ring-loop {
+        position: absolute;
+        left: 2px;
+        right: 2px;
+        top: 1px;
+        height: 14px;
+        border: 3.5px solid var(--ring-yellow);
+        border-bottom-color: var(--ring-gold);
+        border-radius: 10px;
+        box-shadow: 0 3px 5px rgba(0,0,0,0.3);
+      }
+
+      /* Grid Layouts */
+      .page-left-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-top: 52px;
+      }
+
+      .page-right-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-top: 8px;
+        align-items: center;
+        justify-items: center;
+      }
+
+      .grid-slot {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* Sticky Note Card Base */
+      .sticky-card {
+        position: relative;
+        border-radius: 6px;
+        padding: 8px 10px 10px;
+        box-shadow: 2px 4px 10px rgba(40, 15, 25, 0.16);
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+        display: flex;
+        flex-direction: column;
+        cursor: pointer;
+        width: 100%;
+      }
+
+      .sticky-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 2px 8px 16px rgba(40, 15, 25, 0.22);
+      }
+
+      .sticky-card.selected {
+        outline: 2px dashed #db2777;
+        outline-offset: 3px;
+        box-shadow: 0 8px 20px rgba(219, 39, 119, 0.28);
+        z-index: 20;
+      }
+
+      .card-header-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 4px;
+        user-select: none;
+      }
+
+      .card-pin-badge {
+        font-size: 10px;
+        color: rgba(0,0,0,0.35);
+        font-weight: 700;
+        letter-spacing: 0.5px;
+      }
+
+      .card-del-btn {
+        background: #ffffff;
+        border: 1px solid #fecdd3;
+        color: #ef4444;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .sticky-card.selected .card-del-btn {
+        display: flex;
+      }
+      .card-del-btn:hover { background: #fee2e2; }
+
+      /* Corner Fold effects */
+      .corner-tl::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 0;
+        height: 0;
+        border-style: solid;
+        border-width: 22px 22px 0 0;
+        border-color: #d1b46a transparent transparent transparent;
+        filter: drop-shadow(1px 1px 1px rgba(0,0,0,0.15));
+      }
+      .corner-tl::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 0;
+        height: 0;
+        border-style: solid;
+        border-width: 0 0 22px 22px;
+        border-color: transparent transparent #fef08a transparent;
+      }
+
+      .corner-tr::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 0;
+        height: 0;
+        border-style: solid;
+        border-width: 0 22px 22px 0;
+        border-color: transparent #d1b46a transparent transparent;
+        filter: drop-shadow(-1px 1px 1px rgba(0,0,0,0.15));
+      }
+      .corner-tr::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 0;
+        height: 0;
+        border-style: solid;
+        border-width: 22px 0 0 22px;
+        border-color: transparent transparent transparent #fef08a;
+      }
+
+      /* Note Textarea */
+      .card-textarea {
+        width: 100%;
+        flex: 1;
+        background: transparent;
+        border: none;
+        outline: none;
+        resize: none;
+        font-family: inherit;
+        font-size: inherit;
+        color: inherit;
+        line-height: 1.45;
+        overflow-y: auto;
+      }
+
+      /* Distinct Shapes */
+      .shape-square {
+        min-height: 165px;
+        width: 100%;
+      }
+
+      .shape-lined {
+        background: #ffffff !important;
+        border-top: 14px solid #fbcfe8;
+        background-image: repeating-linear-gradient(transparent, transparent 18px, #7dd3fc 19px, #7dd3fc 20px) !important;
+        background-position: 0 8px !important;
+        min-height: 135px;
+        max-width: 190px;
+      }
+
+      .shape-heart {
+        width: 135px !important;
+        height: 125px !important;
+        min-height: 125px !important;
+        max-width: 135px !important;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding-top: 14px;
+        position: relative;
+        background: transparent !important;
+        box-shadow: none !important;
+      }
+      .shape-heart-svg {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+        filter: drop-shadow(0 3px 6px rgba(0,0,0,0.12));
+      }
+      .shape-heart .card-header-bar {
+        position: absolute;
+        top: 6px;
+        right: 6px;
+        z-index: 4;
+        width: auto;
+        margin: 0;
+      }
+      .shape-heart .card-pin-badge { display: none; }
+      .shape-heart .card-textarea {
+        position: relative;
+        z-index: 2;
+        width: 90px;
+        height: 55px;
+        text-align: center;
+        font-size: 15px;
+      }
+
+      .shape-daisy {
+        width: 130px !important;
+        height: 130px !important;
+        min-height: 130px !important;
+        max-width: 130px !important;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        background: transparent !important;
+        box-shadow: none !important;
+        position: relative;
+      }
+      .shape-daisy-svg {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+        filter: drop-shadow(0 3px 6px rgba(0,0,0,0.1));
+      }
+      .shape-daisy .card-header-bar {
+        position: absolute;
+        top: 4px;
+        right: 4px;
+        z-index: 4;
+        width: auto;
+        margin: 0;
+      }
+      .shape-daisy .card-pin-badge { display: none; }
+      .shape-daisy .card-textarea {
+        position: relative;
+        z-index: 2;
+        width: 65px;
+        height: 65px;
+        border-radius: 50%;
+        text-align: center;
+        font-weight: 700;
+        color: #78350f !important;
+        font-size: 13px;
+        padding-top: 10px;
+      }
+
+      .shape-pennant {
+        clip-path: polygon(0 0, 100% 0, 100% 88%, 50% 100%, 0 88%);
+        padding-bottom: 24px;
+        min-height: 170px;
+        max-width: 165px;
+        background-color: #dbeafe !important;
+        background-image: 
+          repeating-linear-gradient(0deg, transparent, transparent 18px, rgba(255,255,255,0.7) 18px, rgba(255,255,255,0.7) 36px),
+          repeating-linear-gradient(90deg, transparent, transparent 18px, rgba(255,255,255,0.7) 18px, rgba(255,255,255,0.7) 36px) !important;
+      }
+
+      .shape-checklist {
+        background: #99f6e4 !important;
+        border-radius: 12px;
+        min-height: 180px;
+        max-width: 185px;
+      }
+
+      .checklist-pill-title {
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 2px 8px;
+        font-size: 11px;
+        font-weight: 700;
+        color: #0d9488;
+        border: none;
+        outline: none;
+        text-align: center;
+        margin-bottom: 6px;
+      }
+
+      .checklist-row {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 4px;
+      }
+
+      .chk-box {
+        width: 13px;
+        height: 13px;
+        border-radius: 3px;
+        background: #ffffff;
+        border: 1.5px solid #14b8a6;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .chk-box.checked {
+        background: #0d9488;
+        border-color: #0d9488;
+      }
+      .chk-box.checked::after {
+        content: '✓';
+        color: #ffffff;
+        font-size: 9px;
+        font-weight: 900;
+      }
+
+      .chk-input {
+        background: transparent;
+        border: none;
+        outline: none;
+        font-size: 12px;
+        color: #134e4a;
+        flex: 1;
+        font-family: inherit;
+      }
+      .chk-input.checked {
+        text-decoration: line-through;
+        opacity: 0.6;
+      }
+
+      .shape-bubble {
+        background: #fbcfe8 !important;
+        border-radius: 16px 16px 16px 4px;
+        min-height: 135px;
+        max-width: 165px;
+        background-image: repeating-linear-gradient(transparent, transparent 18px, rgba(180, 83, 9, 0.25) 19px) !important;
+      }
+
+      /* Mascot Stickers */
+      .mascot-container {
+        position: absolute;
+        pointer-events: none;
+        z-index: 10;
+      }
+      .mascot-bottom-center {
+        bottom: 4px;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+      .mascot-bottom-right {
+        bottom: 6px;
+        right: 8px;
+      }
+
+      /* Clearly Visible Patterns (Crisp, High Contrast & Delightful!) */
+      .pattern-ruled {
+        background-image: 
+          repeating-linear-gradient(
+            transparent, 
+            transparent 19px, 
+            rgba(59, 130, 246, 0.35) 20px, 
+            rgba(59, 130, 246, 0.35) 21px
+          ) !important;
+      }
+
+      .pattern-grid {
+        background-image: 
+          linear-gradient(rgba(59, 130, 246, 0.3) 1.5px, transparent 1.5px),
+          linear-gradient(90deg, rgba(59, 130, 246, 0.3) 1.5px, transparent 1.5px) !important;
+        background-size: 16px 16px !important;
+      }
+
+      .pattern-dots {
+        background-image: 
+          radial-gradient(circle, rgba(75, 85, 99, 0.4) 1.5px, transparent 1.6px) !important;
+        background-size: 15px 15px !important;
+      }
+
+      /* Bottom Stickers Drawer */
+      .stickers-drawer {
+        position: fixed;
+        bottom: 16px;
+        right: 16px;
+        background: #ffffff;
+        border: 2px solid #fbcfe8;
+        border-radius: 14px;
+        padding: 6px 12px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        z-index: 100;
+      }
+
+      .sticker-item {
+        cursor: pointer;
+        padding: 3px;
+        border-radius: 6px;
+        font-size: 18px;
+        transition: transform 0.15s ease;
+      }
+      .sticker-item:hover { transform: scale(1.3); }
+
+      /* Modal: Scegli Forma Nota */
+      .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(2px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 200;
+        padding: 16px;
+      }
+      .modal-backdrop.open {
+        display: flex;
+      }
+
+      .modal-card {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 20px;
+        max-width: 460px;
+        width: 100%;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        border: 2px solid #fce7f3;
+      }
+
+      .modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 14px;
+      }
+      .modal-title {
+        font-family: 'Mali', cursive;
+        font-size: 17px;
+        color: #be185d;
+        font-weight: 700;
+      }
+      .modal-close {
+        background: none;
+        border: none;
+        font-size: 20px;
+        color: #9ca3af;
+        cursor: pointer;
+      }
+
+      .shape-choice-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        gap: 10px;
+        margin-bottom: 16px;
+      }
+
+      .shape-choice-btn {
+        background: #fdf2f8;
+        border: 2px solid #fbcfe8;
+        border-radius: 12px;
+        padding: 12px 6px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+      .shape-choice-btn:hover {
+        background: #fce7f3;
+        border-color: #f472b6;
+        transform: translateY(-2px);
+      }
+      .shape-choice-btn .choice-icon {
+        font-size: 26px;
+      }
+      .shape-choice-btn .choice-name {
+        font-size: 11px;
+        font-weight: 700;
+        color: #831843;
+        text-align: center;
+      }
+
+      /* Cute Toast Feedback Notification */
+      .toast-msg {
+        position: fixed;
+        bottom: 24px;
+        left: 50%;
+        transform: translateX(-50%) translateY(100px);
+        background: #be185d;
+        color: #ffffff;
+        padding: 8px 18px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 700;
+        box-shadow: 0 6px 18px rgba(190, 24, 93, 0.35);
+        z-index: 300;
+        opacity: 0;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        pointer-events: none;
+      }
+      .toast-msg.show {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+      }
+
+      /* Responsive view toggles */
+      .view-left .page-right,
+      .view-left .spiral-binding,
+      .view-left .elastic-band {
+        display: none !important;
+      }
+      .view-left .page-left {
+        border-radius: 10px !important;
+      }
+
+      .view-right .page-left,
+      .view-right .spiral-binding {
+        display: none !important;
+      }
+      .view-right .page-right {
+        border-radius: 10px !important;
+      }
+
+      @media (max-width: 768px) {
+        .notebook-spread {
+          flex-direction: column;
+        }
+        .spiral-binding {
+          display: none;
+        }
+        .page-left {
+          border-radius: 10px 10px 0 0;
+        }
+        .page-right {
+          border-radius: 0 0 10px 10px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <header>
+      <div class="logo-group">
+        <div class="logo-icon">📒</div>
+        <div>
+          <div class="app-title">Pastel Sticky Notebook</div>
+        </div>
+      </div>
+
+      <!-- Page Switcher Tabs -->
+      <div class="page-switch-tabs">
+        <button class="tab-btn active" data-view="both">📖 2 Pagine</button>
+        <button class="tab-btn" data-view="left">🌸 Pag. 1 (NOTE)</button>
+        <button class="tab-btn" data-view="right">💜 Pag. 2 (Stickers)</button>
+      </div>
+
+      <div class="header-actions">
+        <button class="btn btn-primary" id="btn-add-note">
+          ➕ Nuova Nota...
+        </button>
+
+        <button class="btn btn-secondary" id="btn-reset-photo" title="Ripristina la composizione esatta della foto">
+          📸 Come in Foto
+        </button>
+
+        <button class="btn btn-icon" id="btn-sound-toggle" title="Suoni carta">
+          🔊
+        </button>
+
+        <button class="btn btn-icon" id="btn-clear-all" title="Elimina tutto">
+          🗑️
+        </button>
+      </div>
+    </header>
+
+    <!-- Always Visible Customization Toolbar Panel -->
+    <div id="note-toolbar-panel">
+      <!-- Hint when no note is selected -->
+      <div class="toolbar-status-hint" id="tb-hint">
+        <span>👆</span>
+        <span>Clicca su qualsiasi nota per personalizzare forma, font, colori pastello, angolo piegato e trama!</span>
+      </div>
+
+      <!-- Controls when a note is active -->
+      <div class="toolbar-active-controls" id="tb-controls">
+        <div class="tb-group">
+          <span class="tb-label">Forma:</span>
+          <select id="tb-shape-select" class="tb-select">
+            <option value="square">🟨 Quadrata</option>
+            <option value="heart">💖 Cuoricino</option>
+            <option value="daisy">🌼 Margherita</option>
+            <option value="lined">📝 A Righe</option>
+            <option value="checklist">✅ Checklist</option>
+            <option value="pennant">🎏 Bandierina</option>
+            <option value="bubble">💬 Fumetto</option>
+          </select>
+        </div>
+
+        <div class="tb-group">
+          <span class="tb-label">Carattere:</span>
+          <select id="tb-font-family" class="tb-select">
+            <option value="'Caveat', cursive">Caveat (Corsivo fluido)</option>
+            <option value="'Patrick Hand', cursive">Patrick Hand (Scuola a mano)</option>
+            <option value="'Kalam', cursive">Kalam (Penna a sfera)</option>
+            <option value="'Indie Flower', cursive">Indie Flower (Giocoso)</option>
+            <option value="'Shadows Into Light', cursive">Shadows Into Light (Fine)</option>
+            <option value="'Comfortaa', cursive">Comfortaa (Morbido sans)</option>
+            <option value="'Comic Neue', cursive">Comic Neue (Fumetto chiaro)</option>
+            <option value="'Mali', cursive">Mali (Kawaii dolce)</option>
+            <option value="'Gaegu', cursive">Gaegu (Doodle carino)</option>
+            <option value="'Architects Daughter', cursive">Architects Daughter</option>
+            <option value="'Cherry Bomb One', cursive">Cherry Bomb One (Bubble)</option>
+            <option value="'Itim', cursive">Itim (Pennarello dolce)</option>
+            <option value="'Pacifico', cursive">Pacifico (Retro brush)</option>
+            <option value="'Quicksand', sans-serif">Quicksand (Minimal)</option>
+          </select>
+        </div>
+
+        <div class="tb-group">
+          <span class="tb-label">Misura:</span>
+          <select id="tb-font-size" class="tb-select">
+            <option value="13px">Piccolo (13px)</option>
+            <option value="16px">Medio (16px)</option>
+            <option value="19px">Grande (19px)</option>
+            <option value="23px">Titolo (23px)</option>
+          </select>
+        </div>
+
+        <div class="tb-group">
+          <span class="tb-label">Allinea:</span>
+          <button class="tb-btn-small" data-align="left" title="Sinistra">⬅</button>
+          <button class="tb-btn-small" data-align="center" title="Centro">⬛</button>
+          <button class="tb-btn-small" data-align="right" title="Destra">➡</button>
+        </div>
+
+        <div class="tb-group">
+          <span class="tb-label">Colore Pastello:</span>
+          <div class="color-dot" data-color="#fef08a" style="background:#fef08a;" title="Giallo Burro"></div>
+          <div class="color-dot" data-color="#ffffff" style="background:#ffffff;" title="Bianco Carta"></div>
+          <div class="color-dot" data-color="#fbcfe8" style="background:#fbcfe8;" title="Rosa Bubblegum"></div>
+          <div class="color-dot" data-color="#ffe4e6" style="background:#ffe4e6;" title="Rosa Cipria"></div>
+          <div class="color-dot" data-color="#a7f3d0" style="background:#a7f3d0;" title="Menta"></div>
+          <div class="color-dot" data-color="#bbf7d0" style="background:#bbf7d0;" title="Salvia"></div>
+          <div class="color-dot" data-color="#ddd6fe" style="background:#ddd6fe;" title="Lavanda"></div>
+          <div class="color-dot" data-color="#bae6fd" style="background:#bae6fd;" title="Azzurro Cielo"></div>
+          <div class="color-dot" data-color="#fed7aa" style="background:#fed7aa;" title="Pesca"></div>
+        </div>
+
+        <div class="tb-group">
+          <span class="tb-label">Trama:</span>
+          <button class="tb-btn-small" data-pattern="none">Liscia</button>
+          <button class="tb-btn-small" data-pattern="ruled">Righe</button>
+          <button class="tb-btn-small" data-pattern="grid">Quadretti</button>
+          <button class="tb-btn-small" data-pattern="dots">Puntini</button>
+        </div>
+
+        <div class="tb-group">
+          <span class="tb-label">Piega:</span>
+          <button class="tb-btn-small" data-corner="none">Nessuna</button>
+          <button class="tb-btn-small" data-corner="tl">Alto Sx</button>
+          <button class="tb-btn-small" data-corner="tr">Alto Dx</button>
+        </div>
+
+        <div class="tb-group" style="margin-left: auto;">
+          <button class="tb-btn-small" id="tb-btn-duplicate" title="Duplica nota">📋 Duplica</button>
+          <button class="tb-btn-small" id="tb-btn-delete" style="color: #e11d48; border-color: #fecdd3;" title="Elimina nota">🗑️ Elimina</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Workspace -->
+    <main>
+      <div class="notebook-wrapper">
+        <div class="notebook-cover-base">
+          <div class="elastic-band"></div>
+
+          <!-- Open Pages Spread -->
+          <div class="notebook-spread" id="notebook-spread">
+            <!-- Left Page: Pink with "NOTE" washi banner -->
+            <div class="notebook-page page-left" id="page-left">
+              <div class="note-washi-tape">NOTE</div>
+              <div class="page-left-grid" id="left-grid"></div>
+            </div>
+
+            <!-- Center Spiral Twin Wire Binding -->
+            <div class="spiral-binding" id="spiral-binding"></div>
+
+            <!-- Right Page: Lilac with 6 shaped notes in harmonic slots -->
+            <div class="notebook-page page-right" id="page-right">
+              <div class="page-right-grid" id="right-grid"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Sticker Tray Drawer -->
+    <div class="stickers-drawer" id="stickers-drawer" title="Aggiungi uno sticker alla nota selezionata">
+      <span style="font-size: 11px; font-weight: 700; color: #db2777; text-transform: uppercase;">Stickers:</span>
+      <div class="sticker-item" data-sticker="cherries" title="Ciliegine">🍒</div>
+      <div class="sticker-item" data-sticker="bee" title="Apetta">🐝</div>
+      <div class="sticker-item" data-sticker="cat" title="Gattino">🐱</div>
+      <div class="sticker-item" data-sticker="pens" title="Matite">✏️</div>
+      <div class="sticker-item" data-sticker="sparkle" title="Stellina">⭐</div>
+      <div class="sticker-item" data-sticker="strawberry" title="Fragolina">🍓</div>
+      <div class="sticker-item" data-sticker="flower" title="Margherita">🌼</div>
+      <div class="sticker-item" data-sticker="none" title="Rimuovi sticker" style="font-size: 14px; opacity: 0.7;">🚫</div>
+    </div>
+
+    <!-- Modal: Scegli Forma per Nuova Nota -->
+    <div class="modal-backdrop" id="modal-new-shape">
+      <div class="modal-card">
+        <div class="modal-header">
+          <div class="modal-title">Scegli la forma del nuovo Post-it ✨</div>
+          <button class="modal-close" id="modal-close-btn">&times;</button>
+        </div>
+        <div class="shape-choice-grid">
+          <div class="shape-choice-btn" data-shape="square">
+            <div class="choice-icon">🟨</div>
+            <div class="choice-name">Classico</div>
+          </div>
+          <div class="shape-choice-btn" data-shape="heart">
+            <div class="choice-icon">💖</div>
+            <div class="choice-name">Cuoricino</div>
+          </div>
+          <div class="shape-choice-btn" data-shape="daisy">
+            <div class="choice-icon">🌼</div>
+            <div class="choice-name">Margherita</div>
+          </div>
+          <div class="shape-choice-btn" data-shape="lined">
+            <div class="choice-icon">📝</div>
+            <div class="choice-name">A Righe</div>
+          </div>
+          <div class="shape-choice-btn" data-shape="checklist">
+            <div class="choice-icon">✅</div>
+            <div class="choice-name">Checklist</div>
+          </div>
+          <div class="shape-choice-btn" data-shape="pennant">
+            <div class="choice-icon">🎏</div>
+            <div class="choice-name">Bandierina</div>
+          </div>
+          <div class="shape-choice-btn" data-shape="bubble">
+            <div class="choice-icon">💬</div>
+            <div class="choice-name">Fumetto</div>
+          </div>
+        </div>
+        <div style="display:flex; justify-content:flex-end;">
+          <button class="btn btn-secondary" id="btn-cancel-shape">Annulla</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast-msg" id="toast-msg">Notifica</div>
+
+    <!-- Native JavaScript Application Logic -->
+    <script>
+      (function() {
+        'use strict';
+
+        // --- Sound Engine (Web Audio API) ---
+        let audioContext = null;
+        let soundEnabled = true;
+
+        function getAudioContext() {
+          if (!audioContext) {
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            if (AudioCtx) audioContext = new AudioCtx();
+          }
+          if (audioContext && audioContext.state === 'suspended') {
+            audioContext.resume();
+          }
+          return audioContext;
+        }
+
+        function playPopSound() {
+          if (!soundEnabled) return;
+          try {
+            const ctx = getAudioContext();
+            if (!ctx) return;
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine';
+            const now = ctx.currentTime;
+            osc.frequency.setValueAtTime(420, now);
+            osc.frequency.exponentialRampToValueAtTime(780, now + 0.08);
+            gain.gain.setValueAtTime(0.2, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(now);
+            osc.stop(now + 0.09);
+          } catch(e) {}
+        }
+
+        function playCheckSound() {
+          if (!soundEnabled) return;
+          try {
+            const ctx = getAudioContext();
+            if (!ctx) return;
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'triangle';
+            const now = ctx.currentTime;
+            osc.frequency.setValueAtTime(520, now);
+            osc.frequency.setValueAtTime(880, now + 0.06);
+            gain.gain.setValueAtTime(0.25, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(now);
+            osc.stop(now + 0.16);
+          } catch(e) {}
+        }
+
+        // --- Toast feedback ---
+        const toastEl = document.getElementById('toast-msg');
+        let toastTimeout = null;
+        function showToast(msg) {
+          if (!toastEl) return;
+          toastEl.innerText = msg;
+          toastEl.classList.add('show');
+          if (toastTimeout) clearTimeout(toastTimeout);
+          toastTimeout = setTimeout(() => {
+            toastEl.classList.remove('show');
+          }, 2200);
+        }
+
+        // --- SVG Graphics for Mascots & All Stickers ---
+        const SVGS = {
+          cherries: `
+            <svg viewBox="0 0 38 32" width="36" height="30" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M10 17C12 10 15 5 21 2C19 6 18 11 18 17" stroke="#15803d" stroke-width="2" stroke-linecap="round"/>
+              <path d="M26 17C24 11 22 6 20 2" stroke="#15803d" stroke-width="2" stroke-linecap="round"/>
+              <ellipse cx="23" cy="3" rx="3.5" ry="1.8" fill="#22c55e" transform="rotate(-20 23 3)"/>
+              <circle cx="11" cy="20" r="7.5" fill="#f87171" stroke="#dc2626" stroke-width="1.2"/>
+              <ellipse cx="9" cy="18" rx="1.5" ry="2.2" fill="#ffffff" opacity="0.8" transform="rotate(-30 9 18)"/>
+              <circle cx="9.5" cy="20.5" r="1" fill="#450a0a"/>
+              <circle cx="13" cy="20.5" r="1" fill="#450a0a"/>
+              <path d="M9.5 22Q11.2 23.5 13 22" stroke="#450a0a" stroke-width="1" stroke-linecap="round" fill="none"/>
+              <circle cx="25" cy="20" r="7.5" fill="#fb7185" stroke="#e11d48" stroke-width="1.2"/>
+              <ellipse cx="23" cy="18" rx="1.5" ry="2.2" fill="#ffffff" opacity="0.8" transform="rotate(-30 23 18)"/>
+              <circle cx="23.5" cy="20.5" r="1" fill="#450a0a"/>
+              <circle cx="27" cy="20.5" r="1" fill="#450a0a"/>
+              <path d="M23.5 22Q25.2 23.5 27 22" stroke="#450a0a" stroke-width="1" stroke-linecap="round" fill="none"/>
+            </svg>
+          `,
+          bee: `
+            <svg viewBox="0 0 34 34" width="34" height="34" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <ellipse cx="12" cy="10" rx="5" ry="8" fill="#bae6fd" opacity="0.75" stroke="#7dd3fc" transform="rotate(-35 12 10)"/>
+              <ellipse cx="19" cy="9" rx="4.5" ry="7.5" fill="#e0f2fe" opacity="0.75" stroke="#7dd3fc" transform="rotate(25 19 9)"/>
+              <ellipse cx="17" cy="19" rx="10" ry="7.5" fill="#fde047" stroke="#ca8a04" stroke-width="1.2"/>
+              <path d="M14 12V26M19 12V26" stroke="#1f2937" stroke-width="2.2" stroke-linecap="round"/>
+              <circle cx="10" cy="18" r="1.2" fill="#1f2937"/>
+              <path d="M8.5 20.5Q10 22 11.5 20.5" stroke="#1f2937" stroke-width="1" stroke-linecap="round" fill="none"/>
+            </svg>
+          `,
+          cat: `
+            <svg viewBox="0 0 34 34" width="34" height="34" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M7 11L11 4L16 9" fill="#fed7aa" stroke="#ea580c" stroke-width="1.2"/>
+              <path d="M18 9L23 4L27 11" fill="#fed7aa" stroke="#ea580c" stroke-width="1.2"/>
+              <circle cx="17" cy="17" r="10" fill="#ffedd5" stroke="#ea580c" stroke-width="1.2"/>
+              <circle cx="13" cy="16" r="1.2" fill="#1f2937"/>
+              <circle cx="21" cy="16" r="1.2" fill="#1f2937"/>
+              <polygon points="16,18 18,18 17,19.5" fill="#f43f5e"/>
+              <path d="M15 21Q17 22 19 21" stroke="#1f2937" stroke-width="1" stroke-linecap="round" fill="none"/>
+              <rect x="22" y="18" width="3.5" height="11" rx="1" fill="#38bdf8" transform="rotate(-30 22 18)"/>
+            </svg>
+          `,
+          pens: `
+            <svg viewBox="0 0 54 28" width="50" height="26" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="5" y="7" width="9" height="18" rx="2.5" fill="#67e8f9" stroke="#0891b2" stroke-width="1"/>
+              <circle cx="7.5" cy="12" r="0.9" fill="#164e63"/>
+              <circle cx="11.5" cy="12" r="0.9" fill="#164e63"/>
+              <path d="M7.5 15Q9.5 17 11.5 15" stroke="#164e63" stroke-width="0.9" stroke-linecap="round" fill="none"/>
+              <rect x="20" y="4" width="9" height="21" rx="2.5" fill="#f472b6" stroke="#db2777" stroke-width="1"/>
+              <circle cx="22.5" cy="10" r="0.9" fill="#831843"/>
+              <circle cx="26.5" cy="10" r="0.9" fill="#831843"/>
+              <path d="M22.5 13Q24.5 15 26.5 13" stroke="#831843" stroke-width="0.9" stroke-linecap="round" fill="none"/>
+              <rect x="35" y="8" width="9" height="17" rx="2.5" fill="#fde047" stroke="#ca8a04" stroke-width="1"/>
+              <circle cx="37.5" cy="13" r="0.9" fill="#713f12"/>
+              <circle cx="41.5" cy="13" r="0.9" fill="#713f12"/>
+              <path d="M37.5 16Q39.5 18 41.5 16" stroke="#713f12" stroke-width="0.9" stroke-linecap="round" fill="none"/>
+            </svg>
+          `,
+          // Cute Kawaii Golden Star with smiling face
+          sparkle: `
+            <svg viewBox="0 0 34 34" width="32" height="32" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <polygon points="17,2 21.5,12 32,13 24,20.5 26.5,31 17,25.5 7.5,31 10,20.5 2,13 12.5,12" fill="#fde047" stroke="#ca8a04" stroke-width="1.3"/>
+              <!-- Cheeks -->
+              <circle cx="13" cy="19" r="1.5" fill="#f43f5e" opacity="0.6"/>
+              <circle cx="21" cy="19" r="1.5" fill="#f43f5e" opacity="0.6"/>
+              <!-- Eyes & Smile -->
+              <circle cx="14" cy="17" r="1" fill="#713f12"/>
+              <circle cx="20" cy="17" r="1" fill="#713f12"/>
+              <path d="M15 19.5Q17 21.5 19 19.5" stroke="#713f12" stroke-width="1" stroke-linecap="round" fill="none"/>
+            </svg>
+          `,
+          // Sweet Smiling Strawberry with cute leaf crown
+          strawberry: `
+            <svg viewBox="0 0 34 34" width="32" height="32" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Leaf Crown -->
+              <path d="M17 3C15 6 12 7 9 7C12 9 14 10 17 9C20 10 22 9 25 7C22 7 19 6 17 3Z" fill="#22c55e" stroke="#15803d" stroke-width="1"/>
+              <!-- Berry Body -->
+              <path d="M17 30C10 30 7 21 8 13C8 10 11 8 17 8C23 8 26 10 26 13C27 21 24 30 17 30Z" fill="#fb7185" stroke="#e11d48" stroke-width="1.3"/>
+              <!-- Seeds -->
+              <circle cx="12" cy="14" r="0.7" fill="#fef08a"/>
+              <circle cx="22" cy="14" r="0.7" fill="#fef08a"/>
+              <circle cx="17" cy="26" r="0.7" fill="#fef08a"/>
+              <!-- Face -->
+              <circle cx="14" cy="19" r="1" fill="#881337"/>
+              <circle cx="20" cy="19" r="1" fill="#881337"/>
+              <path d="M15.5 22Q17 23.5 18.5 22" stroke="#881337" stroke-width="1" stroke-linecap="round" fill="none"/>
+            </svg>
+          `,
+          // Pretty Daisy/Cherry Blossom Flower Sticker
+          flower: `
+            <svg viewBox="0 0 34 34" width="32" height="32" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <g fill="#fbcfe8" stroke="#f472b6" stroke-width="1">
+                <circle cx="17" cy="8" r="5.5"/>
+                <circle cx="25" cy="14" r="5.5"/>
+                <circle cx="22" cy="23" r="5.5"/>
+                <circle cx="12" cy="23" r="5.5"/>
+                <circle cx="9" cy="14" r="5.5"/>
+              </g>
+              <!-- Center -->
+              <circle cx="17" cy="17" r="5" fill="#fde047" stroke="#ca8a04" stroke-width="1"/>
+              <circle cx="15.5" cy="16" r="0.8" fill="#713f12"/>
+              <circle cx="18.5" cy="16" r="0.8" fill="#713f12"/>
+              <path d="M16 18Q17 19 18 18" stroke="#713f12" stroke-width="0.8" stroke-linecap="round" fill="none"/>
+            </svg>
+          `,
+          // Heart SVG
+          heartSvg: `
+            <svg class="shape-heart-svg" viewBox="0 0 135 125" preserveAspectRatio="none" fill="currentColor">
+              <path d="M67.5 116C67.5 116 10 78 10 38C10 19 24 8 41 8C52 8 62 14 67.5 23C73 14 83 8 94 8C111 8 125 19 125 38C125 78 67.5 116 67.5 116Z"/>
+            </svg>
+          `,
+          // Daisy SVG
+          daisySvg: `
+            <svg class="shape-daisy-svg" viewBox="0 0 130 130" preserveAspectRatio="none">
+              <g fill="#ffffff">
+                <circle cx="65" cy="20" r="17"/>
+                <circle cx="93" cy="29" r="17"/>
+                <circle cx="110" cy="56" r="17"/>
+                <circle cx="105" cy="87" r="17"/>
+                <circle cx="83" cy="108" r="17"/>
+                <circle cx="49" cy="108" r="17"/>
+                <circle cx="25" cy="87" r="17"/>
+                <circle cx="20" cy="56" r="17"/>
+                <circle cx="37" cy="29" r="17"/>
+              </g>
+              <circle cx="65" cy="65" r="28" fill="#eab308"/>
+            </svg>
+          `
+        };
+
+        // --- Default Photo Setup ---
+        function getDefaultNotes() {
+          return [
+            // Page 1 (Left - Pink): 4 classic square notes
+            {
+              id: 'note-1',
+              page: 'left',
+              shape: 'square',
+              color: '#ffffff',
+              fontFamily: "'Patrick Hand', cursive",
+              fontSize: '16px',
+              fontColor: '#1e293b',
+              textAlign: 'left',
+              corner: 'tl',
+              pattern: 'none',
+              text: 'Lista della spesa:\n• Latte di soia 🥛\n• Fragole fresche 🍓\n• Biscotti al miele 🍪'
+            },
+            {
+              id: 'note-2',
+              page: 'left',
+              shape: 'square',
+              color: '#fef08a',
+              fontFamily: "'Caveat', cursive",
+              fontSize: '18px',
+              fontColor: '#1e293b',
+              textAlign: 'left',
+              corner: 'tl',
+              pattern: 'none',
+              text: 'Idee per il weekend ✨\nPasseggiata nel parco e disegno con gli acquerelli!'
+            },
+            {
+              id: 'note-3',
+              page: 'left',
+              shape: 'square',
+              color: '#fef08a',
+              fontFamily: "'Indie Flower', cursive",
+              fontSize: '16px',
+              fontColor: '#1e293b',
+              textAlign: 'left',
+              corner: 'tl',
+              pattern: 'none',
+              text: 'Ricordati di chiamare Silvia alle 17:00! 📞💕'
+            },
+            {
+              id: 'note-4',
+              page: 'left',
+              shape: 'square',
+              color: '#ffffff',
+              fontFamily: "'Mali', cursive",
+              fontSize: '16px',
+              fontColor: '#1e293b',
+              textAlign: 'left',
+              corner: 'tl',
+              pattern: 'none',
+              text: 'Frase del giorno:\n"Fai brillare ogni piccolo momento." 🌸'
+            },
+
+            // Page 2 (Right - Lilac): 6 shaped notes
+            {
+              id: 'note-5',
+              page: 'right',
+              shape: 'lined',
+              color: '#ffffff',
+              fontFamily: "'Patrick Hand', cursive",
+              fontSize: '15px',
+              fontColor: '#0f172a',
+              textAlign: 'left',
+              corner: 'none',
+              pattern: 'none',
+              mascot: 'cat',
+              text: 'Compiti:\n1. Leggere capitolo 4 📖\n2. Esercizi di chimica 🔬'
+            },
+            {
+              id: 'note-6',
+              page: 'right',
+              shape: 'heart',
+              color: '#fbcfe8',
+              fontFamily: "'Caveat', cursive",
+              fontSize: '16px',
+              fontColor: '#831843',
+              textAlign: 'center',
+              corner: 'none',
+              pattern: 'none',
+              mascot: 'cherries',
+              text: 'Sei speciale!\nTi voglio bene! 💕'
+            },
+            {
+              id: 'note-7',
+              page: 'right',
+              shape: 'daisy',
+              color: '#ffffff',
+              fontFamily: "'Comfortaa', cursive",
+              fontSize: '13px',
+              fontColor: '#78350f',
+              textAlign: 'center',
+              corner: 'none',
+              pattern: 'none',
+              text: 'Sorridi\noggi! ☀️'
+            },
+            {
+              id: 'note-8',
+              page: 'right',
+              shape: 'pennant',
+              color: '#bae6fd',
+              fontFamily: "'Itim', cursive",
+              fontSize: '14px',
+              fontColor: '#0369a1',
+              textAlign: 'center',
+              corner: 'none',
+              pattern: 'none',
+              mascot: 'pens',
+              text: 'Progetti Creativi ✨\n• Scrapbook\n• Adesivi DIY\n• Bullet Journal'
+            },
+            {
+              id: 'note-9',
+              page: 'right',
+              shape: 'checklist',
+              color: '#99f6e4',
+              fontFamily: "'Quicksand', sans-serif",
+              fontSize: '13px',
+              fontColor: '#134e4a',
+              textAlign: 'left',
+              corner: 'none',
+              pattern: 'none',
+              mascot: 'bee',
+              title: 'TO DO LIST',
+              checklist: [
+                { id: 'c1', text: 'Annaffiare piantine 🌱', done: true },
+                { id: 'c2', text: 'Preparare la tisana 🍵', done: true },
+                { id: 'c3', text: 'Scrivere diario ✨', done: false },
+                { id: 'c4', text: 'Ordinare scrivania 🧹', done: false }
+              ],
+              text: ''
+            },
+            {
+              id: 'note-10',
+              page: 'right',
+              shape: 'bubble',
+              color: '#fbcfe8',
+              fontFamily: "'Kalam', cursive",
+              fontSize: '15px',
+              fontColor: '#831843',
+              textAlign: 'left',
+              corner: 'none',
+              pattern: 'dots',
+              text: 'Nota al volo:\n"Il segreto è iniziare!" 💬✨'
+            }
+          ];
+        }
+
+        // --- Storage & State ---
+        const STORAGE_KEY = 'pastel_sticky_notebook_v6';
+        let notes = [];
+        let activeNoteId = null;
+
+        function saveNotes() {
+          try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
+          } catch(e) {}
+        }
+
+        function loadNotes() {
+          try {
+            const data = localStorage.getItem(STORAGE_KEY);
+            if (data) {
+              const parsed = JSON.parse(data);
+              const leftCount = parsed.filter(n => n.page === 'left').length;
+              const rightCount = parsed.filter(n => n.page === 'right').length;
+              if (Array.isArray(parsed) && leftCount > 0 && rightCount > 0) {
+                return parsed;
+              }
+            }
+          } catch(e) {}
+          return getDefaultNotes();
+        }
+
+        // --- DOM Elements ---
+        const leftGrid = document.getElementById('left-grid');
+        const rightGrid = document.getElementById('right-grid');
+        const spiralBinding = document.getElementById('spiral-binding');
+        const notebookSpread = document.getElementById('notebook-spread');
+        const tbHint = document.getElementById('tb-hint');
+        const tbControls = document.getElementById('tb-controls');
+
+        const tbShapeSelect = document.getElementById('tb-shape-select');
+        const tbFontFamily = document.getElementById('tb-font-family');
+        const tbFontSize = document.getElementById('tb-font-size');
+        const tbBtnDuplicate = document.getElementById('tb-btn-duplicate');
+        const tbBtnDelete = document.getElementById('tb-btn-delete');
+        const colorDots = document.querySelectorAll('.color-dot');
+        const alignButtons = document.querySelectorAll('[data-align]');
+        const patternButtons = document.querySelectorAll('[data-pattern]');
+        const cornerButtons = document.querySelectorAll('[data-corner]');
+        const stickerItems = document.querySelectorAll('.sticker-item');
+        const tabButtons = document.querySelectorAll('.tab-btn');
+
+        const btnAddNote = document.getElementById('btn-add-note');
+        const btnResetPhoto = document.getElementById('btn-reset-photo');
+        const btnClearAll = document.getElementById('btn-clear-all');
+        const btnSoundToggle = document.getElementById('btn-sound-toggle');
+
+        const modalNewShape = document.getElementById('modal-new-shape');
+        const modalCloseBtn = document.getElementById('modal-close-btn');
+        const btnCancelShape = document.getElementById('btn-cancel-shape');
+        const shapeChoiceButtons = document.querySelectorAll('.shape-choice-btn');
+
+        // Render spiral wire
+        function renderSpiral() {
+          spiralBinding.innerHTML = '';
+          for (let i = 0; i < 16; i++) {
+            const wire = document.createElement('div');
+            wire.className = 'spiral-wire';
+            wire.innerHTML = `
+              <div class="hole-punch-left"></div>
+              <div class="ring-loop"></div>
+              <div class="hole-punch-right"></div>
+            `;
+            spiralBinding.appendChild(wire);
+          }
+        }
+
+        // Render All Notes
+        function renderNotes() {
+          leftGrid.innerHTML = '';
+          rightGrid.innerHTML = '';
+
+          notes.forEach(note => {
+            const card = createNoteCard(note);
+            if (note.page === 'left') {
+              leftGrid.appendChild(card);
+            } else {
+              const slot = document.createElement('div');
+              slot.className = 'grid-slot';
+              slot.appendChild(card);
+              rightGrid.appendChild(slot);
+            }
+          });
+
+          updateToolbar();
+        }
+
+        // Create Note Card DOM
+        function createNoteCard(note) {
+          const card = document.createElement('div');
+          card.className = `sticky-card shape-${note.shape} ${note.pattern ? 'pattern-' + note.pattern : ''} ${note.corner ? 'corner-' + note.corner : ''}`;
+          card.id = note.id;
+
+          if (note.id === activeNoteId) {
+            card.classList.add('selected');
+          }
+
+          if (note.shape === 'heart') {
+            card.style.color = note.color;
+          } else if (note.shape !== 'daisy') {
+            card.style.backgroundColor = note.color;
+          }
+
+          // Top Header Bar
+          const headerBar = document.createElement('div');
+          headerBar.className = 'card-header-bar';
+          headerBar.innerHTML = `
+            <span class="card-pin-badge">POST-IT</span>
+            <button class="card-del-btn" title="Elimina">&times;</button>
+          `;
+          headerBar.querySelector('.card-del-btn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            deleteNote(note.id);
+          });
+          card.appendChild(headerBar);
+
+          // SVG Backgrounds
+          if (note.shape === 'heart') {
+            card.insertAdjacentHTML('afterbegin', SVGS.heartSvg);
+          } else if (note.shape === 'daisy') {
+            card.insertAdjacentHTML('afterbegin', SVGS.daisySvg);
+          }
+
+          // Content Area
+          if (note.shape === 'checklist') {
+            const titleInput = document.createElement('input');
+            titleInput.className = 'checklist-pill-title';
+            titleInput.value = note.title || 'TO DO';
+            titleInput.addEventListener('input', () => {
+              note.title = titleInput.value;
+              saveNotes();
+            });
+            card.appendChild(titleInput);
+
+            const itemsContainer = document.createElement('div');
+            itemsContainer.className = 'checklist-items-wrap';
+
+            (note.checklist || []).forEach(item => {
+              const row = document.createElement('div');
+              row.className = 'checklist-row';
+
+              const box = document.createElement('div');
+              box.className = `chk-box ${item.done ? 'checked' : ''}`;
+              box.addEventListener('click', (e) => {
+                e.stopPropagation();
+                item.done = !item.done;
+                box.classList.toggle('checked', item.done);
+                textInput.classList.toggle('checked', item.done);
+                if (item.done) playCheckSound();
+                saveNotes();
+              });
+
+              const textInput = document.createElement('input');
+              textInput.className = `chk-input ${item.done ? 'checked' : ''}`;
+              textInput.value = item.text;
+              textInput.addEventListener('input', () => {
+                item.text = textInput.value;
+                saveNotes();
+              });
+
+              textInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  const newItem = { id: 'c_' + Date.now(), text: '', done: false };
+                  const idx = note.checklist.indexOf(item);
+                  note.checklist.splice(idx + 1, 0, newItem);
+                  saveNotes();
+                  renderNotes();
+                } else if (e.key === 'Backspace' && textInput.value === '') {
+                  e.preventDefault();
+                  note.checklist = note.checklist.filter(i => i.id !== item.id);
+                  saveNotes();
+                  renderNotes();
+                }
+              });
+
+              row.appendChild(box);
+              row.appendChild(textInput);
+              itemsContainer.appendChild(row);
+            });
+
+            const addBtn = document.createElement('button');
+            addBtn.style.cssText = 'background:none; border:none; font-size:11px; font-weight:700; color:#0f766e; cursor:pointer; text-align:left; padding:3px 0; margin-top:3px;';
+            addBtn.innerText = '+ Aggiungi elemento';
+            addBtn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              if (!note.checklist) note.checklist = [];
+              note.checklist.push({ id: 'c_' + Date.now(), text: 'Nuova voce', done: false });
+              saveNotes();
+              renderNotes();
+              playPopSound();
+            });
+
+            card.appendChild(itemsContainer);
+            card.appendChild(addBtn);
+          } else {
+            const textarea = document.createElement('textarea');
+            textarea.className = 'card-textarea';
+            textarea.value = note.text || '';
+            textarea.style.fontFamily = note.fontFamily || "'Patrick Hand', cursive";
+            textarea.style.fontSize = note.fontSize || "16px";
+            textarea.style.color = note.fontColor || "#1e293b";
+            textarea.style.textAlign = note.textAlign || "left";
+
+            textarea.addEventListener('input', () => {
+              note.text = textarea.value;
+              saveNotes();
+            });
+            textarea.addEventListener('focus', () => {
+              selectNote(note.id);
+            });
+            card.appendChild(textarea);
+          }
+
+          // Mascot Sticker Rendering (Supports all stickers: cherries, bee, cat, pens, sparkle, strawberry, flower!)
+          if (note.mascot && SVGS[note.mascot]) {
+            const mascotWrap = document.createElement('div');
+            mascotWrap.className = `mascot-container ${note.shape === 'heart' ? 'mascot-bottom-center' : 'mascot-bottom-right'}`;
+            mascotWrap.innerHTML = SVGS[note.mascot];
+            card.appendChild(mascotWrap);
+          }
+
+          // Card Click Selection
+          card.addEventListener('click', (e) => {
+            selectNote(note.id);
+          });
+
+          return card;
+        }
+
+        // Selection & Toolbar updates
+        function selectNote(noteId) {
+          activeNoteId = noteId;
+          document.querySelectorAll('.sticky-card').forEach(c => {
+            c.classList.toggle('selected', c.id === noteId);
+          });
+          updateToolbar();
+        }
+
+        function updateToolbar() {
+          if (!activeNoteId) {
+            tbHint.style.display = 'flex';
+            tbControls.classList.remove('visible');
+            return;
+          }
+
+          const note = notes.find(n => n.id === activeNoteId);
+          if (!note) {
+            tbHint.style.display = 'flex';
+            tbControls.classList.remove('visible');
+            return;
+          }
+
+          tbHint.style.display = 'none';
+          tbControls.classList.add('visible');
+
+          tbShapeSelect.value = note.shape || 'square';
+          tbFontFamily.value = note.fontFamily || "'Patrick Hand', cursive";
+          tbFontSize.value = note.fontSize || "16px";
+
+          alignButtons.forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.align === (note.textAlign || 'left'));
+          });
+          patternButtons.forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.pattern === (note.pattern || 'none'));
+          });
+          cornerButtons.forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.corner === (note.corner || 'none'));
+          });
+          colorDots.forEach(dot => {
+            dot.classList.toggle('active', dot.dataset.color.toLowerCase() === (note.color || '#ffffff').toLowerCase());
+          });
+        }
+
+        // Actions
+        function deleteNote(noteId) {
+          notes = notes.filter(n => n.id !== noteId);
+          if (activeNoteId === noteId) activeNoteId = null;
+          saveNotes();
+          renderNotes();
+          playPopSound();
+          showToast('🗑️ Nota eliminata');
+        }
+
+        function duplicateNote(noteId) {
+          const orig = notes.find(n => n.id === noteId);
+          if (!orig) return;
+          const copy = JSON.parse(JSON.stringify(orig));
+          copy.id = 'note-' + Date.now();
+          notes.push(copy);
+          saveNotes();
+          renderNotes();
+          selectNote(copy.id);
+          playPopSound();
+          showToast('📋 Nota duplicata!');
+        }
+
+        function createNewNoteWithShape(shape) {
+          const newId = 'note-' + Date.now();
+          const leftCount = notes.filter(n => n.page === 'left').length;
+          const targetPage = leftCount < 4 ? 'left' : 'right';
+
+          let defColor = '#fef08a';
+          let defFont = "'Caveat', cursive";
+          let defText = 'Scrivi qui la tua nota... ✨';
+          let defCorner = 'tl';
+          let mascot = null;
+
+          if (shape === 'heart') {
+            defColor = '#fbcfe8';
+            defFont = "'Caveat', cursive";
+            defText = 'Sei speciale! 💕';
+            defCorner = 'none';
+            mascot = 'cherries';
+          } else if (shape === 'daisy') {
+            defColor = '#ffffff';
+            defFont = "'Comfortaa', cursive";
+            defText = 'Sorridi! ☀️';
+            defCorner = 'none';
+          } else if (shape === 'checklist') {
+            defColor = '#99f6e4';
+            defFont = "'Quicksand', sans-serif";
+            defText = '';
+            defCorner = 'none';
+            mascot = 'bee';
+          } else if (shape === 'lined') {
+            defColor = '#ffffff';
+            defFont = "'Patrick Hand', cursive";
+            defText = 'Appunti importanti...';
+            defCorner = 'none';
+          } else if (shape === 'pennant') {
+            defColor = '#bae6fd';
+            defFont = "'Itim', cursive";
+            defText = 'Progetti ✨';
+            defCorner = 'none';
+            mascot = 'pens';
+          } else if (shape === 'bubble') {
+            defColor = '#fbcfe8';
+            defFont = "'Kalam', cursive";
+            defText = 'Nota al volo! 💬';
+            defCorner = 'none';
+          }
+
+          notes.push({
+            id: newId,
+            page: targetPage,
+            shape: shape,
+            color: defColor,
+            fontFamily: defFont,
+            fontSize: shape === 'daisy' ? '13px' : '16px',
+            fontColor: shape === 'daisy' ? '#78350f' : (shape === 'heart' ? '#831843' : '#1e293b'),
+            textAlign: shape === 'heart' || shape === 'daisy' ? 'center' : 'left',
+            corner: defCorner,
+            pattern: 'none',
+            mascot: mascot,
+            text: defText,
+            title: shape === 'checklist' ? 'TO DO LIST' : '',
+            checklist: shape === 'checklist' ? [
+              { id: 'c1', text: 'Prima attività', done: false },
+              { id: 'c2', text: 'Seconda attività', done: false }
+            ] : []
+          });
+
+          saveNotes();
+          renderNotes();
+          selectNote(newId);
+          playPopSound();
+          showToast('✨ Nuova nota creata!');
+        }
+
+        // Change Shape of Existing Active Note
+        tbShapeSelect.addEventListener('change', () => {
+          if (!activeNoteId) return;
+          const note = notes.find(n => n.id === activeNoteId);
+          if (note) {
+            note.shape = tbShapeSelect.value;
+            if (note.shape === 'heart' && !note.mascot) note.mascot = 'cherries';
+            if (note.shape === 'checklist' && (!note.checklist || note.checklist.length === 0)) {
+              note.checklist = [{ id: 'c1', text: 'Nuovo compito', done: false }];
+            }
+            saveNotes();
+            renderNotes();
+            playPopSound();
+          }
+        });
+
+        // Toolbar Event Listeners
+        tbFontFamily.addEventListener('change', () => {
+          if (!activeNoteId) return;
+          const note = notes.find(n => n.id === activeNoteId);
+          if (note) {
+            note.fontFamily = tbFontFamily.value;
+            const el = document.getElementById(note.id);
+            if (el) {
+              const txt = el.querySelector('.card-textarea');
+              if (txt) txt.style.fontFamily = note.fontFamily;
+            }
+            saveNotes();
+          }
+        });
+
+        tbFontSize.addEventListener('change', () => {
+          if (!activeNoteId) return;
+          const note = notes.find(n => n.id === activeNoteId);
+          if (note) {
+            note.fontSize = tbFontSize.value;
+            const el = document.getElementById(note.id);
+            if (el) {
+              const txt = el.querySelector('.card-textarea');
+              if (txt) txt.style.fontSize = note.fontSize;
+            }
+            saveNotes();
+          }
+        });
+
+        colorDots.forEach(dot => {
+          dot.addEventListener('click', () => {
+            if (!activeNoteId) return;
+            const note = notes.find(n => n.id === activeNoteId);
+            if (note) {
+              note.color = dot.dataset.color;
+              const el = document.getElementById(note.id);
+              if (el) {
+                if (note.shape === 'heart') {
+                  el.style.color = note.color;
+                } else if (note.shape !== 'daisy') {
+                  el.style.backgroundColor = note.color;
+                }
+              }
+              colorDots.forEach(d => d.classList.toggle('active', d === dot));
+              saveNotes();
+              playPopSound();
+            }
+          });
+        });
+
+        alignButtons.forEach(btn => {
+          btn.addEventListener('click', () => {
+            if (!activeNoteId) return;
+            const note = notes.find(n => n.id === activeNoteId);
+            if (note) {
+              note.textAlign = btn.dataset.align;
+              const el = document.getElementById(note.id);
+              if (el) {
+                const txt = el.querySelector('.card-textarea');
+                if (txt) txt.style.textAlign = note.textAlign;
+              }
+              alignButtons.forEach(b => b.classList.toggle('active', b === btn));
+              saveNotes();
+            }
+          });
+        });
+
+        // Pattern buttons (Righe, Quadretti, Puntini, Liscia)
+        patternButtons.forEach(btn => {
+          btn.addEventListener('click', () => {
+            if (!activeNoteId) return;
+            const note = notes.find(n => n.id === activeNoteId);
+            if (note) {
+              note.pattern = btn.dataset.pattern;
+              saveNotes();
+              renderNotes();
+              playPopSound();
+            }
+          });
+        });
+
+        cornerButtons.forEach(btn => {
+          btn.addEventListener('click', () => {
+            if (!activeNoteId) return;
+            const note = notes.find(n => n.id === activeNoteId);
+            if (note) {
+              note.corner = btn.dataset.corner;
+              saveNotes();
+              renderNotes();
+              playPopSound();
+            }
+          });
+        });
+
+        tbBtnDuplicate.addEventListener('click', () => {
+          if (activeNoteId) duplicateNote(activeNoteId);
+        });
+
+        tbBtnDelete.addEventListener('click', () => {
+          if (activeNoteId) deleteNote(activeNoteId);
+        });
+
+        // Stickers Drawer: supports cherries, bee, cat, pens, sparkle, strawberry, flower, or remove!
+        stickerItems.forEach(item => {
+          item.addEventListener('click', () => {
+            const sticker = item.dataset.sticker;
+            if (!activeNoteId) {
+              if (notes.length > 0) selectNote(notes[0].id);
+              else return;
+            }
+            const note = notes.find(n => n.id === activeNoteId);
+            if (note) {
+              if (sticker === 'none') {
+                note.mascot = null;
+                showToast('Adesivo rimosso');
+              } else {
+                note.mascot = sticker;
+                showToast('Adesivo applicato! ✨');
+              }
+              saveNotes();
+              renderNotes();
+              playPopSound();
+            }
+          });
+        });
+
+        // Tabs (Both / Left / Right)
+        tabButtons.forEach(btn => {
+          btn.addEventListener('click', () => {
+            tabButtons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const view = btn.dataset.view;
+
+            notebookSpread.classList.remove('view-left', 'view-right');
+            if (view === 'left') {
+              notebookSpread.classList.add('view-left');
+            } else if (view === 'right') {
+              notebookSpread.classList.add('view-right');
+            }
+            playPopSound();
+          });
+        });
+
+        // Modal Scegli Forma per Nuova Nota
+        btnAddNote.addEventListener('click', () => {
+          modalNewShape.classList.add('open');
+        });
+        modalCloseBtn.addEventListener('click', () => {
+          modalNewShape.classList.remove('open');
+        });
+        btnCancelShape.addEventListener('click', () => {
+          modalNewShape.classList.remove('open');
+        });
+        modalNewShape.addEventListener('click', (e) => {
+          if (e.target === modalNewShape) modalNewShape.classList.remove('open');
+        });
+
+        shapeChoiceButtons.forEach(btn => {
+          btn.addEventListener('click', () => {
+            const shape = btn.dataset.shape;
+            modalNewShape.classList.remove('open');
+            createNewNoteWithShape(shape);
+          });
+        });
+
+        // Header Buttons: Reset directly without blocking confirm dialog!
+        btnResetPhoto.addEventListener('click', () => {
+          notes = getDefaultNotes();
+          saveNotes();
+          renderNotes();
+          playPopSound();
+          showToast('📸 Quaderno ripristinato esattamente come nella foto!');
+        });
+
+        btnClearAll.addEventListener('click', () => {
+          notes = [];
+          activeNoteId = null;
+          saveNotes();
+          renderNotes();
+          showToast('🗑️ Tutte le note sono state cancellate');
+        });
+
+        btnSoundToggle.addEventListener('click', () => {
+          soundEnabled = !soundEnabled;
+          btnSoundToggle.innerText = soundEnabled ? '🔊' : '🔇';
+          if (soundEnabled) playPopSound();
+        });
+
+        // Init
+        renderSpiral();
+        notes = loadNotes();
+        renderNotes();
+
+      })();
+    </script>
+  </body>
+</html>
