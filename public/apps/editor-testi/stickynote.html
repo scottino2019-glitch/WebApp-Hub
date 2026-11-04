@@ -1079,27 +1079,159 @@
         transform: scale(1.15);
       }
 
-      .water-tracker {
-        background: #f0f9ff;
-        border: 1px solid #bae6fd;
-        border-radius: 8px;
-        padding: 6px 10px;
-        margin-bottom: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
+      /* Spacious Gratitude Box with Editable Title */
+      .daily-gratitude-box {
+        background: #ffffff;
+        border-radius: 10px;
+        border: 2px dashed #f59e0b;
+        padding: 12px;
+        margin-top: 10px;
+        box-shadow: 0 2px 6px rgba(245, 158, 11, 0.1);
+      }
+      .gratitude-title-input {
+        font-family: 'Mali', cursive;
+        font-size: 13px;
+        font-weight: 700;
+        color: #b45309;
+        border: none;
+        outline: none;
+        background: transparent;
+        width: 100%;
+        border-bottom: 1.5px solid #fed7aa;
+        padding-bottom: 4px;
+        margin-bottom: 6px;
+      }
+      .gratitude-textarea {
+        min-height: 120px;
+        font-family: 'Caveat', cursive;
+        font-size: 19px;
+        color: #78350f;
+        line-height: 1.5;
+        padding: 4px 0;
       }
 
-      .water-cup {
-        cursor: pointer;
-        font-size: 16px;
-        opacity: 0.35;
-        transition: all 0.15s ease;
+      /* Dynamic Editable Diary Prompts */
+      .diary-prompts-card {
+        background: #ecfdf5;
+        border: 1.5px dashed #34d399;
+        border-radius: 10px;
+        padding: 8px 10px;
+        margin-bottom: 10px;
       }
-      .water-cup:hover { transform: scale(1.2); }
-      .water-cup.filled {
-        opacity: 1;
-        transform: scale(1.1);
+      .diary-prompt-row {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 5px;
+        background: #ffffff;
+        border: 1px solid #a7f3d0;
+        border-radius: 8px;
+        padding: 4px 8px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+      }
+      .prompt-input {
+        flex: 1;
+        border: none;
+        outline: none;
+        font-family: 'Quicksand', sans-serif;
+        font-size: 12px;
+        font-weight: 600;
+        color: #065f46;
+        background: transparent;
+      }
+      .prompt-del-btn {
+        background: none;
+        border: none;
+        color: #ef4444;
+        font-weight: 700;
+        font-size: 14px;
+        cursor: pointer;
+        padding: 0 4px;
+        opacity: 0.6;
+        transition: opacity 0.15s ease;
+      }
+      .prompt-del-btn:hover { opacity: 1; }
+
+      /* Habit Delete Button */
+      .habit-del-btn {
+        background: none;
+        border: none;
+        color: #f87171;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        padding: 0 4px;
+        opacity: 0.5;
+        transition: opacity 0.15s ease;
+      }
+      .habit-del-btn:hover { opacity: 1; }
+
+      /* Flexible Monthly Goal Card (Not fixed savings!) */
+      .monthly-goal-box {
+        background: #ffffff;
+        border-radius: 10px;
+        border: 2px dashed #f59e0b;
+        padding: 12px;
+        margin-bottom: 12px;
+      }
+      .monthly-goal-title-input {
+        font-family: 'Mali', cursive;
+        font-size: 13px;
+        font-weight: 700;
+        color: #b45309;
+        border: none;
+        outline: none;
+        background: transparent;
+        width: 100%;
+        margin-bottom: 6px;
+      }
+      .goal-step-row {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 4px;
+      }
+      .goal-step-input {
+        background: transparent;
+        border: none;
+        outline: none;
+        font-size: 12px;
+        color: #7c2d12;
+        flex: 1;
+        font-family: inherit;
+      }
+      .goal-step-input.checked {
+        text-decoration: line-through;
+        opacity: 0.6;
+      }
+      .goal-step-del-btn {
+        background: none;
+        border: none;
+        color: #f87171;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        padding: 0 4px;
+        opacity: 0.5;
+        transition: opacity 0.15s ease;
+      }
+      .goal-step-del-btn:hover { opacity: 1; }
+
+      /* Distinct Separated Boxes: Books & Wishlist */
+      .books-tracker-box {
+        background: #ffffff;
+        border-radius: 10px;
+        border: 1.5px solid #fde047;
+        padding: 10px 12px;
+        margin-bottom: 12px;
+        box-shadow: 0 2px 5px rgba(253, 224, 71, 0.15);
+      }
+      .wishlist-tracker-box {
+        background: #ffffff;
+        border-radius: 10px;
+        border: 1.5px solid #fbcfe8;
+        padding: 10px 12px;
+        box-shadow: 0 2px 5px rgba(251, 207, 232, 0.2);
       }
 
       /* Hourly Schedule Timeline */
@@ -1642,21 +1774,6 @@
                   </div>
                 </div>
 
-                <!-- Water Tracker -->
-                <div class="water-tracker">
-                  <span style="font-size:12px; font-weight:700; color:#0369a1;">💧 Idratazione (8 bicchieri):</span>
-                  <div style="display:flex; gap:6px;" id="water-cups-row">
-                    <span class="water-cup filled" data-idx="0">💧</span>
-                    <span class="water-cup filled" data-idx="1">💧</span>
-                    <span class="water-cup filled" data-idx="2">💧</span>
-                    <span class="water-cup" data-idx="3">💧</span>
-                    <span class="water-cup" data-idx="4">💧</span>
-                    <span class="water-cup" data-idx="5">💧</span>
-                    <span class="water-cup" data-idx="6">💧</span>
-                    <span class="water-cup" data-idx="7">💧</span>
-                  </div>
-                </div>
-
                 <!-- Top 3 Priorities -->
                 <div style="background:#fff; border-radius:8px; border:2px dashed #f472b6; padding:10px; margin-bottom:10px;">
                   <div style="font-size:12px; font-weight:700; color:#be185d; margin-bottom:6px;">🌟 Top 3 Priorità di Oggi</div>
@@ -1665,10 +1782,10 @@
                   <input type="text" class="card-textarea" id="priority-3" value="3. Relax serale con tisana al miele 🍵" style="min-height:22px;">
                 </div>
 
-                <!-- Gratitude Corner -->
-                <div style="background:#fff; border-radius:8px; border:1px solid #fde047; padding:10px;">
-                  <div style="font-size:12px; font-weight:700; color:#b45309; margin-bottom:4px;">✨ 3 Cose di cui sono grata oggi:</div>
-                  <textarea class="card-textarea" id="daily-gratitude" style="min-height:60px; font-family:'Caveat', cursive; font-size:17px; color:#78350f;">• Il profumo del caffè al mattino ☕
+                <!-- Gratitude Corner (Spacious & with Editable Title) -->
+                <div class="daily-gratitude-box">
+                  <input type="text" class="gratitude-title-input" id="daily-gratitude-title" value="✨ Cose di cui sono grata oggi:">
+                  <textarea class="card-textarea gratitude-textarea" id="daily-gratitude" placeholder="Scrivi qui per cosa sei grata oggi, pensieri felici o momenti speciali...">• Il profumo del caffè al mattino ☕
 • Un messaggio dolce inaspettato 💕
 • Una bella passeggiata nel parco 🍂</textarea>
                 </div>
@@ -1702,8 +1819,13 @@
                 </div>
 
                 <div class="diary-entry-container">
-                  <div style="font-size:12px; font-weight:700; color:#059669; margin-bottom:4px; font-style:italic;">
-                    💡 Prompt di riflessione: "Qual è stato il momento più bello di oggi?"
+                  <!-- Editable & Expandable Reflection Prompts Card -->
+                  <div class="diary-prompts-card">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                      <span style="font-size:12px; font-weight:700; color:#059669;">💡 Spunti di Riflessione / Prompt:</span>
+                      <button class="planner-action-btn" id="btn-add-diary-prompt" style="padding:2px 8px; font-size:10px;">+ Aggiungi Prompt</button>
+                    </div>
+                    <div id="diary-prompts-list"></div>
                   </div>
                   <textarea class="diary-paper-lines" id="diary-text-left" placeholder="Scrivi qui i tuoi pensieri, sensazioni e ricordi..."></textarea>
                 </div>
@@ -1737,45 +1859,63 @@
                   </div>
                 </div>
 
-                <div style="font-size:12px; color:#c2410c; margin-bottom:8px; font-weight:600;">
-                  Spunta ogni giorno le buone abitudini che hai completato!
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                  <span style="font-size:12px; color:#c2410c; font-weight:700;">Spunta ogni giorno le buone abitudini completate!</span>
+                  <button class="planner-action-btn" id="btn-add-habit" style="padding:3px 9px; font-size:11px;">+ Nuova Abitudine</button>
                 </div>
 
-                <table class="habit-table" id="habit-table-grid">
-                  <!-- Habit rows rendered via JS -->
-                </table>
+                <div style="overflow-x:auto;">
+                  <table class="habit-table" id="habit-table-grid">
+                    <!-- Dynamic habit rows rendered via JS -->
+                  </table>
+                </div>
               </div>
 
               <div class="spiral-binding"></div>
 
-              <!-- Right Page: Wishlist & Savings Jar -->
+              <!-- Right Page: Flexible Goal & Separated Books / Wishlist -->
               <div class="notebook-page page-right">
                 <div class="planner-banner">
-                  <div class="planner-title">🏺 Salvadanaio &amp; Desideri</div>
+                  <div class="planner-title">✨ Focus &amp; Desideri del Mese</div>
                 </div>
 
-                <div style="background:#fff; border-radius:10px; border:2px dashed #f59e0b; padding:12px; margin-bottom:12px;">
-                  <div style="font-size:13px; font-weight:700; color:#b45309; margin-bottom:8px;">✨ Obiettivo di Risparmio del Mese:</div>
-                  <input type="text" class="card-textarea" id="savings-goal-input" value="Borsa vintage pastel & Viaggio a Kyoto 🌸" style="min-height:26px; border-bottom:1.5px solid #fed7aa; margin-bottom:8px; font-weight:700;">
+                <!-- 1. Flexible Monthly Goal (Can vary freely, NOT fixed to savings!) -->
+                <div class="monthly-goal-box">
+                  <input type="text" class="monthly-goal-title-input" id="monthly-goal-title" value="🎯 Obiettivo Principale del Mese:">
+                  <textarea class="card-textarea" id="monthly-goal-desc" style="min-height:36px; border-bottom:1.5px solid #fed7aa; margin-bottom:8px; font-weight:700; color:#9a3412;" placeholder="Descrivi qui il tuo obiettivo del mese (studio, creatività, progetto, salute, viaggi...)...">Completare il corso online &amp; Dipingere su tela 🎨</textarea>
                   
-                  <div style="display:flex; justify-content:space-between; font-size:12px; color:#78350f; font-weight:700; margin-bottom:6px;">
-                    <span>Risparmiati: <input type="text" id="savings-curr" value="€ 180" style="width:60px; border:none; outline:none; font-weight:700; color:#ea580c;"></span>
-                    <span>Target: <input type="text" id="savings-target" value="€ 350" style="width:60px; border:none; outline:none; font-weight:700; color:#ea580c; text-align:right;"></span>
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                    <span style="font-size:11px; font-weight:700; color:#b45309;">✨ Tappe &amp; Avanzamento:</span>
+                    <button class="planner-action-btn" id="btn-add-goal-step" style="padding:1px 6px; font-size:10px;">+ Aggiungi Step</button>
                   </div>
-                  <div style="width:100%; height:12px; background:#ffedd5; border-radius:6px; overflow:hidden;">
-                    <div style="width:52%; height:100%; background:#f97316; border-radius:6px;"></div>
-                  </div>
+                  <div id="monthly-goal-steps-wrap"></div>
                 </div>
 
-                <!-- Cute Books & Wishlist -->
-                <div style="background:#fff; border-radius:10px; border:1px solid #fde047; padding:12px;">
-                  <div style="font-size:13px; font-weight:700; color:#a16207; margin-bottom:6px;">📚 Libri Letti &amp; Wishlist Kawaii</div>
-                  <textarea class="card-textarea" id="books-wishlist" style="min-height:160px; font-family:'Patrick Hand', cursive; font-size:15px; color:#713f12; line-height:1.5;">[✓] "Piccole Donne" 📖
+                <!-- 2. Separated Books Tracker Box -->
+                <div class="books-tracker-box">
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                    <span style="font-size:13px; font-weight:700; color:#a16207;">📚 Libri Letti &amp; Da Leggere</span>
+                    <span style="font-size:11px; color:#ca8a04; font-weight:600;">Reading List</span>
+                  </div>
+                  <textarea class="card-textarea" id="books-list-text" style="min-height:95px; font-family:'Patrick Hand', cursive; font-size:15px; color:#713f12; line-height:1.45;" placeholder="Inserisci qui i libri che stai leggendo o vuoi leggere...&#10;[✓] Titolo libro 📖&#10;[ ] Prossima lettura ✨">[✓] "Piccole Donne" 📖
 [✓] "Finché il caffè è caldo" ☕
 [ ] "Il castello errante di Howl" ✨
-[ ] "La libreria dei gatti" 🐱
-[ ] Set pennarelli pastel Tombow 🎨</textarea>
+[ ] "La libreria dei gatti" 🐱</textarea>
                 </div>
+
+                <!-- 3. Separated Wishlist Box -->
+                <div class="wishlist-tracker-box">
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                    <span style="font-size:13px; font-weight:700; color:#be185d;">🛍️ Wishlist Kawaii &amp; Desideri</span>
+                    <span style="font-size:11px; color:#db2777; font-weight:600;">I Miei Desideri</span>
+                  </div>
+                  <textarea class="card-textarea" id="wishlist-text" style="min-height:95px; font-family:'Patrick Hand', cursive; font-size:15px; color:#831843; line-height:1.45;" placeholder="Inserisci qui i tuoi desideri...&#10;[✓] Desiderio realizzato 🌸&#10;[ ] Nuovo desiderio ✨">[✓] Set pennarelli pastel Tombow 🎨
+[ ] Borsa a tracolla vintage 🌸
+[ ] Tazza kawaii in ceramica ☕
+[ ] Nuovi washi tape pastello ✨</textarea>
+                </div>
+              </div>
+            </div>
               </div>
             </div>
 
@@ -2363,12 +2503,52 @@
           };
         }
 
+        function getDefaultPlannerData() {
+          return {
+            gratitudeTitle: '✨ Cose di cui sono grata oggi:',
+            gratitudeText: '• Il profumo del caffè al mattino ☕\n• Un messaggio dolce inaspettato 💕\n• Una bella passeggiata nel parco 🍂',
+            priority1: '1. Completare il capitolo di studio 📖',
+            priority2: '2. Allenamento 30 min e stretching 🧘‍♀️',
+            priority3: '3. Relax serale con tisana al miele 🍵',
+            dailyDayName: 'Lunedì',
+            dailyDayNum: '10',
+            dailyMonth: 'Novembre',
+            diaryDate: 'Lunedì, 10 Novembre',
+            diaryLeftText: '',
+            diaryRightText: '',
+            diaryPrompts: [
+              'Qual è stato il momento più bello di oggi? 🌸'
+            ],
+            habitMonth: 'Novembre',
+            goalTitle: '🎯 Obiettivo Principale del Mese:',
+            goalDesc: 'Completare il corso online & Dipingere su tela 🎨',
+            goalSteps: [
+              { id: 's1', text: 'Pianificare le tappe del progetto 📋', done: true },
+              { id: 's2', text: 'Completare il primo modulo 💻', done: true },
+              { id: 's3', text: 'Dipingere la prima bozza su tela 🖌️', done: false },
+              { id: 's4', text: 'Sessione finale e rifinitura ✨', done: false }
+            ],
+            booksText: '[✓] "Piccole Donne" 📖\n[✓] "Finché il caffè è caldo" ☕\n[ ] "Il castello errante di Howl" ✨\n[ ] "La libreria dei gatti" 🐱',
+            wishlistText: '[✓] Set pennarelli pastel Tombow 🎨\n[ ] Borsa a tracolla vintage 🌸\n[ ] Tazza kawaii in ceramica ☕\n[ ] Nuovi washi tape pastello ✨',
+            habits: [
+              { id: 'h1', name: 'Lettura 20 min 📖', checks: [true, true, true, false, false, false, false, false, false, false, false, false, false, false] },
+              { id: 'h2', name: 'Bevi Acqua fresca 💧', checks: [true, true, false, false, false, false, false, false, false, false, false, false, false, false] },
+              { id: 'h3', name: 'Esercizio / Yoga 🧘‍♀️', checks: [false, true, true, false, false, false, false, false, false, false, false, false, false, false] },
+              { id: 'h4', name: 'Skin Care serale ✨', checks: [true, true, true, false, false, false, false, false, false, false, false, false, false, false] },
+              { id: 'h5', name: 'Studio / Lavoro 📚', checks: [true, false, true, false, false, false, false, false, false, false, false, false, false, false] },
+              { id: 'h6', name: 'Diario della sera 🌙', checks: [true, true, false, false, false, false, false, false, false, false, false, false, false, false] }
+            ]
+          };
+        }
+
         // --- State Management ---
         const STORAGE_KEY_NOTES = 'pastel_sticky_notebook_v7_notes';
         const STORAGE_KEY_PLANNER = 'pastel_sticky_notebook_v7_planner';
+        const STORAGE_KEY_PLANNER_EXT = 'pastel_sticky_notebook_v8_planner_data';
 
         let notes = [];
         let weeklyData = getDefaultWeekly();
+        let plannerData = getDefaultPlannerData();
         let activeNoteId = null;
         let currentSection = 'notes';
 
@@ -2376,6 +2556,7 @@
           try {
             localStorage.setItem(STORAGE_KEY_NOTES, JSON.stringify(notes));
             localStorage.setItem(STORAGE_KEY_PLANNER, JSON.stringify(weeklyData));
+            localStorage.setItem(STORAGE_KEY_PLANNER_EXT, JSON.stringify(plannerData));
           } catch(e) {}
         }
 
@@ -2394,9 +2575,18 @@
             if (savedPlan) {
               weeklyData = JSON.parse(savedPlan);
             }
+
+            const savedExt = localStorage.getItem(STORAGE_KEY_PLANNER_EXT);
+            if (savedExt) {
+              const parsedExt = JSON.parse(savedExt);
+              plannerData = Object.assign(getDefaultPlannerData(), parsedExt);
+            } else {
+              plannerData = getDefaultPlannerData();
+            }
           } catch(e) {
             notes = getDefaultNotes();
             weeklyData = getDefaultWeekly();
+            plannerData = getDefaultPlannerData();
           }
         }
 
@@ -2862,41 +3052,283 @@
           if (!table) return;
           table.innerHTML = '';
 
-          // Header: Habits + 14 day check dots
-          let headerHTML = '<tr><th style="text-align:left; padding-left:8px;">Abitudine</th>';
+          // Header: Habits + 14 day check dots + delete column
+          let headerHTML = '<thead><tr><th style="text-align:left; padding-left:8px;">Abitudine</th>';
           for (let d = 1; d <= 14; d++) {
             headerHTML += `<th style="width:16px;">${d}</th>`;
           }
-          headerHTML += '</tr>';
+          headerHTML += '<th style="width:20px;"></th></tr></thead><tbody></tbody>';
           table.innerHTML = headerHTML;
+          const tbody = table.querySelector('tbody');
 
-          const defaultHabits = [
-            'Lettura 20 min 📖',
-            'Bevi 2L Acqua 💧',
-            'Esercizio / Yoga 🧘‍♀️',
-            'Skin Care serale ✨',
-            'Studio / Lavoro 📚',
-            'Diario della sera 🌙'
-          ];
+          if (!Array.isArray(plannerData.habits)) {
+            plannerData.habits = [];
+          }
 
-          defaultHabits.forEach(hName => {
+          plannerData.habits.forEach((habit) => {
             const tr = document.createElement('tr');
-            let rowHTML = `<td><input type="text" class="habit-name-input" value="${hName}"></td>`;
-            for (let d = 1; d <= 14; d++) {
-              rowHTML += `<td><span class="habit-dot ${d <= 3 ? 'checked' : ''}"></span></td>`;
+            let rowHTML = `<td><input type="text" class="habit-name-input" value="${(habit.name || '').replace(/"/g, '&quot;')}" placeholder="Nome abitudine..."></td>`;
+            for (let d = 0; d < 14; d++) {
+              const isChecked = habit.checks && habit.checks[d];
+              rowHTML += `<td><span class="habit-dot ${isChecked ? 'checked' : ''}" data-day="${d}"></span></td>`;
             }
+            rowHTML += `<td><button class="habit-del-btn" title="Elimina abitudine">&times;</button></td>`;
             tr.innerHTML = rowHTML;
+
+            const nameInput = tr.querySelector('.habit-name-input');
+            nameInput.addEventListener('input', () => {
+              habit.name = nameInput.value;
+              saveAll();
+            });
 
             tr.querySelectorAll('.habit-dot').forEach(dot => {
               dot.addEventListener('click', () => {
-                dot.classList.toggle('checked');
-                if (dot.classList.contains('checked')) playCheckSound();
+                const dayIdx = parseInt(dot.dataset.day, 10);
+                if (!Array.isArray(habit.checks)) habit.checks = Array(14).fill(false);
+                habit.checks[dayIdx] = !habit.checks[dayIdx];
+                dot.classList.toggle('checked', habit.checks[dayIdx]);
+                if (habit.checks[dayIdx]) playCheckSound();
                 saveAll();
               });
             });
 
-            table.appendChild(tr);
+            tr.querySelector('.habit-del-btn').addEventListener('click', () => {
+              plannerData.habits = plannerData.habits.filter(h => h.id !== habit.id);
+              saveAll();
+              renderHabitTracker();
+              playPopSound();
+              showToast('🗑️ Abitudine rimossa');
+            });
+
+            tbody.appendChild(tr);
           });
+        }
+
+        // --- Diary Prompts Rendering & Handlers ---
+        function renderDiaryPrompts() {
+          const list = document.getElementById('diary-prompts-list');
+          if (!list) return;
+          list.innerHTML = '';
+
+          if (!Array.isArray(plannerData.diaryPrompts)) {
+            plannerData.diaryPrompts = ['Qual è stato il momento più bello di oggi? 🌸'];
+          }
+
+          plannerData.diaryPrompts.forEach((promptText, pIdx) => {
+            const row = document.createElement('div');
+            row.className = 'diary-prompt-row';
+            row.innerHTML = `
+              <span class="prompt-icon">🌸</span>
+              <input type="text" class="prompt-input" value="${(promptText || '').replace(/"/g, '&quot;')}" placeholder="Scrivi uno spunto o riflessione...">
+              <button class="prompt-del-btn" title="Elimina prompt">&times;</button>
+            `;
+            const input = row.querySelector('.prompt-input');
+            const delBtn = row.querySelector('.prompt-del-btn');
+
+            input.addEventListener('input', () => {
+              plannerData.diaryPrompts[pIdx] = input.value;
+              saveAll();
+            });
+
+            delBtn.addEventListener('click', () => {
+              plannerData.diaryPrompts.splice(pIdx, 1);
+              saveAll();
+              renderDiaryPrompts();
+              playPopSound();
+              showToast('🗑️ Prompt rimosso');
+            });
+
+            list.appendChild(row);
+          });
+        }
+
+        // --- Monthly Goal & Steps Rendering ---
+        function renderMonthlyGoal() {
+          const titleEl = document.getElementById('monthly-goal-title');
+          const descEl = document.getElementById('monthly-goal-desc');
+          if (titleEl && plannerData.goalTitle !== undefined) titleEl.value = plannerData.goalTitle;
+          if (descEl && plannerData.goalDesc !== undefined) descEl.value = plannerData.goalDesc;
+
+          const stepsWrap = document.getElementById('monthly-goal-steps-wrap');
+          if (!stepsWrap) return;
+          stepsWrap.innerHTML = '';
+
+          if (!Array.isArray(plannerData.goalSteps)) {
+            plannerData.goalSteps = [];
+          }
+
+          plannerData.goalSteps.forEach((step, sIdx) => {
+            const row = document.createElement('div');
+            row.className = 'goal-step-row';
+            row.innerHTML = `
+              <div class="chk-box ${step.done ? 'checked' : ''}"></div>
+              <input type="text" class="goal-step-input ${step.done ? 'checked' : ''}" value="${(step.text || '').replace(/"/g, '&quot;')}" placeholder="Descrivi questo passaggio...">
+              <button class="goal-step-del-btn" title="Elimina passaggio">&times;</button>
+            `;
+            const box = row.querySelector('.chk-box');
+            const input = row.querySelector('.goal-step-input');
+            const delBtn = row.querySelector('.goal-step-del-btn');
+
+            box.addEventListener('click', () => {
+              step.done = !step.done;
+              box.classList.toggle('checked', step.done);
+              input.classList.toggle('checked', step.done);
+              if (step.done) playCheckSound();
+              saveAll();
+            });
+
+            input.addEventListener('input', () => {
+              step.text = input.value;
+              saveAll();
+            });
+
+            delBtn.addEventListener('click', () => {
+              plannerData.goalSteps.splice(sIdx, 1);
+              saveAll();
+              renderMonthlyGoal();
+              playPopSound();
+              showToast('🗑️ Passaggio rimosso');
+            });
+
+            stepsWrap.appendChild(row);
+          });
+        }
+
+        // --- Bind Persistent Planner Inputs ---
+        function bindPlannerInputs() {
+          // Daily Gratitude & Priorities
+          const gratTitle = document.getElementById('daily-gratitude-title');
+          const gratText = document.getElementById('daily-gratitude');
+          const p1 = document.getElementById('priority-1');
+          const p2 = document.getElementById('priority-2');
+          const p3 = document.getElementById('priority-3');
+          const dayName = document.getElementById('daily-dayname');
+          const dayNum = document.getElementById('daily-daynum');
+          const dayMonth = document.getElementById('daily-month');
+
+          if (gratTitle) {
+            if (plannerData.gratitudeTitle !== undefined) gratTitle.value = plannerData.gratitudeTitle;
+            gratTitle.addEventListener('input', () => { plannerData.gratitudeTitle = gratTitle.value; saveAll(); });
+          }
+          if (gratText) {
+            if (plannerData.gratitudeText !== undefined) gratText.value = plannerData.gratitudeText;
+            gratText.addEventListener('input', () => { plannerData.gratitudeText = gratText.value; saveAll(); });
+          }
+          if (p1) {
+            if (plannerData.priority1 !== undefined) p1.value = plannerData.priority1;
+            p1.addEventListener('input', () => { plannerData.priority1 = p1.value; saveAll(); });
+          }
+          if (p2) {
+            if (plannerData.priority2 !== undefined) p2.value = plannerData.priority2;
+            p2.addEventListener('input', () => { plannerData.priority2 = p2.value; saveAll(); });
+          }
+          if (p3) {
+            if (plannerData.priority3 !== undefined) p3.value = plannerData.priority3;
+            p3.addEventListener('input', () => { plannerData.priority3 = p3.value; saveAll(); });
+          }
+          if (dayName) {
+            if (plannerData.dailyDayName !== undefined) dayName.value = plannerData.dailyDayName;
+            dayName.addEventListener('input', () => { plannerData.dailyDayName = dayName.value; saveAll(); });
+          }
+          if (dayNum) {
+            if (plannerData.dailyDayNum !== undefined) dayNum.value = plannerData.dailyDayNum;
+            dayNum.addEventListener('input', () => { plannerData.dailyDayNum = dayNum.value; saveAll(); });
+          }
+          if (dayMonth) {
+            if (plannerData.dailyMonth !== undefined) dayMonth.value = plannerData.dailyMonth;
+            dayMonth.addEventListener('input', () => { plannerData.dailyMonth = dayMonth.value; saveAll(); });
+          }
+
+          // Diary
+          const diaryDate = document.getElementById('diary-date-header');
+          const diaryLeft = document.getElementById('diary-text-left');
+          const diaryRight = document.getElementById('diary-text-right');
+          if (diaryDate) {
+            if (plannerData.diaryDate !== undefined) diaryDate.value = plannerData.diaryDate;
+            diaryDate.addEventListener('input', () => { plannerData.diaryDate = diaryDate.value; saveAll(); });
+          }
+          if (diaryLeft) {
+            if (plannerData.diaryLeftText !== undefined) diaryLeft.value = plannerData.diaryLeftText;
+            diaryLeft.addEventListener('input', () => { plannerData.diaryLeftText = diaryLeft.value; saveAll(); });
+          }
+          if (diaryRight) {
+            if (plannerData.diaryRightText !== undefined) diaryRight.value = plannerData.diaryRightText;
+            diaryRight.addEventListener('input', () => { plannerData.diaryRightText = diaryRight.value; saveAll(); });
+          }
+
+          // Monthly Goal inputs
+          const goalTitle = document.getElementById('monthly-goal-title');
+          const goalDesc = document.getElementById('monthly-goal-desc');
+          if (goalTitle) {
+            if (plannerData.goalTitle !== undefined) goalTitle.value = plannerData.goalTitle;
+            goalTitle.addEventListener('input', () => { plannerData.goalTitle = goalTitle.value; saveAll(); });
+          }
+          if (goalDesc) {
+            if (plannerData.goalDesc !== undefined) goalDesc.value = plannerData.goalDesc;
+            goalDesc.addEventListener('input', () => { plannerData.goalDesc = goalDesc.value; saveAll(); });
+          }
+
+          // Books & Wishlist
+          const booksText = document.getElementById('books-list-text');
+          const wishlistText = document.getElementById('wishlist-text');
+          const habitMonth = document.getElementById('habit-month-title');
+          if (booksText) {
+            if (plannerData.booksText !== undefined) booksText.value = plannerData.booksText;
+            booksText.addEventListener('input', () => { plannerData.booksText = booksText.value; saveAll(); });
+          }
+          if (wishlistText) {
+            if (plannerData.wishlistText !== undefined) wishlistText.value = plannerData.wishlistText;
+            wishlistText.addEventListener('input', () => { plannerData.wishlistText = wishlistText.value; saveAll(); });
+          }
+          if (habitMonth) {
+            if (plannerData.habitMonth !== undefined) habitMonth.value = plannerData.habitMonth;
+            habitMonth.addEventListener('input', () => { plannerData.habitMonth = habitMonth.value; saveAll(); });
+          }
+
+          // Button triggers
+          const btnAddHabit = document.getElementById('btn-add-habit');
+          if (btnAddHabit) {
+            btnAddHabit.addEventListener('click', () => {
+              if (!Array.isArray(plannerData.habits)) plannerData.habits = [];
+              plannerData.habits.push({
+                id: 'h_' + Date.now(),
+                name: 'Nuova Abitudine ✨',
+                checks: Array(14).fill(false)
+              });
+              saveAll();
+              renderHabitTracker();
+              playPopSound();
+              showToast('✨ Nuova abitudine aggiunta!');
+            });
+          }
+
+          const btnAddDiaryPrompt = document.getElementById('btn-add-diary-prompt');
+          if (btnAddDiaryPrompt) {
+            btnAddDiaryPrompt.addEventListener('click', () => {
+              if (!Array.isArray(plannerData.diaryPrompts)) plannerData.diaryPrompts = [];
+              plannerData.diaryPrompts.push('Di cosa sei fiero/a oggi? ✨');
+              saveAll();
+              renderDiaryPrompts();
+              playPopSound();
+              showToast('💡 Nuovo prompt aggiunto!');
+            });
+          }
+
+          const btnAddGoalStep = document.getElementById('btn-add-goal-step');
+          if (btnAddGoalStep) {
+            btnAddGoalStep.addEventListener('click', () => {
+              if (!Array.isArray(plannerData.goalSteps)) plannerData.goalSteps = [];
+              plannerData.goalSteps.push({
+                id: 's_' + Date.now(),
+                text: 'Nuovo passaggio chiave ✨',
+                done: false
+              });
+              saveAll();
+              renderMonthlyGoal();
+              playPopSound();
+              showToast('🎯 Nuovo step aggiunto!');
+            });
+          }
         }
 
         // --- Navigation Between Sections ---
@@ -3193,10 +3625,16 @@
         btnResetPhoto.addEventListener('click', () => {
           notes = getDefaultNotes();
           weeklyData = getDefaultWeekly();
+          plannerData = getDefaultPlannerData();
           saveAll();
           switchSection('notes');
           renderNotes();
           renderWeeklyPlanner();
+          renderDailyTimeline();
+          renderHabitTracker();
+          renderDiaryPrompts();
+          renderMonthlyGoal();
+          bindPlannerInputs();
           playPopSound();
           showToast('📸 Quaderno ripristinato esattamente come nella foto!');
         });
@@ -3222,6 +3660,9 @@
         renderWeeklyPlanner();
         renderDailyTimeline();
         renderHabitTracker();
+        renderDiaryPrompts();
+        renderMonthlyGoal();
+        bindPlannerInputs();
 
       })();
     </script>
