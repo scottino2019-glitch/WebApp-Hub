@@ -3,10 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Pastel Sticky Notebook</title>
-    <meta name="description" content="Un quaderno ad anelli con sticky notes personalizzabili in stile pastel kawaii, con note sagomate, caratteri calligrafici, colori pastello e gestione nativa in un unico file HTML." />
-    <meta property="og:title" content="Pastel Sticky Notebook" />
-    <meta property="og:description" content="Sticky notes personalizzabili in stile pastel kawaii in un unico file HTML nativo." />
+    <title>Pastel Sticky Notebook &amp; Planner</title>
+    <meta name="description" content="Un diario planner cartaceo perpetuo e quaderno sticky notes kawaii: bacheca post-it, planner settimanale e giornaliero perpetui, diario personale, habit tracker e ricco pack di adesivi in un unico file HTML nativo." />
+    <meta property="og:title" content="Pastel Sticky Notebook &amp; Planner" />
+    <meta property="og:description" content="Diario planner cartaceo perpetuo e quaderno sticky notes kawaii in un unico file HTML nativo." />
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary_large_image" />
 
@@ -20,9 +20,12 @@
         --desk-bg: #f5ece1;
         --page-pink: #f25097;
         --page-lilac: #c6b5ea;
+        --page-cream: #fefdf9;
         --ring-yellow: #f8c325;
         --ring-gold: #d99a0a;
         --elastic-yellow: #eeb311;
+        --accent-pink: #db2777;
+        --accent-rose: #f472b6;
       }
 
       * {
@@ -87,6 +90,44 @@
         letter-spacing: -0.5px;
       }
 
+      /* View Switcher (Both / Page 1 / Page 2) */
+      .page-switch-tabs {
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+        background: #ffffff;
+        border: 1.5px solid #fbcfe8;
+        border-radius: 20px;
+        padding: 3px 4px;
+        box-shadow: 0 1px 3px rgba(244, 114, 182, 0.12);
+      }
+
+      .tab-btn {
+        appearance: none;
+        background: transparent;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        font-family: 'Quicksand', sans-serif;
+        font-size: 11px;
+        font-weight: 700;
+        color: #be185d;
+        padding: 4px 10px;
+        border-radius: 14px;
+        transition: all 0.15s ease;
+        user-select: none;
+      }
+
+      .tab-btn:hover {
+        background: #fdf2f8;
+      }
+
+      .tab-btn.active {
+        background: #db2777;
+        color: #ffffff;
+        box-shadow: 0 2px 5px rgba(219, 39, 119, 0.25);
+      }
+
       .header-actions {
         display: flex;
         align-items: center;
@@ -100,7 +141,7 @@
         outline: none;
         cursor: pointer;
         font-family: 'Quicksand', sans-serif;
-        font-weight: 600;
+        font-weight: 700;
         font-size: 12px;
         padding: 6px 12px;
         border-radius: 8px;
@@ -123,51 +164,55 @@
       .btn-secondary {
         background: #fdf2f8;
         color: #9d174d;
-        border: 1px solid #fbcfe8;
-        box-shadow: 0 1px 0 #f472b6;
+        border: 1.5px solid #fbcfe8;
+        box-shadow: 0 2px 4px rgba(244, 114, 182, 0.12);
       }
-      .btn-secondary:hover { background: #fce7f3; }
+      .btn-secondary:hover { background: #fce7f3; border-color: #f472b6; }
 
       .btn-icon {
-        padding: 6px 9px;
-        background: #f3f4f6;
-        color: #4b5563;
-        border: 1px solid #e5e7eb;
-        border-radius: 8px;
-      }
-
-      /* View Tabs: 2 Pagine / Pag. 1 / Pag. 2 */
-      .page-switch-tabs {
-        display: flex;
-        align-items: center;
-        background: #f3f4f6;
-        padding: 2px;
-        border-radius: 8px;
-        border: 1px solid #e5e7eb;
-      }
-
-      .tab-btn {
-        appearance: none;
-        background: none;
-        border: none;
-        cursor: pointer;
-        font-family: 'Quicksand', sans-serif;
-        font-size: 12px;
-        font-weight: 600;
-        padding: 4px 10px;
-        border-radius: 6px;
-        color: #6b7280;
-        transition: all 0.15s ease;
-      }
-
-      .tab-btn.active {
+        padding: 6px 10px;
         background: #ffffff;
-        color: #be185d;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        font-weight: 700;
+        color: #db2777;
+        border: 1.5px solid #fbcfe8;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(244, 114, 182, 0.12);
+      }
+      .btn-icon:hover {
+        background: #fdf2f8;
+        border-color: #f472b6;
       }
 
-      /* Permanent Customization Toolbar */
+      /* Cute Pastel Stamp Button for Planner Pages */
+      .planner-action-btn {
+        appearance: none;
+        outline: none;
+        background: linear-gradient(135deg, #ffffff, #fdf2f8);
+        color: #be185d;
+        border: 1.5px solid #f472b6;
+        border-radius: 20px;
+        font-family: 'Quicksand', sans-serif;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 5px 12px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        box-shadow: 0 2px 5px rgba(244, 114, 182, 0.15);
+        transition: all 0.15s ease;
+        user-select: none;
+      }
+      .planner-action-btn:hover {
+        background: #fce7f3;
+        border-color: #db2777;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(244, 114, 182, 0.25);
+      }
+      .planner-action-btn:active {
+        transform: translateY(1px);
+      }
+
+      /* Contextual Note Formatting Toolbar */
       #note-toolbar-panel {
         background: #ffffff;
         border-bottom: 2px solid #fbcfe8;
@@ -221,11 +266,12 @@
       .tb-select {
         font-family: inherit;
         font-size: 12px;
-        padding: 4px 6px;
-        border-radius: 6px;
-        border: 1px solid #d1d5db;
-        background: #f9fafb;
-        color: #1f2937;
+        font-weight: 600;
+        padding: 4px 8px;
+        border-radius: 8px;
+        border: 1.5px solid #fbcfe8;
+        background: #ffffff;
+        color: #831843;
         cursor: pointer;
         outline: none;
       }
@@ -246,19 +292,27 @@
       }
 
       .tb-btn-small {
-        padding: 3px 8px;
+        padding: 4px 8px;
         font-size: 11px;
+        font-weight: 700;
         border-radius: 6px;
-        background: #f3f4f6;
-        border: 1px solid #e5e7eb;
+        background: #ffffff;
+        border: 1.5px solid #fbcfe8;
+        color: #9d174d;
         cursor: pointer;
         user-select: none;
+        transition: all 0.15s ease;
+      }
+      .tb-btn-small:hover {
+        background: #fdf2f8;
+        border-color: #f472b6;
       }
       .tb-btn-small.active {
-        background: #fce7f3;
-        border-color: #f472b6;
-        color: #db2777;
+        background: #db2777;
+        border-color: #be185d;
+        color: #ffffff;
         font-weight: 700;
+        box-shadow: 0 2px 4px rgba(219, 39, 119, 0.25);
       }
 
       /* Workspace Canvas */
@@ -275,7 +329,7 @@
       .notebook-wrapper {
         position: relative;
         width: 100%;
-        max-width: 920px;
+        max-width: 960px;
         display: flex;
         justify-content: center;
         filter: drop-shadow(0 16px 26px rgba(50, 20, 35, 0.18));
@@ -291,15 +345,66 @@
           radial-gradient(#f472b6 2px, transparent 2px);
         background-size: 44px 44px, 58px 58px, 50px 50px;
         background-position: 0 0, 22px 22px, 12px 30px;
-        padding: 14px 18px 14px 14px;
+        padding: 14px 28px 14px 14px;
         border-radius: 18px;
         box-shadow: inset 0 2px 5px rgba(255, 255, 255, 0.5), inset 0 -4px 7px rgba(0, 0, 0, 0.35);
       }
 
+      /* Side Ring Binder Tab Dividers (Like real Filofax planner tabs!) */
+      .side-binder-tabs {
+        position: absolute;
+        right: -14px;
+        top: 32px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        z-index: 55;
+      }
+
+      .binder-tab {
+        width: 36px;
+        height: 66px;
+        border-radius: 0 12px 12px 0;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Mali', cursive;
+        font-size: 11px;
+        font-weight: 800;
+        color: #ffffff;
+        writing-mode: vertical-rl;
+        text-orientation: mixed;
+        letter-spacing: 1.5px;
+        box-shadow: 3px 3px 8px rgba(0,0,0,0.18);
+        transition: width 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+        user-select: none;
+        border: 1.5px solid rgba(255, 255, 255, 0.45);
+        border-left: none;
+      }
+      .binder-tab:hover {
+        width: 44px;
+        transform: translateX(4px);
+        box-shadow: 4px 4px 10px rgba(0,0,0,0.25);
+      }
+      .binder-tab.active {
+        width: 50px;
+        font-weight: 900;
+        transform: translateX(6px);
+        box-shadow: 5px 4px 14px rgba(0,0,0,0.3);
+        border-color: rgba(255, 255, 255, 0.95);
+      }
+
+      .tab-color-notes { background: linear-gradient(135deg, #fb7185, #e11d48); }
+      .tab-color-week { background: linear-gradient(135deg, #a78bfa, #7c3aed); }
+      .tab-color-day { background: linear-gradient(135deg, #38bdf8, #0284c7); }
+      .tab-color-diary { background: linear-gradient(135deg, #34d399, #059669); }
+      .tab-color-habits { background: linear-gradient(135deg, #fbbf24, #d97706); }
+
       .elastic-band {
         position: absolute;
         right: -8px;
-        top: 40%;
+        top: 70%;
         width: 16px;
         height: 70px;
         background: var(--elastic-yellow);
@@ -314,35 +419,51 @@
         background: #fdfbf7;
         border-radius: 10px;
         position: relative;
-        min-height: 640px;
+        min-height: 660px;
       }
 
       /* Notebook Pages */
       .notebook-page {
         flex: 1;
-        min-height: 640px;
+        min-height: 660px;
         position: relative;
         padding: 16px 14px;
       }
 
       .page-left {
+        border-radius: 10px 0 0 10px;
+        box-shadow: inset -10px 0 14px -6px rgba(0,0,0,0.18);
+      }
+
+      .page-right {
+        border-radius: 0 10px 10px 0;
+        box-shadow: inset 10px 0 14px -6px rgba(0,0,0,0.15);
+      }
+
+      /* Themed Page Backgrounds */
+      /* 1. Notes Page theme (Original photo) */
+      .spread-theme-notes .page-left {
         background: var(--page-pink);
         background-image: 
           linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px),
           linear-gradient(rgba(0,0,0,0.03) 1px, transparent 1px);
         background-size: 20px 20px;
-        border-radius: 10px 0 0 10px;
-        box-shadow: inset -10px 0 14px -6px rgba(0,0,0,0.2);
       }
-
-      .page-right {
+      .spread-theme-notes .page-right {
         background: var(--page-lilac);
         background-image: 
           linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px),
           linear-gradient(rgba(0,0,0,0.02) 1px, transparent 1px);
         background-size: 20px 20px;
-        border-radius: 0 10px 10px 0;
-        box-shadow: inset 10px 0 14px -6px rgba(0,0,0,0.15);
+      }
+
+      /* 2. Paper Cream theme for Planners & Diary */
+      .spread-theme-paper .page-left,
+      .spread-theme-paper .page-right {
+        background: var(--page-cream);
+        background-image: 
+          radial-gradient(#e5e7eb 1px, transparent 1px);
+        background-size: 16px 16px;
       }
 
       .note-washi-tape {
@@ -405,7 +526,7 @@
         box-shadow: 0 3px 5px rgba(0,0,0,0.3);
       }
 
-      /* Grid Layouts */
+      /* Grid Layouts for Section 1 (Sticky Notes) */
       .page-left-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -751,7 +872,7 @@
         right: 8px;
       }
 
-      /* Clearly Visible Patterns (Crisp, High Contrast & Delightful!) */
+      /* Clearly Visible Patterns */
       .pattern-ruled {
         background-image: 
           repeating-linear-gradient(
@@ -775,32 +896,336 @@
         background-size: 15px 15px !important;
       }
 
-      /* Bottom Stickers Drawer */
+      /* ============================================================== */
+      /* NEW PLANNER & DIARY STYLES (Paper-like Perpetual Agenda)        */
+      /* ============================================================== */
+
+      .planner-spread-content {
+        display: none;
+        width: 100%;
+        height: 100%;
+      }
+      .planner-spread-content.active {
+        display: flex;
+        width: 100%;
+      }
+
+      /* Common Planner Header Tape Banner */
+      .planner-banner {
+        background: #fdf2f8;
+        border: 2px dashed #f472b6;
+        border-radius: 8px;
+        padding: 6px 14px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 14px;
+      }
+
+      .planner-title {
+        font-family: 'Mali', cursive;
+        font-size: 16px;
+        font-weight: 700;
+        color: #be185d;
+      }
+
+      /* Perpetual Date Picker Strip */
+      .perpetual-date-strip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: #ffffff;
+        padding: 3px 8px;
+        border-radius: 20px;
+        border: 1px solid #fbcfe8;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+      }
+
+      .date-input-inline {
+        border: none;
+        outline: none;
+        background: transparent;
+        font-family: 'Quicksand', sans-serif;
+        font-weight: 700;
+        font-size: 12px;
+        color: #9d174d;
+        cursor: pointer;
+      }
+
+      /* Weekly Planner Cards */
+      .weekly-days-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .day-card {
+        background: #ffffff;
+        border: 1px solid #fbcfe8;
+        border-left: 4px solid #db2777;
+        border-radius: 8px;
+        padding: 8px 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+      }
+
+      .day-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 4px;
+      }
+
+      .day-label {
+        font-weight: 700;
+        font-size: 13px;
+        color: #be185d;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .day-date-bubble {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: #fdf2f8;
+        border: 1px solid #f472b6;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        font-weight: 800;
+        color: #db2777;
+        outline: none;
+      }
+
+      .day-textarea {
+        width: 100%;
+        min-height: 48px;
+        border: none;
+        outline: none;
+        resize: none;
+        font-family: 'Patrick Hand', cursive;
+        font-size: 14px;
+        color: #374151;
+        line-height: 1.4;
+        background-image: repeating-linear-gradient(transparent, transparent 18px, #fbcfe8 19px);
+      }
+
+      /* Weekly Goals & Habit Tracker Box */
+      .weekly-sidebar-box {
+        background: #ffffff;
+        border: 2px dashed #c084fc;
+        border-radius: 10px;
+        padding: 10px;
+        margin-top: 10px;
+      }
+
+      .weekly-box-title {
+        font-size: 12px;
+        font-weight: 700;
+        color: #7e22ce;
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      /* Daily Planner Page Components */
+      .daily-header {
+        background: #fdf2f8;
+        border-radius: 10px;
+        padding: 8px 12px;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 6px;
+        border: 1px solid #fbcfe8;
+      }
+
+      .mood-selector, .weather-selector {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .mood-item, .weather-item {
+        font-size: 16px;
+        cursor: pointer;
+        padding: 2px 4px;
+        border-radius: 6px;
+        transition: transform 0.15s ease, background 0.15s ease;
+      }
+      .mood-item:hover, .weather-item:hover { transform: scale(1.2); }
+      .mood-item.active, .weather-item.active {
+        background: #ffffff;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+        transform: scale(1.15);
+      }
+
+      .water-tracker {
+        background: #f0f9ff;
+        border: 1px solid #bae6fd;
+        border-radius: 8px;
+        padding: 6px 10px;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .water-cup {
+        cursor: pointer;
+        font-size: 16px;
+        opacity: 0.35;
+        transition: all 0.15s ease;
+      }
+      .water-cup:hover { transform: scale(1.2); }
+      .water-cup.filled {
+        opacity: 1;
+        transform: scale(1.1);
+      }
+
+      /* Hourly Schedule Timeline */
+      .hourly-timeline {
+        background: #ffffff;
+        border-radius: 8px;
+        border: 1px solid #e5e7eb;
+        padding: 8px 10px;
+        max-height: 440px;
+        overflow-y: auto;
+      }
+
+      .time-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 3px 0;
+        border-bottom: 1px dashed #f3f4f6;
+      }
+
+      .time-label {
+        width: 44px;
+        font-size: 11px;
+        font-weight: 700;
+        color: #9ca3af;
+        text-align: right;
+        flex-shrink: 0;
+      }
+
+      .time-input {
+        flex: 1;
+        border: none;
+        outline: none;
+        font-family: 'Patrick Hand', cursive;
+        font-size: 13px;
+        color: #1f2937;
+      }
+
+      /* Diary / Journal Entry Page */
+      .diary-entry-container {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        padding: 6px;
+      }
+
+      .diary-paper-lines {
+        flex: 1;
+        width: 100%;
+        min-height: 450px;
+        background: transparent;
+        border: none;
+        outline: none;
+        resize: none;
+        font-family: 'Caveat', cursive;
+        font-size: 20px;
+        line-height: 28px;
+        color: #1f2937;
+        background-image: repeating-linear-gradient(transparent, transparent 27px, #bae6fd 28px);
+        padding: 4px 6px;
+      }
+
+      /* Habit Tracker Grid */
+      .habit-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+        background: #ffffff;
+        border-radius: 8px;
+        overflow: hidden;
+        border: 1px solid #fed7aa;
+      }
+
+      .habit-table th, .habit-table td {
+        padding: 6px 4px;
+        font-size: 11px;
+        text-align: center;
+        border-bottom: 1px solid #ffedd5;
+      }
+
+      .habit-table th {
+        background: #fff7ed;
+        color: #c2410c;
+        font-weight: 700;
+      }
+
+      .habit-name-input {
+        border: none;
+        outline: none;
+        font-family: inherit;
+        font-size: 11px;
+        font-weight: 600;
+        color: #7c2d12;
+        width: 100%;
+        text-align: left;
+      }
+
+      .habit-dot {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        border: 1.5px solid #fdba74;
+        display: inline-block;
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+      .habit-dot.checked {
+        background: #ea580c;
+        border-color: #ea580c;
+      }
+
+      /* Extended Sticker Tray Drawer */
       .stickers-drawer {
         position: fixed;
-        bottom: 16px;
-        right: 16px;
+        bottom: 14px;
+        right: 14px;
         background: #ffffff;
         border: 2px solid #fbcfe8;
-        border-radius: 14px;
+        border-radius: 16px;
         padding: 6px 12px;
-        box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.14);
         display: flex;
         align-items: center;
         gap: 8px;
         z-index: 100;
+        max-width: 90vw;
+        overflow-x: auto;
       }
 
       .sticker-item {
         cursor: pointer;
-        padding: 3px;
-        border-radius: 6px;
+        padding: 4px;
+        border-radius: 8px;
         font-size: 18px;
         transition: transform 0.15s ease;
+        flex-shrink: 0;
       }
       .sticker-item:hover { transform: scale(1.3); }
 
-      /* Modal: Scegli Forma Nota */
+      /* Modals */
       .modal-backdrop {
         position: fixed;
         inset: 0;
@@ -812,9 +1237,7 @@
         z-index: 200;
         padding: 16px;
       }
-      .modal-backdrop.open {
-        display: flex;
-      }
+      .modal-backdrop.open { display: flex; }
 
       .modal-card {
         background: #ffffff;
@@ -870,9 +1293,7 @@
         border-color: #f472b6;
         transform: translateY(-2px);
       }
-      .shape-choice-btn .choice-icon {
-        font-size: 26px;
-      }
+      .shape-choice-btn .choice-icon { font-size: 26px; }
       .shape-choice-btn .choice-name {
         font-size: 11px;
         font-weight: 700;
@@ -880,7 +1301,7 @@
         text-align: center;
       }
 
-      /* Cute Toast Feedback Notification */
+      /* Toast Notification */
       .toast-msg {
         position: fixed;
         bottom: 24px;
@@ -903,7 +1324,7 @@
         opacity: 1;
       }
 
-      /* Responsive view toggles */
+      /* Responsive View Toggles */
       .view-left .page-right,
       .view-left .spiral-binding,
       .view-left .elastic-band {
@@ -934,6 +1355,29 @@
         .page-right {
           border-radius: 0 0 10px 10px;
         }
+        .side-binder-tabs {
+          position: static;
+          flex-direction: row;
+          justify-content: center;
+          gap: 6px;
+          margin-bottom: 12px;
+          width: 100%;
+        }
+        .binder-tab {
+          width: auto;
+          height: 32px;
+          padding: 0 10px;
+          border-radius: 8px 8px 0 0;
+          writing-mode: horizontal-tb;
+          letter-spacing: 0.5px;
+          font-size: 11px;
+          border-left: 1.5px solid rgba(255, 255, 255, 0.45);
+        }
+        .binder-tab.active {
+          height: 36px;
+          width: auto;
+          transform: translateY(-2px);
+        }
       }
     </style>
   </head>
@@ -941,25 +1385,25 @@
     <!-- Header -->
     <header>
       <div class="logo-group">
-        <div class="logo-icon">📒</div>
+        <div class="logo-icon">📔</div>
         <div>
-          <div class="app-title">Pastel Sticky Notebook</div>
+          <div class="app-title">Pastel Sticky Notebook &amp; Planner</div>
         </div>
       </div>
 
-      <!-- Page Switcher Tabs -->
+      <!-- View Switcher (Both / Page 1 / Page 2) -->
       <div class="page-switch-tabs">
         <button class="tab-btn active" data-view="both">📖 2 Pagine</button>
-        <button class="tab-btn" data-view="left">🌸 Pag. 1 (NOTE)</button>
-        <button class="tab-btn" data-view="right">💜 Pag. 2 (Stickers)</button>
+        <button class="tab-btn" data-view="left">Pag. Sx</button>
+        <button class="tab-btn" data-view="right">Pag. Dx</button>
       </div>
 
       <div class="header-actions">
-        <button class="btn btn-primary" id="btn-add-note">
+        <button class="btn btn-primary note-action-btn" id="btn-add-note">
           ➕ Nuova Nota...
         </button>
 
-        <button class="btn btn-secondary" id="btn-reset-photo" title="Ripristina la composizione esatta della foto">
+        <button class="btn btn-secondary note-action-btn" id="btn-reset-photo" title="Ripristina la bacheca note come nella foto">
           📸 Come in Foto
         </button>
 
@@ -967,7 +1411,7 @@
           🔊
         </button>
 
-        <button class="btn btn-icon" id="btn-clear-all" title="Elimina tutto">
+        <button class="btn btn-icon note-action-btn" id="btn-clear-all" title="Elimina note">
           🗑️
         </button>
       </div>
@@ -975,13 +1419,11 @@
 
     <!-- Always Visible Customization Toolbar Panel -->
     <div id="note-toolbar-panel">
-      <!-- Hint when no note is selected -->
       <div class="toolbar-status-hint" id="tb-hint">
         <span>👆</span>
         <span>Clicca su qualsiasi nota per personalizzare forma, font, colori pastello, angolo piegato e trama!</span>
       </div>
 
-      <!-- Controls when a note is active -->
       <div class="toolbar-active-controls" id="tb-controls">
         <div class="tb-group">
           <span class="tb-label">Forma:</span>
@@ -1072,31 +1514,265 @@
     <main>
       <div class="notebook-wrapper">
         <div class="notebook-cover-base">
+          <!-- Side Binder Tab Dividers -->
+          <div class="side-binder-tabs">
+            <div class="binder-tab tab-color-notes active" data-target="notes" title="Bacheca Note">🌸 NOTE</div>
+            <div class="binder-tab tab-color-week" data-target="weekly" title="Settimana">📅 SETT.</div>
+            <div class="binder-tab tab-color-day" data-target="daily" title="Giorno">☀️ DAY</div>
+            <div class="binder-tab tab-color-diary" data-target="diary" title="Diario">📖 DIARY</div>
+            <div class="binder-tab tab-color-habits" data-target="habits" title="Abitudini">🎯 HABIT</div>
+          </div>
+
           <div class="elastic-band"></div>
 
           <!-- Open Pages Spread -->
-          <div class="notebook-spread" id="notebook-spread">
-            <!-- Left Page: Pink with "NOTE" washi banner -->
-            <div class="notebook-page page-left" id="page-left">
-              <div class="note-washi-tape">NOTE</div>
-              <div class="page-left-grid" id="left-grid"></div>
+          <div class="notebook-spread spread-theme-notes" id="notebook-spread">
+            
+            <!-- ============================================================== -->
+            <!-- SECTION 1: STICKY NOTES BOARD (Original Photo Replication)     -->
+            <!-- ============================================================== -->
+            <div class="planner-spread-content active" id="sec-notes" style="display:flex; width:100%;">
+              <!-- Left Page: Pink with "NOTE" washi banner -->
+              <div class="notebook-page page-left" id="page-left">
+                <div class="note-washi-tape">NOTE</div>
+                <div class="page-left-grid" id="left-grid"></div>
+              </div>
+
+              <!-- Center Spiral Twin Wire Binding -->
+              <div class="spiral-binding"></div>
+
+              <!-- Right Page: Lilac with 6 shaped notes in harmonic slots -->
+              <div class="notebook-page page-right" id="page-right">
+                <div class="page-right-grid" id="right-grid"></div>
+              </div>
             </div>
 
-            <!-- Center Spiral Twin Wire Binding -->
-            <div class="spiral-binding" id="spiral-binding"></div>
+            <!-- ============================================================== -->
+            <!-- SECTION 2: PERPETUAL WEEKLY PLANNER (Settimanale)               -->
+            <!-- ============================================================== -->
+            <div class="planner-spread-content" id="sec-weekly">
+              <!-- Left Page: Lunedì, Martedì, Mercoledì, Giovedì -->
+              <div class="notebook-page page-left">
+                <div class="planner-banner">
+                  <div class="planner-title">📅 Planner Settimanale</div>
+                  <div class="perpetual-date-strip">
+                    <span>Mese:</span>
+                    <input type="text" class="date-input-inline" id="week-month-input" value="Novembre" style="width:75px;">
+                    <span>Sett:</span>
+                    <input type="text" class="date-input-inline" id="week-range-input" value="10 - 16" style="width:55px;">
+                  </div>
+                </div>
 
-            <!-- Right Page: Lilac with 6 shaped notes in harmonic slots -->
-            <div class="notebook-page page-right" id="page-right">
-              <div class="page-right-grid" id="right-grid"></div>
+                <div class="weekly-days-grid" id="week-left-days">
+                  <!-- Monday to Thursday dynamically rendered -->
+                </div>
+              </div>
+
+              <div class="spiral-binding"></div>
+
+              <!-- Right Page: Venerdì, Sabato, Domenica + Obiettivi & Mini Habit -->
+              <div class="notebook-page page-right">
+                <div class="planner-banner">
+                  <div class="planner-title">✨ Focus &amp; Weekend</div>
+                  <button class="planner-action-btn" id="btn-today-week">📅 Questa Settimana</button>
+                </div>
+
+                <div class="weekly-days-grid" id="week-right-days">
+                  <!-- Friday to Sunday dynamically rendered -->
+                </div>
+
+                <!-- Goals of the Week -->
+                <div class="weekly-sidebar-box">
+                  <div class="weekly-box-title">🎯 Obiettivi Chiave della Settimana</div>
+                  <div id="week-goals-wrap"></div>
+                </div>
+              </div>
             </div>
+
+            <!-- ============================================================== -->
+            <!-- SECTION 3: PERPETUAL DAILY PLANNER (Giornaliero Dettagliato)   -->
+            <!-- ============================================================== -->
+            <div class="planner-spread-content" id="sec-daily">
+              <!-- Left Page: Date, Mood, Water, Top 3 Priorities -->
+              <div class="notebook-page page-left">
+                <div class="daily-header">
+                  <div class="perpetual-date-strip">
+                    <input type="text" class="date-input-inline" id="daily-dayname" value="Lunedì" style="width:65px;">
+                    <input type="number" class="date-input-inline" id="daily-daynum" value="10" min="1" max="31" style="width:36px;">
+                    <input type="text" class="date-input-inline" id="daily-month" value="Novembre" style="width:75px;">
+                  </div>
+                  <button class="planner-action-btn" id="btn-today-day">📅 Oggi</button>
+                </div>
+
+                <!-- Mood & Weather Trackers -->
+                <div style="display:flex; justify-content:space-between; margin-bottom:10px; background:#fff; padding:6px 10px; border-radius:8px; border:1px solid #fbcfe8;">
+                  <div>
+                    <span style="font-size:11px; font-weight:700; color:#db2777;">Mood:</span>
+                    <span class="mood-selector" id="mood-selector">
+                      <span class="mood-item active" data-mood="felice" title="Felice">😄</span>
+                      <span class="mood-item" data-mood="sereno" title="Sereno">😌</span>
+                      <span class="mood-item" data-mood="stanco" title="Stanco">😴</span>
+                      <span class="mood-item" data-mood="stressato" title="Stressato">😤</span>
+                      <span class="mood-item" data-mood="amato" title="Coccolato">🥰</span>
+                    </span>
+                  </div>
+                  <div>
+                    <span style="font-size:11px; font-weight:700; color:#0284c7;">Meteo:</span>
+                    <span class="weather-selector" id="weather-selector">
+                      <span class="weather-item active" data-weather="sole" title="Sole">☀️</span>
+                      <span class="weather-item" data-weather="nuvole" title="Nuvole">⛅</span>
+                      <span class="weather-item" data-weather="pioggia" title="Pioggia">🌧️</span>
+                      <span class="weather-item" data-weather="freddo" title="Freddo">❄️</span>
+                      <span class="weather-item" data-weather="arcobaleno" title="Arcobaleno">🌈</span>
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Water Tracker -->
+                <div class="water-tracker">
+                  <span style="font-size:12px; font-weight:700; color:#0369a1;">💧 Idratazione (8 bicchieri):</span>
+                  <div style="display:flex; gap:6px;" id="water-cups-row">
+                    <span class="water-cup filled" data-idx="0">💧</span>
+                    <span class="water-cup filled" data-idx="1">💧</span>
+                    <span class="water-cup filled" data-idx="2">💧</span>
+                    <span class="water-cup" data-idx="3">💧</span>
+                    <span class="water-cup" data-idx="4">💧</span>
+                    <span class="water-cup" data-idx="5">💧</span>
+                    <span class="water-cup" data-idx="6">💧</span>
+                    <span class="water-cup" data-idx="7">💧</span>
+                  </div>
+                </div>
+
+                <!-- Top 3 Priorities -->
+                <div style="background:#fff; border-radius:8px; border:2px dashed #f472b6; padding:10px; margin-bottom:10px;">
+                  <div style="font-size:12px; font-weight:700; color:#be185d; margin-bottom:6px;">🌟 Top 3 Priorità di Oggi</div>
+                  <input type="text" class="card-textarea" id="priority-1" value="1. Completare il capitolo di studio 📖" style="min-height:22px; border-bottom:1px solid #fce7f3; margin-bottom:4px;">
+                  <input type="text" class="card-textarea" id="priority-2" value="2. Allenamento 30 min e stretching 🧘‍♀️" style="min-height:22px; border-bottom:1px solid #fce7f3; margin-bottom:4px;">
+                  <input type="text" class="card-textarea" id="priority-3" value="3. Relax serale con tisana al miele 🍵" style="min-height:22px;">
+                </div>
+
+                <!-- Gratitude Corner -->
+                <div style="background:#fff; border-radius:8px; border:1px solid #fde047; padding:10px;">
+                  <div style="font-size:12px; font-weight:700; color:#b45309; margin-bottom:4px;">✨ 3 Cose di cui sono grata oggi:</div>
+                  <textarea class="card-textarea" id="daily-gratitude" style="min-height:60px; font-family:'Caveat', cursive; font-size:17px; color:#78350f;">• Il profumo del caffè al mattino ☕
+• Un messaggio dolce inaspettato 💕
+• Una bella passeggiata nel parco 🍂</textarea>
+                </div>
+              </div>
+
+              <div class="spiral-binding"></div>
+
+              <!-- Right Page: Hourly Timeline & To-Do List -->
+              <div class="notebook-page page-right">
+                <div class="planner-banner">
+                  <div class="planner-title">⏰ Programma Orario &amp; Impegni</div>
+                </div>
+
+                <div class="hourly-timeline" id="daily-timeline-wrap">
+                  <!-- Hourly schedule rows from 08:00 to 21:00 -->
+                </div>
+              </div>
+            </div>
+
+            <!-- ============================================================== -->
+            <!-- SECTION 4: DIARY / JOURNAL (Diario Personale dei Pensieri)     -->
+            <!-- ============================================================== -->
+            <div class="planner-spread-content" id="sec-diary">
+              <!-- Left Page: Journal Page 1 with Washi Tape -->
+              <div class="notebook-page page-left">
+                <div class="planner-banner">
+                  <div class="planner-title">📖 Caro Diario...</div>
+                  <div class="perpetual-date-strip">
+                    <input type="text" class="date-input-inline" id="diary-date-header" value="Lunedì, 10 Novembre" style="width:140px;">
+                  </div>
+                </div>
+
+                <div class="diary-entry-container">
+                  <div style="font-size:12px; font-weight:700; color:#059669; margin-bottom:4px; font-style:italic;">
+                    💡 Prompt di riflessione: "Qual è stato il momento più bello di oggi?"
+                  </div>
+                  <textarea class="diary-paper-lines" id="diary-text-left" placeholder="Scrivi qui i tuoi pensieri, sensazioni e ricordi..."></textarea>
+                </div>
+              </div>
+
+              <div class="spiral-binding"></div>
+
+              <!-- Right Page: Journal Page 2 -->
+              <div class="notebook-page page-right">
+                <div class="planner-banner">
+                  <div class="planner-title">🌸 Appunti dal Cuore</div>
+                  <span style="font-size:12px; color:#059669; font-weight:700;">Pagina 2</span>
+                </div>
+
+                <div class="diary-entry-container">
+                  <textarea class="diary-paper-lines" id="diary-text-right" placeholder="Continua a scrivere qui..."></textarea>
+                </div>
+              </div>
+            </div>
+
+            <!-- ============================================================== -->
+            <!-- SECTION 5: HABIT TRACKER & GOALS (Traguardi & Abitudini)       -->
+            <!-- ============================================================== -->
+            <div class="planner-spread-content" id="sec-habits">
+              <!-- Left Page: Monthly Habit Tracker Grid -->
+              <div class="notebook-page page-left">
+                <div class="planner-banner">
+                  <div class="planner-title">🎯 Habit Tracker del Mese</div>
+                  <div class="perpetual-date-strip">
+                    <input type="text" class="date-input-inline" id="habit-month-title" value="Novembre" style="width:80px;">
+                  </div>
+                </div>
+
+                <div style="font-size:12px; color:#c2410c; margin-bottom:8px; font-weight:600;">
+                  Spunta ogni giorno le buone abitudini che hai completato!
+                </div>
+
+                <table class="habit-table" id="habit-table-grid">
+                  <!-- Habit rows rendered via JS -->
+                </table>
+              </div>
+
+              <div class="spiral-binding"></div>
+
+              <!-- Right Page: Wishlist & Savings Jar -->
+              <div class="notebook-page page-right">
+                <div class="planner-banner">
+                  <div class="planner-title">🏺 Salvadanaio &amp; Desideri</div>
+                </div>
+
+                <div style="background:#fff; border-radius:10px; border:2px dashed #f59e0b; padding:12px; margin-bottom:12px;">
+                  <div style="font-size:13px; font-weight:700; color:#b45309; margin-bottom:8px;">✨ Obiettivo di Risparmio del Mese:</div>
+                  <input type="text" class="card-textarea" id="savings-goal-input" value="Borsa vintage pastel & Viaggio a Kyoto 🌸" style="min-height:26px; border-bottom:1.5px solid #fed7aa; margin-bottom:8px; font-weight:700;">
+                  
+                  <div style="display:flex; justify-content:space-between; font-size:12px; color:#78350f; font-weight:700; margin-bottom:6px;">
+                    <span>Risparmiati: <input type="text" id="savings-curr" value="€ 180" style="width:60px; border:none; outline:none; font-weight:700; color:#ea580c;"></span>
+                    <span>Target: <input type="text" id="savings-target" value="€ 350" style="width:60px; border:none; outline:none; font-weight:700; color:#ea580c; text-align:right;"></span>
+                  </div>
+                  <div style="width:100%; height:12px; background:#ffedd5; border-radius:6px; overflow:hidden;">
+                    <div style="width:52%; height:100%; background:#f97316; border-radius:6px;"></div>
+                  </div>
+                </div>
+
+                <!-- Cute Books & Wishlist -->
+                <div style="background:#fff; border-radius:10px; border:1px solid #fde047; padding:12px;">
+                  <div style="font-size:13px; font-weight:700; color:#a16207; margin-bottom:6px;">📚 Libri Letti &amp; Wishlist Kawaii</div>
+                  <textarea class="card-textarea" id="books-wishlist" style="min-height:160px; font-family:'Patrick Hand', cursive; font-size:15px; color:#713f12; line-height:1.5;">[✓] "Piccole Donne" 📖
+[✓] "Finché il caffè è caldo" ☕
+[ ] "Il castello errante di Howl" ✨
+[ ] "La libreria dei gatti" 🐱
+[ ] Set pennarelli pastel Tombow 🎨</textarea>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
       </div>
     </main>
 
-    <!-- Sticker Tray Drawer -->
-    <div class="stickers-drawer" id="stickers-drawer" title="Aggiungi uno sticker alla nota selezionata">
-      <span style="font-size: 11px; font-weight: 700; color: #db2777; text-transform: uppercase;">Stickers:</span>
+    <!-- Mega Sticker Drawer with 20+ Stickers -->
+    <div class="stickers-drawer" id="stickers-drawer" title="Aggiungi uno sticker alla nota o alla pagina selezionata">
+      <span style="font-size: 11px; font-weight: 700; color: #db2777; text-transform: uppercase;">Stickers Pack:</span>
       <div class="sticker-item" data-sticker="cherries" title="Ciliegine">🍒</div>
       <div class="sticker-item" data-sticker="bee" title="Apetta">🐝</div>
       <div class="sticker-item" data-sticker="cat" title="Gattino">🐱</div>
@@ -1104,6 +1780,12 @@
       <div class="sticker-item" data-sticker="sparkle" title="Stellina">⭐</div>
       <div class="sticker-item" data-sticker="strawberry" title="Fragolina">🍓</div>
       <div class="sticker-item" data-sticker="flower" title="Margherita">🌼</div>
+      <div class="sticker-item" data-sticker="boba" title="Boba Tea">🧋</div>
+      <div class="sticker-item" data-sticker="dog" title="Cagnolino">🐶</div>
+      <div class="sticker-item" data-sticker="bunny" title="Coniglietto">🐰</div>
+      <div class="sticker-item" data-sticker="ribbon" title="Fiocco">🎀</div>
+      <div class="sticker-item" data-sticker="cake" title="Dolcetto">🍰</div>
+      <div class="sticker-item" data-sticker="rainbow" title="Arcobaleno">🌈</div>
       <div class="sticker-item" data-sticker="none" title="Rimuovi sticker" style="font-size: 14px; opacity: 0.7;">🚫</div>
     </div>
 
@@ -1193,6 +1875,31 @@
           } catch(e) {}
         }
 
+        function playPageFlipSound() {
+          if (!soundEnabled) return;
+          try {
+            const ctx = getAudioContext();
+            if (!ctx) return;
+            const bufferSize = ctx.sampleRate * 0.07;
+            const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+              data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.4));
+            }
+            const noise = ctx.createBufferSource();
+            noise.buffer = buffer;
+            const filter = ctx.createBiquadFilter();
+            filter.type = 'lowpass';
+            filter.frequency.value = 1400;
+            const gain = ctx.createGain();
+            gain.gain.value = 0.12;
+            noise.connect(filter);
+            filter.connect(gain);
+            gain.connect(ctx.destination);
+            noise.start();
+          } catch(e) {}
+        }
+
         function playCheckSound() {
           if (!soundEnabled) return;
           try {
@@ -1226,7 +1933,7 @@
           }, 2200);
         }
 
-        // --- SVG Graphics for Mascots & All Stickers ---
+        // --- SVG Stickers and Shapes ---
         const SVGS = {
           cherries: `
             <svg viewBox="0 0 38 32" width="36" height="30" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1283,37 +1990,28 @@
               <path d="M37.5 16Q39.5 18 41.5 16" stroke="#713f12" stroke-width="0.9" stroke-linecap="round" fill="none"/>
             </svg>
           `,
-          // Cute Kawaii Golden Star with smiling face
           sparkle: `
             <svg viewBox="0 0 34 34" width="32" height="32" fill="none" xmlns="http://www.w3.org/2000/svg">
               <polygon points="17,2 21.5,12 32,13 24,20.5 26.5,31 17,25.5 7.5,31 10,20.5 2,13 12.5,12" fill="#fde047" stroke="#ca8a04" stroke-width="1.3"/>
-              <!-- Cheeks -->
               <circle cx="13" cy="19" r="1.5" fill="#f43f5e" opacity="0.6"/>
               <circle cx="21" cy="19" r="1.5" fill="#f43f5e" opacity="0.6"/>
-              <!-- Eyes & Smile -->
               <circle cx="14" cy="17" r="1" fill="#713f12"/>
               <circle cx="20" cy="17" r="1" fill="#713f12"/>
               <path d="M15 19.5Q17 21.5 19 19.5" stroke="#713f12" stroke-width="1" stroke-linecap="round" fill="none"/>
             </svg>
           `,
-          // Sweet Smiling Strawberry with cute leaf crown
           strawberry: `
             <svg viewBox="0 0 34 34" width="32" height="32" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <!-- Leaf Crown -->
               <path d="M17 3C15 6 12 7 9 7C12 9 14 10 17 9C20 10 22 9 25 7C22 7 19 6 17 3Z" fill="#22c55e" stroke="#15803d" stroke-width="1"/>
-              <!-- Berry Body -->
               <path d="M17 30C10 30 7 21 8 13C8 10 11 8 17 8C23 8 26 10 26 13C27 21 24 30 17 30Z" fill="#fb7185" stroke="#e11d48" stroke-width="1.3"/>
-              <!-- Seeds -->
               <circle cx="12" cy="14" r="0.7" fill="#fef08a"/>
               <circle cx="22" cy="14" r="0.7" fill="#fef08a"/>
               <circle cx="17" cy="26" r="0.7" fill="#fef08a"/>
-              <!-- Face -->
               <circle cx="14" cy="19" r="1" fill="#881337"/>
               <circle cx="20" cy="19" r="1" fill="#881337"/>
               <path d="M15.5 22Q17 23.5 18.5 22" stroke="#881337" stroke-width="1" stroke-linecap="round" fill="none"/>
             </svg>
           `,
-          // Pretty Daisy/Cherry Blossom Flower Sticker
           flower: `
             <svg viewBox="0 0 34 34" width="32" height="32" fill="none" xmlns="http://www.w3.org/2000/svg">
               <g fill="#fbcfe8" stroke="#f472b6" stroke-width="1">
@@ -1323,20 +2021,72 @@
                 <circle cx="12" cy="23" r="5.5"/>
                 <circle cx="9" cy="14" r="5.5"/>
               </g>
-              <!-- Center -->
               <circle cx="17" cy="17" r="5" fill="#fde047" stroke="#ca8a04" stroke-width="1"/>
               <circle cx="15.5" cy="16" r="0.8" fill="#713f12"/>
               <circle cx="18.5" cy="16" r="0.8" fill="#713f12"/>
               <path d="M16 18Q17 19 18 18" stroke="#713f12" stroke-width="0.8" stroke-linecap="round" fill="none"/>
             </svg>
           `,
-          // Heart SVG
+          boba: `
+            <svg viewBox="0 0 34 34" width="32" height="32" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M10 8L12 28C12 30 14 31 17 31C20 31 22 30 22 28L24 8" fill="#fed7aa" stroke="#ea580c" stroke-width="1.3"/>
+              <ellipse cx="17" cy="8" rx="7" ry="2.5" fill="#ffedd5" stroke="#ea580c" stroke-width="1.2"/>
+              <line x1="17" y1="2" x2="17" y2="10" stroke="#f43f5e" stroke-width="2.5" stroke-linecap="round"/>
+              <circle cx="14" cy="25" r="1.5" fill="#7c2d12"/>
+              <circle cx="17" cy="27" r="1.5" fill="#7c2d12"/>
+              <circle cx="20" cy="25" r="1.5" fill="#7c2d12"/>
+            </svg>
+          `,
+          dog: `
+            <svg viewBox="0 0 34 34" width="32" height="32" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <ellipse cx="9" cy="16" rx="3.5" ry="7" fill="#b45309" transform="rotate(20 9 16)"/>
+              <ellipse cx="25" cy="16" rx="3.5" ry="7" fill="#b45309" transform="rotate(-20 25 16)"/>
+              <circle cx="17" cy="17" r="10" fill="#fef3c7" stroke="#b45309" stroke-width="1.3"/>
+              <circle cx="13" cy="15" r="1.2" fill="#451a03"/>
+              <circle cx="21" cy="15" r="1.2" fill="#451a03"/>
+              <ellipse cx="17" cy="19" rx="2" ry="1.4" fill="#451a03"/>
+            </svg>
+          `,
+          bunny: `
+            <svg viewBox="0 0 34 34" width="32" height="32" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <ellipse cx="12" cy="7" rx="3.5" ry="8" fill="#ffffff" stroke="#f472b6" stroke-width="1.2"/>
+              <ellipse cx="22" cy="7" rx="3.5" ry="8" fill="#ffffff" stroke="#f472b6" stroke-width="1.2"/>
+              <ellipse cx="12" cy="7" rx="1.8" ry="5" fill="#fce7f3"/>
+              <ellipse cx="22" cy="7" rx="1.8" ry="5" fill="#fce7f3"/>
+              <circle cx="17" cy="20" r="9.5" fill="#ffffff" stroke="#f472b6" stroke-width="1.2"/>
+              <circle cx="13.5" cy="19" r="1.2" fill="#831843"/>
+              <circle cx="20.5" cy="19" r="1.2" fill="#831843"/>
+              <polygon points="16,21.5 18,21.5 17,22.8" fill="#ec4899"/>
+            </svg>
+          `,
+          ribbon: `
+            <svg viewBox="0 0 34 34" width="32" height="32" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="17" cy="17" r="3.5" fill="#f43f5e"/>
+              <path d="M14 17C9 12 6 15 8 19C10 23 14 18 14 17Z" fill="#fb7185" stroke="#e11d48" stroke-width="1"/>
+              <path d="M20 17C25 12 28 15 26 19C24 23 20 18 20 17Z" fill="#fb7185" stroke="#e11d48" stroke-width="1"/>
+              <path d="M15 20L11 30M19 20L23 30" stroke="#e11d48" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          `,
+          cake: `
+            <svg viewBox="0 0 34 34" width="32" height="32" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="7" y="16" width="20" height="13" rx="2" fill="#fbcfe8" stroke="#db2777" stroke-width="1.2"/>
+              <path d="M7 21C10 23 14 19 17 21C20 23 24 19 27 21" stroke="#db2777" stroke-width="1.5" fill="none"/>
+              <rect x="16" y="9" width="2" height="7" fill="#38bdf8"/>
+              <circle cx="17" cy="8" r="1.5" fill="#f59e0b"/>
+            </svg>
+          `,
+          rainbow: `
+            <svg viewBox="0 0 34 34" width="32" height="32" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6 25A11 11 0 0 1 28 25" stroke="#f43f5e" stroke-width="2.5" fill="none"/>
+              <path d="M9 25A8 8 0 0 1 25 25" stroke="#fbbf24" stroke-width="2.5" fill="none"/>
+              <path d="M12 25A5 5 0 0 1 22 25" stroke="#38bdf8" stroke-width="2.5" fill="none"/>
+            </svg>
+          `,
           heartSvg: `
             <svg class="shape-heart-svg" viewBox="0 0 135 125" preserveAspectRatio="none" fill="currentColor">
               <path d="M67.5 116C67.5 116 10 78 10 38C10 19 24 8 41 8C52 8 62 14 67.5 23C73 14 83 8 94 8C111 8 125 19 125 38C125 78 67.5 116 67.5 116Z"/>
             </svg>
           `,
-          // Daisy SVG
           daisySvg: `
             <svg class="shape-daisy-svg" viewBox="0 0 130 130" preserveAspectRatio="none">
               <g fill="#ffffff">
@@ -1355,10 +2105,9 @@
           `
         };
 
-        // --- Default Photo Setup ---
+        // --- Original Photo Setup ---
         function getDefaultNotes() {
           return [
-            // Page 1 (Left - Pink): 4 classic square notes
             {
               id: 'note-1',
               page: 'left',
@@ -1411,8 +2160,6 @@
               pattern: 'none',
               text: 'Frase del giorno:\n"Fai brillare ogni piccolo momento." 🌸'
             },
-
-            // Page 2 (Right - Lilac): 6 shaped notes
             {
               id: 'note-5',
               page: 'right',
@@ -1505,36 +2252,69 @@
           ];
         }
 
-        // --- Storage & State ---
-        const STORAGE_KEY = 'pastel_sticky_notebook_v6';
-        let notes = [];
-        let activeNoteId = null;
+        // --- Weekly Planner Data ---
+        function getDefaultWeekly() {
+          return {
+            month: 'Novembre',
+            range: '10 - 16',
+            days: [
+              { name: 'Lunedì', date: '10', notes: 'Pianificare settimana 🎯\nLezione online ore 15:00' },
+              { name: 'Martedì', date: '11', notes: 'Palestra e stretching 🧘‍♀️\nSpesa biologica 🥕' },
+              { name: 'Mercoledì', date: '12', notes: 'Studio approfondito capitolo 5 📚\nChiamata con mamma 💕' },
+              { name: 'Giovedì', date: '13', notes: 'Disegno su diario pastel 🎨\nPulizie e riordino scrivania' },
+              { name: 'Venerdì', date: '14', notes: 'Pizza night con amici 🍕\nFilm serale rilassante 🎬' },
+              { name: 'Sabato', date: '15', notes: 'Passeggiata nella natura 🍂\nCaffè e libreria ☕' },
+              { name: 'Domenica', date: '16', notes: 'Self-care & maschera viso 🌸\nPreparazione per lunedì' }
+            ],
+            goals: [
+              { text: 'Bere 2L di acqua al giorno 💧', done: true },
+              { text: 'Leggere 30 pagine di un libro 📖', done: true },
+              { text: 'Dormire almeno 7-8 ore 🌙', done: false },
+              { text: 'Passeggiata all\'aria aperta 🌿', done: false }
+            ]
+          };
+        }
 
-        function saveNotes() {
+        // --- State Management ---
+        const STORAGE_KEY_NOTES = 'pastel_sticky_notebook_v7_notes';
+        const STORAGE_KEY_PLANNER = 'pastel_sticky_notebook_v7_planner';
+
+        let notes = [];
+        let weeklyData = getDefaultWeekly();
+        let activeNoteId = null;
+        let currentSection = 'notes';
+
+        function saveAll() {
           try {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
+            localStorage.setItem(STORAGE_KEY_NOTES, JSON.stringify(notes));
+            localStorage.setItem(STORAGE_KEY_PLANNER, JSON.stringify(weeklyData));
           } catch(e) {}
         }
 
-        function loadNotes() {
+        function loadAll() {
           try {
-            const data = localStorage.getItem(STORAGE_KEY);
-            if (data) {
-              const parsed = JSON.parse(data);
-              const leftCount = parsed.filter(n => n.page === 'left').length;
-              const rightCount = parsed.filter(n => n.page === 'right').length;
-              if (Array.isArray(parsed) && leftCount > 0 && rightCount > 0) {
-                return parsed;
-              }
+            const savedNotes = localStorage.getItem(STORAGE_KEY_NOTES);
+            if (savedNotes) {
+              const parsed = JSON.parse(savedNotes);
+              if (Array.isArray(parsed) && parsed.length > 0) notes = parsed;
+              else notes = getDefaultNotes();
+            } else {
+              notes = getDefaultNotes();
             }
-          } catch(e) {}
-          return getDefaultNotes();
+
+            const savedPlan = localStorage.getItem(STORAGE_KEY_PLANNER);
+            if (savedPlan) {
+              weeklyData = JSON.parse(savedPlan);
+            }
+          } catch(e) {
+            notes = getDefaultNotes();
+            weeklyData = getDefaultWeekly();
+          }
         }
 
         // --- DOM Elements ---
         const leftGrid = document.getElementById('left-grid');
         const rightGrid = document.getElementById('right-grid');
-        const spiralBinding = document.getElementById('spiral-binding');
         const notebookSpread = document.getElementById('notebook-spread');
         const tbHint = document.getElementById('tb-hint');
         const tbControls = document.getElementById('tb-controls');
@@ -1550,6 +2330,7 @@
         const cornerButtons = document.querySelectorAll('[data-corner]');
         const stickerItems = document.querySelectorAll('.sticker-item');
         const tabButtons = document.querySelectorAll('.tab-btn');
+        const binderTabs = document.querySelectorAll('.binder-tab');
 
         const btnAddNote = document.getElementById('btn-add-note');
         const btnResetPhoto = document.getElementById('btn-reset-photo');
@@ -1561,22 +2342,24 @@
         const btnCancelShape = document.getElementById('btn-cancel-shape');
         const shapeChoiceButtons = document.querySelectorAll('.shape-choice-btn');
 
-        // Render spiral wire
-        function renderSpiral() {
-          spiralBinding.innerHTML = '';
-          for (let i = 0; i < 16; i++) {
-            const wire = document.createElement('div');
-            wire.className = 'spiral-wire';
-            wire.innerHTML = `
-              <div class="hole-punch-left"></div>
-              <div class="ring-loop"></div>
-              <div class="hole-punch-right"></div>
-            `;
-            spiralBinding.appendChild(wire);
-          }
+        // Render spiral wire loops across all bindings
+        function renderAllSpirals() {
+          document.querySelectorAll('.spiral-binding').forEach(spiral => {
+            spiral.innerHTML = '';
+            for (let i = 0; i < 16; i++) {
+              const wire = document.createElement('div');
+              wire.className = 'spiral-wire';
+              wire.innerHTML = `
+                <div class="hole-punch-left"></div>
+                <div class="ring-loop"></div>
+                <div class="hole-punch-right"></div>
+              `;
+              spiral.appendChild(wire);
+            }
+          });
         }
 
-        // Render All Notes
+        // Render Sticky Notes
         function renderNotes() {
           leftGrid.innerHTML = '';
           rightGrid.innerHTML = '';
@@ -1639,7 +2422,7 @@
             titleInput.value = note.title || 'TO DO';
             titleInput.addEventListener('input', () => {
               note.title = titleInput.value;
-              saveNotes();
+              saveAll();
             });
             card.appendChild(titleInput);
 
@@ -1658,7 +2441,7 @@
                 box.classList.toggle('checked', item.done);
                 textInput.classList.toggle('checked', item.done);
                 if (item.done) playCheckSound();
-                saveNotes();
+                saveAll();
               });
 
               const textInput = document.createElement('input');
@@ -1666,7 +2449,7 @@
               textInput.value = item.text;
               textInput.addEventListener('input', () => {
                 item.text = textInput.value;
-                saveNotes();
+                saveAll();
               });
 
               textInput.addEventListener('keydown', (e) => {
@@ -1675,12 +2458,12 @@
                   const newItem = { id: 'c_' + Date.now(), text: '', done: false };
                   const idx = note.checklist.indexOf(item);
                   note.checklist.splice(idx + 1, 0, newItem);
-                  saveNotes();
+                  saveAll();
                   renderNotes();
                 } else if (e.key === 'Backspace' && textInput.value === '') {
                   e.preventDefault();
                   note.checklist = note.checklist.filter(i => i.id !== item.id);
-                  saveNotes();
+                  saveAll();
                   renderNotes();
                 }
               });
@@ -1697,7 +2480,7 @@
               e.stopPropagation();
               if (!note.checklist) note.checklist = [];
               note.checklist.push({ id: 'c_' + Date.now(), text: 'Nuova voce', done: false });
-              saveNotes();
+              saveAll();
               renderNotes();
               playPopSound();
             });
@@ -1715,7 +2498,7 @@
 
             textarea.addEventListener('input', () => {
               note.text = textarea.value;
-              saveNotes();
+              saveAll();
             });
             textarea.addEventListener('focus', () => {
               selectNote(note.id);
@@ -1723,7 +2506,7 @@
             card.appendChild(textarea);
           }
 
-          // Mascot Sticker Rendering (Supports all stickers: cherries, bee, cat, pens, sparkle, strawberry, flower!)
+          // Mascot Sticker Rendering (Supports all stickers!)
           if (note.mascot && SVGS[note.mascot]) {
             const mascotWrap = document.createElement('div');
             mascotWrap.className = `mascot-container ${note.shape === 'heart' ? 'mascot-bottom-center' : 'mascot-bottom-right'}`;
@@ -1731,8 +2514,8 @@
             card.appendChild(mascotWrap);
           }
 
-          // Card Click Selection
-          card.addEventListener('click', (e) => {
+          // Selection
+          card.addEventListener('click', () => {
             selectNote(note.id);
           });
 
@@ -1787,7 +2570,7 @@
         function deleteNote(noteId) {
           notes = notes.filter(n => n.id !== noteId);
           if (activeNoteId === noteId) activeNoteId = null;
-          saveNotes();
+          saveAll();
           renderNotes();
           playPopSound();
           showToast('🗑️ Nota eliminata');
@@ -1799,7 +2582,7 @@
           const copy = JSON.parse(JSON.stringify(orig));
           copy.id = 'note-' + Date.now();
           notes.push(copy);
-          saveNotes();
+          saveAll();
           renderNotes();
           selectNote(copy.id);
           playPopSound();
@@ -1872,11 +2655,261 @@
             ] : []
           });
 
-          saveNotes();
+          // Switch to notes view if in another section
+          switchSection('notes');
+
+          saveAll();
           renderNotes();
           selectNote(newId);
           playPopSound();
           showToast('✨ Nuova nota creata!');
+        }
+
+        // --- Weekly Planner Rendering & Handlers ---
+        function renderWeeklyPlanner() {
+          const leftWrap = document.getElementById('week-left-days');
+          const rightWrap = document.getElementById('week-right-days');
+          const goalsWrap = document.getElementById('week-goals-wrap');
+          if (!leftWrap || !rightWrap) return;
+
+          leftWrap.innerHTML = '';
+          rightWrap.innerHTML = '';
+
+          // First 4 days (Mon-Thu) on Left
+          weeklyData.days.slice(0, 4).forEach((day, idx) => {
+            leftWrap.appendChild(createDayCardDOM(day, idx));
+          });
+
+          // Next 3 days (Fri-Sun) on Right
+          weeklyData.days.slice(4).forEach((day, idx) => {
+            rightWrap.appendChild(createDayCardDOM(day, idx + 4));
+          });
+
+          // Render Goals Checklist
+          if (goalsWrap) {
+            goalsWrap.innerHTML = '';
+            weeklyData.goals.forEach((goal, gIdx) => {
+              const row = document.createElement('div');
+              row.className = 'checklist-row';
+              row.innerHTML = `
+                <div class="chk-box ${goal.done ? 'checked' : ''}"></div>
+                <input type="text" class="chk-input ${goal.done ? 'checked' : ''}" value="${goal.text}">
+              `;
+              const box = row.querySelector('.chk-box');
+              const input = row.querySelector('.chk-input');
+
+              box.addEventListener('click', () => {
+                goal.done = !goal.done;
+                box.classList.toggle('checked', goal.done);
+                input.classList.toggle('checked', goal.done);
+                if (goal.done) playCheckSound();
+                saveAll();
+              });
+
+              input.addEventListener('input', () => {
+                goal.text = input.value;
+                saveAll();
+              });
+
+              goalsWrap.appendChild(row);
+            });
+          }
+        }
+
+        function createDayCardDOM(day, dayIdx) {
+          const card = document.createElement('div');
+          card.className = 'day-card';
+          card.innerHTML = `
+            <div class="day-card-header">
+              <span class="day-label">
+                <span>🗓️</span> ${day.name}
+              </span>
+              <span class="day-date-bubble" contenteditable="true" spellcheck="false">${day.date}</span>
+            </div>
+            <textarea class="day-textarea" placeholder="Attività, memo e appuntamenti...">${day.notes}</textarea>
+          `;
+
+          const dateBubble = card.querySelector('.day-date-bubble');
+          const textarea = card.querySelector('.day-textarea');
+
+          dateBubble.addEventListener('input', () => {
+            day.date = dateBubble.innerText;
+            saveAll();
+          });
+
+          textarea.addEventListener('input', () => {
+            day.notes = textarea.value;
+            saveAll();
+          });
+
+          return card;
+        }
+
+        // --- Daily Planner Rendering & Handlers ---
+        function renderDailyTimeline() {
+          const wrap = document.getElementById('daily-timeline-wrap');
+          if (!wrap) return;
+          wrap.innerHTML = '';
+
+          const hours = ['08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00'];
+          hours.forEach(h => {
+            const row = document.createElement('div');
+            row.className = 'time-row';
+            row.innerHTML = `
+              <span class="time-label">${h}</span>
+              <input type="text" class="time-input" placeholder="Attività o promemoria...">
+            `;
+            wrap.appendChild(row);
+          });
+        }
+
+        // --- Habit Tracker Rendering ---
+        function renderHabitTracker() {
+          const table = document.getElementById('habit-table-grid');
+          if (!table) return;
+          table.innerHTML = '';
+
+          // Header: Habits + 14 day check dots
+          let headerHTML = '<tr><th style="text-align:left; padding-left:8px;">Abitudine</th>';
+          for (let d = 1; d <= 14; d++) {
+            headerHTML += `<th style="width:16px;">${d}</th>`;
+          }
+          headerHTML += '</tr>';
+          table.innerHTML = headerHTML;
+
+          const defaultHabits = [
+            'Lettura 20 min 📖',
+            'Bevi 2L Acqua 💧',
+            'Esercizio / Yoga 🧘‍♀️',
+            'Skin Care serale ✨',
+            'Studio / Lavoro 📚',
+            'Diario della sera 🌙'
+          ];
+
+          defaultHabits.forEach(hName => {
+            const tr = document.createElement('tr');
+            let rowHTML = `<td><input type="text" class="habit-name-input" value="${hName}"></td>`;
+            for (let d = 1; d <= 14; d++) {
+              rowHTML += `<td><span class="habit-dot ${d <= 3 ? 'checked' : ''}"></span></td>`;
+            }
+            tr.innerHTML = rowHTML;
+
+            tr.querySelectorAll('.habit-dot').forEach(dot => {
+              dot.addEventListener('click', () => {
+                dot.classList.toggle('checked');
+                if (dot.classList.contains('checked')) playCheckSound();
+                saveAll();
+              });
+            });
+
+            table.appendChild(tr);
+          });
+        }
+
+        // --- Navigation Between Sections ---
+        function switchSection(secId) {
+          currentSection = secId;
+          playPageFlipSound();
+
+          // Update Side Binder tabs
+          binderTabs.forEach(tab => {
+            tab.classList.toggle('active', tab.dataset.target === secId);
+          });
+
+          // Show/Hide section content
+          document.querySelectorAll('.planner-spread-content').forEach(el => {
+            el.classList.remove('active');
+            el.style.display = 'none';
+          });
+
+          const activeSec = document.getElementById('sec-' + secId);
+          if (activeSec) {
+            activeSec.classList.add('active');
+            activeSec.style.display = 'flex';
+          }
+
+          const noteToolbarPanel = document.getElementById('note-toolbar-panel');
+          const noteActionButtons = document.querySelectorAll('.note-action-btn');
+
+          // Adjust spread background theme and hide/show note-specific UI
+          if (secId === 'notes') {
+            notebookSpread.className = 'notebook-spread spread-theme-notes';
+            if (noteToolbarPanel) noteToolbarPanel.style.display = 'flex';
+            tbHint.style.display = activeNoteId ? 'none' : 'flex';
+            noteActionButtons.forEach(btn => btn.style.display = 'inline-flex');
+          } else {
+            notebookSpread.className = 'notebook-spread spread-theme-paper';
+            if (noteToolbarPanel) noteToolbarPanel.style.display = 'none';
+            tbHint.style.display = 'none';
+            tbControls.classList.remove('visible');
+            noteActionButtons.forEach(btn => btn.style.display = 'none');
+          }
+        }
+
+        // Navigation tab events
+        binderTabs.forEach(tab => {
+          tab.addEventListener('click', () => {
+            switchSection(tab.dataset.target);
+          });
+        });
+
+        // Water tracker cups
+        document.querySelectorAll('.water-cup').forEach(cup => {
+          cup.addEventListener('click', () => {
+            cup.classList.toggle('filled');
+            playCheckSound();
+            saveAll();
+          });
+        });
+
+        // Mood & Weather items
+        document.querySelectorAll('.mood-item').forEach(m => {
+          m.addEventListener('click', () => {
+            document.querySelectorAll('.mood-item').forEach(el => el.classList.remove('active'));
+            m.classList.add('active');
+            playPopSound();
+            showToast('Mood impostato!');
+            saveAll();
+          });
+        });
+
+        document.querySelectorAll('.weather-item').forEach(w => {
+          w.addEventListener('click', () => {
+            document.querySelectorAll('.weather-item').forEach(el => el.classList.remove('active'));
+            w.classList.add('active');
+            playPopSound();
+            showToast('Meteo impostato!');
+            saveAll();
+          });
+        });
+
+        // "Oggi" button helpers to set actual real-world day
+        const btnTodayWeek = document.getElementById('btn-today-week');
+        if (btnTodayWeek) {
+          btnTodayWeek.addEventListener('click', () => {
+            const now = new Date();
+            const months = ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'];
+            document.getElementById('week-month-input').value = months[now.getMonth()];
+            document.getElementById('week-range-input').value = `${now.getDate()} - ${now.getDate() + 6}`;
+            playPopSound();
+            showToast('📅 Settimana aggiornata a oggi!');
+            saveAll();
+          });
+        }
+
+        const btnTodayDay = document.getElementById('btn-today-day');
+        if (btnTodayDay) {
+          btnTodayDay.addEventListener('click', () => {
+            const now = new Date();
+            const days = ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
+            const months = ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'];
+            document.getElementById('daily-dayname').value = days[now.getDay()];
+            document.getElementById('daily-daynum').value = now.getDate();
+            document.getElementById('daily-month').value = months[now.getMonth()];
+            playPopSound();
+            showToast('📅 Data impostata a oggi!');
+            saveAll();
+          });
         }
 
         // Change Shape of Existing Active Note
@@ -1889,7 +2922,7 @@
             if (note.shape === 'checklist' && (!note.checklist || note.checklist.length === 0)) {
               note.checklist = [{ id: 'c1', text: 'Nuovo compito', done: false }];
             }
-            saveNotes();
+            saveAll();
             renderNotes();
             playPopSound();
           }
@@ -1906,7 +2939,7 @@
               const txt = el.querySelector('.card-textarea');
               if (txt) txt.style.fontFamily = note.fontFamily;
             }
-            saveNotes();
+            saveAll();
           }
         });
 
@@ -1920,7 +2953,7 @@
               const txt = el.querySelector('.card-textarea');
               if (txt) txt.style.fontSize = note.fontSize;
             }
-            saveNotes();
+            saveAll();
           }
         });
 
@@ -1939,7 +2972,7 @@
                 }
               }
               colorDots.forEach(d => d.classList.toggle('active', d === dot));
-              saveNotes();
+              saveAll();
               playPopSound();
             }
           });
@@ -1957,19 +2990,18 @@
                 if (txt) txt.style.textAlign = note.textAlign;
               }
               alignButtons.forEach(b => b.classList.toggle('active', b === btn));
-              saveNotes();
+              saveAll();
             }
           });
         });
 
-        // Pattern buttons (Righe, Quadretti, Puntini, Liscia)
         patternButtons.forEach(btn => {
           btn.addEventListener('click', () => {
             if (!activeNoteId) return;
             const note = notes.find(n => n.id === activeNoteId);
             if (note) {
               note.pattern = btn.dataset.pattern;
-              saveNotes();
+              saveAll();
               renderNotes();
               playPopSound();
             }
@@ -1982,7 +3014,7 @@
             const note = notes.find(n => n.id === activeNoteId);
             if (note) {
               note.corner = btn.dataset.corner;
-              saveNotes();
+              saveAll();
               renderNotes();
               playPopSound();
             }
@@ -1997,7 +3029,7 @@
           if (activeNoteId) deleteNote(activeNoteId);
         });
 
-        // Stickers Drawer: supports cherries, bee, cat, pens, sparkle, strawberry, flower, or remove!
+        // Stickers Drawer
         stickerItems.forEach(item => {
           item.addEventListener('click', () => {
             const sticker = item.dataset.sticker;
@@ -2014,14 +3046,14 @@
                 note.mascot = sticker;
                 showToast('Adesivo applicato! ✨');
               }
-              saveNotes();
+              saveAll();
               renderNotes();
               playPopSound();
             }
           });
         });
 
-        // Tabs (Both / Left / Right)
+        // Tabs View (Both / Left / Right)
         tabButtons.forEach(btn => {
           btn.addEventListener('click', () => {
             tabButtons.forEach(b => b.classList.remove('active'));
@@ -2063,8 +3095,11 @@
         // Header Buttons: Reset directly without blocking confirm dialog!
         btnResetPhoto.addEventListener('click', () => {
           notes = getDefaultNotes();
-          saveNotes();
+          weeklyData = getDefaultWeekly();
+          saveAll();
+          switchSection('notes');
           renderNotes();
+          renderWeeklyPlanner();
           playPopSound();
           showToast('📸 Quaderno ripristinato esattamente come nella foto!');
         });
@@ -2072,7 +3107,7 @@
         btnClearAll.addEventListener('click', () => {
           notes = [];
           activeNoteId = null;
-          saveNotes();
+          saveAll();
           renderNotes();
           showToast('🗑️ Tutte le note sono state cancellate');
         });
@@ -2084,9 +3119,12 @@
         });
 
         // Init
-        renderSpiral();
-        notes = loadNotes();
+        loadAll();
+        renderAllSpirals();
         renderNotes();
+        renderWeeklyPlanner();
+        renderDailyTimeline();
+        renderHabitTracker();
 
       })();
     </script>
