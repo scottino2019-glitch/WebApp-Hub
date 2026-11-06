@@ -1,0 +1,2129 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CSS Body Background Studio - Workbench</title>
+  <meta name="description" content="Postazione di lavoro autonoma in solo HTML per creare sfondi completi per il body con editor di codice a sintassi colorata, divisore ridimensionabile ed esportazione negli appunti." />
+
+  <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    /* ==========================================================================
+       TEMA WORKBENCH / POSTAZIONE DI LAVORO PROFESSIONALE
+       Zero contrasti accecanti, chrome riposante, anteprima ampia e netta.
+       ========================================================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      /* Chrome postazione di lavoro (Tonalità grafite/ardesia calibrata) */
+      --wb-topbar: #252a34;
+      --wb-bar-border: #383f4e;
+      --wb-panel: #20242d;
+      --wb-border: #353c4a;
+      --wb-border-soft: rgba(255, 255, 255, 0.08);
+
+      /* Testi chrome ben leggibili */
+      --wb-text-bright: #e6edf3;
+      --wb-text-main: #c0cad5;
+      --wb-text-muted: #8b97a7;
+
+      /* Bottoni e controlli */
+      --btn-bg: #2d3340;
+      --btn-hover: #384050;
+      --btn-active: #1e222b;
+      --btn-border: #444d60;
+
+      --blue-accent: #388bfd;
+      --blue-btn: #1f6feb;
+      --blue-btn-hover: #2977f5;
+      --green-btn: #238636;
+      --green-btn-hover: #2ea043;
+      --cyan-accent: #58a6ff;
+
+      /* Editor di codice scuro classico (Stile VS Code / Sublime) */
+      --editor-bg: #181b22;
+      --editor-gutter: #12141a;
+      --editor-gutter-text: #606877;
+      --editor-cursor: #58a6ff;
+
+      /* Colori evidenziazione sintassi classica */
+      --syn-comment: #6a9955;
+      --syn-keyword: #c586c0;
+      --syn-prop: #9cdcfe;
+      --syn-selector: #d7ba7d;
+      --syn-string: #ce9178;
+      --syn-number: #b5cea8;
+      --syn-func: #dcdcaa;
+      --syn-tag: #569cd6;
+      --syn-val: #4ec9b0;
+
+      --font-ui: 'Plus Jakarta Sans', system-ui, sans-serif;
+      --font-code: 'JetBrains Mono', Consolas, 'Courier New', monospace;
+    }
+
+    body {
+      background-color: var(--wb-panel);
+      color: var(--wb-text-bright);
+      font-family: var(--font-ui);
+      font-size: 13.5px;
+      line-height: 1.5;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* SCROLLBARS */
+    ::-webkit-scrollbar {
+      width: 7px;
+      height: 7px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(18, 20, 26, 0.7);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #444d5e;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #58647a;
+    }
+
+    /* BARRA SUPERIORE MINIMALE COMPATTA (44px) */
+    header {
+      height: 44px;
+      background: var(--wb-topbar);
+      border-bottom: 1px solid var(--wb-bar-border);
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-shrink: 0;
+      user-select: none;
+      z-index: 100;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 800;
+      font-size: 14px;
+      color: #ffffff;
+      letter-spacing: -0.01em;
+    }
+
+    .brand-icon-box {
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
+      background: var(--blue-btn);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-code);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    /* MENU A SCOMPARSA (DROPDOWN) COMPATTI */
+    .dropdown-parent {
+      position: relative;
+    }
+
+    .top-menu-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 6px;
+      background: var(--btn-bg);
+      color: var(--wb-text-bright);
+      border: 1px solid var(--btn-border);
+      cursor: pointer;
+      transition: background 0.12s, border-color 0.12s;
+      white-space: nowrap;
+    }
+    .top-menu-btn:hover {
+      background: var(--btn-hover);
+      border-color: #556075;
+    }
+    .top-menu-btn.active {
+      background: var(--btn-active);
+      border-color: var(--blue-accent);
+      color: var(--cyan-accent);
+    }
+
+    .dropdown-card {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      margin-top: 6px;
+      background: #252a35;
+      border: 1px solid #454f63;
+      border-radius: 8px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+      z-index: 1000;
+      display: none;
+      min-width: 240px;
+      padding: 6px;
+    }
+    .dropdown-card.show {
+      display: block;
+    }
+
+    .menu-group-header {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--wb-text-muted);
+      text-transform: uppercase;
+      padding: 6px 10px 4px 10px;
+      letter-spacing: 0.05em;
+    }
+
+    .dropdown-option {
+      width: 100%;
+      text-align: left;
+      padding: 7px 10px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--wb-text-bright);
+      background: transparent;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.1s;
+      font-family: inherit;
+    }
+    .dropdown-option:hover {
+      background: #333a4a;
+      color: #ffffff;
+    }
+    .dropdown-option.active {
+      background: #2a374c;
+      color: var(--cyan-accent);
+      font-weight: 600;
+    }
+
+    .menu-sep {
+      height: 1px;
+      background: #374154;
+      margin: 4px 0;
+    }
+
+    /* CONTROLLI CENTRALI: DIVISIONE SCHERMO (SPLIT PRESETS) */
+    .header-center-split {
+      display: none;
+      align-items: center;
+      gap: 4px;
+      background: #1c2027;
+      padding: 3px 6px;
+      border-radius: 6px;
+      border: 1px solid #363e4c;
+    }
+    @media (min-width: 1024px) {
+      .header-center-split {
+        display: flex;
+      }
+    }
+
+    .split-preset-btn {
+      padding: 3px 8px;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--wb-text-muted);
+      background: transparent;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .split-preset-btn:hover {
+      color: #ffffff;
+      background: var(--btn-hover);
+    }
+    .split-preset-btn.active {
+      background: #2c3545;
+      color: var(--cyan-accent);
+      font-weight: 700;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 13px;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 6px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: background 0.12s, transform 0.08s;
+      white-space: nowrap;
+    }
+    .action-btn:active {
+      transform: translateY(1px);
+    }
+    .action-btn-green {
+      background: var(--green-btn);
+      border-color: #2ea043;
+      color: #ffffff;
+    }
+    .action-btn-green:hover {
+      background: var(--green-btn-hover);
+    }
+    .action-btn-blue {
+      background: var(--blue-btn);
+      border-color: #388bfd;
+      color: #ffffff;
+    }
+    .action-btn-blue:hover {
+      background: var(--blue-btn-hover);
+    }
+
+    /* WORKBENCH PRINCIPALE A DUE COLONNE CON SEPARATORE */
+    .workbench-split {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+
+    @media (min-width: 900px) {
+      .workbench-split {
+        flex-direction: row;
+      }
+    }
+
+    /* COLONNA SINISTRA: EDITOR DI CODICE CON SINTASSI COLORATA */
+    .editor-pane {
+      width: 100%;
+      height: 50%;
+      display: flex;
+      flex-direction: column;
+      background: var(--editor-bg);
+      border-bottom: 1px solid var(--wb-border);
+      position: relative;
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.25);
+      z-index: 5;
+    }
+
+    @media (min-width: 900px) {
+      .editor-pane {
+        width: 50%; /* 50% di default per pieno spazio al codice */
+        height: 100%;
+        border-bottom: none;
+      }
+    }
+
+    .editor-tab-strip {
+      height: 38px;
+      background: var(--wb-topbar);
+      border-bottom: 1px solid var(--wb-border);
+      padding: 0 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      user-select: none;
+      flex-shrink: 0;
+    }
+
+    .tab-list {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .editor-tab {
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--wb-text-muted);
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.12s;
+    }
+    .editor-tab:hover {
+      color: var(--wb-text-bright);
+      background: rgba(255, 255, 255, 0.04);
+    }
+    .editor-tab.active {
+      background: var(--editor-bg);
+      color: #ffffff;
+      border-color: var(--wb-border);
+      border-bottom-color: var(--editor-bg);
+    }
+
+    .editor-tools-quick {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .mini-btn {
+      padding: 4px 9px;
+      font-size: 11.5px;
+      font-weight: 600;
+      border-radius: 4px;
+      background: var(--btn-bg);
+      color: var(--wb-text-main);
+      border: 1px solid var(--btn-border);
+      cursor: pointer;
+    }
+    .mini-btn:hover {
+      background: var(--btn-hover);
+      color: #ffffff;
+    }
+    .mini-btn.active {
+      background: #2a374c;
+      color: var(--cyan-accent);
+      border-color: var(--blue-accent);
+    }
+
+    /* CONTENITORE EDITOR SYNTAX HIGHLIGHTED */
+    .editor-code-container {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+      position: relative;
+      background: var(--editor-bg);
+    }
+
+    .editor-gutter {
+      width: 50px;
+      background: var(--editor-gutter);
+      color: var(--editor-gutter-text);
+      font-family: var(--font-code);
+      font-size: 13.5px;
+      line-height: 1.6;
+      padding: 16px 8px 16px 0;
+      text-align: right;
+      user-select: none;
+      border-right: 1px solid var(--wb-border);
+      overflow: hidden;
+      flex-shrink: 0;
+      font-weight: 500;
+    }
+
+    .code-view-layer {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Layer pre/code colorato e textarea trasparente */
+    .highlight-overlay, .code-editor-input {
+      font-family: var(--font-code) !important;
+      font-size: 13.5px !important;
+      line-height: 1.6 !important;
+      tab-size: 2 !important;
+      padding: 16px 36px 16px 18px !important; /* Ampio padding destro per non tagliare nulla */
+      margin: 0 !important;
+      border: none !important;
+      outline: none !important;
+      box-sizing: border-box !important;
+    }
+
+    .highlight-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      overflow: hidden;
+      pointer-events: none;
+      color: #d4d4d4;
+      background: transparent;
+      z-index: 1;
+      white-space: pre;
+      word-wrap: normal;
+    }
+
+    .code-editor-input {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      color: transparent;
+      caret-color: var(--editor-cursor);
+      resize: none;
+      overflow: auto;
+      z-index: 2;
+      white-space: pre;
+      word-wrap: normal;
+    }
+
+    /* COLORI SINTASSI CLASSICA EDITOR */
+    .token-comment { color: var(--syn-comment); font-style: italic; }
+    .token-keyword { color: var(--syn-keyword); font-weight: 600; }
+    .token-prop    { color: var(--syn-prop); }
+    .token-func    { color: var(--syn-func); font-weight: 600; }
+    .token-selector{ color: var(--syn-selector); font-weight: 600; }
+    .token-string  { color: var(--syn-string); }
+    .token-number  { color: var(--syn-number); }
+    .token-tag     { color: var(--syn-tag); font-weight: 600; }
+    .token-val     { color: var(--syn-val); }
+    .token-hex     { color: #d19a66; }
+
+    .editor-status-bar {
+      height: 28px;
+      background: var(--wb-topbar);
+      border-top: 1px solid var(--wb-border);
+      padding: 0 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-family: var(--font-code);
+      font-size: 11.5px;
+      color: var(--wb-text-muted);
+      user-select: none;
+      flex-shrink: 0;
+    }
+
+    /* SEPARATORE VERTICALE VISIBILE E RIDIMENSIONABILE (GUTTER SPLITTER) */
+    .workbench-splitter {
+      display: none;
+      width: 10px;
+      background: #181d26;
+      border-left: 1px solid #363e4f;
+      border-right: 1px solid #363e4f;
+      cursor: col-resize;
+      z-index: 20;
+      user-select: none;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s;
+      flex-shrink: 0;
+    }
+    @media (min-width: 900px) {
+      .workbench-splitter {
+        display: flex;
+      }
+    }
+    .workbench-splitter:hover, .workbench-splitter.dragging {
+      background: var(--blue-btn);
+    }
+    .splitter-grip {
+      width: 2px;
+      height: 28px;
+      background: #5a667d;
+      border-radius: 1px;
+    }
+
+    /* COLONNA DESTRA: ANTEPRIMA DEL BODY A TUTTO SCHERMO */
+    .preview-pane {
+      width: 100%;
+      height: 50%;
+      display: flex;
+      flex-direction: column;
+      background: #ffffff;
+      position: relative;
+      overflow: hidden;
+      border-left: 1px solid #cbd5e1; /* Bordo pulito che separa nettamente la preview */
+    }
+
+    @media (min-width: 900px) {
+      .preview-pane {
+        width: 50%;
+        height: 100%;
+      }
+    }
+
+    .preview-workbench-header {
+      height: 38px;
+      background: var(--wb-topbar);
+      border-bottom: 1px solid var(--wb-border);
+      padding: 0 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      user-select: none;
+      flex-shrink: 0;
+    }
+
+    .preview-title-box {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--wb-text-bright);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .preview-status-badge {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--cyan-accent);
+      background: rgba(88, 166, 255, 0.12);
+      padding: 2px 8px;
+      border-radius: 4px;
+      border: 1px solid rgba(88, 166, 255, 0.25);
+    }
+
+    .preview-options-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .preview-pill-btn {
+      padding: 4px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 5px;
+      background: var(--btn-bg);
+      color: var(--wb-text-main);
+      border: 1px solid var(--btn-border);
+      cursor: pointer;
+      transition: all 0.12s;
+    }
+    .preview-pill-btn:hover {
+      background: var(--btn-hover);
+      color: #ffffff;
+    }
+    .preview-pill-btn.active {
+      background: #2a374c;
+      color: var(--cyan-accent);
+      border-color: var(--blue-accent);
+    }
+
+    .preview-canvas-viewport {
+      flex: 1;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      overflow: hidden;
+      background: #ffffff;
+    }
+
+    .full-body-iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+      background: #ffffff;
+    }
+
+    /* MODALE STRUMENTI (EMOJI E FOTO) */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 14, 20, 0.7);
+      backdrop-filter: blur(4px);
+      z-index: 2000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-backdrop.show {
+      display: flex;
+    }
+
+    .modal-window {
+      background: #232833;
+      border: 1px solid #454f63;
+      border-radius: 10px;
+      width: 100%;
+      max-width: 540px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6);
+      padding: 22px;
+      color: var(--wb-text-bright);
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--wb-border);
+    }
+
+    .modal-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: #ffffff;
+    }
+
+    .modal-close-btn {
+      background: transparent;
+      border: none;
+      color: var(--wb-text-muted);
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      padding: 4px;
+    }
+    .modal-close-btn:hover {
+      color: #ffffff;
+    }
+
+    .modal-card {
+      background: #1a1e27;
+      border: 1px solid #363e4f;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .tool-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+      gap: 12px;
+      margin: 12px 0;
+    }
+
+    .ctrl-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .ctrl-label {
+      font-size: 11px;
+      font-family: var(--font-code);
+      color: var(--wb-text-muted);
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+    .ctrl-input {
+      background: #242935;
+      border: 1px solid #444d60;
+      color: #ffffff;
+      font-family: inherit;
+      font-size: 13.5px;
+      padding: 8px 10px;
+      border-radius: 5px;
+      outline: none;
+    }
+
+    .emoji-row-flex {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 10px 0;
+    }
+    .emoji-quick-btn {
+      width: 40px;
+      height: 40px;
+      font-size: 20px;
+      border-radius: 6px;
+      background: #252a36;
+      border: 1px solid #3f4758;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .emoji-quick-btn:hover {
+      transform: scale(1.15);
+      border-color: var(--blue-accent);
+    }
+
+    /* MODALE SCHERMO INTERO */
+    .fullscreen-overlay {
+      position: fixed;
+      inset: 0;
+      background: #ffffff;
+      z-index: 3000;
+      display: none;
+      flex-direction: column;
+    }
+    .fullscreen-overlay.active {
+      display: flex;
+    }
+    .fullscreen-exit-btn {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      z-index: 3001;
+      background: rgba(30, 36, 46, 0.9);
+      border: 1px solid #505c72;
+      color: #ffffff;
+      padding: 8px 16px;
+      border-radius: 7px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+    }
+
+    /* NOTIFICA TOAST */
+    .toast-notice {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #1f6feb;
+      border: 1px solid #388bfd;
+      color: #ffffff;
+      padding: 10px 18px;
+      border-radius: 7px;
+      font-size: 13.5px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      z-index: 4000;
+      opacity: 0;
+      transform: translateY(12px);
+      pointer-events: none;
+      transition: all 0.18s ease;
+    }
+    .toast-notice.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- BARRA SUPERIORE MINIMALE (Workbench Header compatto) -->
+  <header>
+    <div class="header-left">
+      <div class="brand-pill">
+        <div class="brand-icon-box">BG</div>
+        <span>BODY STUDIO</span>
+      </div>
+
+      <!-- Menu a Scomparsa: Modelli Sfondo -->
+      <div class="dropdown-parent">
+        <button id="btn-toggle-patterns" class="top-menu-btn" title="Apri raccolta di pattern per il body">
+          <span>Modelli Sfondo ▾</span>
+        </button>
+        <div id="dropdown-patterns" class="dropdown-card" style="width:300px; max-height:480px; overflow-y:auto;">
+          
+          <div class="menu-group-header">🎨 Gradienti</div>
+          <button class="dropdown-option" data-id="aurora-mesh">Aurora Mesh Multicolore</button>
+          <button class="dropdown-option" data-id="cyber-wave">Onda Cyber Wave Animata</button>
+          <button class="dropdown-option" data-id="conic-glow">Conic Prism Riflettore</button>
+          <button class="dropdown-option" data-id="sunset-deep">Tramonto Orizzontale</button>
+
+          <div class="menu-sep"></div>
+          <div class="menu-group-header">⠶ Puntinati (Dots)</div>
+          <button class="dropdown-option" data-id="tech-dots-22">Puntinato Tech Blu 22px</button>
+          <button class="dropdown-option" data-id="micro-matrix">Micro-Matrice 12px</button>
+          <button class="dropdown-option" data-id="radial-vignette-dots">Puntinato con Dissolvenza</button>
+          <button class="dropdown-option" data-id="dual-stipple-grid">Doppio Retino Incrociato</button>
+
+          <div class="menu-sep"></div>
+          <div class="menu-group-header">≡ A Righe (Stripes)</div>
+          <button class="dropdown-option" data-id="stripes-45-clean">Righe Diagonali 45°</button>
+          <button class="dropdown-option" data-id="pinstripes-vert">Righe Verticali Pinstripe</button>
+          <button class="dropdown-option" data-id="stripes-wide">Strisce Larghe 60px</button>
+
+          <div class="menu-sep"></div>
+          <div class="menu-group-header">▦ A Quadretti (Grid)</div>
+          <button class="dropdown-option" data-id="blueprint-graph">Carta Millimetrata Blueprint</button>
+          <button class="dropdown-option" data-id="checkerboard-clean">Scacchiera Geometrica 40px</button>
+          <button class="dropdown-option" data-id="dual-matrix-grid">Doppia Griglia Tecnica</button>
+
+          <div class="menu-sep"></div>
+          <div class="menu-group-header">✍️ Con Scritte</div>
+          <button class="dropdown-option" data-id="watermark-repeating">Filigrana Diagonale 45°</button>
+          <button class="dropdown-option" data-id="monumental-outline">Scritta Monumentale Outline</button>
+
+          <div class="menu-sep"></div>
+          <div class="menu-group-header">😍 Con Emoji</div>
+          <button class="dropdown-option" data-id="emoji-space">Emoji Razzi & Stelle 🚀✨</button>
+          <button class="dropdown-option" data-id="emoji-retro">Retro Gaming 👾🕹️</button>
+
+          <div class="menu-sep"></div>
+          <div class="menu-group-header">🖼️ Immagini & Tailwind</div>
+          <button class="dropdown-option" data-id="image-overlay-fixed">Foto con Overlay Maschera</button>
+          <button class="dropdown-option" data-id="tailwind-body-glow">Tailwind Gradiente Radiale</button>
+        </div>
+      </div>
+
+      <!-- Menu a Scomparsa: Strumenti -->
+      <button id="btn-open-tools-modal" class="top-menu-btn" title="Apri generatore emoji e immagini">
+        <span>Strumenti Emoji & Foto 🛠️</span>
+      </button>
+    </div>
+
+    <!-- Controlli Divisione Larghezza Pannelli -->
+    <div class="header-center-split">
+      <span style="font-size:11px; font-weight:700; color:var(--wb-text-muted); margin-right:4px;">SPLIT:</span>
+      <button class="split-preset-btn active" id="btn-split-50" title="50% Codice / 50% Anteprima">50/50</button>
+      <button class="split-preset-btn" id="btn-split-65-code" title="65% Codice (Focus Editor)">65% Codice</button>
+      <button class="split-preset-btn" id="btn-split-65-preview" title="65% Anteprima (Focus Sfondo)">65% Sfondo</button>
+    </div>
+
+    <!-- Azioni Destra: Esportazione e Aggiornamento -->
+    <div class="header-right">
+      <button id="btn-copy-css" class="action-btn action-btn-blue" title="Copia le regole CSS del body">
+        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" /></svg>
+        <span>Copia CSS Body</span>
+      </button>
+
+      <button id="btn-copy-all" class="action-btn action-btn-green" title="Copia file HTML autonomo con lo sfondo">
+        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>
+        <span>Copia Tutto</span>
+      </button>
+
+      <!-- Dropdown Altre Esportazioni -->
+      <div class="dropdown-parent">
+        <button id="btn-toggle-export" class="top-menu-btn" style="padding:6px 10px;">
+          <span>Esporta ▾</span>
+        </button>
+        <div id="dropdown-export" class="dropdown-card" style="right:0; left:auto; width:220px;">
+          <button id="btn-copy-inline" class="dropdown-option">
+            <span>🏷️</span> Copia Style Inline
+          </button>
+          <button id="btn-copy-tailwind" class="dropdown-option">
+            <span>⚡</span> Copia Classi Tailwind
+          </button>
+          <div class="menu-sep"></div>
+          <button id="btn-download-html" class="dropdown-option">
+            <span>⬇️</span> Scarica File .html
+          </button>
+          <button id="btn-clear-canvas" class="dropdown-option" style="color:#f87171;">
+            <span>✕</span> Pulisci / Nuovo Vuoto
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- CORPO PRINCIPALE A DUE COLONNE CON DIVISORE RIDIMENSIONABILE -->
+  <div class="workbench-split" id="workbench-split-container">
+    
+    <!-- COLONNA SINISTRA: EDITOR DI CODICE COLORATO -->
+    <section class="editor-pane" id="editor-pane">
+      
+      <!-- Barra Schede Editor -->
+      <div class="editor-tab-strip">
+        <div class="tab-list">
+          <button id="tab-css-btn" class="editor-tab active">
+            <span style="color:#58a6ff;">●</span>
+            <span>CSS Body</span>
+          </button>
+          <button id="tab-html-btn" class="editor-tab">
+            <span style="color:#e3b341;">●</span>
+            <span>HTML Body</span>
+          </button>
+        </div>
+
+        <div class="editor-tools-quick">
+          <button id="btn-wrap-toggle" class="mini-btn" title="Attiva/Disattiva testo a capo automatico">A Capo: OFF</button>
+          <button id="btn-format" class="mini-btn" title="Formatta e ordina codice">Formatta</button>
+          <button id="btn-refresh" class="mini-btn" style="background:#1f6feb; border-color:#388bfd; color:#ffffff;" title="Aggiorna Anteprima (Ctrl+Invio)">Aggiorna ↵</button>
+        </div>
+      </div>
+
+      <!-- Area di Codice a Sintassi Evidenziata -->
+      <div class="editor-code-container">
+        <!-- Numeri di riga -->
+        <div class="editor-gutter" id="editor-gutter">1</div>
+
+        <!-- Viewport condiviso -->
+        <div class="code-view-layer">
+          <!-- Layer 1: Codice colorato dalla sintassi (PRE/CODE) -->
+          <pre class="highlight-overlay" id="highlight-overlay"><code id="highlight-code"></code></pre>
+
+          <!-- Layer 2: Textarea trasparente per digitazione nativa -->
+          <textarea class="code-editor-input" id="code-textarea" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="/* Inserisci qui le regole CSS per il body */"></textarea>
+        </div>
+      </div>
+
+      <!-- Barra di stato inferiore editor -->
+      <div class="editor-status-bar">
+        <div>
+          <span id="editor-mode-label">CSS BODY</span>
+          <span> · </span>
+          <span id="editor-char-counter">0 caratteri</span>
+        </div>
+        <div>
+          <span>Scorciatoia: </span>
+          <strong style="color:var(--wb-text-bright);">Ctrl + Invio</strong>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEPARATORE RIDIMENSIONABILE TRA CODICE E ANTEPRIMA -->
+    <div class="workbench-splitter" id="splitter-bar" title="Trascina verso destra o sinistra per allargare il codice o l'anteprima">
+      <div class="splitter-grip"></div>
+    </div>
+
+    <!-- COLONNA DESTRA: ANTEPRIMA AMPIA E LUMINOSA -->
+    <section class="preview-pane" id="preview-pane">
+      
+      <!-- Toolbar Anteprima -->
+      <div class="preview-workbench-header">
+        <div class="preview-title-box">
+          <span>Anteprima del Body</span>
+          <span class="preview-status-badge" id="preview-badge-status">100% Sfondo Intero</span>
+        </div>
+
+        <div class="preview-options-group">
+          <button id="btn-toggle-demo" class="preview-pill-btn" title="Mostra un testo distribuito sulla pagina per testare la leggibilità">
+            Mostra Testo Pagina
+          </button>
+          
+          <button id="btn-fullscreen" class="preview-pill-btn" title="Anteprima a Schermo Intero">
+            <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" /></svg>
+            <span>Schermo Intero</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Canvas dell'anteprima (Ampio, chiaro, puro) -->
+      <div class="preview-canvas-viewport">
+        <iframe id="preview-iframe" class="full-body-iframe" title="Anteprima dal Vivo del Body" sandbox="allow-scripts allow-same-origin"></iframe>
+      </div>
+
+    </section>
+
+  </div>
+
+  <!-- MODALE STRUMENTI (EMOJI E FOTO) -->
+  <div class="modal-backdrop" id="tools-modal">
+    <div class="modal-window">
+      <div class="modal-header">
+        <div class="modal-title">🛠️ Strumenti di Creazione Sfondo</div>
+        <button class="modal-close-btn" id="btn-close-tools">✕</button>
+      </div>
+
+      <!-- Emoji Tool -->
+      <div class="modal-card">
+        <div style="font-weight:700; font-size:15px; margin-bottom:4px;">😍 Generatore Pattern Emoji per il Body</div>
+        <div style="font-size:12.5px; color:var(--wb-text-muted); margin-bottom:12px;">Crea uno sfondo vettoriale con le tue emoji preferite ripetute su tutto il body.</div>
+
+        <div class="tool-grid">
+          <div class="ctrl-group">
+            <label class="ctrl-label">Emoji:</label>
+            <input type="text" id="emoji-input-char" class="ctrl-input" value="🚀" style="font-size:18px; text-align:center;">
+          </div>
+          <div class="ctrl-group">
+            <label class="ctrl-label">Griglia (px):</label>
+            <input type="number" id="emoji-input-size" class="ctrl-input" value="84" min="30" max="300">
+          </div>
+          <div class="ctrl-group">
+            <label class="ctrl-label">Rotazione (°):</label>
+            <input type="number" id="emoji-input-angle" class="ctrl-input" value="-15" min="-180" max="180">
+          </div>
+          <div class="ctrl-group">
+            <label class="ctrl-label">Opacità (%):</label>
+            <input type="number" id="emoji-input-opacity" class="ctrl-input" value="35" min="5" max="100">
+          </div>
+        </div>
+
+        <div class="ctrl-label">Scegli rapido:</div>
+        <div class="emoji-row-flex">
+          <button class="emoji-quick-btn" data-e="🚀">🚀</button>
+          <button class="emoji-quick-btn" data-e="✨">✨</button>
+          <button class="emoji-quick-btn" data-e="🪐">🪐</button>
+          <button class="emoji-quick-btn" data-e="👾">👾</button>
+          <button class="emoji-quick-btn" data-e="🕹️">🕹️</button>
+          <button class="emoji-quick-btn" data-e="⚡">⚡</button>
+          <button class="emoji-quick-btn" data-e="🍕">🍕</button>
+          <button class="emoji-quick-btn" data-e="☕">☕</button>
+          <button class="emoji-quick-btn" data-e="🌿">🌿</button>
+          <button class="emoji-quick-btn" data-e="🔥">🔥</button>
+          <button class="emoji-quick-btn" data-e="💎">💎</button>
+          <button class="emoji-quick-btn" data-e="🌸">🌸</button>
+        </div>
+
+        <button id="btn-apply-emoji-modal" class="action-btn action-btn-blue" style="margin-top:6px;">
+          Applica Pattern Emoji al Body
+        </button>
+      </div>
+
+      <!-- Immagini Tool -->
+      <div class="modal-card">
+        <div style="font-weight:700; font-size:15px; margin-bottom:4px;">🖼️ Foto di Sfondo con Overlay Maschera</div>
+        <div style="font-size:12.5px; color:var(--wb-text-muted); margin-bottom:12px;">Applica una foto a tutto schermo con maschera di contrasto uniforme.</div>
+
+        <div class="ctrl-group" style="margin-bottom:12px;">
+          <label class="ctrl-label">URL Immagine:</label>
+          <input type="text" id="img-input-url" class="ctrl-input" value="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=80">
+        </div>
+
+        <div class="tool-grid">
+          <div class="ctrl-group">
+            <label class="ctrl-label">Blend Mode:</label>
+            <select id="img-input-blend" class="ctrl-input">
+              <option value="multiply" selected>multiply</option>
+              <option value="overlay">overlay</option>
+              <option value="soft-light">soft-light</option>
+              <option value="screen">screen</option>
+            </select>
+          </div>
+          <div class="ctrl-group">
+            <label class="ctrl-label">Colore Maschera:</label>
+            <input type="color" id="img-input-color" class="ctrl-input" value="#0f172a" style="height:38px; padding:2px;">
+          </div>
+        </div>
+
+        <button id="btn-apply-image-modal" class="action-btn action-btn-green" style="margin-top:6px;">
+          Applica Immagine al Body
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ANTEPRIMA A SCHERMO INTERO -->
+  <div class="fullscreen-overlay" id="fullscreen-overlay">
+    <button class="fullscreen-exit-btn" id="btn-close-fullscreen">
+      ✕ Chiudi Schermo Intero (Esc)
+    </button>
+    <iframe id="fullscreen-iframe" class="full-body-iframe" title="Anteprima Schermo Intero" sandbox="allow-scripts allow-same-origin"></iframe>
+  </div>
+
+  <!-- NOTIFICA TOAST -->
+  <div class="toast-notice" id="toast-notice">
+    <span>✓</span>
+    <span id="toast-label">Copiato negli appunti!</span>
+  </div>
+
+  <!-- JAVASCRIPT AUTONOMO (ZERO REACT) -->
+  <script>
+    (function() {
+      // 1. DATA DEI PATTERN AUTENTICI PER IL BODY (SENZA ALCUNA CARD IN MEZZO!)
+      const PRESETS = [
+        // GRADIENTI
+        {
+          id: 'aurora-mesh',
+          name: 'Aurora Mesh Multicolore',
+          category: 'gradienti',
+          css: `body {
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  background-color: #0f172a;
+  background-image: 
+    radial-gradient(at 15% 15%, #4f46e5 0px, transparent 50%),
+    radial-gradient(at 85% 12%, #06b6d4 0px, transparent 50%),
+    radial-gradient(at 12% 85%, #ec4899 0px, transparent 50%),
+    radial-gradient(at 85% 85%, #3b82f6 0px, transparent 50%),
+    radial-gradient(at 50% 50%, #9333ea 0px, transparent 55%);
+  background-attachment: fixed;
+  background-size: cover;
+  color: #f8fafc;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+}`,
+          html: ``
+        },
+        {
+          id: 'cyber-wave',
+          name: 'Onda Cyber Wave Animata',
+          category: 'gradienti',
+          css: `body {
+  min-height: 100vh;
+  margin: 0;
+  background: linear-gradient(-45deg, #0f172a, #312e81, #4338ca, #0e7490, #0f172a);
+  background-size: 400% 400%;
+  animation: bgGradientFlow 14s ease infinite;
+  color: #f8fafc;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+}
+
+@keyframes bgGradientFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}`,
+          html: ``
+        },
+        {
+          id: 'conic-glow',
+          name: 'Conic Prism Riflettore',
+          category: 'gradienti',
+          css: `body {
+  min-height: 100vh;
+  margin: 0;
+  background-color: #030712;
+  background-image: 
+    radial-gradient(circle at center, transparent 30%, #030712 85%),
+    conic-gradient(from 180deg at 50% 50%, #1e1b4b, #3b82f6, #06b6d4, #6366f1, #1e1b4b);
+  background-attachment: fixed;
+  color: #f8fafc;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+}`,
+          html: ``
+        },
+        {
+          id: 'sunset-deep',
+          name: 'Tramonto Orizzontale',
+          category: 'gradienti',
+          css: `body {
+  min-height: 100vh;
+  margin: 0;
+  background: linear-gradient(180deg, #090d16 0%, #1e1b4b 35%, #831843 75%, #b45309 100%);
+  background-attachment: fixed;
+  color: #f8fafc;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+}`,
+          html: ``
+        },
+
+        // PUNTINATI (DOTS)
+        {
+          id: 'tech-dots-22',
+          name: 'Puntinato Tech Blu 22px',
+          category: 'puntinati',
+          css: `body {
+  min-height: 100vh;
+  margin: 0;
+  background-color: #0b0f19;
+  background-image: radial-gradient(#38bdf8 1.5px, transparent 1.5px);
+  background-size: 22px 22px;
+  background-position: 0 0;
+  color: #f8fafc;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+}`,
+          html: ``
+        },
+        {
+          id: 'micro-matrix',
+          name: 'Micro-Matrice 12px',
+          category: 'puntinati',
+          css: `body {
+  min-height: 100vh;
+  margin: 0;
+  background-color: #0f172a;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.22) 1px, transparent 1px);
+  background-size: 12px 12px;
+  color: #f8fafc;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+}`,
+          html: ``
+        },
+        {
+          id: 'radial-vignette-dots',
+          name: 'Puntinato con Dissolvenza',
+          category: 'puntinati',
+          css: `body {
+  min-height: 100vh;
+  margin: 0;
+  background-color: #050811;
+  background-image: 
+    radial-gradient(circle at center, transparent 30%, #050811 88%),
+    radial-gradient(circle, rgba(99, 102, 241, 0.45) 1.5px, transparent 1.5px);
+  background-size: 100% 100%, 22px 22px;
+  background-attachment: fixed;
+  color: #f8fafc;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+}`,
+          html: ``
+        },
+        {
+          id: 'dual-stipple-grid',
+          name: 'Doppio Retino Incrociato',
+          category: 'puntinati',
+          css: `body {
+  min-height: 100vh;
+  margin: 0;
+  background-color: #0b0f19;
+  background-image: 
+    radial-gradient(rgba(255, 255, 255, 0.18) 1px, transparent 1px),
+    radial-gradient(rgba(56, 189, 248, 0.3) 1.5px, transparent 1.5px);
+  background-size: 32px 32px, 32px 32px;
+  background-position: 0 0, 16px 16px;
+  color: #f8fafc;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+}`,
+          html: ``
+        },
+
+        // A RIGHE (STRIPES)
+        {
+          id: 'stripes-45-clean',
+          name: 'Righe Diagonali 45°',
+          category: 'righe',
+          css: `body {
+  min-height: 100vh;
+  margin: 0;
+  background-color: #0b0f19;
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 14px,
+    rgba(255, 255, 255, 0.04) 14px,
+    rgba(255, 255, 255, 0.04) 28px
+  );
+  color: #f8fafc;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+}`,
+          html: ``
+        },
+        {
+          id: 'pinstripes-vert',
+          name: 'Righe Verticali Pinstripe',
+          category: 'righe',
+          css: `body {
+  min-height: 100vh;
+  margin: 0;
+  background-color: #090d16;
+  background-image: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 36px,
+    rgba(56, 189, 248, 0.14) 36px,
+    rgba(56, 189, 248, 0.14) 38px
+  );
+  color: #f8fafc;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+}`,
+          html: ``
+        },
+        {
+          id: 'stripes-wide',
+          name: 'Strisce Larghe 60px',
+          category: 'righe',
+          css: `body {
+  min-height: 100vh;
+  margin: 0;
+  background-color: #0d121f;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent,
+    transparent 60px,
+    rgba(0, 0, 0, 0.28) 60px,
+    rgba(0, 0, 0, 0.28) 120px
+  );
+  color: #f8fafc;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+}`,
+          html: ``
+        },
+
+        // A QUADRETTI (GRID)
+        {
+          id: 'blueprint-graph',
+          name: 'Carta Millimetrata Blueprint',
+          category: 'quadretti',
+          css: `body {
+  min-height: 100vh;
+  margin: 0;
+  background-color: #060b14;
+  background-image: 
+    linear-gradient(to right, rgba(56, 189, 248, 0.16) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(56, 189, 248, 0.16) 1px, transparent 1px);
+  background-size: 32px 32px;
+  color: #f8fafc;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+}`,
+          html: ``
+        },
+        {
+          id: 'checkerboard-clean',
+          name: 'Scacchiera Geometrica 40px',
+          category: 'quadretti',
+          css: `body {
+  min-height: 100vh;
+  margin: 0;
+  background-color: #0f172a;
+  background-image: 
+    linear-gradient(45deg, rgba(255, 255, 255, 0.045) 25%, transparent 25%), 
+    linear-gradient(-45deg, rgba(255, 255, 255, 0.045) 25%, transparent 25%), 
+    linear-gradient(45deg, transparent 75%, rgba(255, 255, 255, 0.045) 75%), 
+    linear-gradient(-45deg, transparent 75%, rgba(255, 255, 255, 0.045) 75%);
+  background-size: 40px 40px;
+  background-position: 0 0, 0 20px, 20px -20px, -20px 0px;
+  color: #f8fafc;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+}`,
+          html: ``
+        },
+        {
+          id: 'dual-matrix-grid',
+          name: 'Doppia Griglia Tecnica',
+          category: 'quadretti',
+          css: `body {
+  min-height: 100vh;
+  margin: 0;
+  background-color: #080c14;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+    linear-gradient(to right, rgba(56, 189, 248, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(56, 189, 248, 0.04) 1px, transparent 1px);
+  background-size: 80px 80px, 80px 80px, 16px 16px, 16px 16px;
+  color: #f8fafc;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+}`,
+          html: ``
+        },
+
+        // CON SCRITTE
+        {
+          id: 'watermark-repeating',
+          name: 'Filigrana Diagonale 45°',
+          category: 'scritte',
+          css: `body {
+  min-height: 100vh;
+  margin: 0;
+  background-color: #080c16;
+  background-image: url("data:image/svg+xml,%3Csvg width='260' height='130' xmlns='http://www.w3.org/2000/svg'%3E%3Ctext x='50%25' y='50%25' font-family='sans-serif' font-weight='800' font-size='16' fill='rgba(255,255,255,0.05)' text-anchor='middle' dominant-baseline='middle' transform='rotate(-25 130 65)'%3EBACKGROUND STUDIO%3C/text%3E%3C/svg%3E");
+  background-repeat: repeat;
+  color: #f8fafc;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+}`,
+          html: ``
+        },
+        {
+          id: 'monumental-outline',
+          name: 'Scritta Monumentale Outline',
+          category: 'scritte',
+          css: `body {
+  min-height: 100vh;
+  margin: 0;
+  background-color: #060911;
+  position: relative;
+  overflow-x: hidden;
+  color: #f8fafc;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+}
+
+body::before {
+  content: "DEVELOPER";
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: clamp(80px, 18vw, 220px);
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  color: transparent;
+  -webkit-text-stroke: 2px rgba(255, 255, 255, 0.08);
+  user-select: none;
+  pointer-events: none;
+  z-index: 0;
+}`,
+          html: ``
+        },
+
+        // CON EMOJI
+        {
+          id: 'emoji-space',
+          name: 'Emoji Razzi & Stelle 🚀✨',
+          category: 'emoji',
+          css: `body {
+  min-height: 100vh;
+  margin: 0;
+  background-color: #070b16;
+  background-image: url("data:image/svg+xml,%3Csvg width='90' height='90' xmlns='http://www.w3.org/2000/svg'%3E%3Ctext x='50%25' y='50%25' font-size='28' opacity='0.3' text-anchor='middle' dominant-baseline='middle' transform='rotate(-20 45 45)'%3E🚀%3C/text%3E%3C/svg%3E");
+  background-repeat: repeat;
+  color: #f8fafc;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+}`,
+          html: ``
+        },
+        {
+          id: 'emoji-retro',
+          name: 'Retro Gaming 👾🕹️',
+          category: 'emoji',
+          css: `body {
+  min-height: 100vh;
+  margin: 0;
+  background-color: #0a0814;
+  background-image: url("data:image/svg+xml,%3Csvg width='84' height='84' xmlns='http://www.w3.org/2000/svg'%3E%3Ctext x='50%25' y='50%25' font-size='26' opacity='0.28' text-anchor='middle' dominant-baseline='middle' transform='rotate(10 42 42)'%3E👾%3C/text%3E%3C/svg%3E");
+  background-repeat: repeat;
+  color: #f8fafc;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+}`,
+          html: ``
+        },
+
+        // CON IMMAGINI
+        {
+          id: 'image-overlay-fixed',
+          name: 'Foto con Overlay Maschera',
+          category: 'immagini',
+          css: `body {
+  min-height: 100vh;
+  margin: 0;
+  background-color: #080c14;
+  background-image: 
+    linear-gradient(rgba(8, 12, 20, 0.86), rgba(8, 12, 20, 0.86)),
+    url("https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=80");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  color: #f8fafc;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+}`,
+          html: ``
+        },
+
+        // TAILWIND
+        {
+          id: 'tailwind-body-glow',
+          name: 'Tailwind Gradiente Radiale Body',
+          category: 'tailwind',
+          css: `/* Classi equivalenti per <body class="...">: */
+body {
+  min-height: 100vh;
+  margin: 0;
+  background-color: #020617; /* bg-slate-950 */
+  background-image: radial-gradient(ellipse 80% 80% at 50% -20%, rgba(120, 119, 198, 0.35), rgba(255, 255, 255, 0));
+  color: #f8fafc;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+}`,
+          html: ``
+        }
+      ];
+
+      // TESTO DIMOSTRATIVO DISTRIBUITO SULLA PAGINA (SENZA CARD)
+      const DEMO_PAGE_LAYOUT = `
+<div style="min-height:100vh; display:flex; flex-direction:column; justify-content:space-between; padding:44px 54px; box-sizing:border-box;">
+  <header style="display:flex; justify-content:space-between; align-items:center;">
+    <div style="font-size:22px; font-weight:800; letter-spacing:-0.02em;">STUDIO ARCHITETTURA</div>
+    <nav style="display:flex; gap:26px; font-size:15px; font-weight:600; opacity:0.85;">
+      <span>Home</span>
+      <span>Progetti</span>
+      <span>Metodologia</span>
+      <span>Contatti</span>
+    </nav>
+  </header>
+  
+  <main style="max-width:720px; margin:70px 0;">
+    <div style="font-size:13px; font-weight:800; color:#38bdf8; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:14px;">Collaudo Leggibilità Body</div>
+    <h1 style="font-size:clamp(32px, 5vw, 56px); font-weight:800; line-height:1.15; margin:0 0 18px 0;">
+      Il tuo sfondo a tutto schermo in azione
+    </h1>
+    <p style="font-size:17.5px; line-height:1.65; opacity:0.9; margin:0 0 30px 0;">
+      Questo testo di esempio serve unicamente per verificare come risaltano titoli e paragrafi direttamente sopra il pattern di sfondo del body che hai creato.
+    </p>
+    <div style="display:flex; gap:12px;">
+      <button style="background:#1d4ed8; color:#ffffff; border:none; padding:13px 26px; border-radius:7px; font-size:14.5px; font-weight:700; cursor:pointer;">Pulsante Primario</button>
+      <button style="background:rgba(255,255,255,0.15); color:#ffffff; border:1px solid rgba(255,255,255,0.25); padding:13px 26px; border-radius:7px; font-size:14.5px; font-weight:600; cursor:pointer;">Secondario</button>
+    </div>
+  </main>
+
+  <footer style="font-size:13.5px; opacity:0.65;">
+    © 2026 Test di Anteprima Body · Sfondo al 100%
+  </footer>
+</div>`;
+
+      // 2. HIGHLIGHTER SINTATTICO CLASSICO (REGEX PARSER AD ALTA VELOCITÀ)
+      function highlightCss(code) {
+        let text = code
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;');
+
+        // Commenti: /* ... */
+        text = text.replace(/(\/\*[\s\S]*?\*\/)/g, '<span class="token-comment">$1</span>');
+        // Stringhe: "..." o '...'
+        text = text.replace(/(["'])(?:(?=(\\?))\2[\s\S])*?\1/g, '<span class="token-string">$&</span>');
+        // At-rules: @keyframes, @media
+        text = text.replace(/(@[a-zA-Z-]+)/g, '<span class="token-keyword">$1</span>');
+        // Funzioni CSS: radial-gradient, linear-gradient, url, calc, ecc.
+        text = text.replace(/\b(radial-gradient|linear-gradient|repeating-linear-gradient|repeating-radial-gradient|conic-gradient|repeating-conic-gradient|url|calc|rgb|rgba|hsl|hsla|clamp|var)\b(?=\s*\()/g, '<span class="token-func">$1</span>');
+        // Colori Esadecimali: #0f172a, #ffffff
+        text = text.replace(/(#[0-9a-fA-F]{3,8}\b)/g, '<span class="token-hex">$1</span>');
+        // Numeri e unità: 100vh, 22px, 45deg, 50%, 14s
+        text = text.replace(/\b(\d+(?:\.\d+)?)(px|vh|vw|%|deg|rem|em|s|ms)?\b/g, '<span class="token-number">$1$2</span>');
+        // Proprietà prima dei due punti: background:, margin:, ecc.
+        text = text.replace(/([a-zA-Z-]+)(?=\s*:)/g, '<span class="token-prop">$1</span>');
+        // Selettori noti: body, html, div, h1, ::before, ::after
+        text = text.replace(/\b(body|html|div|h1|h2|p|span|header|main|footer)\b(?=[^{]*{)/g, '<span class="token-selector">$1</span>');
+        text = text.replace(/(::?[a-zA-Z-]+)(?=[^{]*{)/g, '<span class="token-selector">$1</span>');
+        // Valori comuni: fixed, cover, repeat, no-repeat, center, transparent, ease, infinite
+        text = text.replace(/\b(fixed|cover|repeat|no-repeat|center|transparent|ease|infinite|relative|hidden|sans-serif|system-ui|none|block|flex)\b/g, '<span class="token-val">$1</span>');
+
+        return text;
+      }
+
+      function highlightHtml(code) {
+        let text = code
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;');
+
+        // Commenti HTML: <!-- ... -->
+        text = text.replace(/(&lt;!--[\s\S]*?--&gt;)/g, '<span class="token-comment">$1</span>');
+        // Attributi: class=, style=
+        text = text.replace(/\b([a-zA-Z-]+)(?==)/g, '<span class="token-prop">$1</span>');
+        text = text.replace(/(=)(&quot;[^&]*&quot;|"[^"]*")/g, '$1<span class="token-string">$2</span>');
+        // Tag di apertura e chiusura
+        text = text.replace(/(&lt;\/?[a-zA-Z0-9-]+)/g, '<span class="token-tag">$1</span>');
+        text = text.replace(/(&gt;)/g, '<span class="token-tag">$1</span>');
+
+        return text;
+      }
+
+      // 3. STATO APPLICAZIONE
+      let currentCss = PRESETS[0].css;
+      let currentHtml = PRESETS[0].html;
+      let activeTab = 'css'; // 'css' | 'html'
+      let showDemoText = false;
+      let isWordWrap = false;
+      let debounceTimer = null;
+
+      // 4. RIFERIMENTI DOM
+      const codeTextarea = document.getElementById('code-textarea');
+      const highlightCode = document.getElementById('highlight-code');
+      const highlightOverlay = document.getElementById('highlight-overlay');
+      const editorGutter = document.getElementById('editor-gutter');
+      const previewIframe = document.getElementById('preview-iframe');
+      const fullscreenIframe = document.getElementById('fullscreen-iframe');
+      const fullscreenOverlay = document.getElementById('fullscreen-overlay');
+
+      const editorPane = document.getElementById('editor-pane');
+      const previewPane = document.getElementById('preview-pane');
+      const splitterBar = document.getElementById('splitter-bar');
+      const splitContainer = document.getElementById('workbench-split-container');
+
+      const tabCssBtn = document.getElementById('tab-css-btn');
+      const tabHtmlBtn = document.getElementById('tab-html-btn');
+      const editorModeLabel = document.getElementById('editor-mode-label');
+      const editorCharCounter = document.getElementById('editor-char-counter');
+      const previewBadgeStatus = document.getElementById('preview-badge-status');
+      const btnToggleDemo = document.getElementById('btn-toggle-demo');
+      const btnWrapToggle = document.getElementById('btn-wrap-toggle');
+
+      const dropdownPatterns = document.getElementById('dropdown-patterns');
+      const btnTogglePatterns = document.getElementById('btn-toggle-patterns');
+      const dropdownExport = document.getElementById('dropdown-export');
+      const btnToggleExport = document.getElementById('btn-toggle-export');
+      const toolsModal = document.getElementById('tools-modal');
+
+      const toastNotice = document.getElementById('toast-notice');
+      const toastLabel = document.getElementById('toast-label');
+
+      // 5. INIZIALIZZAZIONE APPLICAZIONE
+      function initWorkbench() {
+        codeTextarea.value = (activeTab === 'css') ? currentCss : currentHtml;
+        syncCodeView();
+        updatePreview();
+        bindEvents();
+        setupSplitter();
+      }
+
+      // 6. SINCRONIZZAZIONE SINTASSI E GUTTER
+      function syncCodeView() {
+        const val = codeTextarea.value;
+        if (activeTab === 'css') {
+          currentCss = val;
+          highlightCode.innerHTML = highlightCss(val) + '\n ';
+        } else {
+          currentHtml = val;
+          highlightCode.innerHTML = highlightHtml(val) + '\n ';
+        }
+
+        // Calcola numeri di riga
+        const lineCount = val.split('\n').length;
+        let gutterHtml = '';
+        for (let i = 1; i <= Math.max(lineCount, 1); i++) {
+          gutterHtml += i + '<br>';
+        }
+        editorGutter.innerHTML = gutterHtml;
+
+        // Conteggio caratteri
+        editorCharCounter.textContent = `${val.length} caratteri`;
+
+        // Sincronizza posizioni di scroll
+        syncScroll();
+      }
+
+      function syncScroll() {
+        highlightOverlay.scrollTop = codeTextarea.scrollTop;
+        highlightOverlay.scrollLeft = codeTextarea.scrollLeft;
+        editorGutter.scrollTop = codeTextarea.scrollTop;
+      }
+
+      // 7. COMPILAZIONE E RENDERING ANTEPRIMA (BODY A TUTTO SCHERMO SENZA ALCUNA CARD!)
+      function updatePreview() {
+        let bodyContent = '';
+        if (currentHtml.trim().length > 0) {
+          bodyContent = currentHtml;
+        } else if (showDemoText) {
+          bodyContent = DEMO_PAGE_LAYOUT;
+        }
+
+        const fullDoc = `<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"><\/script>
+  <style>
+    * { box-sizing: border-box; }
+    ${currentCss}
+  </style>
+</head>
+<body>
+  ${bodyContent}
+</body>
+</html>`;
+
+        previewIframe.srcdoc = fullDoc;
+        if (fullscreenOverlay.classList.contains('active')) {
+          fullscreenIframe.srcdoc = fullDoc;
+        }
+      }
+
+      function queueUpdate() {
+        if (debounceTimer) clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(updatePreview, 160);
+      }
+
+      // 8. TOAST NOTIFICHE E COPIA APPUNTI
+      function showToast(msg) {
+        toastLabel.textContent = msg;
+        toastNotice.classList.add('active');
+        setTimeout(() => toastNotice.classList.remove('active'), 2400);
+      }
+
+      async function copyToClipboard(text, msg) {
+        try {
+          await navigator.clipboard.writeText(text);
+          showToast(msg);
+        } catch (e) {
+          const t = document.createElement('textarea');
+          t.value = text;
+          t.style.position = 'fixed';
+          t.style.opacity = '0';
+          document.body.appendChild(t);
+          t.select();
+          document.execCommand('copy');
+          document.body.removeChild(t);
+          showToast(msg);
+        }
+      }
+
+      function buildAutonomousHtmlDoc() {
+        return `<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sfondo Body Personalizzato</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"><\/script>
+  <style>
+${currentCss}
+  </style>
+</head>
+<body>
+${currentHtml}
+</body>
+</html>`;
+      }
+
+      function getInlineBackground() {
+        const matches = currentCss.match(/background(?:-image|-color|-size|-repeat|-position|-attachment)?:[^;]+;/g);
+        if (matches && matches.length > 0) {
+          return matches.join(' ').replace(/\s+/g, ' ').trim();
+        }
+        return currentCss.replace(/\/\*[\s\S]*?\*\/|[\r\n\t]+/g, ' ').trim();
+      }
+
+      function getTailwindClasses() {
+        const matches = currentHtml.match(/class=["']([^"']+)["']/g);
+        if (!matches || matches.length === 0) {
+          return 'bg-slate-950 bg-[radial-gradient(#38bdf8_1.5px,transparent_1.5px)] [background-size:22px_22px]';
+        }
+        const set = new Set();
+        matches.forEach(m => {
+          const raw = m.replace(/class=["']|["']/g, '');
+          raw.split(/\s+/).forEach(c => c && set.add(c));
+        });
+        return Array.from(set).join(' ');
+      }
+
+      function downloadHtmlFile() {
+        const blob = new Blob([buildAutonomousHtmlDoc()], { type: 'text/html;charset=utf-8' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'sfondo-body.html';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        showToast('File sfondo-body.html scaricato!');
+      }
+
+      // 9. GESTIONE SEPARATORE RIDIMENSIONABILE (SPLITTER)
+      function setupSplitter() {
+        let isDragging = false;
+
+        splitterBar.addEventListener('mousedown', (e) => {
+          isDragging = true;
+          splitterBar.classList.add('dragging');
+          document.body.style.cursor = 'col-resize';
+          document.body.style.userSelect = 'none';
+        });
+
+        window.addEventListener('mousemove', (e) => {
+          if (!isDragging) return;
+          const containerRect = splitContainer.getBoundingClientRect();
+          const offset = e.clientX - containerRect.left;
+          const percentage = (offset / containerRect.width) * 100;
+          if (percentage >= 20 && percentage <= 80) {
+            editorPane.style.width = percentage + '%';
+            previewPane.style.width = (100 - percentage) + '%';
+            clearSplitPresetActive();
+          }
+        });
+
+        window.addEventListener('mouseup', () => {
+          if (isDragging) {
+            isDragging = false;
+            splitterBar.classList.remove('dragging');
+            document.body.style.cursor = '';
+            document.body.style.userSelect = '';
+          }
+        });
+
+        // Pulsanti preset divisione larghezza
+        const btn50 = document.getElementById('btn-split-50');
+        const btn65Code = document.getElementById('btn-split-65-code');
+        const btn65Prev = document.getElementById('btn-split-65-preview');
+
+        function clearSplitPresetActive() {
+          [btn50, btn65Code, btn65Prev].forEach(b => b.classList.remove('active'));
+        }
+
+        btn50.addEventListener('click', () => {
+          clearSplitPresetActive();
+          btn50.classList.add('active');
+          editorPane.style.width = '50%';
+          previewPane.style.width = '50%';
+        });
+
+        btn65Code.addEventListener('click', () => {
+          clearSplitPresetActive();
+          btn65Code.classList.add('active');
+          editorPane.style.width = '65%';
+          previewPane.style.width = '35%';
+        });
+
+        btn65Prev.addEventListener('click', () => {
+          clearSplitPresetActive();
+          btn65Prev.classList.add('active');
+          editorPane.style.width = '35%';
+          previewPane.style.width = '65%';
+        });
+      }
+
+      // 10. TASTO TAB (2 SPAZI)
+      function handleTabKey(e) {
+        if (e.key === 'Tab') {
+          e.preventDefault();
+          const start = codeTextarea.selectionStart;
+          const end = codeTextarea.selectionEnd;
+          codeTextarea.value = codeTextarea.value.substring(0, start) + '  ' + codeTextarea.value.substring(end);
+          codeTextarea.selectionStart = codeTextarea.selectionEnd = start + 2;
+          syncCodeView();
+          queueUpdate();
+        }
+      }
+
+      // 11. CAMBIO TAB (CSS / HTML)
+      function switchTab(tab) {
+        activeTab = tab;
+        tabCssBtn.classList.toggle('active', tab === 'css');
+        tabHtmlBtn.classList.toggle('active', tab === 'html');
+
+        codeTextarea.value = (tab === 'css') ? currentCss : currentHtml;
+        codeTextarea.placeholder = (tab === 'css') 
+          ? '/* Inserisci qui le regole CSS per il body */' 
+          : '<!-- Inserisci qui il codice HTML della pagina (lascia vuoto per vedere solo lo sfondo) -->';
+        
+        editorModeLabel.textContent = (tab === 'css') ? 'CSS BODY' : 'HTML BODY';
+        syncCodeView();
+      }
+
+      // 12. CARICAMENTO PRESET
+      function loadPresetById(id) {
+        const found = PRESETS.find(p => p.id === id);
+        if (!found) return;
+
+        currentCss = found.css;
+        currentHtml = found.html;
+
+        if (activeTab === 'css') {
+          codeTextarea.value = currentCss;
+        } else {
+          codeTextarea.value = currentHtml;
+        }
+
+        syncCodeView();
+        updatePreview();
+        showToast(`Pattern "${found.name}" applicato al Body!`);
+      }
+
+      // 13. GENERATORE SVG EMOJI
+      function makeEmojiSvg(emoji, size, angle, opacity) {
+        const svg = `<svg width='${size}' height='${size}' xmlns='http://www.w3.org/2000/svg'><text x='50%' y='50%' font-size='${Math.round(size * 0.32)}' opacity='${(opacity / 100).toFixed(2)}' text-anchor='middle' dominant-baseline='middle' transform='rotate(${angle} ${size/2} ${size/2})'>${emoji}</text></svg>`;
+        return `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
+      }
+
+      // 14. COLLEGAMENTO EVENTI
+      function bindEvents() {
+        // Textarea input & scroll
+        codeTextarea.addEventListener('input', () => {
+          syncCodeView();
+          queueUpdate();
+        });
+        codeTextarea.addEventListener('scroll', syncScroll);
+        codeTextarea.addEventListener('keydown', (e) => {
+          handleTabKey(e);
+          if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+            e.preventDefault();
+            updatePreview();
+            showToast('Anteprima aggiornata!');
+          }
+        });
+
+        // Tasti di scelta rapida globali
+        window.addEventListener('keydown', (e) => {
+          if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+            e.preventDefault();
+            updatePreview();
+            showToast('Anteprima aggiornata!');
+          }
+          if (e.key === 'Escape') {
+            fullscreenOverlay.classList.remove('active');
+            toolsModal.classList.remove('show');
+            closeDropdowns();
+          }
+        });
+
+        // Tabs
+        tabCssBtn.addEventListener('click', () => switchTab('css'));
+        tabHtmlBtn.addEventListener('click', () => switchTab('html'));
+
+        // Pulsante Word Wrap (A Capo)
+        btnWrapToggle.addEventListener('click', () => {
+          isWordWrap = !isWordWrap;
+          btnWrapToggle.classList.toggle('active', isWordWrap);
+          btnWrapToggle.textContent = isWordWrap ? 'A Capo: ON' : 'A Capo: OFF';
+
+          const wsVal = isWordWrap ? 'pre-wrap' : 'pre';
+          const wbVal = isWordWrap ? 'break-word' : 'normal';
+
+          codeTextarea.style.whiteSpace = wsVal;
+          codeTextarea.style.wordBreak = wbVal;
+          highlightOverlay.style.whiteSpace = wsVal;
+          highlightOverlay.style.wordBreak = wbVal;
+
+          syncCodeView();
+          showToast(isWordWrap ? 'Testo a capo automatico attivo' : 'Testo su riga continua attivo');
+        });
+
+        // Pulsanti Aggiorna & Formatta
+        document.getElementById('btn-refresh').addEventListener('click', () => {
+          updatePreview();
+          showToast('Anteprima aggiornata!');
+        });
+        document.getElementById('btn-format').addEventListener('click', () => {
+          codeTextarea.value = codeTextarea.value.split('\n').map(l => l.trimEnd()).join('\n');
+          syncCodeView();
+          showToast('Codice formattato!');
+        });
+
+        // Menu Dropdown: Modelli Sfondo
+        btnTogglePatterns.addEventListener('click', (e) => {
+          e.stopPropagation();
+          dropdownExport.classList.remove('show');
+          btnToggleExport.classList.remove('active');
+          const isOpened = dropdownPatterns.classList.toggle('show');
+          btnTogglePatterns.classList.toggle('active', isOpened);
+        });
+
+        // Selezione modello da dropdown
+        dropdownPatterns.querySelectorAll('.dropdown-option').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const id = btn.getAttribute('data-id');
+            loadPresetById(id);
+            dropdownPatterns.classList.remove('show');
+            btnTogglePatterns.classList.remove('active');
+          });
+        });
+
+        // Menu Dropdown: Esporta
+        btnToggleExport.addEventListener('click', (e) => {
+          e.stopPropagation();
+          dropdownPatterns.classList.remove('show');
+          btnTogglePatterns.classList.remove('active');
+          const isOpened = dropdownExport.classList.toggle('show');
+          btnToggleExport.classList.toggle('active', isOpened);
+        });
+
+        // Chiudi dropdown al click fuori
+        window.addEventListener('click', () => closeDropdowns());
+
+        function closeDropdowns() {
+          dropdownPatterns.classList.remove('show');
+          btnTogglePatterns.classList.remove('active');
+          dropdownExport.classList.remove('show');
+          btnToggleExport.classList.remove('active');
+        }
+
+        // Esportazione diretta
+        document.getElementById('btn-copy-css').addEventListener('click', () => {
+          copyToClipboard(currentCss, 'CSS Body copiato negli appunti!');
+        });
+        document.getElementById('btn-copy-all').addEventListener('click', () => {
+          copyToClipboard(buildAutonomousHtmlDoc(), 'File HTML completo copiato!');
+        });
+        document.getElementById('btn-copy-inline').addEventListener('click', () => {
+          closeDropdowns();
+          copyToClipboard(`style="${getInlineBackground()}"`, 'Style inline copiato!');
+        });
+        document.getElementById('btn-copy-tailwind').addEventListener('click', () => {
+          closeDropdowns();
+          copyToClipboard(getTailwindClasses(), 'Classi Tailwind copiate!');
+        });
+        document.getElementById('btn-download-html').addEventListener('click', () => {
+          closeDropdowns();
+          downloadHtmlFile();
+        });
+        document.getElementById('btn-clear-canvas').addEventListener('click', () => {
+          closeDropdowns();
+          currentCss = `body {\n  min-height: 100vh;\n  margin: 0;\n  background-color: #0b0f19;\n  color: #ffffff;\n  font-family: system-ui, sans-serif;\n}`;
+          currentHtml = ``;
+          codeTextarea.value = (activeTab === 'css') ? currentCss : currentHtml;
+          syncCodeView();
+          updatePreview();
+          showToast('Canvas vuoto pronto!');
+        });
+
+        // Toggle Testo Dimostrativo
+        btnToggleDemo.addEventListener('click', () => {
+          showDemoText = !showDemoText;
+          btnToggleDemo.classList.toggle('active', showDemoText);
+          btnToggleDemo.textContent = showDemoText ? '✓ Testo Pagina Attivo' : 'Mostra Testo Pagina';
+          previewBadgeStatus.textContent = showDemoText ? 'Con Testo Dimostrativo' : '100% Sfondo Intero';
+          updatePreview();
+        });
+
+        // Schermo intero
+        document.getElementById('btn-fullscreen').addEventListener('click', () => {
+          fullscreenOverlay.classList.add('active');
+          updatePreview();
+        });
+        document.getElementById('btn-close-fullscreen').addEventListener('click', () => {
+          fullscreenOverlay.classList.remove('active');
+        });
+
+        // Modale Strumenti (Emoji & Foto)
+        const btnOpenTools = document.getElementById('btn-open-tools-modal');
+        const btnCloseTools = document.getElementById('btn-close-tools');
+        btnOpenTools.addEventListener('click', () => {
+          closeDropdowns();
+          toolsModal.classList.add('show');
+        });
+        btnCloseTools.addEventListener('click', () => toolsModal.classList.remove('show'));
+        toolsModal.addEventListener('click', (e) => {
+          if (e.target === toolsModal) toolsModal.classList.remove('show');
+        });
+
+        // Emoji tool picker
+        document.querySelectorAll('.emoji-quick-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            document.getElementById('emoji-input-char').value = btn.getAttribute('data-e');
+          });
+        });
+
+        // Applica Emoji da Modale
+        document.getElementById('btn-apply-emoji-modal').addEventListener('click', () => {
+          const char = document.getElementById('emoji-input-char').value || '🚀';
+          const size = parseInt(document.getElementById('emoji-input-size').value, 10) || 84;
+          const angle = parseInt(document.getElementById('emoji-input-angle').value, 10) || -15;
+          const opacity = parseInt(document.getElementById('emoji-input-opacity').value, 10) || 35;
+
+          const uri = makeEmojiSvg(char, size, angle, opacity);
+
+          currentCss = `body {
+  min-height: 100vh;
+  margin: 0;
+  background-color: #0b0f19;
+  background-image: ${uri};
+  background-repeat: repeat;
+  color: #f8fafc;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+}`;
+          if (activeTab === 'css') {
+            codeTextarea.value = currentCss;
+          }
+          syncCodeView();
+          updatePreview();
+          toolsModal.classList.remove('show');
+          showToast(`Pattern emoji ${char} applicato al Body!`);
+        });
+
+        // Applica Foto da Modale
+        document.getElementById('btn-apply-image-modal').addEventListener('click', () => {
+          const url = document.getElementById('img-input-url').value;
+          const blend = document.getElementById('img-input-blend').value;
+          const color = document.getElementById('img-input-color').value;
+
+          currentCss = `body {
+  min-height: 100vh;
+  margin: 0;
+  background-color: ${color};
+  background-image: 
+    linear-gradient(${color}e6, ${color}e6),
+    url("${url}");
+  background-blend-mode: ${blend};
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  color: #f8fafc;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+}`;
+          if (activeTab === 'css') {
+            codeTextarea.value = currentCss;
+          }
+          syncCodeView();
+          updatePreview();
+          toolsModal.classList.remove('show');
+          showToast('Immagine a tutta pagina applicata al Body!');
+        });
+      }
+
+      // Avvia Workbench
+      initWorkbench();
+    })();
+  </script>
+</body>
+</html>
