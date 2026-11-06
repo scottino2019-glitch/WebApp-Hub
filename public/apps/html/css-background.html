@@ -11,6 +11,15 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
 
+  <!-- CodeMirror 5 (Editor di codice standard e affidabile, zero React) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/material-darker.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/css/css.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/xml/xml.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/htmlmixed/htmlmixed.min.js"></script>
+
   <style>
     /* ==========================================================================
        TEMA WORKBENCH / POSTAZIONE DI LAVORO PROFESSIONALE
@@ -242,7 +251,7 @@
       border-radius: 6px;
       border: 1px solid #363e4c;
     }
-    @media (min-width: 1024px) {
+    @media (min-width: 680px) {
       .header-center-split {
         display: flex;
       }
@@ -316,7 +325,7 @@
       position: relative;
     }
 
-    @media (min-width: 900px) {
+    @media (min-width: 680px) {
       .workbench-split {
         flex-direction: row;
       }
@@ -329,17 +338,18 @@
       display: flex;
       flex-direction: column;
       background: var(--editor-bg);
-      border-bottom: 1px solid var(--wb-border);
+      border-bottom: 2px solid var(--wb-border);
       position: relative;
-      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.25);
+      box-shadow: 4px 0 20px rgba(0, 0, 0, 0.4);
       z-index: 5;
     }
 
-    @media (min-width: 900px) {
+    @media (min-width: 680px) {
       .editor-pane {
         width: 50%; /* 50% di default per pieno spazio al codice */
         height: 100%;
         border-bottom: none;
+        border-right: 1px solid #363f50;
       }
     }
 
@@ -413,7 +423,7 @@
       border-color: var(--blue-accent);
     }
 
-    /* CONTENITORE EDITOR SYNTAX HIGHLIGHTED */
+    /* CONTENITORE EDITOR PROFESSIONALE (CODEMIRROR) */
     .editor-code-container {
       flex: 1;
       display: flex;
@@ -422,83 +432,63 @@
       background: var(--editor-bg);
     }
 
-    .editor-gutter {
-      width: 50px;
-      background: var(--editor-gutter);
-      color: var(--editor-gutter-text);
-      font-family: var(--font-code);
-      font-size: 13.5px;
-      line-height: 1.6;
-      padding: 16px 8px 16px 0;
-      text-align: right;
-      user-select: none;
-      border-right: 1px solid var(--wb-border);
-      overflow: hidden;
-      flex-shrink: 0;
-      font-weight: 500;
-    }
-
-    .code-view-layer {
-      flex: 1;
-      position: relative;
-      overflow: hidden;
-    }
-
-    /* Layer pre/code colorato e textarea trasparente */
-    .highlight-overlay, .code-editor-input {
-      font-family: var(--font-code) !important;
-      font-size: 13.5px !important;
-      line-height: 1.6 !important;
-      tab-size: 2 !important;
-      padding: 16px 36px 16px 18px !important; /* Ampio padding destro per non tagliare nulla */
-      margin: 0 !important;
-      border: none !important;
-      outline: none !important;
-      box-sizing: border-box !important;
-    }
-
-    .highlight-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      overflow: hidden;
-      pointer-events: none;
-      color: #d4d4d4;
-      background: transparent;
-      z-index: 1;
-      white-space: pre;
-      word-wrap: normal;
-    }
-
-    .code-editor-input {
-      position: absolute;
-      top: 0;
-      left: 0;
+    #code-editor-mount {
       width: 100%;
       height: 100%;
-      background: transparent;
-      color: transparent;
-      caret-color: var(--editor-cursor);
-      resize: none;
-      overflow: auto;
-      z-index: 2;
-      white-space: pre;
-      word-wrap: normal;
     }
 
-    /* COLORI SINTASSI CLASSICA EDITOR */
-    .token-comment { color: var(--syn-comment); font-style: italic; }
-    .token-keyword { color: var(--syn-keyword); font-weight: 600; }
-    .token-prop    { color: var(--syn-prop); }
-    .token-func    { color: var(--syn-func); font-weight: 600; }
-    .token-selector{ color: var(--syn-selector); font-weight: 600; }
-    .token-string  { color: var(--syn-string); }
-    .token-number  { color: var(--syn-number); }
-    .token-tag     { color: var(--syn-tag); font-weight: 600; }
-    .token-val     { color: var(--syn-val); }
-    .token-hex     { color: #d19a66; }
+    .CodeMirror {
+      width: 100% !important;
+      height: 100% !important;
+      font-family: var(--font-code) !important;
+      font-size: var(--editor-font-size, 13.5px) !important;
+      line-height: 1.65 !important;
+      background: #181c24 !important;
+      color: #e6edf3 !important;
+    }
+
+    .CodeMirror-gutters {
+      background: #13161c !important;
+      border-right: 1px solid #323946 !important;
+      padding-right: 6px !important;
+    }
+
+    .CodeMirror-linenumber {
+      color: #64748b !important;
+      font-size: 12px !important;
+      padding-left: 6px !important;
+    }
+
+    .CodeMirror-cursor {
+      border-left: 2px solid #58a6ff !important;
+    }
+
+    .CodeMirror-selected {
+      background: #264f78 !important;
+    }
+
+    .CodeMirror-focused .CodeMirror-selected {
+      background: #264f78 !important;
+    }
+
+    .CodeMirror-lines {
+      padding: 14px 18px 36px 8px !important;
+    }
+
+    /* Colori sintassi classica calibrati per riposo visivo */
+    .cm-s-material-darker .cm-keyword   { color: #c792ea !important; font-weight: 600; }
+    .cm-s-material-darker .cm-atom      { color: #f78c6c !important; }
+    .cm-s-material-darker .cm-number    { color: #f78c6c !important; }
+    .cm-s-material-darker .cm-def       { color: #82aaff !important; font-weight: 600; }
+    .cm-s-material-darker .cm-property  { color: #80cbc4 !important; }
+    .cm-s-material-darker .cm-variable  { color: #dcdcaa !important; }
+    .cm-s-material-darker .cm-variable-2{ color: #89ddff !important; }
+    .cm-s-material-darker .cm-string    { color: #c3e88d !important; }
+    .cm-s-material-darker .cm-comment   { color: #6b7a90 !important; font-style: italic; }
+    .cm-s-material-darker .cm-tag       { color: #ff5370 !important; font-weight: 600; }
+    .cm-s-material-darker .cm-attribute { color: #ffcb6b !important; }
+    .cm-s-material-darker .cm-qualifier { color: #ffcb6b !important; }
+    .cm-s-material-darker .cm-builtin   { color: #82aaff !important; }
 
     .editor-status-bar {
       height: 28px;
@@ -518,31 +508,39 @@
     /* SEPARATORE VERTICALE VISIBILE E RIDIMENSIONABILE (GUTTER SPLITTER) */
     .workbench-splitter {
       display: none;
-      width: 10px;
-      background: #181d26;
-      border-left: 1px solid #363e4f;
-      border-right: 1px solid #363e4f;
+      width: 14px;
+      background: #252b38;
+      border-left: 2px solid #3d4659;
+      border-right: 2px solid #3d4659;
       cursor: col-resize;
-      z-index: 20;
+      z-index: 25;
       user-select: none;
       align-items: center;
       justify-content: center;
-      transition: background 0.15s;
+      gap: 2px;
+      transition: background 0.15s, border-color 0.15s;
       flex-shrink: 0;
     }
-    @media (min-width: 900px) {
+    @media (min-width: 680px) {
       .workbench-splitter {
         display: flex;
       }
     }
     .workbench-splitter:hover, .workbench-splitter.dragging {
       background: var(--blue-btn);
+      border-color: var(--blue-accent);
+      box-shadow: 0 0 12px rgba(56, 139, 253, 0.45);
     }
-    .splitter-grip {
+    .splitter-grip-bar {
       width: 2px;
-      height: 28px;
-      background: #5a667d;
+      height: 24px;
+      background: #73829c;
       border-radius: 1px;
+      transition: background 0.12s;
+    }
+    .workbench-splitter:hover .splitter-grip-bar,
+    .workbench-splitter.dragging .splitter-grip-bar {
+      background: #ffffff;
     }
 
     /* COLONNA DESTRA: ANTEPRIMA DEL BODY A TUTTO SCHERMO */
@@ -554,10 +552,10 @@
       background: #ffffff;
       position: relative;
       overflow: hidden;
-      border-left: 1px solid #cbd5e1; /* Bordo pulito che separa nettamente la preview */
+      border-left: 2px solid #3d4659; /* Bordo pulito e netto che separa fisicamente la preview */
     }
 
-    @media (min-width: 900px) {
+    @media (min-width: 680px) {
       .preview-pane {
         width: 50%;
         height: 100%;
@@ -884,6 +882,7 @@
       <span style="font-size:11px; font-weight:700; color:var(--wb-text-muted); margin-right:4px;">SPLIT:</span>
       <button class="split-preset-btn active" id="btn-split-50" title="50% Codice / 50% Anteprima">50/50</button>
       <button class="split-preset-btn" id="btn-split-65-code" title="65% Codice (Focus Editor)">65% Codice</button>
+      <button class="split-preset-btn" id="btn-split-75-code" title="75% Codice (Massimo Spazio Codice)">75% Codice</button>
       <button class="split-preset-btn" id="btn-split-65-preview" title="65% Anteprima (Focus Sfondo)">65% Sfondo</button>
     </div>
 
@@ -904,9 +903,9 @@
         <button id="btn-toggle-export" class="top-menu-btn" style="padding:6px 10px;">
           <span>Esporta ▾</span>
         </button>
-        <div id="dropdown-export" class="dropdown-card" style="right:0; left:auto; width:220px;">
-          <button id="btn-copy-inline" class="dropdown-option">
-            <span>🏷️</span> Copia Style Inline
+        <div id="dropdown-export" class="dropdown-card" style="right:0; left:auto; width:240px;">
+          <button id="btn-copy-css-rules" class="dropdown-option">
+            <span>📋</span> Copia solo Regole CSS background
           </button>
           <button id="btn-copy-tailwind" class="dropdown-option">
             <span>⚡</span> Copia Classi Tailwind
@@ -926,42 +925,36 @@
   <!-- CORPO PRINCIPALE A DUE COLONNE CON DIVISORE RIDIMENSIONABILE -->
   <div class="workbench-split" id="workbench-split-container">
     
-    <!-- COLONNA SINISTRA: EDITOR DI CODICE COLORATO -->
+    <!-- COLONNA SINISTRA: EDITOR DI CODICE PROFESSIONALE -->
     <section class="editor-pane" id="editor-pane">
       
       <!-- Barra Schede Editor -->
       <div class="editor-tab-strip">
         <div class="tab-list">
-          <button id="tab-css-btn" class="editor-tab active">
+          <button id="tab-css-btn" class="editor-tab active" title="Modifica il foglio di stile CSS per il body">
             <span style="color:#58a6ff;">●</span>
-            <span>CSS Body</span>
+            <span>Foglio CSS (body)</span>
           </button>
-          <button id="tab-html-btn" class="editor-tab">
+          <button id="tab-html-btn" class="editor-tab" title="Visualizza e modifica l'intero documento HTML">
             <span style="color:#e3b341;">●</span>
-            <span>HTML Body</span>
+            <span>Documento HTML Completo</span>
           </button>
         </div>
 
         <div class="editor-tools-quick">
-          <button id="btn-wrap-toggle" class="mini-btn" title="Attiva/Disattiva testo a capo automatico">A Capo: OFF</button>
+          <div style="display:flex; align-items:center; gap:2px; margin-right:2px;">
+            <button id="btn-font-smaller" class="mini-btn" title="Riduci font codice (A−)">A−</button>
+            <button id="btn-font-larger" class="mini-btn" title="Ingrandisci font codice (A+)">A+</button>
+          </div>
+          <button id="btn-wrap-toggle" class="mini-btn active" title="Attiva/Disattiva testo a capo automatico">A Capo: ON</button>
           <button id="btn-format" class="mini-btn" title="Formatta e ordina codice">Formatta</button>
           <button id="btn-refresh" class="mini-btn" style="background:#1f6feb; border-color:#388bfd; color:#ffffff;" title="Aggiorna Anteprima (Ctrl+Invio)">Aggiorna ↵</button>
         </div>
       </div>
 
-      <!-- Area di Codice a Sintassi Evidenziata -->
-      <div class="editor-code-container">
-        <!-- Numeri di riga -->
-        <div class="editor-gutter" id="editor-gutter">1</div>
-
-        <!-- Viewport condiviso -->
-        <div class="code-view-layer">
-          <!-- Layer 1: Codice colorato dalla sintassi (PRE/CODE) -->
-          <pre class="highlight-overlay" id="highlight-overlay"><code id="highlight-code"></code></pre>
-
-          <!-- Layer 2: Textarea trasparente per digitazione nativa -->
-          <textarea class="code-editor-input" id="code-textarea" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="/* Inserisci qui le regole CSS per il body */"></textarea>
-        </div>
+      <!-- Area di Codice Professionale CodeMirror (Zero Overlay, Zero Tagli) -->
+      <div class="editor-code-container" id="editor-code-container">
+        <div id="code-editor-mount" style="width:100%; height:100%;"></div>
       </div>
 
       <!-- Barra di stato inferiore editor -->
@@ -979,8 +972,10 @@
     </section>
 
     <!-- SEPARATORE RIDIMENSIONABILE TRA CODICE E ANTEPRIMA -->
-    <div class="workbench-splitter" id="splitter-bar" title="Trascina verso destra o sinistra per allargare il codice o l'anteprima">
-      <div class="splitter-grip"></div>
+    <div class="workbench-splitter" id="splitter-bar" title="Trascina verso destra o sinistra per allargare o ridurre l'area codice">
+      <div class="splitter-grip-bar"></div>
+      <div class="splitter-grip-bar"></div>
+      <div class="splitter-grip-bar"></div>
     </div>
 
     <!-- COLONNA DESTRA: ANTEPRIMA AMPIA E LUMINOSA -->
@@ -989,8 +984,9 @@
       <!-- Toolbar Anteprima -->
       <div class="preview-workbench-header">
         <div class="preview-title-box">
-          <span>Anteprima del Body</span>
-          <span class="preview-status-badge" id="preview-badge-status">100% Sfondo Intero</span>
+          <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#22c55e;"></span>
+          <span style="font-weight:800; letter-spacing:0.02em;">ANTEPRIMA BODY</span>
+          <span class="preview-status-badge" id="preview-badge-status">100% Vista Completa</span>
         </div>
 
         <div class="preview-options-group">
@@ -1121,14 +1117,298 @@
       // 1. DATA DEI PATTERN AUTENTICI PER IL BODY (SENZA ALCUNA CARD IN MEZZO!)
       const PRESETS = [
         // GRADIENTI
+        // 1. PUNTINATI (DOTS) - Predefinito iniziale pulito e immediato
+        {
+          id: 'tech-dots-22',
+          name: 'Puntinato Tech Blu 22px',
+          category: 'puntinati',
+          css: `/* ========================================================
+   SFONDO PUNTINATO TECH (BODY)
+   ======================================================== */
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  
+  /* Sfondo a matrice di punti calibrati */
+  background-color: #0b0f19;
+  background-image: radial-gradient(#38bdf8 1.5px, transparent 1.5px);
+  background-size: 22px 22px;
+  background-position: 0 0;
+  background-repeat: repeat;
+
+  /* Tipografia */
+  color: #f8fafc;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+}`,
+          html: ``
+        },
+        {
+          id: 'micro-matrix',
+          name: 'Micro-Matrice 12px',
+          category: 'puntinati',
+          css: `/* ========================================================
+   MICRO-MATRICE A PUNTI (BODY)
+   ======================================================== */
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  
+  /* Micro puntinato denso 12px */
+  background-color: #0f172a;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.22) 1px, transparent 1px);
+  background-size: 12px 12px;
+  background-position: 0 0;
+  background-repeat: repeat;
+
+  /* Tipografia */
+  color: #f8fafc;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+}`,
+          html: ``
+        },
+        {
+          id: 'radial-vignette-dots',
+          name: 'Puntinato con Dissolvenza',
+          category: 'puntinati',
+          css: `/* ========================================================
+   PUNTINATO CON DISSOLVENZA RADIALE (BODY)
+   ======================================================== */
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  
+  /* Dissolvenza centrale su matrice viola */
+  background-color: #050811;
+  background-image: 
+    radial-gradient(circle at center, transparent 30%, #050811 88%),
+    radial-gradient(circle, rgba(99, 102, 241, 0.45) 1.5px, transparent 1.5px);
+  background-size: 100% 100%, 22px 22px;
+  background-attachment: fixed;
+
+  /* Tipografia */
+  color: #f8fafc;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+}`,
+          html: ``
+        },
+        {
+          id: 'dual-stipple-grid',
+          name: 'Doppio Retino Incrociato',
+          category: 'puntinati',
+          css: `/* ========================================================
+   DOPPIO RETINO INCROCIATO (BODY)
+   ======================================================== */
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  
+  /* Doppio strato di punti sfasati */
+  background-color: #0b0f19;
+  background-image: 
+    radial-gradient(rgba(255, 255, 255, 0.18) 1px, transparent 1px),
+    radial-gradient(rgba(56, 189, 248, 0.3) 1.5px, transparent 1.5px);
+  background-size: 32px 32px, 32px 32px;
+  background-position: 0 0, 16px 16px;
+  background-repeat: repeat;
+
+  /* Tipografia */
+  color: #f8fafc;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+}`,
+          html: ``
+        },
+
+        // 2. A QUADRETTI (GRID)
+        {
+          id: 'blueprint-graph',
+          name: 'Carta Millimetrata Blueprint',
+          category: 'quadretti',
+          css: `/* ========================================================
+   CARTA MILLIMETRATA BLUEPRINT (BODY)
+   ======================================================== */
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  
+  /* Griglia tecnica a quadretti 32px */
+  background-color: #060b14;
+  background-image: 
+    linear-gradient(to right, rgba(56, 189, 248, 0.16) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(56, 189, 248, 0.16) 1px, transparent 1px);
+  background-size: 32px 32px;
+  background-position: 0 0;
+  background-repeat: repeat;
+
+  /* Tipografia */
+  color: #f8fafc;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+}`,
+          html: ``
+        },
+        {
+          id: 'checkerboard-clean',
+          name: 'Scacchiera Geometrica 40px',
+          category: 'quadretti',
+          css: `/* ========================================================
+   SCACCHIERA GEOMETRICA (BODY)
+   ======================================================== */
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  
+  /* Motivo a scacchiera 40px */
+  background-color: #0f172a;
+  background-image: 
+    linear-gradient(45deg, rgba(255, 255, 255, 0.045) 25%, transparent 25%), 
+    linear-gradient(-45deg, rgba(255, 255, 255, 0.045) 25%, transparent 25%), 
+    linear-gradient(45deg, transparent 75%, rgba(255, 255, 255, 0.045) 75%), 
+    linear-gradient(-45deg, transparent 75%, rgba(255, 255, 255, 0.045) 75%);
+  background-size: 40px 40px;
+  background-position: 0 0, 0 20px, 20px -20px, -20px 0px;
+  background-repeat: repeat;
+
+  /* Tipografia */
+  color: #f8fafc;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+}`,
+          html: ``
+        },
+        {
+          id: 'dual-matrix-grid',
+          name: 'Doppia Griglia Tecnica',
+          category: 'quadretti',
+          css: `/* ========================================================
+   DOPPIA GRIGLIA TECNICA (BODY)
+   ======================================================== */
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  
+  /* Griglie concentriche 80px e 16px */
+  background-color: #080c14;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+    linear-gradient(to right, rgba(56, 189, 248, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(56, 189, 248, 0.04) 1px, transparent 1px);
+  background-size: 80px 80px, 80px 80px, 16px 16px, 16px 16px;
+  background-position: 0 0;
+  background-repeat: repeat;
+
+  /* Tipografia */
+  color: #f8fafc;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+}`,
+          html: ``
+        },
+
+        // 3. A RIGHE (STRIPES)
+        {
+          id: 'stripes-45-clean',
+          name: 'Righe Diagonali 45°',
+          category: 'righe',
+          css: `/* ========================================================
+   RIGHE DIAGONALI 45° (BODY)
+   ======================================================== */
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  
+  /* Texture a righe diagonali continue */
+  background-color: #0b0f19;
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 14px,
+    rgba(255, 255, 255, 0.04) 14px,
+    rgba(255, 255, 255, 0.04) 28px
+  );
+
+  /* Tipografia */
+  color: #f8fafc;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+}`,
+          html: ``
+        },
+        {
+          id: 'pinstripes-vert',
+          name: 'Righe Verticali Pinstripe',
+          category: 'righe',
+          css: `/* ========================================================
+   RIGHE VERTICALI PINSTRIPE (BODY)
+   ======================================================== */
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  
+  /* Sottili righe verticali azzurre */
+  background-color: #090d16;
+  background-image: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 36px,
+    rgba(56, 189, 248, 0.14) 36px,
+    rgba(56, 189, 248, 0.14) 38px
+  );
+
+  /* Tipografia */
+  color: #f8fafc;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+}`,
+          html: ``
+        },
+        {
+          id: 'stripes-wide',
+          name: 'Strisce Larghe 60px',
+          category: 'righe',
+          css: `/* ========================================================
+   STRISCE ORIZZONTALI LARGHE 60px (BODY)
+   ======================================================== */
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  
+  /* Fasce orizzontali alternate */
+  background-color: #0d121f;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent,
+    transparent 60px,
+    rgba(0, 0, 0, 0.28) 60px,
+    rgba(0, 0, 0, 0.28) 120px
+  );
+
+  /* Tipografia */
+  color: #f8fafc;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+}`,
+          html: ``
+        },
+
+        // 4. GRADIENTI
         {
           id: 'aurora-mesh',
           name: 'Aurora Mesh Multicolore',
           category: 'gradienti',
-          css: `body {
-  min-height: 100vh;
+          css: `/* ========================================================
+   AURORA MESH GRADIENT (BODY)
+   ======================================================== */
+body {
   margin: 0;
   padding: 0;
+  min-height: 100vh;
+  
+  /* Gradiente mesh diffuso a sfere radiali */
   background-color: #0f172a;
   background-image: 
     radial-gradient(at 15% 15%, #4f46e5 0px, transparent 50%),
@@ -1138,6 +1418,8 @@
     radial-gradient(at 50% 50%, #9333ea 0px, transparent 55%);
   background-attachment: fixed;
   background-size: cover;
+
+  /* Tipografia */
   color: #f8fafc;
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
 }`,
@@ -1147,12 +1429,20 @@
           id: 'cyber-wave',
           name: 'Onda Cyber Wave Animata',
           category: 'gradienti',
-          css: `body {
-  min-height: 100vh;
+          css: `/* ========================================================
+   ONDA CYBER WAVE ANIMATA (BODY)
+   ======================================================== */
+body {
   margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  
+  /* Gradiente lineare fluido animato */
   background: linear-gradient(-45deg, #0f172a, #312e81, #4338ca, #0e7490, #0f172a);
   background-size: 400% 400%;
   animation: bgGradientFlow 14s ease infinite;
+
+  /* Tipografia */
   color: #f8fafc;
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
 }
@@ -1168,14 +1458,22 @@
           id: 'conic-glow',
           name: 'Conic Prism Riflettore',
           category: 'gradienti',
-          css: `body {
-  min-height: 100vh;
+          css: `/* ========================================================
+   CONIC PRISM RIFLETTORE (BODY)
+   ======================================================== */
+body {
   margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  
+  /* Gradiente conico con maschera radiale centrale */
   background-color: #030712;
   background-image: 
     radial-gradient(circle at center, transparent 30%, #030712 85%),
     conic-gradient(from 180deg at 50% 50%, #1e1b4b, #3b82f6, #06b6d4, #6366f1, #1e1b4b);
   background-attachment: fixed;
+
+  /* Tipografia */
   color: #f8fafc;
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
 }`,
@@ -1185,217 +1483,44 @@
           id: 'sunset-deep',
           name: 'Tramonto Orizzontale',
           category: 'gradienti',
-          css: `body {
-  min-height: 100vh;
+          css: `/* ========================================================
+   TRAMONTO PROFONDO (BODY)
+   ======================================================== */
+body {
   margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  
+  /* Gradiente verticale crepuscolare */
   background: linear-gradient(180deg, #090d16 0%, #1e1b4b 35%, #831843 75%, #b45309 100%);
   background-attachment: fixed;
+
+  /* Tipografia */
   color: #f8fafc;
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
 }`,
           html: ``
         },
 
-        // PUNTINATI (DOTS)
-        {
-          id: 'tech-dots-22',
-          name: 'Puntinato Tech Blu 22px',
-          category: 'puntinati',
-          css: `body {
-  min-height: 100vh;
-  margin: 0;
-  background-color: #0b0f19;
-  background-image: radial-gradient(#38bdf8 1.5px, transparent 1.5px);
-  background-size: 22px 22px;
-  background-position: 0 0;
-  color: #f8fafc;
-  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-}`,
-          html: ``
-        },
-        {
-          id: 'micro-matrix',
-          name: 'Micro-Matrice 12px',
-          category: 'puntinati',
-          css: `body {
-  min-height: 100vh;
-  margin: 0;
-  background-color: #0f172a;
-  background-image: radial-gradient(rgba(255, 255, 255, 0.22) 1px, transparent 1px);
-  background-size: 12px 12px;
-  color: #f8fafc;
-  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-}`,
-          html: ``
-        },
-        {
-          id: 'radial-vignette-dots',
-          name: 'Puntinato con Dissolvenza',
-          category: 'puntinati',
-          css: `body {
-  min-height: 100vh;
-  margin: 0;
-  background-color: #050811;
-  background-image: 
-    radial-gradient(circle at center, transparent 30%, #050811 88%),
-    radial-gradient(circle, rgba(99, 102, 241, 0.45) 1.5px, transparent 1.5px);
-  background-size: 100% 100%, 22px 22px;
-  background-attachment: fixed;
-  color: #f8fafc;
-  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-}`,
-          html: ``
-        },
-        {
-          id: 'dual-stipple-grid',
-          name: 'Doppio Retino Incrociato',
-          category: 'puntinati',
-          css: `body {
-  min-height: 100vh;
-  margin: 0;
-  background-color: #0b0f19;
-  background-image: 
-    radial-gradient(rgba(255, 255, 255, 0.18) 1px, transparent 1px),
-    radial-gradient(rgba(56, 189, 248, 0.3) 1.5px, transparent 1.5px);
-  background-size: 32px 32px, 32px 32px;
-  background-position: 0 0, 16px 16px;
-  color: #f8fafc;
-  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-}`,
-          html: ``
-        },
-
-        // A RIGHE (STRIPES)
-        {
-          id: 'stripes-45-clean',
-          name: 'Righe Diagonali 45°',
-          category: 'righe',
-          css: `body {
-  min-height: 100vh;
-  margin: 0;
-  background-color: #0b0f19;
-  background-image: repeating-linear-gradient(
-    45deg,
-    transparent,
-    transparent 14px,
-    rgba(255, 255, 255, 0.04) 14px,
-    rgba(255, 255, 255, 0.04) 28px
-  );
-  color: #f8fafc;
-  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-}`,
-          html: ``
-        },
-        {
-          id: 'pinstripes-vert',
-          name: 'Righe Verticali Pinstripe',
-          category: 'righe',
-          css: `body {
-  min-height: 100vh;
-  margin: 0;
-  background-color: #090d16;
-  background-image: repeating-linear-gradient(
-    90deg,
-    transparent,
-    transparent 36px,
-    rgba(56, 189, 248, 0.14) 36px,
-    rgba(56, 189, 248, 0.14) 38px
-  );
-  color: #f8fafc;
-  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-}`,
-          html: ``
-        },
-        {
-          id: 'stripes-wide',
-          name: 'Strisce Larghe 60px',
-          category: 'righe',
-          css: `body {
-  min-height: 100vh;
-  margin: 0;
-  background-color: #0d121f;
-  background-image: repeating-linear-gradient(
-    to bottom,
-    transparent,
-    transparent 60px,
-    rgba(0, 0, 0, 0.28) 60px,
-    rgba(0, 0, 0, 0.28) 120px
-  );
-  color: #f8fafc;
-  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-}`,
-          html: ``
-        },
-
-        // A QUADRETTI (GRID)
-        {
-          id: 'blueprint-graph',
-          name: 'Carta Millimetrata Blueprint',
-          category: 'quadretti',
-          css: `body {
-  min-height: 100vh;
-  margin: 0;
-  background-color: #060b14;
-  background-image: 
-    linear-gradient(to right, rgba(56, 189, 248, 0.16) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(56, 189, 248, 0.16) 1px, transparent 1px);
-  background-size: 32px 32px;
-  color: #f8fafc;
-  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-}`,
-          html: ``
-        },
-        {
-          id: 'checkerboard-clean',
-          name: 'Scacchiera Geometrica 40px',
-          category: 'quadretti',
-          css: `body {
-  min-height: 100vh;
-  margin: 0;
-  background-color: #0f172a;
-  background-image: 
-    linear-gradient(45deg, rgba(255, 255, 255, 0.045) 25%, transparent 25%), 
-    linear-gradient(-45deg, rgba(255, 255, 255, 0.045) 25%, transparent 25%), 
-    linear-gradient(45deg, transparent 75%, rgba(255, 255, 255, 0.045) 75%), 
-    linear-gradient(-45deg, transparent 75%, rgba(255, 255, 255, 0.045) 75%);
-  background-size: 40px 40px;
-  background-position: 0 0, 0 20px, 20px -20px, -20px 0px;
-  color: #f8fafc;
-  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-}`,
-          html: ``
-        },
-        {
-          id: 'dual-matrix-grid',
-          name: 'Doppia Griglia Tecnica',
-          category: 'quadretti',
-          css: `body {
-  min-height: 100vh;
-  margin: 0;
-  background-color: #080c14;
-  background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
-    linear-gradient(to right, rgba(56, 189, 248, 0.04) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(56, 189, 248, 0.04) 1px, transparent 1px);
-  background-size: 80px 80px, 80px 80px, 16px 16px, 16px 16px;
-  color: #f8fafc;
-  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-}`,
-          html: ``
-        },
-
-        // CON SCRITTE
+        // 5. CON SCRITTE
         {
           id: 'watermark-repeating',
           name: 'Filigrana Diagonale 45°',
           category: 'scritte',
-          css: `body {
-  min-height: 100vh;
+          css: `/* ========================================================
+   FILIGRANA TESTUALE DIAGONALE (BODY)
+   ======================================================== */
+body {
   margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  
+  /* Filigrana vettoriale SVG pulita */
   background-color: #080c16;
-  background-image: url("data:image/svg+xml,%3Csvg width='260' height='130' xmlns='http://www.w3.org/2000/svg'%3E%3Ctext x='50%25' y='50%25' font-family='sans-serif' font-weight='800' font-size='16' fill='rgba(255,255,255,0.05)' text-anchor='middle' dominant-baseline='middle' transform='rotate(-25 130 65)'%3EBACKGROUND STUDIO%3C/text%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='260' height='130'><text x='50%' y='50%' font-size='16' font-family='sans-serif' font-weight='bold' fill='rgba(255,255,255,0.06)' text-anchor='middle' dominant-baseline='middle' transform='rotate(-25 130 65)'>BACKGROUND STUDIO</text></svg>");
   background-repeat: repeat;
+
+  /* Tipografia */
   color: #f8fafc;
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
 }`,
@@ -1405,9 +1530,13 @@
           id: 'monumental-outline',
           name: 'Scritta Monumentale Outline',
           category: 'scritte',
-          css: `body {
-  min-height: 100vh;
+          css: `/* ========================================================
+   SCRITTA MONUMENTALE OUTLINE (BODY)
+   ======================================================== */
+body {
   margin: 0;
+  padding: 0;
+  min-height: 100vh;
   background-color: #060911;
   position: relative;
   overflow-x: hidden;
@@ -1433,17 +1562,25 @@ body::before {
           html: ``
         },
 
-        // CON EMOJI
+        // 6. CON EMOJI
         {
           id: 'emoji-space',
           name: 'Emoji Razzi & Stelle 🚀✨',
           category: 'emoji',
-          css: `body {
-  min-height: 100vh;
+          css: `/* ========================================================
+   PATTERN EMOJI SPAZIO (BODY)
+   ======================================================== */
+body {
   margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  
+  /* Griglia di emoji vettoriali ripetute */
   background-color: #070b16;
-  background-image: url("data:image/svg+xml,%3Csvg width='90' height='90' xmlns='http://www.w3.org/2000/svg'%3E%3Ctext x='50%25' y='50%25' font-size='28' opacity='0.3' text-anchor='middle' dominant-baseline='middle' transform='rotate(-20 45 45)'%3E🚀%3C/text%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='90' height='90'><text x='50%' y='50%' font-size='28' opacity='0.35' text-anchor='middle' dominant-baseline='middle' transform='rotate(-20 45 45)'>🚀</text></svg>");
   background-repeat: repeat;
+
+  /* Tipografia */
   color: #f8fafc;
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
 }`,
@@ -1453,50 +1590,75 @@ body::before {
           id: 'emoji-retro',
           name: 'Retro Gaming 👾🕹️',
           category: 'emoji',
-          css: `body {
-  min-height: 100vh;
+          css: `/* ========================================================
+   PATTERN RETRO GAMING (BODY)
+   ======================================================== */
+body {
   margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  
+  /* Griglia con emoji retrogaming */
   background-color: #0a0814;
-  background-image: url("data:image/svg+xml,%3Csvg width='84' height='84' xmlns='http://www.w3.org/2000/svg'%3E%3Ctext x='50%25' y='50%25' font-size='26' opacity='0.28' text-anchor='middle' dominant-baseline='middle' transform='rotate(10 42 42)'%3E👾%3C/text%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='84' height='84'><text x='50%' y='50%' font-size='26' opacity='0.3' text-anchor='middle' dominant-baseline='middle' transform='rotate(10 42 42)'>👾</text></svg>");
   background-repeat: repeat;
+
+  /* Tipografia */
   color: #f8fafc;
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
 }`,
           html: ``
         },
 
-        // CON IMMAGINI
+        // 7. CON IMMAGINI
         {
           id: 'image-overlay-fixed',
           name: 'Foto con Overlay Maschera',
           category: 'immagini',
-          css: `body {
-  min-height: 100vh;
+          css: `/* ========================================================
+   FOTO DI SFONDO CON MASCHERA SCURA (BODY)
+   ======================================================== */
+body {
   margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  
+  /* Immagine fissa a schermo intero con velo di contrasto */
   background-color: #080c14;
   background-image: 
-    linear-gradient(rgba(8, 12, 20, 0.86), rgba(8, 12, 20, 0.86)),
+    linear-gradient(rgba(8, 12, 20, 0.85), rgba(8, 12, 20, 0.85)),
     url("https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=80");
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
+
+  /* Tipografia */
   color: #f8fafc;
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
 }`,
           html: ``
         },
 
-        // TAILWIND
+        // 8. TAILWIND
         {
           id: 'tailwind-body-glow',
           name: 'Tailwind Gradiente Radiale Body',
           category: 'tailwind',
-          css: `/* Classi equivalenti per <body class="...">: */
+          css: `/* ========================================================
+   REGOLA CSS BODY (EQUIVALENTE CLASSI TAILWIND)
+   Per classe HTML: bg-slate-950 bg-[radial-gradient(...)]
+   ======================================================== */
 body {
-  min-height: 100vh;
   margin: 0;
-  background-color: #020617; /* bg-slate-950 */
+  padding: 0;
+  min-height: 100vh;
+  
+  /* Sfondo Slate 950 con bagliore ellittico in alto */
+  background-color: #020617;
   background-image: radial-gradient(ellipse 80% 80% at 50% -20%, rgba(120, 119, 198, 0.35), rgba(255, 255, 255, 0));
+  background-attachment: fixed;
+
+  /* Tipografia */
   color: #f8fafc;
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
 }`,
@@ -1536,67 +1698,16 @@ body {
   </footer>
 </div>`;
 
-      // 2. HIGHLIGHTER SINTATTICO CLASSICO (REGEX PARSER AD ALTA VELOCITÀ)
-      function highlightCss(code) {
-        let text = code
-          .replace(/&/g, '&amp;')
-          .replace(/</g, '&lt;')
-          .replace(/>/g, '&gt;');
-
-        // Commenti: /* ... */
-        text = text.replace(/(\/\*[\s\S]*?\*\/)/g, '<span class="token-comment">$1</span>');
-        // Stringhe: "..." o '...'
-        text = text.replace(/(["'])(?:(?=(\\?))\2[\s\S])*?\1/g, '<span class="token-string">$&</span>');
-        // At-rules: @keyframes, @media
-        text = text.replace(/(@[a-zA-Z-]+)/g, '<span class="token-keyword">$1</span>');
-        // Funzioni CSS: radial-gradient, linear-gradient, url, calc, ecc.
-        text = text.replace(/\b(radial-gradient|linear-gradient|repeating-linear-gradient|repeating-radial-gradient|conic-gradient|repeating-conic-gradient|url|calc|rgb|rgba|hsl|hsla|clamp|var)\b(?=\s*\()/g, '<span class="token-func">$1</span>');
-        // Colori Esadecimali: #0f172a, #ffffff
-        text = text.replace(/(#[0-9a-fA-F]{3,8}\b)/g, '<span class="token-hex">$1</span>');
-        // Numeri e unità: 100vh, 22px, 45deg, 50%, 14s
-        text = text.replace(/\b(\d+(?:\.\d+)?)(px|vh|vw|%|deg|rem|em|s|ms)?\b/g, '<span class="token-number">$1$2</span>');
-        // Proprietà prima dei due punti: background:, margin:, ecc.
-        text = text.replace(/([a-zA-Z-]+)(?=\s*:)/g, '<span class="token-prop">$1</span>');
-        // Selettori noti: body, html, div, h1, ::before, ::after
-        text = text.replace(/\b(body|html|div|h1|h2|p|span|header|main|footer)\b(?=[^{]*{)/g, '<span class="token-selector">$1</span>');
-        text = text.replace(/(::?[a-zA-Z-]+)(?=[^{]*{)/g, '<span class="token-selector">$1</span>');
-        // Valori comuni: fixed, cover, repeat, no-repeat, center, transparent, ease, infinite
-        text = text.replace(/\b(fixed|cover|repeat|no-repeat|center|transparent|ease|infinite|relative|hidden|sans-serif|system-ui|none|block|flex)\b/g, '<span class="token-val">$1</span>');
-
-        return text;
-      }
-
-      function highlightHtml(code) {
-        let text = code
-          .replace(/&/g, '&amp;')
-          .replace(/</g, '&lt;')
-          .replace(/>/g, '&gt;');
-
-        // Commenti HTML: <!-- ... -->
-        text = text.replace(/(&lt;!--[\s\S]*?--&gt;)/g, '<span class="token-comment">$1</span>');
-        // Attributi: class=, style=
-        text = text.replace(/\b([a-zA-Z-]+)(?==)/g, '<span class="token-prop">$1</span>');
-        text = text.replace(/(=)(&quot;[^&]*&quot;|"[^"]*")/g, '$1<span class="token-string">$2</span>');
-        // Tag di apertura e chiusura
-        text = text.replace(/(&lt;\/?[a-zA-Z0-9-]+)/g, '<span class="token-tag">$1</span>');
-        text = text.replace(/(&gt;)/g, '<span class="token-tag">$1</span>');
-
-        return text;
-      }
-
-      // 3. STATO APPLICAZIONE
+      // 2. STATO APPLICAZIONE
+      let cmEditor = null;
       let currentCss = PRESETS[0].css;
-      let currentHtml = PRESETS[0].html;
       let activeTab = 'css'; // 'css' | 'html'
       let showDemoText = false;
-      let isWordWrap = false;
+      let isWordWrap = true;
+      let currentFontSize = 13.5;
       let debounceTimer = null;
 
-      // 4. RIFERIMENTI DOM
-      const codeTextarea = document.getElementById('code-textarea');
-      const highlightCode = document.getElementById('highlight-code');
-      const highlightOverlay = document.getElementById('highlight-overlay');
-      const editorGutter = document.getElementById('editor-gutter');
+      // 3. RIFERIMENTI DOM
       const previewIframe = document.getElementById('preview-iframe');
       const fullscreenIframe = document.getElementById('fullscreen-iframe');
       const fullscreenOverlay = document.getElementById('fullscreen-overlay');
@@ -1613,6 +1724,8 @@ body {
       const previewBadgeStatus = document.getElementById('preview-badge-status');
       const btnToggleDemo = document.getElementById('btn-toggle-demo');
       const btnWrapToggle = document.getElementById('btn-wrap-toggle');
+      const btnFontSmaller = document.getElementById('btn-font-smaller');
+      const btnFontLarger = document.getElementById('btn-font-larger');
 
       const dropdownPatterns = document.getElementById('dropdown-patterns');
       const btnTogglePatterns = document.getElementById('btn-toggle-patterns');
@@ -1623,75 +1736,47 @@ body {
       const toastNotice = document.getElementById('toast-notice');
       const toastLabel = document.getElementById('toast-label');
 
-      // 5. INIZIALIZZAZIONE APPLICAZIONE
+      // 4. INIZIALIZZAZIONE APPLICAZIONE
       function initWorkbench() {
-        codeTextarea.value = (activeTab === 'css') ? currentCss : currentHtml;
-        syncCodeView();
+        const mount = document.getElementById('code-editor-mount');
+        
+        // Creazione dell'istanza CodeMirror standard
+        cmEditor = CodeMirror(mount, {
+          value: currentCss,
+          mode: 'css',
+          theme: 'material-darker',
+          lineNumbers: true,
+          lineWrapping: isWordWrap,
+          tabSize: 2,
+          indentUnit: 2,
+          viewportMargin: Infinity
+        });
+
+        // Evento di modifica codice: live sync verso anteprima
+        cmEditor.on('change', () => {
+          const val = cmEditor.getValue();
+          if (activeTab === 'css') {
+            currentCss = val;
+          } else {
+            // Se l'utente modifica l'HTML completo, estrae il blocco <style>
+            const match = val.match(/<style[^>]*>([\s\S]*?)<\/style>/i);
+            if (match && match[1]) {
+              currentCss = match[1].trim();
+            }
+          }
+          editorCharCounter.textContent = `${val.length} caratteri`;
+          queueUpdate();
+        });
+
+        editorCharCounter.textContent = `${currentCss.length} caratteri`;
         updatePreview();
         bindEvents();
         setupSplitter();
       }
 
-      // 6. SINCRONIZZAZIONE SINTASSI E GUTTER
-      function syncCodeView() {
-        const val = codeTextarea.value;
-        if (activeTab === 'css') {
-          currentCss = val;
-          highlightCode.innerHTML = highlightCss(val) + '\n ';
-        } else {
-          currentHtml = val;
-          highlightCode.innerHTML = highlightHtml(val) + '\n ';
-        }
-
-        // Calcola numeri di riga
-        const lineCount = val.split('\n').length;
-        let gutterHtml = '';
-        for (let i = 1; i <= Math.max(lineCount, 1); i++) {
-          gutterHtml += i + '<br>';
-        }
-        editorGutter.innerHTML = gutterHtml;
-
-        // Conteggio caratteri
-        editorCharCounter.textContent = `${val.length} caratteri`;
-
-        // Sincronizza posizioni di scroll
-        syncScroll();
-      }
-
-      function syncScroll() {
-        highlightOverlay.scrollTop = codeTextarea.scrollTop;
-        highlightOverlay.scrollLeft = codeTextarea.scrollLeft;
-        editorGutter.scrollTop = codeTextarea.scrollTop;
-      }
-
-      // 7. COMPILAZIONE E RENDERING ANTEPRIMA (BODY A TUTTO SCHERMO SENZA ALCUNA CARD!)
+      // 5. RENDERING ANTEPRIMA DEL BODY A TUTTO SCHERMO
       function updatePreview() {
-        let bodyContent = '';
-        if (currentHtml.trim().length > 0) {
-          bodyContent = currentHtml;
-        } else if (showDemoText) {
-          bodyContent = DEMO_PAGE_LAYOUT;
-        }
-
-        const fullDoc = `<!doctype html>
-<html lang="it">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"><\/script>
-  <style>
-    * { box-sizing: border-box; }
-    ${currentCss}
-  </style>
-</head>
-<body>
-  ${bodyContent}
-</body>
-</html>`;
-
+        const fullDoc = buildAutonomousHtmlDoc();
         previewIframe.srcdoc = fullDoc;
         if (fullscreenOverlay.classList.contains('active')) {
           fullscreenIframe.srcdoc = fullDoc;
@@ -1700,10 +1785,48 @@ body {
 
       function queueUpdate() {
         if (debounceTimer) clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(updatePreview, 160);
+        debounceTimer = setTimeout(updatePreview, 140);
       }
 
-      // 8. TOAST NOTIFICHE E COPIA APPUNTI
+      // 6. COSTRUZIONE DOCUMENTO HTML AUTONOMO PULITO
+      function buildAutonomousHtmlDoc() {
+        let bodyContent = '';
+        if (showDemoText) {
+          bodyContent = DEMO_PAGE_LAYOUT;
+        }
+
+        return `<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sfondo Personalizzato Body</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+${currentCss}
+  </style>
+</head>
+<body>
+${bodyContent}
+</body>
+</html>`;
+      }
+
+      function getCleanCssPropertiesOnly() {
+        const lines = currentCss.split('\n')
+          .filter(l => /background|min-height|margin/i.test(l))
+          .map(l => l.trim());
+        if (lines.length > 0) return lines.join('\n');
+        return currentCss;
+      }
+
+      function getTailwindClasses() {
+        return 'bg-slate-950 bg-[radial-gradient(#38bdf8_1.5px,transparent_1.5px)] [background-size:22px_22px] min-h-screen';
+      }
+
+      // 7. TOAST NOTIFICHE E COPIA APPUNTI
       function showToast(msg) {
         toastLabel.textContent = msg;
         toastNotice.classList.add('active');
@@ -1727,48 +1850,6 @@ body {
         }
       }
 
-      function buildAutonomousHtmlDoc() {
-        return `<!doctype html>
-<html lang="it">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sfondo Body Personalizzato</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"><\/script>
-  <style>
-${currentCss}
-  </style>
-</head>
-<body>
-${currentHtml}
-</body>
-</html>`;
-      }
-
-      function getInlineBackground() {
-        const matches = currentCss.match(/background(?:-image|-color|-size|-repeat|-position|-attachment)?:[^;]+;/g);
-        if (matches && matches.length > 0) {
-          return matches.join(' ').replace(/\s+/g, ' ').trim();
-        }
-        return currentCss.replace(/\/\*[\s\S]*?\*\/|[\r\n\t]+/g, ' ').trim();
-      }
-
-      function getTailwindClasses() {
-        const matches = currentHtml.match(/class=["']([^"']+)["']/g);
-        if (!matches || matches.length === 0) {
-          return 'bg-slate-950 bg-[radial-gradient(#38bdf8_1.5px,transparent_1.5px)] [background-size:22px_22px]';
-        }
-        const set = new Set();
-        matches.forEach(m => {
-          const raw = m.replace(/class=["']|["']/g, '');
-          raw.split(/\s+/).forEach(c => c && set.add(c));
-        });
-        return Array.from(set).join(' ');
-      }
-
       function downloadHtmlFile() {
         const blob = new Blob([buildAutonomousHtmlDoc()], { type: 'text/html;charset=utf-8' });
         const link = document.createElement('a');
@@ -1780,7 +1861,48 @@ ${currentHtml}
         showToast('File sfondo-body.html scaricato!');
       }
 
-      // 9. GESTIONE SEPARATORE RIDIMENSIONABILE (SPLITTER)
+      // 8. CAMBIO SCHEDA (FOGLIO CSS / DOCUMENTO HTML)
+      function switchTab(tab) {
+        activeTab = tab;
+        tabCssBtn.classList.toggle('active', tab === 'css');
+        tabHtmlBtn.classList.toggle('active', tab === 'html');
+
+        if (tab === 'css') {
+          cmEditor.setOption('mode', 'css');
+          cmEditor.setValue(currentCss);
+          editorModeLabel.textContent = 'FOGLIO CSS (body { ... })';
+        } else {
+          cmEditor.setOption('mode', 'htmlmixed');
+          cmEditor.setValue(buildAutonomousHtmlDoc());
+          editorModeLabel.textContent = 'DOCUMENTO HTML COMPLETO';
+        }
+
+        setTimeout(() => cmEditor.refresh(), 20);
+      }
+
+      // 9. CARICAMENTO PRESET
+      function loadPresetById(id) {
+        const found = PRESETS.find(p => p.id === id);
+        if (!found) return;
+
+        currentCss = found.css;
+        if (activeTab === 'css') {
+          cmEditor.setValue(currentCss);
+        } else {
+          cmEditor.setValue(buildAutonomousHtmlDoc());
+        }
+
+        updatePreview();
+        showToast(`Pattern "${found.name}" applicato!`);
+      }
+
+      // 10. GENERATORE SVG EMOJI PULITO (UTF-8)
+      function makeEmojiSvg(emoji, size, angle, opacity) {
+        const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='${size}' height='${size}'><text x='50%' y='50%' font-size='${Math.round(size * 0.32)}' opacity='${(opacity / 100).toFixed(2)}' text-anchor='middle' dominant-baseline='middle' transform='rotate(${angle} ${size/2} ${size/2})'>${emoji}</text></svg>`;
+        return `url("data:image/svg+xml;utf8,${svg}")`;
+      }
+
+      // 11. GESTIONE SEPARATORE RIDIMENSIONABILE (SPLITTER)
       function setupSplitter() {
         let isDragging = false;
 
@@ -1789,6 +1911,7 @@ ${currentHtml}
           splitterBar.classList.add('dragging');
           document.body.style.cursor = 'col-resize';
           document.body.style.userSelect = 'none';
+          if (previewIframe) previewIframe.style.pointerEvents = 'none';
         });
 
         window.addEventListener('mousemove', (e) => {
@@ -1796,10 +1919,11 @@ ${currentHtml}
           const containerRect = splitContainer.getBoundingClientRect();
           const offset = e.clientX - containerRect.left;
           const percentage = (offset / containerRect.width) * 100;
-          if (percentage >= 20 && percentage <= 80) {
+          if (percentage >= 20 && percentage <= 85) {
             editorPane.style.width = percentage + '%';
             previewPane.style.width = (100 - percentage) + '%';
             clearSplitPresetActive();
+            if (cmEditor) cmEditor.refresh();
           }
         });
 
@@ -1809,110 +1933,64 @@ ${currentHtml}
             splitterBar.classList.remove('dragging');
             document.body.style.cursor = '';
             document.body.style.userSelect = '';
+            if (previewIframe) previewIframe.style.pointerEvents = 'auto';
+            if (cmEditor) cmEditor.refresh();
           }
         });
 
         // Pulsanti preset divisione larghezza
         const btn50 = document.getElementById('btn-split-50');
         const btn65Code = document.getElementById('btn-split-65-code');
+        const btn75Code = document.getElementById('btn-split-75-code');
         const btn65Prev = document.getElementById('btn-split-65-preview');
 
         function clearSplitPresetActive() {
-          [btn50, btn65Code, btn65Prev].forEach(b => b.classList.remove('active'));
+          [btn50, btn65Code, btn75Code, btn65Prev].forEach(b => b && b.classList.remove('active'));
         }
 
-        btn50.addEventListener('click', () => {
-          clearSplitPresetActive();
-          btn50.classList.add('active');
-          editorPane.style.width = '50%';
-          previewPane.style.width = '50%';
-        });
+        if (btn50) {
+          btn50.addEventListener('click', () => {
+            clearSplitPresetActive();
+            btn50.classList.add('active');
+            editorPane.style.width = '50%';
+            previewPane.style.width = '50%';
+            if (cmEditor) cmEditor.refresh();
+          });
+        }
 
-        btn65Code.addEventListener('click', () => {
-          clearSplitPresetActive();
-          btn65Code.classList.add('active');
-          editorPane.style.width = '65%';
-          previewPane.style.width = '35%';
-        });
+        if (btn65Code) {
+          btn65Code.addEventListener('click', () => {
+            clearSplitPresetActive();
+            btn65Code.classList.add('active');
+            editorPane.style.width = '65%';
+            previewPane.style.width = '35%';
+            if (cmEditor) cmEditor.refresh();
+          });
+        }
 
-        btn65Prev.addEventListener('click', () => {
-          clearSplitPresetActive();
-          btn65Prev.classList.add('active');
-          editorPane.style.width = '35%';
-          previewPane.style.width = '65%';
-        });
-      }
+        if (btn75Code) {
+          btn75Code.addEventListener('click', () => {
+            clearSplitPresetActive();
+            btn75Code.classList.add('active');
+            editorPane.style.width = '75%';
+            previewPane.style.width = '25%';
+            if (cmEditor) cmEditor.refresh();
+          });
+        }
 
-      // 10. TASTO TAB (2 SPAZI)
-      function handleTabKey(e) {
-        if (e.key === 'Tab') {
-          e.preventDefault();
-          const start = codeTextarea.selectionStart;
-          const end = codeTextarea.selectionEnd;
-          codeTextarea.value = codeTextarea.value.substring(0, start) + '  ' + codeTextarea.value.substring(end);
-          codeTextarea.selectionStart = codeTextarea.selectionEnd = start + 2;
-          syncCodeView();
-          queueUpdate();
+        if (btn65Prev) {
+          btn65Prev.addEventListener('click', () => {
+            clearSplitPresetActive();
+            btn65Prev.classList.add('active');
+            editorPane.style.width = '35%';
+            previewPane.style.width = '65%';
+            if (cmEditor) cmEditor.refresh();
+          });
         }
       }
 
-      // 11. CAMBIO TAB (CSS / HTML)
-      function switchTab(tab) {
-        activeTab = tab;
-        tabCssBtn.classList.toggle('active', tab === 'css');
-        tabHtmlBtn.classList.toggle('active', tab === 'html');
-
-        codeTextarea.value = (tab === 'css') ? currentCss : currentHtml;
-        codeTextarea.placeholder = (tab === 'css') 
-          ? '/* Inserisci qui le regole CSS per il body */' 
-          : '<!-- Inserisci qui il codice HTML della pagina (lascia vuoto per vedere solo lo sfondo) -->';
-        
-        editorModeLabel.textContent = (tab === 'css') ? 'CSS BODY' : 'HTML BODY';
-        syncCodeView();
-      }
-
-      // 12. CARICAMENTO PRESET
-      function loadPresetById(id) {
-        const found = PRESETS.find(p => p.id === id);
-        if (!found) return;
-
-        currentCss = found.css;
-        currentHtml = found.html;
-
-        if (activeTab === 'css') {
-          codeTextarea.value = currentCss;
-        } else {
-          codeTextarea.value = currentHtml;
-        }
-
-        syncCodeView();
-        updatePreview();
-        showToast(`Pattern "${found.name}" applicato al Body!`);
-      }
-
-      // 13. GENERATORE SVG EMOJI
-      function makeEmojiSvg(emoji, size, angle, opacity) {
-        const svg = `<svg width='${size}' height='${size}' xmlns='http://www.w3.org/2000/svg'><text x='50%' y='50%' font-size='${Math.round(size * 0.32)}' opacity='${(opacity / 100).toFixed(2)}' text-anchor='middle' dominant-baseline='middle' transform='rotate(${angle} ${size/2} ${size/2})'>${emoji}</text></svg>`;
-        return `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
-      }
-
-      // 14. COLLEGAMENTO EVENTI
+      // 12. COLLEGAMENTO EVENTI
       function bindEvents() {
-        // Textarea input & scroll
-        codeTextarea.addEventListener('input', () => {
-          syncCodeView();
-          queueUpdate();
-        });
-        codeTextarea.addEventListener('scroll', syncScroll);
-        codeTextarea.addEventListener('keydown', (e) => {
-          handleTabKey(e);
-          if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-            e.preventDefault();
-            updatePreview();
-            showToast('Anteprima aggiornata!');
-          }
-        });
-
         // Tasti di scelta rapida globali
         window.addEventListener('keydown', (e) => {
           if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
@@ -1931,22 +2009,32 @@ ${currentHtml}
         tabCssBtn.addEventListener('click', () => switchTab('css'));
         tabHtmlBtn.addEventListener('click', () => switchTab('html'));
 
+        // Dimensione Font Editor
+        if (btnFontSmaller) {
+          btnFontSmaller.addEventListener('click', () => {
+            currentFontSize = Math.max(11, currentFontSize - 1);
+            cmEditor.getWrapperElement().style.fontSize = `${currentFontSize}px`;
+            cmEditor.refresh();
+            showToast(`Dimensione font: ${currentFontSize}px`);
+          });
+        }
+        if (btnFontLarger) {
+          btnFontLarger.addEventListener('click', () => {
+            currentFontSize = Math.min(22, currentFontSize + 1);
+            cmEditor.getWrapperElement().style.fontSize = `${currentFontSize}px`;
+            cmEditor.refresh();
+            showToast(`Dimensione font: ${currentFontSize}px`);
+          });
+        }
+
         // Pulsante Word Wrap (A Capo)
         btnWrapToggle.addEventListener('click', () => {
           isWordWrap = !isWordWrap;
+          cmEditor.setOption('lineWrapping', isWordWrap);
           btnWrapToggle.classList.toggle('active', isWordWrap);
           btnWrapToggle.textContent = isWordWrap ? 'A Capo: ON' : 'A Capo: OFF';
-
-          const wsVal = isWordWrap ? 'pre-wrap' : 'pre';
-          const wbVal = isWordWrap ? 'break-word' : 'normal';
-
-          codeTextarea.style.whiteSpace = wsVal;
-          codeTextarea.style.wordBreak = wbVal;
-          highlightOverlay.style.whiteSpace = wsVal;
-          highlightOverlay.style.wordBreak = wbVal;
-
-          syncCodeView();
-          showToast(isWordWrap ? 'Testo a capo automatico attivo' : 'Testo su riga continua attivo');
+          cmEditor.refresh();
+          showToast(isWordWrap ? 'A capo automatico attivo' : 'Scorrimento orizzontale attivo');
         });
 
         // Pulsanti Aggiorna & Formatta
@@ -1955,8 +2043,9 @@ ${currentHtml}
           showToast('Anteprima aggiornata!');
         });
         document.getElementById('btn-format').addEventListener('click', () => {
-          codeTextarea.value = codeTextarea.value.split('\n').map(l => l.trimEnd()).join('\n');
-          syncCodeView();
+          const val = cmEditor.getValue();
+          cmEditor.setValue(val.split('\n').map(l => l.trimEnd()).join('\n'));
+          cmEditor.refresh();
           showToast('Codice formattato!');
         });
 
@@ -2005,10 +2094,15 @@ ${currentHtml}
         document.getElementById('btn-copy-all').addEventListener('click', () => {
           copyToClipboard(buildAutonomousHtmlDoc(), 'File HTML completo copiato!');
         });
-        document.getElementById('btn-copy-inline').addEventListener('click', () => {
-          closeDropdowns();
-          copyToClipboard(`style="${getInlineBackground()}"`, 'Style inline copiato!');
-        });
+
+        const btnCopyCssRules = document.getElementById('btn-copy-css-rules');
+        if (btnCopyCssRules) {
+          btnCopyCssRules.addEventListener('click', () => {
+            closeDropdowns();
+            copyToClipboard(getCleanCssPropertiesOnly(), 'Regole CSS background copiate!');
+          });
+        }
+
         document.getElementById('btn-copy-tailwind').addEventListener('click', () => {
           closeDropdowns();
           copyToClipboard(getTailwindClasses(), 'Classi Tailwind copiate!');
@@ -2019,12 +2113,14 @@ ${currentHtml}
         });
         document.getElementById('btn-clear-canvas').addEventListener('click', () => {
           closeDropdowns();
-          currentCss = `body {\n  min-height: 100vh;\n  margin: 0;\n  background-color: #0b0f19;\n  color: #ffffff;\n  font-family: system-ui, sans-serif;\n}`;
-          currentHtml = ``;
-          codeTextarea.value = (activeTab === 'css') ? currentCss : currentHtml;
-          syncCodeView();
+          currentCss = `/* Nuovo Foglio di Stile CSS */\nbody {\n  margin: 0;\n  padding: 0;\n  min-height: 100vh;\n  background-color: #0b0f19;\n  color: #f8fafc;\n  font-family: system-ui, sans-serif;\n}`;
+          if (activeTab === 'css') {
+            cmEditor.setValue(currentCss);
+          } else {
+            cmEditor.setValue(buildAutonomousHtmlDoc());
+          }
           updatePreview();
-          showToast('Canvas vuoto pronto!');
+          showToast('Foglio di stile vuoto pronto!');
         });
 
         // Toggle Testo Dimostrativo
@@ -2032,7 +2128,7 @@ ${currentHtml}
           showDemoText = !showDemoText;
           btnToggleDemo.classList.toggle('active', showDemoText);
           btnToggleDemo.textContent = showDemoText ? '✓ Testo Pagina Attivo' : 'Mostra Testo Pagina';
-          previewBadgeStatus.textContent = showDemoText ? 'Con Testo Dimostrativo' : '100% Sfondo Intero';
+          previewBadgeStatus.textContent = showDemoText ? 'Con Testo Dimostrativo' : '100% Vista Completa';
           updatePreview();
         });
 
@@ -2073,19 +2169,28 @@ ${currentHtml}
 
           const uri = makeEmojiSvg(char, size, angle, opacity);
 
-          currentCss = `body {
-  min-height: 100vh;
+          currentCss = `/* ========================================================
+   PATTERN EMOJI ${char} (BODY)
+   ======================================================== */
+body {
   margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  
+  /* Sfondo con pattern emoji ${char} */
   background-color: #0b0f19;
   background-image: ${uri};
   background-repeat: repeat;
+
+  /* Tipografia */
   color: #f8fafc;
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
 }`;
           if (activeTab === 'css') {
-            codeTextarea.value = currentCss;
+            cmEditor.setValue(currentCss);
+          } else {
+            cmEditor.setValue(buildAutonomousHtmlDoc());
           }
-          syncCodeView();
           updatePreview();
           toolsModal.classList.remove('show');
           showToast(`Pattern emoji ${char} applicato al Body!`);
@@ -2097,9 +2202,15 @@ ${currentHtml}
           const blend = document.getElementById('img-input-blend').value;
           const color = document.getElementById('img-input-color').value;
 
-          currentCss = `body {
-  min-height: 100vh;
+          currentCss = `/* ========================================================
+   FOTO DI SFONDO PERSONALIZZATA (BODY)
+   ======================================================== */
+body {
   margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  
+  /* Immagine di sfondo con maschera ${color} */
   background-color: ${color};
   background-image: 
     linear-gradient(${color}e6, ${color}e6),
@@ -2108,13 +2219,16 @@ ${currentHtml}
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
+
+  /* Tipografia */
   color: #f8fafc;
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
 }`;
           if (activeTab === 'css') {
-            codeTextarea.value = currentCss;
+            cmEditor.setValue(currentCss);
+          } else {
+            cmEditor.setValue(buildAutonomousHtmlDoc());
           }
-          syncCodeView();
           updatePreview();
           toolsModal.classList.remove('show');
           showToast('Immagine a tutta pagina applicata al Body!');
@@ -2127,3 +2241,4 @@ ${currentHtml}
   </script>
 </body>
 </html>
+
