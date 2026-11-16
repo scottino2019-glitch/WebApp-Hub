@@ -1,0 +1,1393 @@
+<!doctype html>
+<html lang="it"><head>
+    <script type="module" src="/@vite/client"></script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Convertitore Codice HTML &amp; CSS in &amp;code; | 100% Client-Side</title>
+    <meta name="description" content="Convertitore di codice HTML e CSS in entità sicure (&amp;code;) client-side in un unico file HTML, senza server e senza AI.">
+    <meta property="og:title" content="Convertitore Codice HTML &amp; CSS in &amp;code;">
+    <meta property="og:description" content="Convertitore rapido e autonomo in JavaScript puro per trasformare HTML e CSS in entità HTML sicure per il web.">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <style>
+      :root {
+        --bg-main: #0f172a;
+        --bg-card: #1e293b;
+        --bg-input: #0b1120;
+        --border-color: #334155;
+        --border-focus: #38bdf8;
+        --text-main: #f8fafc;
+        --text-muted: #94a3b8;
+        --text-dim: #64748b;
+        --primary: #0284c7;
+        --primary-hover: #0369a1;
+        --primary-glow: rgba(56, 189, 248, 0.2);
+        --accent: #10b981;
+        --accent-hover: #059669;
+        --warning: #f59e0b;
+        --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 14px;
+        --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.2);
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: var(--font-sans);
+        background-color: var(--bg-main);
+        color: var(--text-main);
+        line-height: 1.5;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      header {
+        background-color: #111827;
+        border-bottom: 1px solid var(--border-color);
+        padding: 1rem 1.5rem;
+        position: sticky;
+        top: 0;
+        z-index: 50;
+      }
+
+      .header-content {
+        max-width: 1400px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      .brand-icon {
+        width: 38px;
+        height: 38px;
+        background: linear-gradient(135deg, #0284c7, #38bdf8);
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--font-mono);
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: #ffffff;
+        box-shadow: 0 0 15px var(--primary-glow);
+      }
+
+      .brand-text h1 {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #f1f5f9;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .badge-tag {
+        font-size: 0.7rem;
+        font-weight: 600;
+        background-color: rgba(16, 185, 129, 0.15);
+        color: #34d399;
+        border: 1px solid rgba(16, 185, 129, 0.3);
+        padding: 0.15rem 0.5rem;
+        border-radius: 999px;
+        letter-spacing: 0.03em;
+      }
+
+      .brand-text p {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+      }
+
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        flex-wrap: wrap;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        font-family: var(--font-sans);
+        font-size: 0.82rem;
+        font-weight: 600;
+        padding: 0.48rem 0.9rem;
+        border-radius: var(--radius-sm);
+        border: 1px solid transparent;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        text-decoration: none;
+        user-select: none;
+      }
+
+      .btn-primary {
+        background-color: var(--primary);
+        color: #ffffff;
+        border-color: #0284c7;
+      }
+      .btn-primary:hover {
+        background-color: var(--primary-hover);
+        box-shadow: 0 0 12px var(--primary-glow);
+      }
+
+      .btn-accent {
+        background-color: var(--accent);
+        color: #ffffff;
+      }
+      .btn-accent:hover {
+        background-color: var(--accent-hover);
+      }
+
+      .btn-secondary {
+        background-color: var(--bg-card);
+        color: var(--text-main);
+        border-color: var(--border-color);
+      }
+      .btn-secondary:hover {
+        background-color: #334155;
+        border-color: #475569;
+      }
+
+      .btn-sm {
+        padding: 0.3rem 0.65rem;
+        font-size: 0.75rem;
+      }
+
+      main {
+        flex: 1;
+        max-width: 1400px;
+        width: 100%;
+        margin: 0 auto;
+        padding: 1.25rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+      }
+
+      /* Control Toolbar */
+      .toolbar-card {
+        background-color: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 1rem 1.25rem;
+        box-shadow: var(--shadow);
+        display: flex;
+        flex-direction: column;
+        gap: 0.85rem;
+      }
+
+      .toolbar-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+
+      .radio-group, .select-group {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+
+      .group-label {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .pill-toggle {
+        display: inline-flex;
+        background-color: var(--bg-input);
+        padding: 0.25rem;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--border-color);
+      }
+
+      .pill-toggle label {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.35rem 0.75rem;
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: var(--text-muted);
+        border-radius: var(--radius-sm);
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+
+      .pill-toggle input[type="radio"] {
+        display: none;
+      }
+
+      .pill-toggle input[type="radio"]:checked + label {
+        background-color: var(--primary);
+        color: #ffffff;
+        font-weight: 600;
+      }
+
+      select.custom-select {
+        background-color: var(--bg-input);
+        color: var(--text-main);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        padding: 0.4rem 0.75rem;
+        font-size: 0.82rem;
+        font-family: var(--font-sans);
+        outline: none;
+        cursor: pointer;
+      }
+      select.custom-select:focus {
+        border-color: var(--border-focus);
+      }
+
+      .checkboxes-row {
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+        flex-wrap: wrap;
+        border-top: 1px solid rgba(51, 65, 85, 0.5);
+        padding-top: 0.75rem;
+      }
+
+      .checkbox-label {
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        cursor: pointer;
+        user-select: none;
+      }
+
+      .checkbox-label input[type="checkbox"] {
+        accent-color: var(--primary);
+        cursor: pointer;
+        width: 15px;
+        height: 15px;
+      }
+
+      /* Editors Grid */
+      .editors-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.25rem;
+        flex: 1;
+        min-height: 480px;
+      }
+
+      @media (max-width: 960px) {
+        .editors-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .editor-pane {
+        background-color: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+      }
+
+      .pane-header {
+        background-color: #111827;
+        border-bottom: 1px solid var(--border-color);
+        padding: 0.65rem 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+      }
+
+      .pane-title {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #f1f5f9;
+      }
+
+      .pane-stats {
+        font-size: 0.75rem;
+        color: var(--text-dim);
+        font-family: var(--font-mono);
+      }
+
+      .pane-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+      }
+
+      .textarea-wrapper {
+        flex: 1;
+        position: relative;
+        display: flex;
+        background-color: var(--bg-input);
+      }
+
+      textarea {
+        width: 100%;
+        height: 100%;
+        min-height: 380px;
+        background-color: transparent;
+        color: #f8fafc;
+        border: none;
+        outline: none;
+        padding: 1rem;
+        font-family: var(--font-mono);
+        font-size: 0.88rem;
+        line-height: 1.6;
+        resize: none;
+        tab-size: 2;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+
+      textarea::placeholder {
+        color: #475569;
+        font-family: var(--font-sans);
+        font-size: 0.85rem;
+      }
+
+      .pane-footer {
+        background-color: #111827;
+        border-top: 1px solid var(--border-color);
+        padding: 0.5rem 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 0.75rem;
+        color: var(--text-dim);
+      }
+
+      .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        color: #38bdf8;
+      }
+      .status-dot {
+        width: 7px;
+        height: 7px;
+        background-color: #10b981;
+        border-radius: 50%;
+      }
+
+      /* Preview Section */
+      .preview-section {
+        background-color: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow);
+      }
+
+      .preview-tabs {
+        background-color: #111827;
+        border-bottom: 1px solid var(--border-color);
+        padding: 0.5rem 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .tabs-nav {
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      .tab-btn {
+        background: transparent;
+        border: none;
+        color: var(--text-muted);
+        font-size: 0.8rem;
+        font-weight: 600;
+        padding: 0.35rem 0.75rem;
+        border-radius: var(--radius-sm);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        transition: all 0.15s ease;
+      }
+
+      .tab-btn.active {
+        background-color: #334155;
+        color: #ffffff;
+      }
+
+      .tab-btn:hover:not(.active) {
+        color: #cbd5e1;
+      }
+
+      .preview-body {
+        padding: 1rem;
+        min-height: 180px;
+      }
+
+      .code-render-box {
+        background-color: #0b1120;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        padding: 1rem;
+        color: #38bdf8;
+        font-family: var(--font-mono);
+        font-size: 0.85rem;
+        line-height: 1.6;
+        max-height: 260px;
+        overflow: auto;
+        white-space: pre-wrap;
+      }
+
+      .sandbox-iframe-box {
+        width: 100%;
+        height: 240px;
+        background: #ffffff;
+        border-radius: var(--radius-md);
+        border: 1px solid var(--border-color);
+        overflow: hidden;
+      }
+
+      iframe#sandboxFrame {
+        width: 100%;
+        height: 100%;
+        border: none;
+      }
+
+      /* Quick Reference Guide Table */
+      .guide-card {
+        background-color: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 1.25rem;
+      }
+
+      .guide-title {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #f1f5f9;
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .entity-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+        gap: 0.6rem;
+      }
+
+      .entity-item {
+        background-color: var(--bg-input);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        padding: 0.45rem 0.65rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 0.8rem;
+      }
+
+      .char-display {
+        font-weight: 700;
+        color: #fbbf24;
+        font-family: var(--font-mono);
+        background: rgba(251, 191, 36, 0.1);
+        padding: 0.1rem 0.35rem;
+        border-radius: 3px;
+      }
+
+      .entity-code {
+        color: #38bdf8;
+        font-family: var(--font-mono);
+        font-weight: 600;
+      }
+
+      footer {
+        background-color: #0b1120;
+        border-top: 1px solid var(--border-color);
+        padding: 1rem 1.5rem;
+        text-align: center;
+        font-size: 0.78rem;
+        color: var(--text-dim);
+      }
+
+      /* Toast Notification */
+      #toast {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        background-color: #10b981;
+        color: #ffffff;
+        padding: 0.65rem 1.25rem;
+        border-radius: var(--radius-md);
+        font-size: 0.85rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        pointer-events: none;
+        z-index: 100;
+      }
+
+      #toast.show {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      /* Drag drop highlight */
+      .textarea-wrapper.dragover {
+        border: 2px dashed #38bdf8 !important;
+        background-color: rgba(56, 189, 248, 0.05);
+      }
+    </style>
+  <script src="/_aistudio-iframe.js?v=6634132a"></script><script src="https://cdn.jsdelivr.net/npm/html2canvas-pro@2.0.4"></script><style>.aistudio-hover-highlight { box-shadow: inset 0 0 0 0.5px white, inset 0 0 0 1.5px rgba(128,128,128,0.6) !important; }.aistudio-active-highlight { outline: 2px solid #87a9ff !important; outline-offset: -2px !important; box-shadow: 0 0 0 0.5px rgba(0,0,0,0.3), inset 0 0 0 0.5px rgba(0,0,0,0.3) !important; }.aistudio-generating-blur { filter: blur(5px) grayscale(100%) brightness(28%) !important; transition: filter 0.3s ease; }#aistudio-focus-mode-tag { position: absolute; display: none; align-items: center; gap: 4px; background: #87a9ff; border-radius: 12px; z-index: 10000; padding: 8px; color: #32302c; font-family: Inter, sans-serif; font-size: 14px; font-style: normal; font-weight: 500; line-height: 21px; pointer-events: none; }#aistudio-hover-mode-tag { position: absolute; display: none; align-items: center; gap: 4px; background: rgba(128,128,128,0.6); border-radius: 12px; z-index: 10000; padding: 8px; color: white; font-family: Inter, sans-serif; font-size: 14px; font-style: normal; font-weight: 500; line-height: 21px; pointer-events: none; }.aistudio-img-icon { display: none; vertical-align: middle; pointer-events: auto; cursor: pointer; }.aistudio-img-icon.visible { display: inline-flex; }#aistudio-focus-mode-tag .aistudio-img-icon { position: relative; width: 26px; height: 26px; background: #32302c; border-radius: 6px; margin: -4px -4px -4px 0; }#aistudio-focus-mode-tag .aistudio-img-icon::before { content: ""; position: absolute; top: 4px; left: 4px; width: 18px; height: 18px; background-color: white; -webkit-mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/googlesymbols/edit_fix_auto/default/24px.svg"); -webkit-mask-size: contain; -webkit-mask-repeat: no-repeat; mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/googlesymbols/edit_fix_auto/default/24px.svg"); mask-size: contain; mask-repeat: no-repeat; }#aistudio-hover-mode-tag .aistudio-img-icon { position: relative; width: 18px; height: 18px; margin-left: 4px; }#aistudio-hover-mode-tag .aistudio-img-icon::before { content: ""; position: absolute; top: 0; left: 0; width: 18px; height: 18px; background-color: white; -webkit-mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/googlesymbols/edit_fix_auto/default/24px.svg"); -webkit-mask-size: contain; -webkit-mask-repeat: no-repeat; mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/googlesymbols/edit_fix_auto/default/24px.svg"); mask-size: contain; mask-repeat: no-repeat; }#aistudio-focus-mode-tag .aistudio-img-icon:hover, #aistudio-hover-mode-tag .aistudio-img-icon:hover { background: #424242 !important; }#aistudio-focus-mode-tag .aistudio-img-icon:active, #aistudio-hover-mode-tag .aistudio-img-icon:active { background: #393f51 !important; }</style><style>@font-face {
+              font-family: 'Open Sans Regular';
+              font-style: normal;
+              font-weight: 400;
+              src: url('chrome-extension://gkkdmjjodidppndkbkhhknakbeflbomf/fonts/open_sans/open-sans-v18-latin-regular.woff');
+          }</style><style>@font-face {
+              font-family: 'Open Sans Bold';
+              font-style: normal;
+              font-weight: 800;
+              src: url('chrome-extension://gkkdmjjodidppndkbkhhknakbeflbomf/fonts/open_sans/OpenSans-Bold.woff');
+          }</style><style>@font-face {
+              font-family: 'Open Sans ExtraBold';
+              font-style: normal;
+              font-weight: 800;
+              src: url('chrome-extension://gkkdmjjodidppndkbkhhknakbeflbomf/fonts/open_sans/open-sans-v18-latin-800.woff');
+          }</style></head>
+  <body>
+    <!-- HEADER -->
+    <header>
+      <div class="header-content">
+        <div class="brand">
+          <div class="brand-icon">&amp;</div>
+          <div class="brand-text">
+            <h1>
+              Convertitore HTML &amp; CSS in &amp;code;
+              <span class="badge-tag">100% Client-Side • No AI • No Server</span>
+            </h1>
+            <p>Elaborazione istantanea in locale nel tuo browser. Sicuro, privato e leggero.</p>
+          </div>
+        </div>
+
+        <div class="header-actions">
+          <button id="btnDownloadSingleHtml" class="btn btn-primary" title="Scarica questa intera app come un unico file .html autonomo da eseguire offline">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            Scarica App (.html autonomo)
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- MAIN APP -->
+    <main>
+      <!-- CONTROLS & SETTINGS TOOLBAR -->
+      <section class="toolbar-card">
+        <div class="toolbar-row">
+          <!-- Direzione di conversione: Codifica vs Decodifica -->
+          <div class="radio-group">
+            <span class="group-label">Modalità:</span>
+            <div class="pill-toggle">
+              <input type="radio" id="modeEncode" name="conversionMode" value="encode" checked="">
+              <label for="modeEncode">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polyline points="16 3 21 3 21 8"></polyline>
+                  <line x1="4" y1="20" x2="21" y2="3"></line>
+                  <polyline points="21 16 21 21 16 21"></polyline>
+                  <line x1="15" y1="15" x2="21" y2="21"></line>
+                  <line x1="4" y1="4" x2="9" y2="9"></line>
+                </svg>
+                Codifica (Codice → &amp;code;)
+              </label>
+
+              <input type="radio" id="modeDecode" name="conversionMode" value="decode">
+              <label for="modeDecode">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
+                  <path d="M21 3v5h-5"></path>
+                  <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path>
+                  <path d="M8 16H3v5"></path>
+                </svg>
+                Decodifica (&amp;code; → Codice)
+              </label>
+            </div>
+          </div>
+
+          <!-- Tipo di codifica -->
+          <div class="select-group">
+            <span class="group-label">Tipo Entità:</span>
+            <select id="entityFormatSelect" class="custom-select">
+              <option value="standard" selected="">Standard (&amp;lt; &amp;gt; &amp;amp; &amp;quot; &amp;#39;)</option>
+              <option value="full">Completo (Tutti i simboli speciali + accenti)</option>
+              <option value="decimal">Numerico Decimale (&amp;#60; &amp;#62; &amp;#38;)</option>
+              <option value="hex">Numerico Esadecimale (&amp;#x3C; &amp;#x3E; &amp;#x26;)</option>
+            </select>
+          </div>
+
+          <!-- Wrapper del codice per output -->
+          <div class="select-group">
+            <span class="group-label">Formato Wrapper:</span>
+            <select id="wrapperFormatSelect" class="custom-select">
+              <option value="none" selected="">Nessuno (Solo testo convertito)</option>
+              <option value="pre-code">&lt;pre&gt;&lt;code&gt;...&lt;/code&gt;&lt;/pre&gt;</option>
+              <option value="pre-code-html">&lt;pre&gt;&lt;code class="language-html"&gt;...&lt;/code&gt;&lt;/pre&gt;</option>
+              <option value="pre-code-css">&lt;pre&gt;&lt;code class="language-css"&gt;...&lt;/code&gt;&lt;/pre&gt;</option>
+              <option value="code-inline">&lt;code&gt;...&lt;/code&gt; (Inline)</option>
+              <option value="markdown">Markdown (```html ... ```)</option>
+              <option value="bbcode">[code]...[/code] (Forum BBCode)</option>
+              <option value="js-string">Stringa JavaScript ('...')</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Opzioni Aggiuntive Checkbox -->
+        <div class="checkboxes-row">
+          <label class="checkbox-label" title="Sostituisce doppi apici con &quot; e singoli apici con '">
+            <input type="checkbox" id="optQuotes" checked="">
+            Codifica apici (" e ')
+          </label>
+          <label class="checkbox-label" title="Converte caratteri accentati (à, è, é, ì, ò, ù) in entità HTML">
+            <input type="checkbox" id="optAccents">
+            Codifica lettere accentate
+          </label>
+          <label class="checkbox-label" title="Sostituisce spazi consecutivi con &nbsp; per mantenere la spaziatura">
+            <input type="checkbox" id="optNbsp">
+            Spazi multipli in &amp;nbsp;
+          </label>
+          <label class="checkbox-label" title="Rimuove spazi e ritorni a capo ridondanti prima di convertire">
+            <input type="checkbox" id="optMinify">
+            Compatta / Minifica codice
+          </label>
+        </div>
+      </section>
+
+      <!-- EDITORS AREA (INPUT & OUTPUT) -->
+      <section class="editors-grid">
+        <!-- PANE INPUT -->
+        <div class="editor-pane">
+          <div class="pane-header">
+            <div class="pane-title">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="4 7 4 4 20 4 20 7"></polyline>
+                <line x1="9" y1="20" x2="15" y2="20"></line>
+                <line x1="12" y1="4" x2="12" y2="20"></line>
+              </svg>
+              <span id="inputLabel">Codice Sorgente (HTML o CSS)</span>
+            </div>
+            <div class="pane-actions">
+              <button id="btnSampleHtml" class="btn btn-secondary btn-sm" title="Carica codice HTML d'esempio">Esempio HTML</button>
+              <button id="btnSampleCss" class="btn btn-secondary btn-sm" title="Carica codice CSS d'esempio">Esempio CSS</button>
+              <button id="btnClearInput" class="btn btn-secondary btn-sm" title="Svuota il testo">Pulisci</button>
+            </div>
+          </div>
+
+          <div class="textarea-wrapper" id="inputWrapper">
+            <textarea id="rawInput" spellcheck="false" placeholder="Incolla o digita qui il codice HTML o CSS da convertire... (puoi anche trascinare un file qui dentro)"></textarea>
+          </div>
+
+          <div class="pane-footer">
+            <div class="pane-stats" id="inputStats">723 caratteri • 31 righe</div>
+            <div>Trascina un file .html / .css</div>
+          </div>
+        </div>
+
+        <!-- PANE OUTPUT -->
+        <div class="editor-pane">
+          <div class="pane-header">
+            <div class="pane-title">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="16 18 22 12 16 6"></polyline>
+                <polyline points="8 6 2 12 8 18"></polyline>
+              </svg>
+              <span id="outputLabel">Risultato Convertito (&amp;code;)</span>
+            </div>
+            <div class="pane-actions">
+              <button id="btnCopyOutput" class="btn btn-primary btn-sm" title="Copia negli appunti">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+                Copia
+              </button>
+              <button id="btnDownloadOutput" class="btn btn-secondary btn-sm" title="Scarica file convertito">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                Scarica
+              </button>
+            </div>
+          </div>
+
+          <div class="textarea-wrapper">
+            <textarea id="convertedOutput" readonly="" spellcheck="false" placeholder="Il codice convertito in entità &amp;code; apparirà qui automaticamente in tempo reale..."></textarea>
+          </div>
+
+          <div class="pane-footer">
+            <div class="pane-stats" id="outputStats">921 caratteri • 58 entità generate</div>
+            <div class="status-pill">
+              <span class="status-dot"></span>
+              <span>Pronto all'uso nel browser</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- LIVE PREVIEW ACCORDION / TABS -->
+      <section class="preview-section">
+        <div class="preview-tabs">
+          <div class="tabs-nav">
+            <button class="tab-btn active" id="tabPreViewBtn" data-target="preCodeView">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                <line x1="8" y1="21" x2="16" y2="21"></line>
+                <line x1="12" y1="17" x2="12" y2="21"></line>
+              </svg>
+              Anteprima Rendering Web (&lt;pre&gt;&lt;code&gt;)
+            </button>
+            <button class="tab-btn" id="tabSandboxBtn" data-target="sandboxView">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+              </svg>
+              Esegui Codice Originale (Sandbox Iframe)
+            </button>
+          </div>
+          <span style="font-size: 0.75rem; color: var(--text-dim);">Aggiornamento in tempo reale</span>
+        </div>
+
+        <div class="preview-body">
+          <div id="preCodeView">
+            <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 0.5rem;">
+              Ecco come il tuo codice convertito apparirà ai visitatori su una pagina web, blog o documentazione:
+            </p>
+            <div class="code-render-box" id="liveRenderedHtml">&lt;!DOCTYPE html&gt;
+&lt;html lang="it"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;title&gt;Esempio Scheda Prodotto&lt;/title&gt;
+  &lt;style&gt;
+    .card {
+      background: #1e293b;
+      color: #f8fafc;
+      padding: 1.5rem;
+      border-radius: 8px;
+      border: 1px solid #334155;
+      font-family: sans-serif;
+    }
+    .badge {
+      background: #0284c7;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      font-size: 0.8rem;
+    }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class="card"&gt;
+    &lt;span class="badge"&gt;Novità&lt;/span&gt;
+    &lt;h2&gt;Titolo del Componente&lt;/h2&gt;
+    &lt;p&gt;Questo è un esempio di codice HTML &amp; CSS da convertire in entità &amp;amp;code; sicure.&lt;/p&gt;
+    &lt;button onclick="alert('Funziona!')"&gt;Clicca Qui&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;</div>
+          </div>
+
+          <div id="sandboxView" style="display: none;">
+            <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 0.5rem;">
+              Rendering effettivo del codice HTML/CSS inserito in un ambiente sicuro isolato:
+            </p>
+            <div class="sandbox-iframe-box">
+              <iframe id="sandboxFrame" sandbox="allow-scripts" title="Sandbox Preview" srcdoc="&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;it&quot;&gt;
+&lt;head&gt;
+  &lt;meta charset=&quot;UTF-8&quot;&gt;
+  &lt;title&gt;Esempio Scheda Prodotto&lt;/title&gt;
+  &lt;style&gt;
+    .card {
+      background: #1e293b;
+      color: #f8fafc;
+      padding: 1.5rem;
+      border-radius: 8px;
+      border: 1px solid #334155;
+      font-family: sans-serif;
+    }
+    .badge {
+      background: #0284c7;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      font-size: 0.8rem;
+    }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class=&quot;card&quot;&gt;
+    &lt;span class=&quot;badge&quot;&gt;Novità&lt;/span&gt;
+    &lt;h2&gt;Titolo del Componente&lt;/h2&gt;
+    &lt;p&gt;Questo è un esempio di codice HTML &amp; CSS da convertire in entità &amp;amp;code; sicure.&lt;/p&gt;
+    &lt;button onclick=&quot;alert('Funziona!')&quot;&gt;Clicca Qui&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;"></iframe>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ENTITY REFERENCE CHEAT SHEET -->
+      <section class="guide-card">
+        <div class="guide-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+          </svg>
+          Tabella Rapida Entità Principali per HTML &amp; CSS
+        </div>
+        <div class="entity-grid">
+          <div class="entity-item"><span>Minore: <span class="char-display">&lt;</span></span><span class="entity-code">&amp;lt;</span></div>
+          <div class="entity-item"><span>Maggiore: <span class="char-display">&gt;</span></span><span class="entity-code">&amp;gt;</span></div>
+          <div class="entity-item"><span>E commerciale: <span class="char-display">&amp;</span></span><span class="entity-code">&amp;amp;</span></div>
+          <div class="entity-item"><span>Doppio apice: <span class="char-display">"</span></span><span class="entity-code">&amp;quot;</span></div>
+          <div class="entity-item"><span>Singolo apice: <span class="char-display">'</span></span><span class="entity-code">&amp;#39;</span></div>
+          <div class="entity-item"><span>Spazio unificatore: <span class="char-display">[spazio]</span></span><span class="entity-code">&amp;nbsp;</span></div>
+          <div class="entity-item"><span>Copyright: <span class="char-display">©</span></span><span class="entity-code">&amp;copy;</span></div>
+          <div class="entity-item"><span>Euro: <span class="char-display">€</span></span><span class="entity-code">&amp;euro;</span></div>
+          <div class="entity-item"><span>Freccia destra: <span class="char-display">→</span></span><span class="entity-code">&amp;rarr;</span></div>
+          <div class="entity-item"><span>Aperta graffa: <span class="char-display">{</span></span><span class="entity-code">&amp;#123;</span></div>
+          <div class="entity-item"><span>Chiusa graffa: <span class="char-display">}</span></span><span class="entity-code">&amp;#125;</span></div>
+          <div class="entity-item"><span>Slash: <span class="char-display">/</span></span><span class="entity-code">&amp;#47;</span></div>
+        </div>
+      </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+      Applicazione 100% autonoma in un unico file HTML • Nessun server • Nessun tracciamento • Senza AI • Elaborazione JavaScript client-side locale
+    </footer>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <polyline points="20 6 9 17 4 12"></polyline>
+      </svg>
+      <span id="toastMsg">Copiato negli appunti!</span>
+    </div>
+
+    <!-- PURE VANILLA JAVASCRIPT LOGIC (100% CLIENT-SIDE, ZERO SERVER, ZERO AI) -->
+    <script>
+      (function() {
+        'use strict';
+
+        // Element references
+        const rawInput = document.getElementById('rawInput');
+        const convertedOutput = document.getElementById('convertedOutput');
+        const entityFormatSelect = document.getElementById('entityFormatSelect');
+        const wrapperFormatSelect = document.getElementById('wrapperFormatSelect');
+        const optQuotes = document.getElementById('optQuotes');
+        const optAccents = document.getElementById('optAccents');
+        const optNbsp = document.getElementById('optNbsp');
+        const optMinify = document.getElementById('optMinify');
+        const inputStats = document.getElementById('inputStats');
+        const outputStats = document.getElementById('outputStats');
+        const liveRenderedHtml = document.getElementById('liveRenderedHtml');
+        const sandboxFrame = document.getElementById('sandboxFrame');
+        const inputWrapper = document.getElementById('inputWrapper');
+        const toast = document.getElementById('toast');
+        const toastMsg = document.getElementById('toastMsg');
+        const inputLabel = document.getElementById('inputLabel');
+        const outputLabel = document.getElementById('outputLabel');
+
+        // Buttons
+        const btnCopyOutput = document.getElementById('btnCopyOutput');
+        const btnDownloadOutput = document.getElementById('btnDownloadOutput');
+        const btnDownloadSingleHtml = document.getElementById('btnDownloadSingleHtml');
+        const btnClearInput = document.getElementById('btnClearInput');
+        const btnSampleHtml = document.getElementById('btnSampleHtml');
+        const btnSampleCss = document.getElementById('btnSampleCss');
+        const tabPreViewBtn = document.getElementById('tabPreViewBtn');
+        const tabSandboxBtn = document.getElementById('tabSandboxBtn');
+        const preCodeView = document.getElementById('preCodeView');
+        const sandboxView = document.getElementById('sandboxView');
+
+        // Named character entity map for accents and symbols
+        const namedEntitiesMap = {
+          'à': '&agrave;', 'á': '&aacute;', 'â': '&acirc;', 'ã': '&atilde;', 'ä': '&auml;', 'å': '&aring;',
+          'è': '&egrave;', 'é': '&eacute;', 'ê': '&ecirc;', 'ë': '&euml;',
+          'ì': '&igrave;', 'í': '&iacute;', 'î': '&icirc;', 'ï': '&iuml;',
+          'ò': '&ograve;', 'ó': '&oacute;', 'ô': '&ocirc;', 'õ': '&otilde;', 'ö': '&ouml;',
+          'ù': '&ugrave;', 'ú': '&uacute;', 'û': '&ucirc;', 'ü': '&uuml;',
+          'À': '&Agrave;', 'Á': '&Aacute;', 'Â': '&Acirc;', 'Ã': '&Atilde;', 'Ä': '&Auml;', 'Å': '&Aring;',
+          'È': '&Egrave;', 'É': '&Eacute;', 'Ê': '&Ecirc;', 'Ë': '&Euml;',
+          'Ì': '&Igrave;', 'Í': '&Iacute;', 'Î': '&Icirc;', 'Ï': '&Iuml;',
+          'Ò': '&Ograve;', 'Ó': '&Oacute;', 'Ô': '&Ocirc;', 'Õ': '&Otilde;', 'Ö': '&Ouml;',
+          'Ù': '&Ugrave;', 'Ú': '&Uacute;', 'Û': '&Ucirc;', 'Ü': '&Uuml;',
+          'ç': '&ccedil;', 'Ç': '&Ccedil;', 'ñ': '&ntilde;', 'Ñ': '&Ntilde;',
+          '€': '&euro;', '£': '&pound;', '¥': '&yen;', '©': '&copy;', '®': '&reg;', '™': '&trade;',
+          '°': '&deg;', '±': '&plusmn;', '×': '&times;', '÷': '&divide;', '≠': '&ne;', '≤': '&le;', '≥': '&ge;'
+        };
+
+        // Samples
+        const SAMPLE_HTML = `<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Esempio Scheda Prodotto</title>
+  <style>
+    .card {
+      background: #1e293b;
+      color: #f8fafc;
+      padding: 1.5rem;
+      border-radius: 8px;
+      border: 1px solid #334155;
+      font-family: sans-serif;
+    }
+    .badge {
+      background: #0284c7;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      font-size: 0.8rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <span class="badge">Novità</span>
+    <h2>Titolo del Componente</h2>
+    <p>Questo è un esempio di codice HTML & CSS da convertire in entità &amp;code; sicure.</p>
+    <button onclick="alert('Funziona!')">Clicca Qui</button>
+  </div>
+</body>
+</html>`;
+
+        const SAMPLE_CSS = `/* Animazione e Stile Bottone Glassmorphism */
+.btn-glass {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-glass:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes pulseGlow {
+  0% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(56, 189, 248, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0); }
+}`;
+
+        // Toast feedback
+        let toastTimer = null;
+        function showToast(message, isError) {
+          toastMsg.textContent = message;
+          toast.style.backgroundColor = isError ? '#ef4444' : '#10b981';
+          toast.classList.add('show');
+          clearTimeout(toastTimer);
+          toastTimer = setTimeout(() => {
+            toast.classList.remove('show');
+          }, 2400);
+        }
+
+        // Minify helper
+        function simpleMinify(code) {
+          return code
+            .replace(/\/\*[\s\S]*?\*\/|([^:]|^)\/\/.*$/gm, '') // rimuovi commenti
+            .replace(/\s+/g, ' ') // rimuovi spazi multipli
+            .replace(/\s*([\{\}\:\;\,])\s*/g, '$1') // compatta attorno a punteggiatura
+            .trim();
+        }
+
+        // Conversion Engine: Encode
+        function encodeCode(text) {
+          if (!text) return '';
+
+          let processed = text;
+          if (optMinify.checked) {
+            processed = simpleMinify(processed);
+          }
+
+          const format = entityFormatSelect.value;
+          const encodeQuotes = optQuotes.checked;
+          const encodeAccents = optAccents.checked;
+          const encodeNbsp = optNbsp.checked;
+
+          let result = '';
+
+          if (format === 'standard') {
+            // Escaping standard sicuro
+            result = processed.replace(/[&<>"']/g, function(char) {
+              switch (char) {
+                case '&': return '&amp;';
+                case '<': return '&lt;';
+                case '>': return '&gt;';
+                case '"': return encodeQuotes ? '&quot;' : '"';
+                case "'": return encodeQuotes ? '&#39;' : "'";
+                default: return char;
+              }
+            });
+
+            if (encodeAccents) {
+              result = result.replace(/[àáâãäåèéêëìíîïòóôõöùúûüÀÁÂÃÄÅÈÉÊËÌÍÎÏÒÓÔÕÖÙÚÛÜçÇñÑ€£¥©®™°±×÷≠≤≥]/g, function(c) {
+                return namedEntitiesMap[c] || `&#${c.charCodeAt(0)};`;
+              });
+            }
+
+          } else if (format === 'full') {
+            // Sostituisce i base e tutti i caratteri non-ASCII
+            result = processed.replace(/[&<>"']/g, function(char) {
+              switch (char) {
+                case '&': return '&amp;';
+                case '<': return '&lt;';
+                case '>': return '&gt;';
+                case '"': return encodeQuotes ? '&quot;' : '"';
+                case "'": return encodeQuotes ? '&#39;' : "'";
+                default: return char;
+              }
+            });
+
+            result = result.replace(/[^\u0000-\u007F]/g, function(c) {
+              return namedEntitiesMap[c] || `&#${c.charCodeAt(0)};`;
+            });
+
+          } else if (format === 'decimal') {
+            // Tutte le entità fondamentali in decimale &#...;
+            result = processed.replace(/[&<>"'\{\}\[\]\/]/g, function(char) {
+              if ((char === '"' || char === "'") && !encodeQuotes) return char;
+              return `&#${char.charCodeAt(0)};`;
+            });
+
+            if (encodeAccents) {
+              result = result.replace(/[^\u0000-\u007F]/g, function(c) {
+                return `&#${c.charCodeAt(0)};`;
+              });
+            }
+
+          } else if (format === 'hex') {
+            // Tutte le entità fondamentali in esadecimale &#x...;
+            result = processed.replace(/[&<>"'\{\}\[\]\/]/g, function(char) {
+              if ((char === '"' || char === "'") && !encodeQuotes) return char;
+              return `&#x${char.charCodeAt(0).toString(16).toUpperCase()};`;
+            });
+
+            if (encodeAccents) {
+              result = result.replace(/[^\u0000-\u007F]/g, function(c) {
+                return `&#x${c.charCodeAt(0).toString(16).toUpperCase()};`;
+              });
+            }
+          }
+
+          if (encodeNbsp) {
+            result = result.replace(/ {2,}/g, function(spaces) {
+              return '&nbsp;'.repeat(spaces.length);
+            });
+          }
+
+          // Apply wrapper format
+          const wrapper = wrapperFormatSelect.value;
+          switch (wrapper) {
+            case 'pre-code':
+              return `<pre><code>${result}</code></pre>`;
+            case 'pre-code-html':
+              return `<pre><code class="language-html">${result}</code></pre>`;
+            case 'pre-code-css':
+              return `<pre><code class="language-css">${result}</code></pre>`;
+            case 'code-inline':
+              return `<code>${result}</code>`;
+            case 'markdown':
+              return "```html\n" + result + "\n```";
+            case 'bbcode':
+              return `[code]${result}[/code]`;
+            case 'js-string':
+              return JSON.stringify(result);
+            case 'none':
+            default:
+              return result;
+          }
+        }
+
+        // Conversion Engine: Decode
+        function decodeEntities(text) {
+          if (!text) return '';
+          // Remove wrapper tags if present
+          let clean = text;
+          clean = clean.replace(/^<pre><code.*?>|<\/code><\/pre>$/gi, '');
+          clean = clean.replace(/^<code>|<\/code>$/gi, '');
+          clean = clean.replace(/^```[a-z]*\n|```$/gi, '');
+          clean = clean.replace(/^\[code\]|\[\/code\]$/gi, '');
+
+          // Native browser entity decoding using textarea DOM
+          const doc = new DOMParser().parseFromString(clean, 'text/html');
+          return doc.documentElement.textContent || '';
+        }
+
+        // Real-time update processor
+        function processConversion() {
+          const mode = document.querySelector('input[name="conversionMode"]:checked').value;
+          const inputVal = rawInput.value;
+
+          // Update input stats
+          const inputLines = inputVal ? inputVal.split('\n').length : 0;
+          inputStats.textContent = `${inputVal.length} caratteri • ${inputLines} righe`;
+
+          if (mode === 'encode') {
+            inputLabel.textContent = 'Codice Sorgente (HTML o CSS)';
+            outputLabel.textContent = 'Risultato Convertito (&code;)';
+
+            const encoded = encodeCode(inputVal);
+            convertedOutput.value = encoded;
+
+            // Count occurrences of &...;
+            const matches = encoded.match(/&[a-zA-Z0-9#x]+;/g);
+            const entityCount = matches ? matches.length : 0;
+            outputStats.textContent = `${encoded.length} caratteri • ${entityCount} entità generate`;
+
+            // Update live previews
+            updatePreviews(inputVal, encoded);
+          } else {
+            inputLabel.textContent = 'Codice con Entità (&code;)';
+            outputLabel.textContent = 'Codice Decodificato Originale';
+
+            const decoded = decodeEntities(inputVal);
+            convertedOutput.value = decoded;
+
+            const lines = decoded ? decoded.split('\n').length : 0;
+            outputStats.textContent = `${decoded.length} caratteri • ${lines} righe ripristinate`;
+
+            updatePreviews(decoded, inputVal);
+          }
+        }
+
+        // Update preview tabs
+        function updatePreviews(originalCode, encodedCode) {
+          // Tab 1: Render how the entity code looks inside a webpage
+          if (liveRenderedHtml) {
+            liveRenderedHtml.textContent = originalCode || 'Nessun codice inserito.';
+          }
+
+          // Tab 2: Execute actual code in secure iframe
+          if (sandboxFrame) {
+            try {
+              sandboxFrame.srcdoc = originalCode || '<div style="font-family:sans-serif;color:#666;padding:1rem;">Nessun codice eseguibile caricato.</div>';
+            } catch (e) {
+              console.warn('Sandbox frame update failed', e);
+            }
+          }
+        }
+
+        // Tab support inside textareas (Tab key inserts 2 spaces)
+        rawInput.addEventListener('keydown', function(e) {
+          if (e.key === 'Tab') {
+            e.preventDefault();
+            const start = this.selectionStart;
+            const end = this.selectionEnd;
+            this.value = this.value.substring(0, start) + '  ' + this.value.substring(end);
+            this.selectionStart = this.selectionEnd = start + 2;
+            processConversion();
+          }
+        });
+
+        // Event listeners for real-time reactive conversion
+        rawInput.addEventListener('input', processConversion);
+        entityFormatSelect.addEventListener('change', processConversion);
+        wrapperFormatSelect.addEventListener('change', processConversion);
+        optQuotes.addEventListener('change', processConversion);
+        optAccents.addEventListener('change', processConversion);
+        optNbsp.addEventListener('change', processConversion);
+        optMinify.addEventListener('change', processConversion);
+
+        document.querySelectorAll('input[name="conversionMode"]').forEach(radio => {
+          radio.addEventListener('change', function() {
+            // Swap inputs if switching direction
+            if (convertedOutput.value && rawInput.value) {
+              const temp = rawInput.value;
+              rawInput.value = convertedOutput.value;
+            }
+            processConversion();
+          });
+        });
+
+        // Copy button
+        btnCopyOutput.addEventListener('click', async function() {
+          const val = convertedOutput.value;
+          if (!val) {
+            showToast('Nessun testo da copiare!', true);
+            return;
+          }
+          try {
+            await navigator.clipboard.writeText(val);
+            showToast('Codice copiato negli appunti!');
+          } catch (err) {
+            convertedOutput.select();
+            document.execCommand('copy');
+            showToast('Codice copiato negli appunti!');
+          }
+        });
+
+        // Download output file
+        btnDownloadOutput.addEventListener('click', function() {
+          const val = convertedOutput.value;
+          if (!val) {
+            showToast('Inserisci del codice prima di scaricare!', true);
+            return;
+          }
+          const mode = document.querySelector('input[name="conversionMode"]:checked').value;
+          const filename = mode === 'encode' ? 'converted-entities.html' : 'decoded-code.html';
+          const blob = new Blob([val], { type: 'text/plain;charset=utf-8' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = filename;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+          showToast(`File ${filename} scaricato!`);
+        });
+
+        // Download the standalone application as a single .html file
+        btnDownloadSingleHtml.addEventListener('click', function() {
+          const currentHtml = '<!doctype html>\n' + document.documentElement.outerHTML;
+          const blob = new Blob([currentHtml], { type: 'text/html;charset=utf-8' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'convertitore-html-css-entita.html';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+          showToast('App scaricata! Aprila direttamente offline in qualsiasi browser.');
+        });
+
+        // Clear input button
+        btnClearInput.addEventListener('click', function() {
+          rawInput.value = '';
+          convertedOutput.value = '';
+          processConversion();
+          rawInput.focus();
+          showToast('Area di testo svuotata');
+        });
+
+        // Sample buttons
+        btnSampleHtml.addEventListener('click', function() {
+          document.getElementById('modeEncode').checked = true;
+          rawInput.value = SAMPLE_HTML;
+          processConversion();
+          showToast('Esempio HTML caricato!');
+        });
+
+        btnSampleCss.addEventListener('click', function() {
+          document.getElementById('modeEncode').checked = true;
+          wrapperFormatSelect.value = 'pre-code-css';
+          rawInput.value = SAMPLE_CSS;
+          processConversion();
+          showToast('Esempio CSS caricato!');
+        });
+
+        // Tab switching in Preview
+        tabPreViewBtn.addEventListener('click', function() {
+          tabPreViewBtn.classList.add('active');
+          tabSandboxBtn.classList.remove('active');
+          preCodeView.style.display = 'block';
+          sandboxView.style.display = 'none';
+        });
+
+        tabSandboxBtn.addEventListener('click', function() {
+          tabSandboxBtn.classList.add('active');
+          tabPreViewBtn.classList.remove('active');
+          preCodeView.style.display = 'none';
+          sandboxView.style.display = 'block';
+        });
+
+        // Drag and drop support
+        ['dragenter', 'dragover'].forEach(eventName => {
+          inputWrapper.addEventListener(eventName, function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            inputWrapper.classList.add('dragover');
+          });
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+          inputWrapper.addEventListener(eventName, function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            inputWrapper.classList.remove('dragover');
+          });
+        });
+
+        inputWrapper.addEventListener('drop', function(e) {
+          const files = e.dataTransfer.files;
+          if (files && files.length > 0) {
+            const file = files[0];
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+              rawInput.value = evt.target.result;
+              processConversion();
+              showToast(`File caricato: ${file.name}`);
+            };
+            reader.readAsText(file);
+          }
+        });
+
+        // Load default initial sample for an instant delightful preview
+        rawInput.value = SAMPLE_HTML;
+        processConversion();
+      })();
+    </script>
+  
+
+</body></html>
