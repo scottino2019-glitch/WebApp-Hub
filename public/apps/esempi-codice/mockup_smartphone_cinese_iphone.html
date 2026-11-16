@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mockup Smartphone</title>
+    <!-- Tailwind CSS per uno styling rapido e pulito -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome per le icone -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Font Inter per la tipografia -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #311042 100%);
+            min-height: 100vh;
+        }
+
+        /* Effetto scocca smartphone pulita */
+        .phone-case {
+            width: 320px;
+            height: 650px;
+            border-radius: 48px;
+            background: #18181b;
+            box-shadow: 
+                0 0 0 4px #27272a,
+                0 0 0 5px #3f3f46,
+                0 25px 50px -12px rgba(0, 0, 0, 0.7),
+                0 0 40px rgba(139, 92, 246, 0.15);
+            position: relative;
+            padding: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        /* Schermo interno */
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            border-radius: 38px;
+            background: linear-gradient(180deg, #181824 0%, #0d0d15 100%), 
+                        url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop') center/cover no-repeat;
+            background-blend-mode: overlay;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* Dynamic Island / Notch stile iPhone */
+        .dynamic-island {
+            width: 90px;
+            height: 22px;
+            background-color: #000000;
+            border-radius: 20px;
+            position: absolute;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 8px;
+        }
+
+        .camera-lens {
+            width: 10px;
+            height: 10px;
+            background-color: #09090b;
+            border-radius: 50%;
+            border: 1px solid #27272a;
+        }
+
+        /* Dock sospeso stile iOS / Cinese */
+        .dock-bar {
+            background: rgba(255, 255, 255, 0.18);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 26px;
+            margin: 0 16px 8px 16px;
+            padding: 10px 18px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Effetti icone app */
+        .app-icon-box {
+            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            user-select: none;
+            text-decoration: none;
+        }
+        .app-icon-box:hover {
+            transform: scale(1.12);
+        }
+        .app-icon-box:active {
+            transform: scale(0.92);
+        }
+
+        /* Scritta APP integrata nello sfondo */
+        .app-watermark-title {
+            font-weight: 800;
+            letter-spacing: 0.1em;
+            color: rgba(255, 255, 255, 0.18);
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Barra Home */
+        .home-indicator {
+            width: 110px;
+            height: 4px;
+            background-color: rgba(255, 255, 255, 0.7);
+            border-radius: 10px;
+            margin: 0 auto 6px auto;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen select-none">
+
+    <!-- Mockup Smartphone (Nessuna scritta esterna) -->
+    <div class="phone-case">
+        <div class="phone-screen text-white">
+            
+            <!-- Dynamic Island (Isola Dinamica) -->
+            <div class="dynamic-island">
+                <div class="camera-lens"></div>
+            </div>
+
+            <!-- Sezione Superiore: Status Bar & Titolo integrato nello sfondo -->
+            <div>
+                <!-- Barra di Stato (Status Bar) -->
+                <div class="pt-2 px-6 flex justify-between items-center text-[12px] font-semibold tracking-tight z-30">
+                    <!-- Orologio Live -->
+                    <span id="status-clock">12:45</span>
+                    
+                    <!-- Icone Stato (Segnale, Wi-Fi, Batteria) -->
+                    <div class="flex items-center space-x-1.5 text-[11px]">
+                        <i class="fas fa-signal"></i>
+                        <i class="fas fa-wifi"></i>
+                        <div class="flex items-center space-x-0.5">
+                            <span class="text-[10px]">85%</span>
+                            <i class="fas fa-battery-three-quarters text-sm"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Titolo "APP" integrato nello sfondo -->
+                <div class="text-center pt-3 pb-1">
+                    <h2 class="app-watermark-title text-xl uppercase">APP</h2>
+                </div>
+            </div>
+
+            <!-- Griglia Applicazioni al Centro -->
+            <div class="px-4 grid grid-cols-3 gap-y-6 gap-x-3 my-auto">
+                
+                <!-- App 1: Temi Cinesi -->
+                <a href="https://temi-cinesi.vercel.app/" target="_blank" class="app-icon-box flex flex-col items-center">
+                    <div class="w-13 h-13 w-12 h-12 bg-gradient-to-tr from-red-600 to-amber-500 rounded-2xl flex items-center justify-center shadow-md shadow-red-900/40">
+                        <i class="fas fa-palette text-lg text-white"></i>
+                    </div>
+                    <span class="text-[11px] mt-1.5 font-medium text-white/90 drop-shadow text-center leading-tight">Temi Cinesi</span>
+                </a>
+
+                <!-- App 2: Libreria Cinese -->
+                <a href="https://libreria-cinese.vercel.app/" target="_blank" class="app-icon-box flex flex-col items-center">
+                    <div class="w-12 h-12 bg-gradient-to-tr from-amber-600 to-yellow-400 rounded-2xl flex items-center justify-center shadow-md shadow-amber-900/40">
+                        <i class="fas fa-book-bookmark text-lg text-white"></i>
+                    </div>
+                    <span class="text-[11px] mt-1.5 font-medium text-white/90 drop-shadow text-center leading-tight">Libreria</span>
+                </a>
+
+                <!-- App 3: Hanzi PWA -->
+                <a href="https://hanzi-pwa-five.vercel.app/" target="_blank" class="app-icon-box flex flex-col items-center">
+                    <div class="w-12 h-12 bg-gradient-to-tr from-indigo-600 to-blue-400 rounded-2xl flex items-center justify-center shadow-md shadow-indigo-900/40">
+                        <i class="fas fa-pen-nib text-lg text-white"></i>
+                    </div>
+                    <span class="text-[11px] mt-1.5 font-medium text-white/90 drop-shadow text-center leading-tight">Hanzi PWA</span>
+                </a>
+
+                <!-- App 4: Hanzi Lab -->
+                <a href="https://hanzilab.vercel.app/" target="_blank" class="app-icon-box flex flex-col items-center">
+                    <div class="w-12 h-12 bg-gradient-to-tr from-teal-600 to-emerald-400 rounded-2xl flex items-center justify-center shadow-md shadow-teal-900/40">
+                        <i class="fas fa-flask text-lg text-white"></i>
+                    </div>
+                    <span class="text-[11px] mt-1.5 font-medium text-white/90 drop-shadow text-center leading-tight">Hanzi Lab</span>
+                </a>
+
+                <!-- App 5: Hanzi Walkman -->
+                <a href="https://hanziwalkman.vercel.app/" target="_blank" class="app-icon-box flex flex-col items-center">
+                    <div class="w-12 h-12 bg-gradient-to-tr from-purple-600 to-pink-500 rounded-2xl flex items-center justify-center shadow-md shadow-purple-900/40">
+                        <i class="fas fa-headphones text-lg text-white"></i>
+                    </div>
+                    <span class="text-[11px] mt-1.5 font-medium text-white/90 drop-shadow text-center leading-tight">Hanzi Walkman</span>
+                </a>
+
+            </div>
+
+            <!-- Sezione Inferiore: Dock Sospesa & Home Bar -->
+            <div>
+                <!-- Dock Menu Stile iPhone / Cinese -->
+                <div class="dock-bar flex justify-around items-center">
+                    
+                    <!-- Dock Item 1: Sito -->
+                    <a href="https://lingua-cinese.vercel.app/" target="_blank" class="app-icon-box flex flex-col items-center">
+                        <div class="w-11 h-11 bg-gradient-to-tr from-blue-600 to-cyan-400 rounded-2xl flex items-center justify-center shadow-md shadow-blue-900/40">
+                            <i class="fas fa-globe text-base text-white"></i>
+                        </div>
+                        <span class="text-[9px] mt-1 font-medium text-white/80">Sito</span>
+                    </a>
+
+                    <!-- Dock Item 2: Utility -->
+                    <a href="https://lingua-cinese.vercel.app/utility.html" target="_blank" class="app-icon-box flex flex-col items-center">
+                        <div class="w-11 h-11 bg-gradient-to-tr from-slate-600 to-gray-400 rounded-2xl flex items-center justify-center shadow-md shadow-slate-900/40">
+                            <i class="fas fa-wrench text-base text-white"></i>
+                        </div>
+                        <span class="text-[9px] mt-1 font-medium text-white/80">Utility</span>
+                    </a>
+
+                    <!-- Dock Item 3: Roji -->
+                    <a href="https://roji-tawny.vercel.app/" target="_blank" class="app-icon-box flex flex-col items-center">
+                        <div class="w-11 h-11 bg-gradient-to-tr from-rose-600 to-orange-400 rounded-2xl flex items-center justify-center shadow-md shadow-rose-900/40">
+                            <i class="fas fa-book-open text-base text-white"></i>
+                        </div>
+                        <span class="text-[9px] mt-1 font-medium text-white/80">Roji</span>
+                    </a>
+
+                </div>
+
+                <!-- Indicatore Home inferiore -->
+                <div class="home-indicator"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Script JavaScript per orologio di sistema -->
+    <script>
+        function updateClock() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('status-clock').textContent = `${hours}:${minutes}`;
+        }
+        
+        updateClock();
+        setInterval(updateClock, 1000);
+    </script>
+</body>
+</html>
